@@ -482,7 +482,7 @@ public class RpcApiService implements Service {
       ECKey ecKey = new ECKey(Utils.getRandom());
       byte[] priKey = ecKey.getPrivKeyBytes();
       byte[] address = ecKey.getAddress();
-      String addressStr = Wallet.encode58Check(address);
+      String addressStr = Wallet.encodeBase58(address);
       String priKeyStr = Hex.encodeHexString(priKey);
       AddressPrKeyPairMessage.Builder builder = AddressPrKeyPairMessage.newBuilder();
       builder.setAddress(addressStr);
@@ -1627,7 +1627,7 @@ public class RpcApiService implements Service {
       ECKey ecKey = new ECKey(Utils.getRandom());
       byte[] priKey = ecKey.getPrivKeyBytes();
       byte[] address = ecKey.getAddress();
-      String addressStr = Wallet.encode58Check(address);
+      String addressStr = Wallet.encodeBase58(address);
       String priKeyStr = Hex.encodeHexString(priKey);
       AddressPrKeyPairMessage.Builder builder = AddressPrKeyPairMessage.newBuilder();
       builder.setAddress(addressStr);

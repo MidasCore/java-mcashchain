@@ -58,10 +58,10 @@ public class BandwidthProcessorTest {
     context = new TronApplicationContext(DefaultConfig.class);
     ASSET_NAME = "test_token";
     ASSET_NAME_V2 = "2";
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    TO_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    ASSET_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3456";
-    ASSET_ADDRESS_V2 = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a7890";
+    OWNER_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
+    TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    ASSET_ADDRESS = "548794500882809695a8a687866e76d4271a3456";
+    ASSET_ADDRESS_V2 = "548794500882809695a8a687866e76d4271a7890";
     START_TIME = DateTime.now().minusDays(1).getMillis();
     END_TIME = DateTime.now().getMillis();
   }
@@ -227,8 +227,7 @@ public class BandwidthProcessorTest {
     TransferAssetContract transferAssetContract = getTransferAssetContract();
     TransactionCapsule trx = new TransactionCapsule(transferAssetContract);
 
-    String NOT_EXISTS_ADDRESS =
-        Wallet.getAddressPreFixString() + "008794500882809695a8a687866e76d4271a1abc";
+    String NOT_EXISTS_ADDRESS = "008794500882809695a8a687866e76d4271a1abc";
     transferAssetContract = transferAssetContract.toBuilder()
         .setToAddress(ByteString.copyFrom(ByteArray.fromHexString(NOT_EXISTS_ADDRESS))).build();
 

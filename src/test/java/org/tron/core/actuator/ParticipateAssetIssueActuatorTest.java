@@ -53,11 +53,11 @@ public class ParticipateAssetIssueActuatorTest {
   static {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1234";
-    TO_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    TO_ADDRESS_2 = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e048892";
-    THIRD_ADDRESS = Wallet.getAddressPreFixString() + "4948c2e8a756d9437037dcd8c7e0c73d560ca38d";
-    NOT_EXIT_ADDRESS = Wallet.getAddressPreFixString() + "B56446E617E924805E4D6CA021D341FEF6E2013B";
+    OWNER_ADDRESS = "548794500882809695a8a687866e76d4271a1234";
+    TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    TO_ADDRESS_2 = "abd4b9367799eaa3197fecb144eb71de1e048892";
+    THIRD_ADDRESS = "4948c2e8a756d9437037dcd8c7e0c73d560ca38d";
+    NOT_EXIT_ADDRESS = "B56446E617E924805E4D6CA021D341FEF6E2013B";
   }
 
   /**

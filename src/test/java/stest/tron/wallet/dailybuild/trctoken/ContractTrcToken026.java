@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -62,7 +61,6 @@ public class ContractTrcToken026 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -90,12 +88,12 @@ public class ContractTrcToken026 {
         .assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "dev001Address:" + Base58.encode58Check(dev001Address));
+        "dev001Address:" + Base58.encodeBase58(dev001Address));
     Assert
         .assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "user001Address:" + Base58.encode58Check(user001Address));
+        "user001Address:" + Base58.encodeBase58(user001Address));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     // freeze balance
@@ -226,8 +224,8 @@ public class ContractTrcToken026 {
     logger.info("beforeUserBalance:" + beforeUserBalance);
     // 1.user trigger A to transfer token to B
     String param =
-        "\"" + Base58.encode58Check(btestAddress) + "\",\"" + Base58.encode58Check(ctestAddress)
-            + "\",\"" + Base58.encode58Check(transferTokenContractAddress)
+        "\"" + Base58.encodeBase58(btestAddress) + "\",\"" + Base58.encodeBase58(ctestAddress)
+            + "\",\"" + Base58.encodeBase58(transferTokenContractAddress)
             + "\",1,\"" + assetAccountId
             .toStringUtf8()
             + "\"";
@@ -337,8 +335,8 @@ public class ContractTrcToken026 {
     ByteString tokenId1 = ByteString.copyFromUtf8(String.valueOf(i));
 
     String param1 =
-        "\"" + Base58.encode58Check(btestAddress) + "\",\"" + Base58.encode58Check(ctestAddress)
-            + "\",\"" + Base58.encode58Check(transferTokenContractAddress)
+        "\"" + Base58.encodeBase58(btestAddress) + "\",\"" + Base58.encodeBase58(ctestAddress)
+            + "\",\"" + Base58.encodeBase58(transferTokenContractAddress)
             + "\",1,\"" + tokenId1
             .toStringUtf8()
             + "\"";
@@ -433,8 +431,8 @@ public class ContractTrcToken026 {
         .getBalance();
     //4. user trigger A to transfer token to B
     String param2 =
-        "\"" + Base58.encode58Check(btestAddress) + "\",\"" + Base58.encode58Check(ctestAddress)
-            + "\",\"" + Base58.encode58Check(transferTokenContractAddress)
+        "\"" + Base58.encodeBase58(btestAddress) + "\",\"" + Base58.encodeBase58(ctestAddress)
+            + "\",\"" + Base58.encodeBase58(transferTokenContractAddress)
             + "\",10000000,\"" + assetAccountId
             .toStringUtf8()
             + "\"";
@@ -529,8 +527,8 @@ public class ContractTrcToken026 {
         .getBalance();
     //5. user trigger A to transfer token to B
     String param3 =
-        "\"" + Base58.encode58Check(btestAddress) + "\",\"" + Base58.encode58Check(ctestAddress)
-            + "\",\"" + Base58.encode58Check(transferTokenContractAddress)
+        "\"" + Base58.encodeBase58(btestAddress) + "\",\"" + Base58.encodeBase58(ctestAddress)
+            + "\",\"" + Base58.encodeBase58(transferTokenContractAddress)
             + "\",1,\"" + assetAccountId
             .toStringUtf8()
             + "\"";
@@ -628,8 +626,8 @@ public class ContractTrcToken026 {
         .getBalance();
     //6. user trigger A to transfer token to B
     String param4 =
-        "\"" + Base58.encode58Check(btestAddress) + "\",\"" + Base58.encode58Check(ctestAddress)
-            + "\",\"" + Base58.encode58Check(transferTokenContractAddress)
+        "\"" + Base58.encodeBase58(btestAddress) + "\",\"" + Base58.encodeBase58(ctestAddress)
+            + "\",\"" + Base58.encodeBase58(transferTokenContractAddress)
             + "\",1,\"" + assetAccountId
             .toStringUtf8()
             + "\"";
@@ -726,8 +724,8 @@ public class ContractTrcToken026 {
         .getBalance();
     //2. user trigger A to transfer token to B
     String param5 =
-        "\"" + Base58.encode58Check(btestAddress) + "\",\"" + Base58.encode58Check(ctestAddress)
-            + "\",\"" + Base58.encode58Check(transferTokenContractAddress)
+        "\"" + Base58.encodeBase58(btestAddress) + "\",\"" + Base58.encodeBase58(ctestAddress)
+            + "\",\"" + Base58.encodeBase58(transferTokenContractAddress)
             + "\",1,\"" + assetAccountId
             .toStringUtf8()
             + "\"";

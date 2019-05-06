@@ -29,7 +29,6 @@ import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.WalletClient;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -83,7 +82,6 @@ public class UpdateAccount2Test {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -116,7 +114,7 @@ public class UpdateAccount2Test {
       //Assert.assertTrue(noCreateAccount.getBalance() == 1);
 
       //TestVoteToNonWitnessAccount
-      String voteStr = Base58.encode58Check(lowBalAddress);
+      String voteStr = Base58.encodeBase58(lowBalAddress);
 
       HashMap<String, String> voteToNonWitnessAccount = new HashMap<String, String>();
       voteToNonWitnessAccount.put(voteStr, "3");
@@ -143,7 +141,7 @@ public class UpdateAccount2Test {
         ret1 = createWitness2(lowBalAddress2, createUrl, lowBalTest2);
         Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
         Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
-        String voteStr1 = Base58.encode58Check(lowBalAddress2);
+        String voteStr1 = Base58.encodeBase58(lowBalAddress2);
         HashMap<String, String> voteToWitAddress = new HashMap<String, String>();
         voteToWitAddress.put(voteStr1, "1");
         PublicMethed.printAddress(lowBalTest);

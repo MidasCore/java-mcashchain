@@ -22,7 +22,6 @@ import org.tron.common.utils.Utils;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -62,7 +61,6 @@ public class ContractInternalTransaction003 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -152,7 +150,7 @@ public class ContractInternalTransaction003 {
             internalTxsAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1) + "\"";
     String txid = "";
     txid = PublicMethed.triggerContract(contractAddress,
         "test1(address)", initParmes, false,
@@ -282,8 +280,8 @@ public class ContractInternalTransaction003 {
             internalTxsAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1)
-        + "\",\"" + Base58.encode58Check(contractAddress2) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1)
+        + "\",\"" + Base58.encodeBase58(contractAddress2) + "\"";
     String txid = "";
     txid = PublicMethed.triggerContract(contractAddress,
         "sendToB(address,address)", initParmes, false,
@@ -470,8 +468,8 @@ public class ContractInternalTransaction003 {
             internalTxsAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1)
-        + "\",\"" + Base58.encode58Check(contractAddress2) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1)
+        + "\",\"" + Base58.encodeBase58(contractAddress2) + "\"";
     String txid = "";
     txid = PublicMethed.triggerContract(contractAddress,
         "test1(address,address)", initParmes, false,
@@ -874,7 +872,7 @@ public class ContractInternalTransaction003 {
         internalTxsAddress, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    String initParmes = "\"" + Base58.encode58Check(contractAddress) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress) + "\"";
 
     String txid = "";
     txid = PublicMethed.triggerContract(contractAddress,
@@ -1281,8 +1279,8 @@ public class ContractInternalTransaction003 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1)
-        + "\",\"" + Base58.encode58Check(contractAddress2) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1)
+        + "\",\"" + Base58.encodeBase58(contractAddress2) + "\"";
     String txid = "";
     txid = PublicMethed.triggerContract(contractAddress,
         "test1(address,address)", initParmes, false,

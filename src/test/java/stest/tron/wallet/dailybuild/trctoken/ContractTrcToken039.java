@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -61,7 +60,6 @@ public class ContractTrcToken039 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -85,13 +83,13 @@ public class ContractTrcToken039 {
         .assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "dev001Address:" + Base58.encode58Check(dev001Address));
+        "dev001Address:" + Base58.encodeBase58(dev001Address));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Assert
         .assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "user001Address:" + Base58.encode58Check(user001Address));
+        "user001Address:" + Base58.encodeBase58(user001Address));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     // freeze balance
@@ -199,9 +197,9 @@ public class ContractTrcToken039 {
     logger.info("beforeBalanceContractAddress:" + beforeBalanceContractAddress);
     logger.info("beforeUserBalance:" + beforeUserBalance);
     String param =
-        "\"" + Base58.encode58Check(atestAddress) + "\"";
+        "\"" + Base58.encodeBase58(atestAddress) + "\"";
     String param1 =
-        "\"" + "1" + "\",\"" + Base58.encode58Check(user001Address) + "\",\"" + assetAccountId
+        "\"" + "1" + "\",\"" + Base58.encodeBase58(user001Address) + "\",\"" + assetAccountId
             .toStringUtf8()
             + "\"";
 
@@ -308,9 +306,9 @@ public class ContractTrcToken039 {
     logger.info("beforeBalanceContractAddress1:" + beforeBalanceContractAddress1);
     logger.info("beforeUserBalance1:" + beforeUserBalance1);
     String param3 =
-        "\"" + Base58.encode58Check(btestAddress) + "\"";
+        "\"" + Base58.encodeBase58(btestAddress) + "\"";
     String param2 =
-        "\"" + "1" + "\",\"" + Base58.encode58Check(user001Address) + "\",\"" + assetAccountId
+        "\"" + "1" + "\",\"" + Base58.encodeBase58(user001Address) + "\",\"" + assetAccountId
             .toStringUtf8()
             + "\"";
 

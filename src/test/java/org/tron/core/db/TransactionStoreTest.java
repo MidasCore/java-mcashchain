@@ -50,13 +50,10 @@ public class TransactionStoreTest {
   private static final String URL = "https://tron.network";
 
   private static final String ACCOUNT_NAME = "ownerF";
-  private static final String OWNER_ADDRESS =
-      Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-  private static final String TO_ADDRESS =
-      Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+  private static final String OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+  private static final String TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
   private static final long AMOUNT = 100;
-  private static final String WITNESS_ADDRESS =
-      Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
+  private static final String WITNESS_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
 
   static {
     Args.setParam(
@@ -352,7 +349,6 @@ public class TransactionStoreTest {
     // generate the random number
     byte[] result = new byte[length];
     new Random().nextBytes(result);
-    result[0] = Wallet.getAddressPreFixByte();
     return result;
   }
 }

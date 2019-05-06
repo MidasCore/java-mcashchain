@@ -38,7 +38,6 @@ import org.tron.common.crypto.ECKey;
 import org.tron.common.crypto.ECKey.ECDSASignature;
 import org.tron.common.runtime.Runtime;
 import org.tron.common.runtime.vm.program.Program.BadJumpDestinationException;
-import org.tron.common.runtime.vm.program.Program.BytecodeExecutionException;
 import org.tron.common.runtime.vm.program.Program.IllegalOperationException;
 import org.tron.common.runtime.vm.program.Program.JVMStackOverFlowException;
 import org.tron.common.runtime.vm.program.Program.OutOfEnergyException;
@@ -299,10 +298,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       if (weight == 0) {
         throw new PermissionException(
             ByteArray.toHexString(sig.toByteArray()) + " is signed by " + Wallet
-                .encode58Check(address) + " but it is not contained of permission.");
+                .encodeBase58(address) + " but it is not contained of permission.");
       }
       if (addMap.containsKey(base64)) {
-        throw new PermissionException(Wallet.encode58Check(address) + " has signed twice!");
+        throw new PermissionException(Wallet.encodeBase58(address) + " has signed twice!");
       }
       addMap.put(base64, weight);
       if (approveList != null) {
@@ -342,7 +341,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       checkWeight(permission, this.transaction.getSignatureList(), this.getRawHash().getBytes(),
           approveList);
       if (approveList.contains(ByteString.copyFrom(address))) {
-        throw new PermissionException(Wallet.encode58Check(address) + " had signed!");
+        throw new PermissionException(Wallet.encodeBase58(address) + " had signed!");
       }
     }
 
@@ -350,7 +349,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     if (weight == 0) {
       throw new PermissionException(
           ByteArray.toHexString(privateKey) + "'s address is " + Wallet
-              .encode58Check(address) + " but it is not contained of permission.");
+              .encodeBase58(address) + " but it is not contained of permission.");
     }
     ECDSASignature signature = ecKey.sign(getRawHash().getBytes());
     ByteString sig = ByteString.copyFrom(signature.toByteArray());

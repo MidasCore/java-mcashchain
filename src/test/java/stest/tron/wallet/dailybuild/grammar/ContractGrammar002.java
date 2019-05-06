@@ -18,7 +18,6 @@ import org.tron.common.utils.Utils;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -58,7 +57,6 @@ public class ContractGrammar002 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -182,7 +180,7 @@ public class ContractGrammar002 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     String txid = "";
-    String initParmes = "\"" + Base58.encode58Check(grammarAddress2) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(grammarAddress2) + "\"";
     txid = PublicMethed.triggerContract(contractAddress,
         "setFeed(address)", initParmes, false,
         0, maxFeeLimit, grammarAddress2, testKeyForGrammarAddress2, blockingStubFull);

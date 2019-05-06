@@ -19,7 +19,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -56,7 +55,6 @@ public class ContractScenario012 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -102,7 +100,7 @@ public class ContractScenario012 {
 
   @Test(enabled = true)
   public void test2TriggerTransactionCoin() {
-    receiveAddressParam = "\"" + Base58.encode58Check(fromAddress)
+    receiveAddressParam = "\"" + Base58.encodeBase58(fromAddress)
         + "\"";
     //When the contract has no money,transaction coin failed.
     txid = PublicMethed.triggerContract(contractAddress,
@@ -129,7 +127,7 @@ public class ContractScenario012 {
     Assert.assertTrue(PublicMethed.sendcoin(contractAddress, 1000000000L, toAddress,
         testKey003, blockingStubFull));
 
-    receiveAddressParam = "\"" + Base58.encode58Check(receiverAddress)
+    receiveAddressParam = "\"" + Base58.encodeBase58(receiverAddress)
         + "\"";
     //In smart contract, you can't create account
     txid = PublicMethed.triggerContract(contractAddress,
@@ -149,7 +147,7 @@ public class ContractScenario012 {
 
   @Test(enabled = true)
   public void test4TriggerTransactionCoin() {
-    receiveAddressParam = "\"" + Base58.encode58Check(receiverAddress)
+    receiveAddressParam = "\"" + Base58.encodeBase58(receiverAddress)
         + "\"";
     //This time, trigger the methed sendToAddress2 is OK.
     Assert.assertTrue(PublicMethed.sendcoin(receiverAddress, 10000000L, toAddress,

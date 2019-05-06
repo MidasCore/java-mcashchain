@@ -327,7 +327,6 @@ public class WalletTestTransfer003 {
 
   public static Protocol.Transaction sendcoin(byte[] to, long amount, byte[] owner, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     //String priKey = testKey002;
     ECKey temKey = null;
     try {
@@ -366,7 +365,6 @@ public class WalletTestTransfer003 {
 
   public Protocol.Transaction updateAccount(byte[] addressBytes, byte[] accountNameBytes,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);

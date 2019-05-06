@@ -25,7 +25,7 @@ public class Credentials {
   }
 
   public static Credentials create(ECKey ecKeyPair) {
-    String address = org.tron.core.Wallet.encode58Check(ecKeyPair.getAddress());
+    String address = org.tron.core.Wallet.encodeBase58(ecKeyPair.getAddress());
     return new Credentials(ecKeyPair, address);
   }
 

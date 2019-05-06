@@ -6,17 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.util.StringUtils;
 import org.spongycastle.crypto.OutputLengthException;
 import org.spongycastle.util.Arrays;
 import org.spongycastle.util.encoders.Hex;
-import org.tron.common.crypto.Hash;
 import org.tron.common.runtime.utils.MUtil;
 import org.tron.common.runtime.vm.DataWord;
-import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.SmartContract.ABI;
 
@@ -152,7 +149,7 @@ public class ContractEventParser {
         return Hex.toHexString(startBytes);
       } else if (type == Type.ADDRESS) {
         byte[] last20Bytes = Arrays.copyOfRange(startBytes, 12, startBytes.length);
-        return Wallet.encode58Check(MUtil.convertToTronAddress(last20Bytes));
+        return Wallet.encodeBase58(MUtil.convertToTronAddress(last20Bytes));
       } else if (type == Type.STRING || type == Type.BYTES) {
         int start = intValueExact(startBytes);
         byte[] lengthBytes = subBytes(data, start, DATAWORD_UNIT_SIZE);
@@ -221,7 +218,7 @@ public class ContractEventParser {
       return String.valueOf(!DataWord.isZero(bytes));
     } else if (type == Type.ADDRESS) {
       byte[] last20Bytes = Arrays.copyOfRange(bytes, 12, bytes.length);
-      return Wallet.encode58Check(MUtil.convertToTronAddress(last20Bytes));
+      return Wallet.encodeBase58(MUtil.convertToTronAddress(last20Bytes));
     }
     return Hex.toHexString(bytes);
   }

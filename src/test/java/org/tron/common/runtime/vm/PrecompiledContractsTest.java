@@ -88,8 +88,8 @@ public class PrecompiledContractsTest {
     Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
     appT = ApplicationFactory.create(context);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    WITNESS_ADDRESS = Wallet.getAddressPreFixString() + WITNESS_ADDRESS_BASE;
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    WITNESS_ADDRESS = WITNESS_ADDRESS_BASE;
 
   }
 

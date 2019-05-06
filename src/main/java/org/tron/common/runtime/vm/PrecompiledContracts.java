@@ -101,7 +101,7 @@ public class PrecompiledContracts {
 
   private static final ECKey addressCheckECKey = new ECKey();
   private static final String addressCheckECKeyAddress = Wallet
-      .encode58Check(addressCheckECKey.getAddress());
+      .encodeBase58(addressCheckECKey.getAddress());
 
 
   private static final DataWord ecRecoverAddr = new DataWord(

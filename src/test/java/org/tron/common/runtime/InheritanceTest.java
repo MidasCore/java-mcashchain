@@ -38,7 +38,7 @@ public class InheritanceTest {
     Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
     appT = ApplicationFactory.create(context);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
   }
 
   /**

@@ -36,9 +36,8 @@ public class EnergyProcessorTest {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
     ASSET_NAME = "test_token";
-    CONTRACT_PROVIDER_ADDRESS =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    USER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    CONTRACT_PROVIDER_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
+    USER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
   }
 
   /**

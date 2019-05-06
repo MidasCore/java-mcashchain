@@ -20,7 +20,6 @@ import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -63,7 +62,6 @@ public class TestNetErc721Cat {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -268,7 +266,7 @@ public class TestNetErc721Cat {
   @Test(enabled = false)
   public void triggerToSetThreeContractAddressToKittyCore() {
     //Set SaleAuctionAddress to kitty core.
-    String saleContractString = "\"" + Base58.encode58Check(saleClockAuctionContractAddress) + "\"";
+    String saleContractString = "\"" + Base58.encodeBase58(saleClockAuctionContractAddress) + "\"";
     txid = PublicMethed.triggerContract(kittyCoreContractAddress, "setSaleAuctionAddress(address)",
         saleContractString, false, 0, 10000000L, deployAddress, deployKey, blockingStubFull);
     logger.info(txid);
@@ -276,7 +274,7 @@ public class TestNetErc721Cat {
     //Assert.assertTrue(infoById.get().getReceipt().getStorageDelta() > 50);
 
     //Set SiringAuctionAddress to kitty core.
-    String siringContractString = "\"" + Base58.encode58Check(siringClockAuctionContractAddress)
+    String siringContractString = "\"" + Base58.encodeBase58(siringClockAuctionContractAddress)
         + "\"";
     txid = PublicMethed
         .triggerContract(kittyCoreContractAddress, "setSiringAuctionAddress(address)",
@@ -287,7 +285,7 @@ public class TestNetErc721Cat {
     //Assert.assertTrue(infoById.get().getReceipt().getStorageDelta() > 50);
 
     //Set gen contract to kitty core
-    String genContractString = "\"" + Base58.encode58Check(geneScienceInterfaceContractAddress)
+    String genContractString = "\"" + Base58.encodeBase58(geneScienceInterfaceContractAddress)
         + "\"";
     txid = PublicMethed.triggerContract(kittyCoreContractAddress,
         "setGeneScienceAddress(address)", genContractString,
@@ -328,7 +326,7 @@ public class TestNetErc721Cat {
     infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
     Assert.assertTrue(infoById.get().getResultValue() == 0);
 
-    String newCxoAddress = "\"" + Base58.encode58Check(triggerAddress)
+    String newCxoAddress = "\"" + Base58.encodeBase58(triggerAddress)
         + "\"";
 
     txid = PublicMethed.triggerContract(kittyCoreContractAddress,
@@ -366,7 +364,7 @@ public class TestNetErc721Cat {
       infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
       //Assert.assertTrue(infoById.get().getResultValue() == 0);
       /*      String promoKitty = "\"" + times.toString() + "\",\""
-          +  Base58.encode58Check(kittyCoreContractAddress) + "\"";
+          +  Base58.encodeBase58(kittyCoreContractAddress) + "\"";
       logger.info(promoKitty);
       txid = PublicMethed.triggerContract(kittyCoreContractAddress,
           "createPromoKitty(uint256,address)", promoKitty,false,

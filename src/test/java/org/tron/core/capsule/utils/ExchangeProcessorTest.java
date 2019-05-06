@@ -27,9 +27,8 @@ public class ExchangeProcessorTest {
   static {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    OWNER_ACCOUNT_INVALID =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3456";
+    OWNER_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
+    OWNER_ACCOUNT_INVALID = "548794500882809695a8a687866e76d4271a3456";
   }
 
   /**

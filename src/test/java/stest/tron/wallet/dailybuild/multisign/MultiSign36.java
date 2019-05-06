@@ -127,14 +127,14 @@ public class MultiSign36 {
         .addTransactionSign(transaction1, sendAccountKey2, blockingStubFull);
     TransactionApprovedList transactionApprovedList = PublicMethed
         .getTransactionApprovedList(transaction2, blockingStubFull);
-    logger.info("test001Address:" + Base58.encode58Check(test001Address));
+    logger.info("test001Address:" + Base58.encodeBase58(test001Address));
     logger.info(
         "transactionApprovedList:" + Base58
-            .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
-    Assert.assertEquals(Base58.encode58Check(test001Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(1).toByteArray()));
+            .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test001Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(1).toByteArray()));
     Assert.assertEquals(2, transactionApprovedList.getApprovedListCount());
     Assert.assertEquals(0,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
@@ -227,12 +227,12 @@ public class MultiSign36 {
 
     logger.info("transactionSignWeight:" + transactionApprovedList);
     logger.info("transactionSignWeight:" + transactionApprovedList);
-    logger.info("test001Address:" + Base58.encode58Check(test001Address));
+    logger.info("test001Address:" + Base58.encodeBase58(test001Address));
     logger.info(
         "transactionApprovedList:" + Base58
-            .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+            .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Assert.assertEquals(1, transactionApprovedList.getApprovedListCount());
     Assert.assertEquals(2,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
@@ -307,14 +307,14 @@ public class MultiSign36 {
         .getTransactionApprovedList(transaction2, blockingStubFull);
 
     logger.info("transactionSignWeight:" + transactionApprovedList);
-    logger.info("test001Address:" + Base58.encode58Check(test001Address));
+    logger.info("test001Address:" + Base58.encodeBase58(test001Address));
     logger.info(
         "transactionApprovedList:" + Base58
-            .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
-    Assert.assertEquals(Base58.encode58Check(test003Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(1).toByteArray()));
+            .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test003Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(1).toByteArray()));
     Assert.assertEquals(2, transactionApprovedList.getApprovedListCount());
     Assert.assertEquals(2,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
@@ -388,12 +388,12 @@ public class MultiSign36 {
         .getTransactionApprovedList(transaction1, blockingStubFull);
 
     logger.info("transactionSignWeight:" + transactionApprovedList);
-    logger.info("test001Address:" + Base58.encode58Check(test001Address));
+    logger.info("test001Address:" + Base58.encodeBase58(test001Address));
     logger.info(
         "transactionApprovedList:" + Base58
-            .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+            .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Assert.assertEquals(2,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
             .getPermissionId());
@@ -465,7 +465,7 @@ public class MultiSign36 {
         .getTransactionApprovedList(transaction, blockingStubFull);
 
     logger.info("transactionSignWeight:" + transactionApprovedList);
-    logger.info("test001Address:" + Base58.encode58Check(test001Address));
+    logger.info("test001Address:" + Base58.encodeBase58(test001Address));
 
     Assert.assertEquals(0, transactionApprovedList.getApprovedListCount());
     Assert.assertEquals(2,
@@ -539,11 +539,11 @@ public class MultiSign36 {
         .getTransactionApprovedList(transaction1, blockingStubFull);
 
     logger.info("transactionSignWeight:" + transactionApprovedList);
-    logger.info("test001Address:" + Base58.encode58Check(test001Address));
+    logger.info("test001Address:" + Base58.encodeBase58(test001Address));
 
     Assert.assertEquals(1, transactionApprovedList.getApprovedListCount());
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Assert.assertEquals(2,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
             .getPermissionId());
@@ -619,8 +619,8 @@ public class MultiSign36 {
     logger.info("transactionSignWeight:" + transactionApprovedList);
 
     Assert.assertEquals(1, transactionApprovedList.getApprovedListCount());
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Assert.assertEquals(0,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
             .getPermissionId());
@@ -699,12 +699,12 @@ public class MultiSign36 {
         .getTransactionApprovedList(transaction1, blockingStubFull);
 
     logger.info("transactionSignWeight:" + transactionApprovedList);
-    logger.info("Base58.encode58Check(test001Address):" + Base58.encode58Check(test002Address));
-    logger.info("Base58.encode58Check(test001Address)1:" + Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+    logger.info("Base58.encodeBase58(test001Address):" + Base58.encodeBase58(test002Address));
+    logger.info("Base58.encodeBase58(test001Address)1:" + Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Assert.assertEquals(1, transactionApprovedList.getApprovedListCount());
-    Assert.assertEquals(Base58.encode58Check(test002Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test002Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Account test001AddressAccount2 = PublicMethed.queryAccount(test001Address, blockingStubFull);
     List<Permission> permissionsList2 = test001AddressAccount2.getActivePermissionList();
     Permission ownerPermission2 = test001AddressAccount2.getOwnerPermission();
@@ -773,8 +773,8 @@ public class MultiSign36 {
     logger.info("transactionSignWeight:" + transactionApprovedList);
 
     Assert.assertEquals(1, transactionApprovedList.getApprovedListCount());
-    Assert.assertEquals(Base58.encode58Check(test001Address), Base58
-        .encode58Check(transactionApprovedList.getApprovedList(0).toByteArray()));
+    Assert.assertEquals(Base58.encodeBase58(test001Address), Base58
+        .encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
     Assert.assertEquals(0,
         transactionApprovedList.getTransaction().getTransaction().getRawData().getContract(0)
             .getPermissionId());

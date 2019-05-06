@@ -76,13 +76,11 @@ public class TransferAssetActuatorTest {
   static {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049150";
-    TO_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a146a";
-    NOT_EXIT_ADDRESS = Wallet.getAddressPreFixString() + "B56446E617E924805E4D6CA021D341FEF6E2013B";
-    NOT_EXIT_ADDRESS_2 = Wallet.getAddressPreFixString() +
-        "B56446E617E924805E4D6CA021D341FEF6E21234";
-    ownerAsset_ADDRESS =
-        Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049010";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049150";
+    TO_ADDRESS = "548794500882809695a8a687866e76d4271a146a";
+    NOT_EXIT_ADDRESS = "B56446E617E924805E4D6CA021D341FEF6E2013B";
+    NOT_EXIT_ADDRESS_2 = "B56446E617E924805E4D6CA021D341FEF6E21234";
+    ownerAsset_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049010";
   }
 
   /**

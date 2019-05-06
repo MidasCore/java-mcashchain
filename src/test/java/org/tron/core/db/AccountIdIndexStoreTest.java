@@ -132,7 +132,6 @@ public class AccountIdIndexStoreTest {
     // generate the random number
     byte[] result = new byte[length];
     new Random().nextBytes(result);
-    result[0] = Wallet.getAddressPreFixByte();
     return result;
   }
 }

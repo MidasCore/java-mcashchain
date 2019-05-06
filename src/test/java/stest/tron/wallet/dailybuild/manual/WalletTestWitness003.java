@@ -27,7 +27,6 @@ import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 import stest.tron.wallet.common.client.utils.TransactionUtils;
@@ -71,7 +70,6 @@ public class WalletTestWitness003 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -82,7 +80,7 @@ public class WalletTestWitness003 {
   public void beforeClass() {
     logger.info(lowBalTest);
     logger.info(ByteArray.toHexString(PublicMethed.getFinalAddress(lowBalTest)));
-    logger.info(Base58.encode58Check(PublicMethed.getFinalAddress(lowBalTest)));
+    logger.info(Base58.encodeBase58(PublicMethed.getFinalAddress(lowBalTest)));
 
     channelFull = ManagedChannelBuilder.forTarget(fullnode)
         .usePlaintext(true)

@@ -15,10 +15,8 @@ import org.tron.api.GrpcAPI.EmptyMessage;
 import org.tron.api.GrpcAPI.ProposalList;
 import org.tron.api.WalletGrpc;
 import org.tron.api.WalletSolidityGrpc;
-import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -70,7 +68,6 @@ public class WalletTestCommittee003 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -116,10 +113,10 @@ public class WalletTestCommittee003 {
     listProposals = Optional.ofNullable(proposalList);
     logger.info(Integer.toString(listProposals.get().getProposals(0).getApprovalsCount()));
     Assert.assertTrue(listProposals.get().getProposals(0).getApprovalsCount() == 1);
-    //logger.info(Base58.encode58Check(witness002Address));
-    //logger.info(Base58.encode58Check(listProposals.get().getProposals(0).
+    //logger.info(Base58.encodeBase58(witness002Address));
+    //logger.info(Base58.encodeBase58(listProposals.get().getProposals(0).
     // getApprovalsList().get(0).toByteArray()));
-    Assert.assertTrue(Base58.encode58Check(witness002Address).equals(Base58.encode58Check(
+    Assert.assertTrue(Base58.encodeBase58(witness002Address).equals(Base58.encodeBase58(
         listProposals.get().getProposals(0).getApprovalsList().get(0).toByteArray())));
 
     //Failed to approve proposal when you already approval this proposal

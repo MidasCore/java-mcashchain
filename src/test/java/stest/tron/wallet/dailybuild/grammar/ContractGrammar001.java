@@ -18,7 +18,6 @@ import org.tron.common.utils.Utils;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -58,7 +57,6 @@ public class ContractGrammar001 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -142,7 +140,7 @@ public class ContractGrammar001 {
     String abi1 = Configuration.getByPath("testng.conf")
         .getString("abi.abi1_ContractGrammar001_testGrammar002");
     String libraryAddress =
-        "browser/TvmTest_p1_Grammar_002.sol:S:" + Base58.encode58Check(contractAddress);
+        "browser/TvmTest_p1_Grammar_002.sol:S:" + Base58.encodeBase58(contractAddress);
     contractAddress1 = PublicMethed.deployContract(contractName1, abi1, code1, "", maxFeeLimit,
         0L, 100, libraryAddress, testKeyForGrammarAddress,
         grammarAddress, blockingStubFull);
@@ -178,7 +176,7 @@ public class ContractGrammar001 {
     String abi1 = Configuration.getByPath("testng.conf")
         .getString("abi.abi1_ContractGrammar001_testGrammar003");
     String libraryAddress =
-        "browser/TvmTest_p1_Grammar_003.sol:S:" + Base58.encode58Check(contractAddress);
+        "browser/TvmTest_p1_Grammar_003.sol:S:" + Base58.encodeBase58(contractAddress);
     contractAddress1 = PublicMethed.deployContract(contractName1, abi1, code1, "", maxFeeLimit,
         0L, 100, libraryAddress, testKeyForGrammarAddress,
         grammarAddress, blockingStubFull);
@@ -214,7 +212,7 @@ public class ContractGrammar001 {
         .getString("abi.abi1_ContractGrammar001_testGrammar004");
     String libraryAddress = null;
     libraryAddress =
-        "browser/TvmTest_p1_Grammar_004.sol:S:" + Base58.encode58Check(contractAddress);
+        "browser/TvmTest_p1_Grammar_004.sol:S:" + Base58.encodeBase58(contractAddress);
     contractAddress1 = PublicMethed.deployContract(contractName1, abi1, code1, "", maxFeeLimit,
         0L, 100, libraryAddress, testKeyForGrammarAddress,
         grammarAddress, blockingStubFull);

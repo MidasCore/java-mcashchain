@@ -51,7 +51,7 @@ public class AccountCapsuleTest {
     context = new TronApplicationContext(DefaultConfig.class);
     dbManager = context.getBean(Manager.class);
 
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "a06a17a49648a8ad32055c06f60fa14ae46df91234";
+    OWNER_ADDRESS = "a06a17a49648a8ad32055c06f60fa14ae46df91234";
   }
 
 
@@ -324,8 +324,7 @@ public class AccountCapsuleTest {
         Arrays.equals(ByteArray.fromHexString(OWNER_ADDRESS),
             accountCapsule.getWitnessPermissionAddress()));
 
-    String witnessPermissionAddress =
-        Wallet.getAddressPreFixString() + "cc6a17a49648a8ad32055c06f60fa14ae46df912cc";
+    String witnessPermissionAddress = "cc6a17a49648a8ad32055c06f60fa14ae46df912cc";
     accountCapsule = new AccountCapsule(accountCapsule.getInstance().toBuilder().
         setWitnessPermission(Permission.newBuilder().addKeys(
             Key.newBuilder()

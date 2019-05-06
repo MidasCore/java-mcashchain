@@ -18,7 +18,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -54,7 +53,6 @@ public class ContractScenario014 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -103,7 +101,7 @@ public class ContractScenario014 {
         .getString("code.code1_ContractScenario014_testTripleTrigger");
     String abi1 = Configuration.getByPath("testng.conf")
         .getString("abi.abi1_ContractScenario014_testTripleTrigger");
-    String parame = "\"" + Base58.encode58Check(contractAddress1) + "\"";
+    String parame = "\"" + Base58.encodeBase58(contractAddress1) + "\"";
     contractName = "Contract2";
 
     txid = PublicMethed.deployContractWithConstantParame(contractName, abi1, code1,
@@ -118,7 +116,7 @@ public class ContractScenario014 {
         .getString("code.code2_ContractScenario014_testTripleTrigger");
     String abi2 = Configuration.getByPath("testng.conf")
         .getString("abi.abi2_ContractScenario014_testTripleTrigger");
-    parame = "\"" + Base58.encode58Check(contractAddress2) + "\"";
+    parame = "\"" + Base58.encodeBase58(contractAddress2) + "\"";
     contractName = "Contract3";
 
     txid = PublicMethed.deployContractWithConstantParame(contractName, abi2, code2,
@@ -147,7 +145,7 @@ public class ContractScenario014 {
     Long contract1BeforeBalance = contract1AccountInfo.getBalance();
     logger.info("before contract1 balance is " + Long.toString(contract1BeforeBalance));
     logger.info("before receiver balance is " + Long.toString(receiverBeforeBalance));
-    String receiveAddress = "\"" + Base58.encode58Check(receiverAddress) + "\"";
+    String receiveAddress = "\"" + Base58.encodeBase58(receiverAddress) + "\"";
     txid = PublicMethed.triggerContract(contractAddress2,
         "triggerContract1(address)", receiveAddress, false,
         0, 10000000L, contract014Address, contract014Key, blockingStubFull);
@@ -170,7 +168,7 @@ public class ContractScenario014 {
     contract1BeforeBalance = contract1AccountInfo.getBalance();
     receiverAccountInfo = PublicMethed.queryAccount(receiverAddress, blockingStubFull);
     receiverBeforeBalance = receiverAccountInfo.getBalance();
-    receiveAddress = "\"" + Base58.encode58Check(receiverAddress) + "\"";
+    receiveAddress = "\"" + Base58.encodeBase58(receiverAddress) + "\"";
     txid = PublicMethed.triggerContract(contractAddress2,
         "triggerContract1ButRevert(address)", receiveAddress, false,
         0, 10000000L, contract014Address, contract014Key, blockingStubFull);
@@ -194,7 +192,7 @@ public class ContractScenario014 {
     receiverBeforeBalance = receiverAccountInfo.getBalance();
     logger.info("before receiver balance is " + Long.toString(receiverBeforeBalance));
     logger.info("before contract3 balance is " + Long.toString(contract3BeforeBalance));
-    receiveAddress = "\"" + Base58.encode58Check(receiverAddress) + "\"";
+    receiveAddress = "\"" + Base58.encodeBase58(receiverAddress) + "\"";
     txid = PublicMethed.triggerContract(contractAddress3,
         "triggerContract2(address)", receiveAddress, false,
         0, 10000000L, contract014Address, contract014Key, blockingStubFull);

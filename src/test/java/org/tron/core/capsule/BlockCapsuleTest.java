@@ -52,15 +52,13 @@ public class BlockCapsuleTest {
     TransferContract transferContract1 = TransferContract.newBuilder()
         .setAmount(1L)
         .setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
-        .setToAddress(ByteString.copyFrom(ByteArray.fromHexString(
-            (Wallet.getAddressPreFixString() + "A389132D6639FBDA4FBC8B659264E6B7C90DB086"))))
+        .setToAddress(ByteString.copyFrom(ByteArray.fromHexString(("A389132D6639FBDA4FBC8B659264E6B7C90DB086"))))
         .build();
 
     TransferContract transferContract2 = TransferContract.newBuilder()
         .setAmount(2L)
         .setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
-        .setToAddress(ByteString.copyFrom(ByteArray.fromHexString(
-            (Wallet.getAddressPreFixString() + "ED738B3A0FE390EAA71B768B6D02CDBD18FB207B"))))
+        .setToAddress(ByteString.copyFrom(ByteArray.fromHexString("ED738B3A0FE390EAA71B768B6D02CDBD18FB207B")))
         .build();
 
     blockCapsule0
@@ -69,15 +67,9 @@ public class BlockCapsuleTest {
         .addTransaction(new TransactionCapsule(transferContract2, ContractType.TransferContract));
     blockCapsule0.setMerkleRoot();
 
-    if (Constant.ADD_PRE_FIX_BYTE_TESTNET == Wallet.getAddressPreFixByte()) {
-      Assert.assertEquals(
-          "53421c1f1bcbbba67a4184cc3dbc1a59f90af7e2b0644dcfc8dc738fe30deffc",
-          blockCapsule0.getMerkleRoot().toString());
-    } else {
-      Assert.assertEquals(
-          "5bc862243292e6aa1d5e21a60bb6a673e4c2544709f6363d4a2f85ec29bcfe00",
-          blockCapsule0.getMerkleRoot().toString());
-    }
+    Assert.assertEquals(
+        "5bc862243292e6aa1d5e21a60bb6a673e4c2544709f6363d4a2f85ec29bcfe00",
+        blockCapsule0.getMerkleRoot().toString());
 
     logger.info("Transaction[O] Merkle Root : {}", blockCapsule0.getMerkleRoot().toString());
   }

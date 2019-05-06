@@ -23,7 +23,6 @@ import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -69,7 +68,6 @@ public class ContractTrcToken018 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -226,7 +224,7 @@ public class ContractTrcToken018 {
     logger.info("before trigger, receiveTokenContractAddress has AssetId "
         + assetAccountId.toStringUtf8() + ", Count is " + receiveAssetBefore);
 
-    String param = "\"" + Base58.encode58Check(tmpAddress)
+    String param = "\"" + Base58.encodeBase58(tmpAddress)
         + "\"," + assetAccountId.toStringUtf8() + ",\"1\"";
 
     final String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,

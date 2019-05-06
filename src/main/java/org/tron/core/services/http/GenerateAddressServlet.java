@@ -24,7 +24,7 @@ public class GenerateAddressServlet extends HttpServlet {
       byte[] priKey = ecKey.getPrivKeyBytes();
       byte[] address = ecKey.getAddress();
       String priKeyStr = Hex.encodeHexString(priKey);
-      String base58check = Wallet.encode58Check(address);
+      String base58check = Wallet.encodeBase58(address);
       String hexString = ByteArray.toHexString(address);
       JSONObject jsonAddress = new JSONObject();
       jsonAddress.put("address", base58check);

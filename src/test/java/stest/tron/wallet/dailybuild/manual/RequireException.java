@@ -18,7 +18,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -62,7 +61,6 @@ public class RequireException {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -481,7 +479,7 @@ public class RequireException {
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
-    String newCxoAddress = "\"" + Base58.encode58Check(testNetAccountAddress)
+    String newCxoAddress = "\"" + Base58.encodeBase58(testNetAccountAddress)
         + "\"";
     final String txid = PublicMethed.triggerContract(contractAddress,
         "tranferTest(address) ", newCxoAddress, false,
@@ -569,7 +567,7 @@ public class RequireException {
     logger.info("beforeNetUsed:" + beforeNetUsed);
     logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
 
-    String saleContractString = "\"" + Base58.encode58Check(contractAddress) + "\"";
+    String saleContractString = "\"" + Base58.encodeBase58(contractAddress) + "\"";
     final String txid = PublicMethed.triggerContract(contractAddress1,
         "callTest(address)", saleContractString, false,
         5, maxFeeLimit, asset016Address, testKeyForAssetIssue016, blockingStubFull);
@@ -715,7 +713,7 @@ public class RequireException {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    final String saleContractString = "\"" + Base58.encode58Check(contractAddress) + "\"";
+    final String saleContractString = "\"" + Base58.encodeBase58(contractAddress) + "\"";
     String contractName1 = "MessageUseContract";
     String code1 = "608060405234801561001057600080fd5b50610149806100206000396000f30060806040526004"
         + "36106100405763ffffffff7c010000000000000000000000000000000000000000000000000000000060003"
@@ -803,7 +801,7 @@ public class RequireException {
     PublicMethed.waitProduceNextBlock(blockingStubFull1);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-    final String saleContractString = "\"" + Base58.encode58Check(contractAddress) + "\"";
+    final String saleContractString = "\"" + Base58.encodeBase58(contractAddress) + "\"";
 
     String contractName1 = "FunctionUseContract";
     String code1 = "608060405234801561001057600080fd5b5061013f806100206000396000f3006080604052600"

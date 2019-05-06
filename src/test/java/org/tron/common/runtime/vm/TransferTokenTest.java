@@ -56,8 +56,8 @@ public class TransferTokenTest {
     Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
     appT = ApplicationFactory.create(context);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    TRANSFER_TO = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    TRANSFER_TO = "548794500882809695a8a687866e76d4271a1abc";
     dbManager = context.getBean(Manager.class);
     deposit = DepositImpl.createRoot(dbManager);
     deposit.createAccount(Hex.decode(TRANSFER_TO), AccountType.Normal);

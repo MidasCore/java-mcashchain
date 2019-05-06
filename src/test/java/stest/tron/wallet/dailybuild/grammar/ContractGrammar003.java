@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -60,7 +59,6 @@ public class ContractGrammar003 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -133,7 +131,7 @@ public class ContractGrammar003 {
     Assert.assertTrue(infoById1.get().getResultValue() == 0);
     Assert.assertTrue(returnnumber1 == 0);
 
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1) + "\",\"1\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1) + "\",\"1\"";
     String txid4 = PublicMethed.triggerContract(contractAddress,
         "callTest(address,uint256)", initParmes, false,
         0, maxFeeLimit, grammarAddress3, testKeyForGrammarAddress3, blockingStubFull);
@@ -228,7 +226,7 @@ public class ContractGrammar003 {
 
     Assert.assertTrue(returnnumber12 == 1);
 
-    String initParmes1 = "\"" + Base58.encode58Check(contractAddress1) + "\"";
+    String initParmes1 = "\"" + Base58.encodeBase58(contractAddress1) + "\"";
     String txid13 = PublicMethed.triggerContract(contractAddress,
         "callAddTest(address)", initParmes1, false,
         0, maxFeeLimit, grammarAddress3, testKeyForGrammarAddress3, blockingStubFull);
@@ -379,7 +377,7 @@ public class ContractGrammar003 {
         grammarAddress3, blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     Account info;
-    String initParmes = "\"" + Base58.encode58Check(grammarAddress3) + "\",\"1\"";
+    String initParmes = "\"" + Base58.encodeBase58(grammarAddress3) + "\",\"1\"";
     Optional<TransactionInfo> infoById = null;
     String txid = PublicMethed.triggerContract(contractAddress1,
         "candidate(address,uint256)", initParmes, false,

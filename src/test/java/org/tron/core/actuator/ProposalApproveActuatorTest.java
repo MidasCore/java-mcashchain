@@ -51,12 +51,9 @@ public class ProposalApproveActuatorTest {
   static {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS_FIRST =
-        Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    OWNER_ADDRESS_SECOND =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    OWNER_ADDRESS_NOACCOUNT =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1aed";
+    OWNER_ADDRESS_FIRST = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ADDRESS_SECOND = "548794500882809695a8a687866e76d4271a1abc";
+    OWNER_ADDRESS_NOACCOUNT = "548794500882809695a8a687866e76d4271a1aed";
   }
 
   /**

@@ -22,7 +22,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -58,7 +57,6 @@ public class TestTransferTokenInContract {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -235,7 +233,7 @@ public class TestTransferTokenInContract {
       }
       // user trigger A to transfer token to B
       String param =
-          "\"" + Base58.encode58Check(receiveTokenContractAddress) + "\",\"" + tokenId
+          "\"" + Base58.encodeBase58(receiveTokenContractAddress) + "\",\"" + tokenId
               .toStringUtf8()
               + "\",\"5\"";
 
@@ -254,7 +252,7 @@ public class TestTransferTokenInContract {
 
       // user trigger A to transfer token to devAddress
       param =
-          "\"" + Base58.encode58Check(dev001Address) + "\",\"" + tokenId.toStringUtf8()
+          "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId.toStringUtf8()
               + "\",\"5\"";
 
       triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
@@ -271,7 +269,7 @@ public class TestTransferTokenInContract {
 
       // user trigger C to get B's token balance
       param =
-          "\"" + Base58.encode58Check(receiveTokenContractAddress) + "\",\"" + tokenId
+          "\"" + Base58.encodeBase58(receiveTokenContractAddress) + "\",\"" + tokenId
               .toStringUtf8()
               + "\"";
 
@@ -292,7 +290,7 @@ public class TestTransferTokenInContract {
           user001Key, blockingStubFull);
 
       // user trigger C to get devAddress's token balance
-      param = "\"" + Base58.encode58Check(dev001Address) + "\",\"" + tokenId.toStringUtf8() + "\"";
+      param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId.toStringUtf8() + "\"";
 
       triggerTxid = PublicMethed
           .triggerContract(tokenBalanceContractAddress, "getTokenBalnce(address,trcToken)",

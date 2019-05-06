@@ -49,7 +49,7 @@ public class ConfigurationTest {
 
 //    log.debug("address = {}", ByteArray.toHexString(key.getOwnerAddress()));
 
-    assertEquals(Wallet.getAddressPreFixString() + "125b6c87b3d67114b3873977888c34582f27bbb0",
+    assertEquals("125b6c87b3d67114b3873977888c34582f27bbb0",
         ByteArray.toHexString(key.getAddress()));
   }
 

@@ -19,7 +19,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -53,7 +52,6 @@ public class ContractLinkage007 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -279,7 +277,7 @@ public class ContractLinkage007 {
     logger.info("beforeNetLimit3:" + beforeNetLimit3);
     logger.info("beforeNetUsed3:" + beforeNetUsed3);
     logger.info("beforeFreeNetUsed3:" + beforeFreeNetUsed3);
-    String initParmes = "\"" + Base58.encode58Check(fromAddress) + "\",\"63\"";
+    String initParmes = "\"" + Base58.encodeBase58(fromAddress) + "\",\"63\"";
     txid = PublicMethed.triggerContract(contractAddress,
         "init(address,uint256)", initParmes, false,
         1000, maxFeeLimit + 1, linkage007Address, linkage007Key, blockingStubFull);

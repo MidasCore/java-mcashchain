@@ -52,7 +52,6 @@ import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 import org.tron.protos.Protocol.Transaction.Result;
 import org.tron.protos.Protocol.Transaction.raw;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.WalletClient;
 
 
@@ -70,7 +69,6 @@ public class PublicMethedForMutiSign {
       String description, String url, Long freeAssetNetLimit, Long publicFreeAssetNetLimit,
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -123,7 +121,6 @@ public class PublicMethedForMutiSign {
       String description, String url, Long freeAssetNetLimit, Long publicFreeAssetNetLimit,
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -187,7 +184,6 @@ public class PublicMethedForMutiSign {
    */
   public static Account queryAccount(byte[] address, WalletGrpc
       .WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ByteString addressBs = ByteString.copyFrom(address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
     return blockingStubFull.getAccount(request);
@@ -199,7 +195,6 @@ public class PublicMethedForMutiSign {
 
   public static Account queryAccount(byte[] address, WalletSolidityGrpc
       .WalletSolidityBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ByteString addressBs = ByteString.copyFrom(address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
     return blockingStubFull.getAccount(request);
@@ -212,7 +207,6 @@ public class PublicMethedForMutiSign {
 
   public static Account queryAccount(String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address;
     ECKey temKey = null;
     try {
@@ -240,7 +234,6 @@ public class PublicMethedForMutiSign {
    */
 
   public static String loadPubKey() {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     char[] buf = new char[0x100];
     return String.valueOf(buf, 32, 130);
   }
@@ -250,8 +243,6 @@ public class PublicMethedForMutiSign {
    */
 
   public static byte[] getAddress(ECKey ecKey) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
-
     return ecKey.getAddress();
   }
 
@@ -261,7 +252,6 @@ public class PublicMethedForMutiSign {
 
   public static Account grpcQueryAccount(byte[] address,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ByteString addressBs = ByteString.copyFrom(address);
     Account request = Account.newBuilder().setAddress(addressBs).build();
     return blockingStubFull.getAccount(request);
@@ -273,7 +263,6 @@ public class PublicMethedForMutiSign {
 
   public static Block getBlock(long blockNum,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     GrpcAPI.NumberMessage.Builder builder = GrpcAPI.NumberMessage.newBuilder();
     builder.setNum(blockNum);
     return blockingStubFull.getBlockByNum(builder.build());
@@ -285,7 +274,6 @@ public class PublicMethedForMutiSign {
 
   public static Transaction signTransaction(ECKey ecKey,
       Transaction transaction) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     if (ecKey == null || ecKey.getPrivKey() == null) {
       return null;
     }
@@ -342,7 +330,6 @@ public class PublicMethedForMutiSign {
   public static boolean participateAssetIssue(byte[] to, byte[] assertName, long amount,
       byte[] from, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -374,7 +361,6 @@ public class PublicMethedForMutiSign {
   public static boolean participateAssetIssueWithPermissionId(byte[] to, byte[] assertName,
       long amount, byte[] from, String priKey, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -411,7 +397,6 @@ public class PublicMethedForMutiSign {
   public static String participateAssetIssueForTransactionId(byte[] to, byte[] assertName,
       long amount, byte[] from, String priKey, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -453,7 +438,6 @@ public class PublicMethedForMutiSign {
 
   public static Boolean freezeBalance(byte[] addRess, long freezeBalance, long freezeDuration,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;
@@ -507,7 +491,6 @@ public class PublicMethedForMutiSign {
       long freezeDuration,
       int permissionId, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;
@@ -566,7 +549,6 @@ public class PublicMethedForMutiSign {
   public static Boolean unFreezeBalanceWithPermissionId(byte[] address, String priKey,
       int resourceCode, byte[] receiverAddress, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -603,7 +585,6 @@ public class PublicMethedForMutiSign {
   public static Boolean unFreezeBalance(byte[] address, String priKey, int resourceCode,
       byte[] receiverAddress, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -634,7 +615,6 @@ public class PublicMethedForMutiSign {
 
   public static Boolean sendcoin(byte[] to, long amount, byte[] owner, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     //String priKey = testKey002;
     ECKey temKey = null;
     try {
@@ -671,7 +651,6 @@ public class PublicMethedForMutiSign {
   public static boolean updateAsset(byte[] address, byte[] description, byte[] url, long newLimit,
       long newPublicLimit, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -708,7 +687,6 @@ public class PublicMethedForMutiSign {
   public static boolean updateAssetWithPermissionId(byte[] address, byte[] description, byte[] url,
       long newLimit, long newPublicLimit, String priKey, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -751,7 +729,6 @@ public class PublicMethedForMutiSign {
   public static String updateAssetForTransactionId(byte[] address, byte[] description, byte[] url,
       long newLimit, long newPublicLimit, String priKey, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -799,7 +776,6 @@ public class PublicMethedForMutiSign {
 
   public static boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -841,7 +817,6 @@ public class PublicMethedForMutiSign {
   public static String transferAssetForTransactionId(byte[] to, byte[] assertName, long amount,
       byte[] address,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -888,7 +863,6 @@ public class PublicMethedForMutiSign {
   public static boolean updateAccount(byte[] addressBytes, byte[] accountNameBytes, String
       priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -923,7 +897,6 @@ public class PublicMethedForMutiSign {
 
   public static boolean waitProduceNextBlock(WalletGrpc.WalletBlockingStub
       blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     Block currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
     final Long currentNum = currentBlock.getBlockHeader().getRawData().getNumber();
 
@@ -958,7 +931,6 @@ public class PublicMethedForMutiSign {
 
   public static boolean createAccount(byte[] ownerAddress, byte[] newAddress, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -990,7 +962,6 @@ public class PublicMethedForMutiSign {
   public static boolean createProposal(byte[] ownerAddress, String priKey,
       HashMap<Long, Long> parametersMap,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1036,7 +1007,6 @@ public class PublicMethedForMutiSign {
   public static boolean createProposalWithPermissionId(byte[] ownerAddress, String priKey,
       HashMap<Long, Long> parametersMap, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1087,7 +1057,6 @@ public class PublicMethedForMutiSign {
   public static boolean approveProposal(byte[] ownerAddress, String priKey, long id,
       boolean isAddApproval, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1134,7 +1103,6 @@ public class PublicMethedForMutiSign {
       long id,
       boolean isAddApproval, int permissionId, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1184,7 +1152,6 @@ public class PublicMethedForMutiSign {
 
   public static boolean deleteProposal(byte[] ownerAddress, String priKey, long id,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1231,7 +1198,6 @@ public class PublicMethedForMutiSign {
       long id,
       int permissionId, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1281,7 +1247,6 @@ public class PublicMethedForMutiSign {
 
   public static boolean setAccountId(byte[] accountIdBytes, byte[] ownerAddress, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1314,7 +1279,6 @@ public class PublicMethedForMutiSign {
   public static Boolean freezeBalanceGetEnergy(byte[] addRess, long freezeBalance,
       long freezeDuration, int resourceCode, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;
@@ -1367,7 +1331,6 @@ public class PublicMethedForMutiSign {
       long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1445,7 +1408,7 @@ public class PublicMethedForMutiSign {
     byte[] contractAddress = PublicMethed.generateContractAddress(
         transactionExtention.getTransaction(), owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     if (transactionExtention == null) {
       return null;
     }
@@ -1467,7 +1430,7 @@ public class PublicMethedForMutiSign {
             .toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
     contractAddress = PublicMethed.generateContractAddress(transaction, owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     broadcastTransaction(transaction, blockingStubFull);
     return contractAddress;
   }
@@ -1494,7 +1457,6 @@ public class PublicMethedForMutiSign {
       long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1589,7 +1551,7 @@ public class PublicMethedForMutiSign {
             .toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
     byte[] contractAddress = PublicMethed.generateContractAddress(transaction, owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     Return response = broadcastTransaction1(transaction, blockingStubFull);
     if (response.getResult() == false) {
       return null;
@@ -1742,7 +1704,6 @@ public class PublicMethedForMutiSign {
 
   public static SmartContract getContract(byte[] address, WalletGrpc
       .WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ByteString byteString = ByteString.copyFrom(address);
     BytesMessage bytesMessage = BytesMessage.newBuilder().setValue(byteString).build();
     Integer i = 0;
@@ -1754,7 +1715,7 @@ public class PublicMethedForMutiSign {
       }
     }
     logger.info("contract name is " + blockingStubFull.getContract(bytesMessage).getName());
-    logger.info("contract address is " + WalletClient.encode58Check(address));
+    logger.info("contract address is " + WalletClient.encodeBase58(address));
     return blockingStubFull.getContract(bytesMessage);
   }
 
@@ -1799,7 +1760,6 @@ public class PublicMethedForMutiSign {
   public static boolean updateSetting(byte[] contractAddress, long consumeUserResourcePercent,
       String priKey, byte[] ownerAddress, WalletGrpc
       .WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1855,7 +1815,6 @@ public class PublicMethedForMutiSign {
   public static boolean updateSettingWithPermissionId(byte[] contractAddress,
       long consumeUserResourcePercent, String priKey, byte[] ownerAddress, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1916,7 +1875,6 @@ public class PublicMethedForMutiSign {
   public static boolean updateEnergyLimitWithPermissionId(byte[] contractAddress,
       long originEnergyLimit, String priKey, byte[] ownerAddress, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -1988,7 +1946,6 @@ public class PublicMethedForMutiSign {
       Boolean isHex, long callValue, long feeLimit, String tokenId, long tokenValue,
       byte[] ownerAddress,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2082,7 +2039,6 @@ public class PublicMethedForMutiSign {
   public static Boolean exchangeCreate(byte[] firstTokenId, long firstTokenBalance,
       byte[] secondTokenId, long secondTokenBalance, byte[] ownerAddress,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2132,7 +2088,6 @@ public class PublicMethedForMutiSign {
   public static Boolean injectExchange(long exchangeId, byte[] tokenId, long quant,
       byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2187,7 +2142,6 @@ public class PublicMethedForMutiSign {
   public static boolean exchangeWithdraw(long exchangeId, byte[] tokenId, long quant,
       byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2235,7 +2189,6 @@ public class PublicMethedForMutiSign {
   public static boolean exchangeTransaction(long exchangeId, byte[] tokenId, long quant,
       long expected, byte[] ownerAddress, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2300,7 +2253,6 @@ public class PublicMethedForMutiSign {
       long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2396,7 +2348,7 @@ public class PublicMethedForMutiSign {
             .toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
     byte[] contractAddress = PublicMethed.generateContractAddress(transaction, owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     Return response = broadcastTransaction1(transaction, blockingStubFull);
     if (response.getResult() == false) {
       return null;
@@ -2413,7 +2365,6 @@ public class PublicMethedForMutiSign {
   public static Boolean freezeBalanceForReceiver(byte[] addRess, long freezeBalance,
       long freezeDuration, int resourceCode, ByteString receiverAddressBytes, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;
@@ -2493,7 +2444,6 @@ public class PublicMethedForMutiSign {
   public static boolean accountPermissionUpdate(String permissionJson, byte[] owner, String
       priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] priKeys) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2562,7 +2512,6 @@ public class PublicMethedForMutiSign {
       byte[] owner,
       String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] priKeys) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2636,7 +2585,6 @@ public class PublicMethedForMutiSign {
       byte[] owner,
       String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId, String[] priKeys) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2712,7 +2660,6 @@ public class PublicMethedForMutiSign {
    */
   public static Transaction addTransactionSign(Transaction transaction, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -2738,7 +2685,6 @@ public class PublicMethedForMutiSign {
   public static Boolean voteWitness(HashMap<String, String> witness, byte[] addRess,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
 
     ECKey temKey = null;
     try {
@@ -2870,7 +2816,6 @@ public class PublicMethedForMutiSign {
       byte[] owner,
       int permissionId, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     //String priKey = testKey002;
     ECKey temKey = null;
     try {
@@ -2928,7 +2873,6 @@ public class PublicMethedForMutiSign {
       byte[] owner,
       String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId, String[] priKeys) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3006,7 +2950,6 @@ public class PublicMethedForMutiSign {
       byte[] owner,
       String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] priKeys) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3071,7 +3014,6 @@ public class PublicMethedForMutiSign {
   public static Transaction addTransactionSignWithPermissionId(Transaction transaction,
       String priKey, int permissionId,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3138,7 +3080,6 @@ public class PublicMethedForMutiSign {
   public static Boolean sendcoinWithPermissionId(byte[] to, long amount, byte[] owner,
       int permissionId, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     //String priKey = testKey002;
     ECKey temKey = null;
     try {
@@ -3239,7 +3180,6 @@ public class PublicMethedForMutiSign {
   public static GrpcAPI.Return accountPermissionUpdateForResponse(String permissionJson,
       byte[] owner, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] priKeys) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3339,7 +3279,6 @@ public class PublicMethedForMutiSign {
    */
   public static Transaction sendcoin2(byte[] to, long amount, byte[] owner, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     //String priKey = testKey002;
     ECKey temKey = null;
     try {
@@ -3440,7 +3379,6 @@ public class PublicMethedForMutiSign {
       byte[] ownerAddress,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString,
       int permissionId) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3567,7 +3505,6 @@ public class PublicMethedForMutiSign {
       String libraryAddress, String priKey, byte[] ownerAddress,
       WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString,
       int permissionId) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3644,7 +3581,7 @@ public class PublicMethedForMutiSign {
 
     byte[] contractAddress = generateContractAddress(transactionExtention.getTransaction(), owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     if (transactionExtention == null) {
       return null;
     }
@@ -3672,7 +3609,7 @@ public class PublicMethedForMutiSign {
         "txid = " + ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
     contractAddress = generateContractAddress(transaction, owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
 
     GrpcAPI.Return response = broadcastTransaction1(transaction, blockingStubFull);
     if (response.getResult() == false) {
@@ -3693,7 +3630,6 @@ public class PublicMethedForMutiSign {
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
 
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3771,7 +3707,7 @@ public class PublicMethedForMutiSign {
     byte[] contractAddress = PublicMethed.generateContractAddress(
         transactionExtention.getTransaction(), owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     if (transactionExtention == null) {
       return null;
     }
@@ -3798,7 +3734,7 @@ public class PublicMethedForMutiSign {
             .toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
     contractAddress = PublicMethed.generateContractAddress(transaction, owner);
     System.out.println(
-        "Your smart contract address will be: " + WalletClient.encode58Check(contractAddress));
+        "Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
     broadcastTransaction(transaction, blockingStubFull);
     return contractAddress;
   }
@@ -3810,7 +3746,6 @@ public class PublicMethedForMutiSign {
       Boolean isHex, long callValue, long feeLimit, byte[] ownerAddress,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3911,7 +3846,6 @@ public class PublicMethedForMutiSign {
           priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -3954,7 +3888,6 @@ public class PublicMethedForMutiSign {
       byte[] address,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4008,7 +3941,6 @@ public class PublicMethedForMutiSign {
       long freezeDuration, int resourceCode, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;
@@ -4055,7 +3987,6 @@ public class PublicMethedForMutiSign {
       long freezeDuration, int resourceCode, ByteString receiverAddressBytes, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;
@@ -4100,7 +4031,6 @@ public class PublicMethedForMutiSign {
   public static boolean createAccount1(byte[] ownerAddress, byte[] newAddress, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4137,7 +4067,6 @@ public class PublicMethedForMutiSign {
   public static boolean setAccountId1(byte[] accountIdBytes, byte[] ownerAddress, String priKey,
       int permissionId, WalletGrpc.WalletBlockingStub blockingStubFull,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4182,7 +4111,6 @@ public class PublicMethedForMutiSign {
   public static Boolean voteWitnessWithPermissionId(HashMap<String, String> witness, byte[] addRess,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
 
     ECKey temKey = null;
     try {
@@ -4237,7 +4165,6 @@ public class PublicMethedForMutiSign {
       Long fronzenAmount, Long frozenDay, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4298,7 +4225,6 @@ public class PublicMethedForMutiSign {
   public static Boolean injectExchange1(long exchangeId, byte[] tokenId, long quant,
       byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       int permissionId, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4353,7 +4279,6 @@ public class PublicMethedForMutiSign {
   public static boolean exchangeWithdraw1(long exchangeId, byte[] tokenId, long quant,
       byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
       int permissionId, String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4408,7 +4333,6 @@ public class PublicMethedForMutiSign {
       long expected, byte[] ownerAddress, String priKey,
       WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);
@@ -4463,7 +4387,6 @@ public class PublicMethedForMutiSign {
       byte[] secondTokenId, long secondTokenBalance, byte[] ownerAddress,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
       String[] permissionKeyString) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     ECKey temKey = null;
     try {
       BigInteger priK = new BigInteger(priKey, 16);

@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -61,7 +60,6 @@ public class ContractTrcToken035 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -86,12 +84,12 @@ public class ContractTrcToken035 {
         .assertTrue(PublicMethed.sendcoin(dev001Address, 9999000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "dev001Address:" + Base58.encode58Check(dev001Address));
+        "dev001Address:" + Base58.encodeBase58(dev001Address));
     Assert
         .assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "user001Address:" + Base58.encode58Check(user001Address));
+        "user001Address:" + Base58.encodeBase58(user001Address));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     // freeze balance
@@ -172,7 +170,7 @@ public class ContractTrcToken035 {
     ByteString fakeTokenId = ByteString
         .copyFromUtf8(Long.toString(Long.valueOf(assetAccountDev.toStringUtf8()) + 100));
     String param =
-        "\"" + Base58.encode58Check(user001Address) + "\",1,\"" + fakeTokenId
+        "\"" + Base58.encodeBase58(user001Address) + "\",1,\"" + fakeTokenId
             .toStringUtf8()
             + "\"";
 

@@ -65,12 +65,9 @@ public class UpdateEnergyLimitContractActuatorTest {
   @BeforeClass
   public static void init() {
     dbManager = context.getBean(Manager.class);
-    OWNER_ADDRESS =
-        Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    SECOND_ACCOUNT_ADDRESS =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d427122222";
-    OWNER_ADDRESS_NOTEXIST =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    SECOND_ACCOUNT_ADDRESS = "548794500882809695a8a687866e76d427122222";
+    OWNER_ADDRESS_NOTEXIST = "548794500882809695a8a687866e76d4271a1abc";
 
     byte[] stats = new byte[27];
     Arrays.fill(stats, (byte) 1);

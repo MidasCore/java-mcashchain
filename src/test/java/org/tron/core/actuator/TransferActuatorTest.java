@@ -49,13 +49,11 @@ public class TransferActuatorTest {
   static {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    TO_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    OWNER_ACCOUNT_INVALID =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3456";
-    OWNER_NO_BALANCE = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3433";
-    To_ACCOUNT_INVALID =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3422";
+    OWNER_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
+    TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ACCOUNT_INVALID = "548794500882809695a8a687866e76d4271a3456";
+    OWNER_NO_BALANCE = "548794500882809695a8a687866e76d4271a3433";
+    To_ACCOUNT_INVALID = "548794500882809695a8a687866e76d4271a3422";
   }
 
   /**

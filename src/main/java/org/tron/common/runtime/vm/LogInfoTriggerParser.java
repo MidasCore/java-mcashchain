@@ -31,7 +31,7 @@ public class LogInfoTriggerParser {
     this.blockTimestamp = blockTimestamp;
     this.txId = ArrayUtils.isEmpty(txId) ? "" : Hex.toHexString(txId);
     this.originAddress =
-        ArrayUtils.isEmpty(originAddress) ? "" : Wallet.encode58Check(originAddress);
+        ArrayUtils.isEmpty(originAddress) ? "" : Wallet.encodeBase58(originAddress);
 
   }
 
@@ -49,7 +49,7 @@ public class LogInfoTriggerParser {
 
       byte[] contractAddress = MUtil.convertToTronAddress(logInfo.getAddress());
       String strContractAddr =
-          ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encode58Check(contractAddress);
+          ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encodeBase58(contractAddress);
       if (signMap.get(strContractAddr) != null) {
         continue;
       }
@@ -59,7 +59,7 @@ public class LogInfoTriggerParser {
         continue;
       }
       ABI abi = contract.getInstance().getAbi();
-      String creatorAddr = Wallet.encode58Check(
+      String creatorAddr = Wallet.encodeBase58(
           MUtil.convertToTronAddress(contract.getInstance().getOriginAddress().toByteArray()));
       signMap.put(strContractAddr, creatorAddr); // mark as found.
 
@@ -82,7 +82,7 @@ public class LogInfoTriggerParser {
 
       byte[] contractAddress = MUtil.convertToTronAddress(logInfo.getAddress());
       String strContractAddr =
-          ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encode58Check(contractAddress);
+          ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encodeBase58(contractAddress);
 
       List<DataWord> topics = logInfo.getTopics();
       ABI.Entry entry = null;

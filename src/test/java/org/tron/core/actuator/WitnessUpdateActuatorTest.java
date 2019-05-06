@@ -46,11 +46,9 @@ public class WitnessUpdateActuatorTest {
   static {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    OWNER_ADDRESS_NOTEXIST =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    OWNER_ADDRESS_NOT_WITNESS =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d427122222";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ADDRESS_NOTEXIST = "548794500882809695a8a687866e76d4271a1abc";
+    OWNER_ADDRESS_NOT_WITNESS = "548794500882809695a8a687866e76d427122222";
   }
 
   /**

@@ -1,0 +1,16 @@
+.git
+.circleci
+.github
+backup
+helm
+Dockerfile*
+.DS_Store
+.gitignore
+README.md
+env.*
+logs
+out
+output*
+build
+.idea
+.gradle

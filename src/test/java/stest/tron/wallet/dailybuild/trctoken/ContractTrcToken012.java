@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -60,7 +59,6 @@ public class ContractTrcToken012 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -216,7 +214,7 @@ public class ContractTrcToken012 {
     Long tokenValue = Long.valueOf(1);
     Long callValue = Long.valueOf(0);
 
-    String param = "\"" + Base58.encode58Check(dev001Address)
+    String param = "\"" + Base58.encodeBase58(dev001Address)
         + "\",\"" + tokenValue + "\"," + tokenId;
 
     final String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
@@ -296,7 +294,7 @@ public class ContractTrcToken012 {
     logger.info("before trigger, user energy usage is " + Long.toString(userEnergyUsageBefore));
     logger.info("before trigger, user balance is " + Long.toString(userBalanceBefore));
 
-    String param = "\"" + Base58.encode58Check(dev001Address) + "\",\""
+    String param = "\"" + Base58.encodeBase58(dev001Address) + "\",\""
         + assetAccountId.toStringUtf8() + "\"";
 
     final String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,

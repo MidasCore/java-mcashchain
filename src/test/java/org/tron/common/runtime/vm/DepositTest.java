@@ -44,7 +44,7 @@ public class DepositTest {
   public void init() {
     Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
     manager = context.getBean(Manager.class);
     rootDeposit = DepositImpl.createRoot(manager);
     rootDeposit.createAccount(Hex.decode(OWNER_ADDRESS), AccountType.Normal);

@@ -49,7 +49,7 @@ public class StringUtil {
 
   public static List<String> getAddressStringList(Collection<ByteString> collection) {
     return collection.stream()
-        .map(bytes -> Wallet.encode58Check(bytes.toByteArray()))
+        .map(bytes -> Wallet.encodeBase58(bytes.toByteArray()))
         .collect(Collectors.toList());
   }
 

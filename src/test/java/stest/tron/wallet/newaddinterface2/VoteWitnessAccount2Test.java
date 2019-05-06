@@ -57,7 +57,6 @@ public class VoteWitnessAccount2Test {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -107,9 +106,9 @@ public class VoteWitnessAccount2Test {
     Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
     Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
-    String voteStr1 = Base58.encode58Check(lowBalAddress);
+    String voteStr1 = Base58.encodeBase58(lowBalAddress);
 
-    //Base58.encode58Check(getFinalAddress(key)；
+    //Base58.encodeBase58(getFinalAddress(key)；
     //String voteStr = "TB4B1RMhoPeivkj4Hebm6tttHjRY9yQFes";
     String voteStr = voteStr1;
     HashMap<String, String> smallVoteMap = new HashMap<String, String>();

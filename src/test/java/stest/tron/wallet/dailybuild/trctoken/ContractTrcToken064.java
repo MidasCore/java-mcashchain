@@ -22,7 +22,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -64,7 +63,6 @@ public class ContractTrcToken064 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -294,7 +292,7 @@ public class ContractTrcToken064 {
 
     Long callValue = Long.valueOf(0);
 
-    String param = "\"" + Base58.encode58Check(resultContractAddress) + "\"";
+    String param = "\"" + Base58.encodeBase58(resultContractAddress) + "\"";
     String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
         "transferTokenTestValue0IdBigInteger(address)", param, false, callValue,
         1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
@@ -309,7 +307,7 @@ public class ContractTrcToken064 {
         infoById.get().getResMessage().toStringUtf8());
 
     //transfer to a normal account
-    param = "\"" + Base58.encode58Check(dev001Address) + "\"";
+    param = "\"" + Base58.encodeBase58(dev001Address) + "\"";
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
         "transferTokenTestValue0IdBigInteger(address)", param, false, callValue,
         1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
@@ -326,7 +324,7 @@ public class ContractTrcToken064 {
     Long tokenValue = Long.valueOf(0);
     callValue = Long.valueOf(0);
 
-    param = "\"" + Base58.encode58Check(resultContractAddress)
+    param = "\"" + Base58.encodeBase58(resultContractAddress)
         + "\",\"" + tokenValue + "\"," + tokenId;
 
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
@@ -346,7 +344,7 @@ public class ContractTrcToken064 {
     tokenValue = Long.valueOf(0);
     callValue = Long.valueOf(0);
 
-    param = "\"" + Base58.encode58Check(resultContractAddress)
+    param = "\"" + Base58.encodeBase58(resultContractAddress)
         + "\",\"" + tokenValue + "\"," + tokenId;
 
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
@@ -366,7 +364,7 @@ public class ContractTrcToken064 {
     tokenValue = Long.valueOf(0);
     callValue = Long.valueOf(0);
 
-    param = "\"" + Base58.encode58Check(resultContractAddress)
+    param = "\"" + Base58.encodeBase58(resultContractAddress)
         + "\",\"" + tokenValue + "\"," + tokenId;
 
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
@@ -386,7 +384,7 @@ public class ContractTrcToken064 {
     tokenValue = Long.valueOf(0);
     callValue = Long.valueOf(0);
 
-    param = "\"" + Base58.encode58Check(resultContractAddress)
+    param = "\"" + Base58.encodeBase58(resultContractAddress)
         + "\",\"" + tokenValue + "\"," + tokenId;
 
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
@@ -404,7 +402,7 @@ public class ContractTrcToken064 {
 
     callValue = Long.valueOf(0);
 
-    param = "\"" + Base58.encode58Check(resultContractAddress) + "\"";
+    param = "\"" + Base58.encodeBase58(resultContractAddress) + "\"";
 
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
         "transferTokenTestValueMaxLong(address)", param, false, callValue,
@@ -420,7 +418,7 @@ public class ContractTrcToken064 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     //transfer to a normal account
-    param = "\"" + Base58.encode58Check(dev001Address) + "\"";
+    param = "\"" + Base58.encodeBase58(dev001Address) + "\"";
 
     triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
         "transferTokenTestValueMaxLong(address)", param, false, callValue,

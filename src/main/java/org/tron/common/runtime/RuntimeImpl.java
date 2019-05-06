@@ -384,7 +384,7 @@ public class RuntimeImpl implements Runtime {
     if (deposit.getAccount(contractAddress) != null) {
       throw new ContractValidateException(
           "Trying to create a contract with existing contract address: " + Wallet
-              .encode58Check(contractAddress));
+              .encodeBase58(contractAddress));
     }
 
     newSmartContract = newSmartContract.toBuilder()
@@ -714,9 +714,9 @@ public class RuntimeImpl implements Runtime {
           .getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
       if (contract == null) {
         logger.info("contract: {} is not in contract store", Wallet
-            .encode58Check(triggerContractFromTransaction.getContractAddress().toByteArray()));
+            .encodeBase58(triggerContractFromTransaction.getContractAddress().toByteArray()));
         throw new ContractValidateException("contract: " + Wallet
-            .encode58Check(triggerContractFromTransaction.getContractAddress().toByteArray())
+            .encodeBase58(triggerContractFromTransaction.getContractAddress().toByteArray())
             + " is not in contract store");
       }
       ABI abi = contract.getInstance().getAbi();

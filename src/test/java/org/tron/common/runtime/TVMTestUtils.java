@@ -607,7 +607,6 @@ public class TVMTestUtils {
 
   public static CreateSmartContract createSmartContract(byte[] owner, String contractName,
       String abiString, String code, long value, long consumeUserResourcePercent) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
 
     SmartContract.ABI abi = jsonStr2Abi(abiString);
     if (abi == null) {
@@ -631,7 +630,6 @@ public class TVMTestUtils {
   public static TriggerSmartContract createTriggerContract(byte[] contractAddress, String method,
       String argsStr,
       Boolean isHex, long callValue, byte[] ownerAddress) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
 
     byte[] owner = ownerAddress;
     byte[] input = Hex.decode(AbiUtil.parseMethod(method, argsStr, isHex));

@@ -30,7 +30,6 @@ import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.Transaction;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.WalletClient;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -88,7 +87,6 @@ public class MainNetVoteOrFreezeOrCreate {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -125,7 +123,7 @@ public class MainNetVoteOrFreezeOrCreate {
       ECKey ecKey1 = new ECKey(Utils.getRandom());
       byte[] accountAddress = ecKey1.getAddress();
       String testKeyAccount = ByteArray.toHexString(ecKey1.getPrivKeyBytes());
-      logger.info(Base58.encode58Check(accountAddress));
+      logger.info(Base58.encodeBase58(accountAddress));
       logger.info(testKeyAccount);
       Integer tryTimes = 0;
 
@@ -172,7 +170,7 @@ public class MainNetVoteOrFreezeOrCreate {
       ret = false;
       while (!ret) {
         String voteStr = Base58
-            .encode58Check(result.get().getWitnesses(i % 5).getAddress().toByteArray());
+            .encodeBase58(result.get().getWitnesses(i % 5).getAddress().toByteArray());
         HashMap<String, String> smallVoteMap = new HashMap<String, String>();
         smallVoteMap.put(voteStr, "1");
         ret = voteWitness(smallVoteMap, accountAddress, testKeyAccount);
@@ -323,7 +321,6 @@ public class MainNetVoteOrFreezeOrCreate {
 
   public static Boolean freezeBalance(byte[] addRess, long freezeBalance, long freezeDuration,
       String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
     byte[] address = addRess;
     long frozenBalance = freezeBalance;
     long frozenDuration = freezeDuration;

@@ -28,7 +28,7 @@ public class TransactionCapsuleTest {
   private static String OWNER_ADDRESS;
   private static String OWNER_KEY = "bfa67cb3dc6609b3a0c98e717d66f38ed1a159b5b3421678dfab85961c40de2f";
   private static String TO_ADDRESS;
-  private static String OWNER_ACCOUNT_NOT_Exist;
+  private static String OWNER_ACCOUNT_NOT_EXIST;
   private static String KEY_11 = "1111111111111111111111111111111111111111111111111111111111111111";
   private static String KEY_12 = "1212121212121212121212121212121212121212121212121212121212121212";
   private static String KEY_13 = "1313131313131313131313131313131313131313131313131313131313131313";
@@ -56,21 +56,20 @@ public class TransactionCapsuleTest {
     context = new TronApplicationContext(DefaultConfig.class);
     AppT = ApplicationFactory.create(context);
     dbManager = context.getBean(Manager.class);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "03702350064AD5C1A8AA6B4D74B051199CFF8EA7";
-    TO_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    OWNER_ACCOUNT_NOT_Exist =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3456";
-    KEY_ADDRESS_11 = Wallet.getAddressPreFixString() + "19E7E376E7C213B7E7E7E46CC70A5DD086DAFF2A";
-    KEY_ADDRESS_12 = Wallet.getAddressPreFixString() + "1C5A77D9FA7EF466951B2F01F724BCA3A5820B63";
-    KEY_ADDRESS_13 = Wallet.getAddressPreFixString() + "03A1BBA60B5AA37094CF16123ADD674C01589488";
+    OWNER_ADDRESS = "03702350064AD5C1A8AA6B4D74B051199CFF8EA7";
+    TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ACCOUNT_NOT_EXIST = "548794500882809695a8a687866e76d4271a3456";
+    KEY_ADDRESS_11 = "19E7E376E7C213B7E7E7E46CC70A5DD086DAFF2A";
+    KEY_ADDRESS_12 = "1C5A77D9FA7EF466951B2F01F724BCA3A5820B63";
+    KEY_ADDRESS_13 = "03A1BBA60B5AA37094CF16123ADD674C01589488";
 
-    KEY_ADDRESS_21 = Wallet.getAddressPreFixString() + "2BD0C9FE079C8FCA0E3352EB3D02839C371E5C41";
-    KEY_ADDRESS_22 = Wallet.getAddressPreFixString() + "1563915E194D8CFBA1943570603F7606A3115508";
-    KEY_ADDRESS_23 = Wallet.getAddressPreFixString() + "D3E442496EB66A4748912EC4A3B7A111D0B855D6";
+    KEY_ADDRESS_21 = "2BD0C9FE079C8FCA0E3352EB3D02839C371E5C41";
+    KEY_ADDRESS_22 = "1563915E194D8CFBA1943570603F7606A3115508";
+    KEY_ADDRESS_23 = "D3E442496EB66A4748912EC4A3B7A111D0B855D6";
 
-    KEY_ADDRESS_31 = Wallet.getAddressPreFixString() + "77952CE83CA3CAD9F7ADCFABEDA85BD2F1F52008";
-    KEY_ADDRESS_32 = Wallet.getAddressPreFixString() + "94622CC2A5B64A58C25A129D48A2BEEC4B65B779";
-    KEY_ADDRESS_33 = Wallet.getAddressPreFixString() + "5CBDD86A2FA8DC4BDDD8A8F69DBA48572EEC07FB";
+    KEY_ADDRESS_31 = "77952CE83CA3CAD9F7ADCFABEDA85BD2F1F52008";
+    KEY_ADDRESS_32 = "94622CC2A5B64A58C25A129D48A2BEEC4B65B779";
+    KEY_ADDRESS_33 = "5CBDD86A2FA8DC4BDDD8A8F69DBA48572EEC07FB";
   }
 
   /**
@@ -354,7 +353,7 @@ public class TransactionCapsuleTest {
 //      ByteString sign21 = sign11_21.get(1);
 //      Assert.assertEquals(e.getMessage(),
 //          ByteArray.toHexString(sign21.toByteArray()) + " is signed by " + Wallet
-//              .encode58Check(ByteArray.fromHexString(KEY_ADDRESS_21))
+//              .encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_21))
 //              + " but it is not contained of permission.");
 //    } catch (SignatureFormatException e) {
 //      Assert.assertFalse(true);
@@ -389,7 +388,7 @@ public class TransactionCapsuleTest {
 //      Assert.assertFalse(true);
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
-//          Wallet.encode58Check(ByteArray.fromHexString(KEY_ADDRESS_11)) + " has signed twice!");
+//          Wallet.encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_11)) + " has signed twice!");
 //    } catch (SignatureFormatException e) {
 //      Assert.assertFalse(true);
 //    }
@@ -458,7 +457,7 @@ public class TransactionCapsuleTest {
 //  public void addSign() {
 //
 //    byte[] to = ByteArray.fromHexString(TO_ADDRESS);
-//    byte[] owner_not_exist = ByteArray.fromHexString(OWNER_ACCOUNT_NOT_Exist);
+//    byte[] owner_not_exist = ByteArray.fromHexString(OWNER_ACCOUNT_NOT_EXIST);
 //    TransferContract transferContract = createTransferContract(to, owner_not_exist, 1);
 //    Transaction.Builder trxBuilder = Transaction.newBuilder();
 //    Transaction.raw.Builder rawBuilder = Transaction.raw.newBuilder();
@@ -490,7 +489,7 @@ public class TransactionCapsuleTest {
 //      Assert.assertFalse(true);
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
-//          KEY_11 + "'s address is " + Wallet.encode58Check(ByteArray.fromHexString(KEY_ADDRESS_11))
+//          KEY_11 + "'s address is " + Wallet.encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_11))
 //              + " but it is not contained of permission.");
 //    } catch (SignatureException e) {
 //      Assert.assertFalse(true);
@@ -524,7 +523,7 @@ public class TransactionCapsuleTest {
 //      Assert.assertFalse(true);
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
-//          Wallet.encode58Check(ByteArray.fromHexString(OWNER_ADDRESS)) + " had signed!");
+//          Wallet.encodeBase58(ByteArray.fromHexString(OWNER_ADDRESS)) + " had signed!");
 //    } catch (SignatureException e) {
 //      Assert.assertFalse(true);
 //    } catch (SignatureFormatException e) {
@@ -546,7 +545,7 @@ public class TransactionCapsuleTest {
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
 //          OWNER_KEY + "'s address is " + Wallet
-//              .encode58Check(ByteArray.fromHexString(OWNER_ADDRESS))
+//              .encodeBase58(ByteArray.fromHexString(OWNER_ADDRESS))
 //              + " but it is not contained of permission.");
 //    } catch (SignatureException e) {
 //      Assert.assertFalse(true);
@@ -655,7 +654,7 @@ public class TransactionCapsuleTest {
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
 //          KEY_11 + "'s address is " + Wallet
-//              .encode58Check(ByteArray.fromHexString(KEY_ADDRESS_11))
+//              .encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_11))
 //              + " but it is not contained of permission.");
 //    } catch (SignatureException e) {
 //      Assert.assertFalse(true);
@@ -710,7 +709,7 @@ public class TransactionCapsuleTest {
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
 //          ByteArray.toHexString(sign11.get(0).toByteArray()) + " is signed by " + Wallet
-//              .encode58Check(ByteArray.fromHexString(KEY_ADDRESS_11))
+//              .encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_11))
 //              + " but it is not contained of permission.");
 //    } catch (SignatureException e) {
 //      Assert.assertFalse(true);
@@ -727,7 +726,7 @@ public class TransactionCapsuleTest {
 //    List<Permission> permissions = buildPermissions();
 //
 //    byte[] to = ByteArray.fromHexString(TO_ADDRESS);
-//    byte[] owner_not_exist = ByteArray.fromHexString(OWNER_ACCOUNT_NOT_Exist);
+//    byte[] owner_not_exist = ByteArray.fromHexString(OWNER_ACCOUNT_NOT_EXIST);
 //    TransferContract transferContract = createTransferContract(to, owner_not_exist, 1);
 //    Transaction.Builder trxBuilder = Transaction
 //        .newBuilder();
@@ -803,7 +802,7 @@ public class TransactionCapsuleTest {
 //      ByteString sign21 = sign21_11.get(1);
 //      Assert.assertEquals(e.getMessage(),
 //          ByteArray.toHexString(sign21.toByteArray()) + " is signed by " + Wallet
-//              .encode58Check(ByteArray.fromHexString(KEY_ADDRESS_11))
+//              .encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_11))
 //              + " but it is not contained of permission.");
 //    } catch (SignatureFormatException e) {
 //      Assert.assertFalse(true);
@@ -842,7 +841,7 @@ public class TransactionCapsuleTest {
 //      Assert.assertFalse(true);
 //    } catch (PermissionException e) {
 //      Assert.assertEquals(e.getMessage(),
-//          Wallet.encode58Check(ByteArray.fromHexString(KEY_ADDRESS_21)) + " has signed twice!");
+//          Wallet.encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_21)) + " has signed twice!");
 //    } catch (SignatureFormatException e) {
 //      Assert.assertFalse(true);
 //    }
@@ -911,7 +910,7 @@ public class TransactionCapsuleTest {
 //        .put(ByteArray.fromHexString(OWNER_ADDRESS), new AccountCapsule(builder.build()));
 //
 //    byte[] to = ByteArray.fromHexString(TO_ADDRESS);
-//    byte[] owner_not_exist = ByteArray.fromHexString(OWNER_ACCOUNT_NOT_Exist);
+//    byte[] owner_not_exist = ByteArray.fromHexString(OWNER_ACCOUNT_NOT_EXIST);
 //    TransferContract transferContract = createTransferContract(to, owner_not_exist, 1);
 //    Transaction.Builder trxBuilder = Transaction.newBuilder();
 //    Transaction.raw.Builder rawBuilder = Transaction.raw.newBuilder();
@@ -997,7 +996,7 @@ public class TransactionCapsuleTest {
 //      ByteString sign21 = sign21_11.get(1);
 //      Assert.assertEquals(e.getMessage(),
 //          ByteArray.toHexString(sign21.toByteArray()) + " is signed by " + Wallet
-//              .encode58Check(ByteArray.fromHexString(KEY_ADDRESS_11))
+//              .encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_11))
 //              + " but it is not contained of permission.");
 //    }
 //    //Too many signature
@@ -1030,7 +1029,7 @@ public class TransactionCapsuleTest {
 //      Assert.assertFalse(true);
 //    } catch (ValidateSignatureException e) {
 //      Assert.assertEquals(e.getMessage(),
-//          Wallet.encode58Check(ByteArray.fromHexString(KEY_ADDRESS_21)) + " has signed twice!");
+//          Wallet.encodeBase58(ByteArray.fromHexString(KEY_ADDRESS_21)) + " has signed twice!");
 //    }
 //
 //    //

@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.tron.common.utils.ByteArray;
-import org.tron.core.Wallet;
 import org.tron.protos.Protocol.AccountType;
 
 public class AccountTest {
@@ -36,8 +35,7 @@ public class AccountTest {
     account.setAccountName("tron");
     account.setAccountType("Normal");
     account
-        .setAddress(ByteArray.fromHexString(
-            Wallet.getAddressPreFixString() + "4948c2e8a756d9437037dcd8c7e0c73d560ca38d"));
+        .setAddress(ByteArray.fromHexString("4948c2e8a756d9437037dcd8c7e0c73d560ca38d"));
     account.setBalance("10000");
   }
 
@@ -117,15 +115,13 @@ public class AccountTest {
 
   @Test
   public void getAddress() {
-    Assert.assertEquals(
-        Wallet.getAddressPreFixString() + "4948c2e8a756d9437037dcd8c7e0c73d560ca38d",
+    Assert.assertEquals("4948c2e8a756d9437037dcd8c7e0c73d560ca38d",
         ByteArray.toHexString(account.getAddress()));
   }
 
   @Test
   public void getAddressBytes() {
-    byte[] bytes = ByteArray.fromHexString(
-        Wallet.getAddressPreFixString() + "4948c2e8a756d9437037dcd8c7e0c73d560ca38d");
+    byte[] bytes = ByteArray.fromHexString("4948c2e8a756d9437037dcd8c7e0c73d560ca38d");
     Assert.assertArrayEquals(bytes, account.getAddress());
   }
 
@@ -169,10 +165,8 @@ public class AccountTest {
   @Test
   public void setBalanceRight() {
     account
-        .setAddress(ByteArray.fromHexString(
-            Wallet.getAddressPreFixString() + "92814a458256d9437037dcd8c7e0c7948327154d"));
-    Assert.assertEquals(
-        Wallet.getAddressPreFixString() + "92814a458256d9437037dcd8c7e0c7948327154d",
+        .setAddress(ByteArray.fromHexString("92814a458256d9437037dcd8c7e0c7948327154d"));
+    Assert.assertEquals("92814a458256d9437037dcd8c7e0c7948327154d",
         ByteArray.toHexString(account.getAddress()));
   }
 

@@ -19,7 +19,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -59,7 +58,6 @@ public class ContractLinkage006 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -210,7 +208,7 @@ public class ContractLinkage006 {
     logger.info("beforeFreeNetUsed1:" + beforeFreeNetUsed1);
 
     //success ,balance change.use EnergyUsed and NetUsed
-    initParmes = "\"" + Base58.encode58Check(fromAddress) + "\",\"63\"";
+    initParmes = "\"" + Base58.encodeBase58(fromAddress) + "\",\"63\"";
     txid = PublicMethed.triggerContract(contractAddress,
         "init(address,uint256)", initParmes, false,
         0, 100000000L, linkage006Address2, linkage006Key2, blockingStubFull);
@@ -261,7 +259,7 @@ public class ContractLinkage006 {
       + "(Trigger 64 level can't success)")
   public void teststackOutByContract2() {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    initParmes = "\"" + Base58.encode58Check(fromAddress) + "\",\"64\"";
+    initParmes = "\"" + Base58.encodeBase58(fromAddress) + "\",\"64\"";
     AccountResourceMessage resourceInfo2 = PublicMethed.getAccountResource(linkage006Address2,
         blockingStubFull);
     Account info2 = PublicMethed.queryAccount(linkage006Address2, blockingStubFull);

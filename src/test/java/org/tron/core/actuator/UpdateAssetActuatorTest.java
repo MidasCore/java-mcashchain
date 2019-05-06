@@ -51,11 +51,9 @@ public class UpdateAssetActuatorTest {
     Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
     context = new TronApplicationContext(DefaultConfig.class);
     AppT = ApplicationFactory.create(context);
-    OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
-    OWNER_ADDRESS_NOTEXIST =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-    SECOND_ACCOUNT_ADDRESS =
-        Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d427122222";
+    OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+    OWNER_ADDRESS_NOTEXIST = "548794500882809695a8a687866e76d4271a1abc";
+    SECOND_ACCOUNT_ADDRESS = "548794500882809695a8a687866e76d427122222";
   }
 
   /**

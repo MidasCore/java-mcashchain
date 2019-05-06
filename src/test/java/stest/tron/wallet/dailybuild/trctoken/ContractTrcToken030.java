@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -58,7 +57,6 @@ public class ContractTrcToken030 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -82,12 +80,12 @@ public class ContractTrcToken030 {
         .assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "dev001Address:" + Base58.encode58Check(dev001Address));
+        "dev001Address:" + Base58.encodeBase58(dev001Address));
     Assert
         .assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
             testKey002, blockingStubFull));
     logger.info(
-        "user001Address:" + Base58.encode58Check(user001Address));
+        "user001Address:" + Base58.encodeBase58(user001Address));
     PublicMethed.waitProduceNextBlock(blockingStubFull);
 
     // freeze balance
@@ -176,7 +174,7 @@ public class ContractTrcToken030 {
 
     // user trigger A to transfer token to B
     String param =
-        "\"" + Base58.encode58Check(user001Address)
+        "\"" + Base58.encodeBase58(user001Address)
             + "\"";
 
     final String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,

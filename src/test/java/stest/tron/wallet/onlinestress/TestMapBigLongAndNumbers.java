@@ -19,7 +19,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 //import java.io.BufferedWriter;
 
@@ -62,7 +61,6 @@ public class TestMapBigLongAndNumbers {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -136,10 +134,10 @@ public class TestMapBigLongAndNumbers {
       ECKey ecKey1 = new ECKey(Utils.getRandom());
       byte[] userAddress = ecKey1.getAddress();
       String inputKey = ByteArray.toHexString(ecKey1.getPrivKeyBytes());
-      String addresstest = Base58.encode58Check(userAddress);
+      String addresstest = Base58.encodeBase58(userAddress);
 
       String saleContractString = "\"" + data + "\"" + "," + "\""
-          + Base58.encode58Check(userAddress) + "\"";
+          + Base58.encodeBase58(userAddress) + "\"";
 
       System.out.println("long string address:" + addresstest);
 
@@ -148,7 +146,7 @@ public class TestMapBigLongAndNumbers {
       logger.info(txid);
 
       String saleContractString1 = "\"" + data5 + "\"" + "," + "\""
-          + Base58.encode58Check(userAddress) + "\"";
+          + Base58.encodeBase58(userAddress) + "\"";
 
       System.out.println("short string address:" + addresstest);
 

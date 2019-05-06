@@ -533,14 +533,6 @@ public class Args {
 
     Config config = Configuration.getByFileName(INSTANCE.shellConfFileName, confFileName);
 
-    if (config.hasPath("net.type") && "testnet".equalsIgnoreCase(config.getString("net.type"))) {
-      Wallet.setAddressPreFixByte(Constant.ADD_PRE_FIX_BYTE_TESTNET);
-      Wallet.setAddressPreFixString(Constant.ADD_PRE_FIX_STRING_TESTNET);
-    } else {
-      Wallet.setAddressPreFixByte(Constant.ADD_PRE_FIX_BYTE_MAINNET);
-      Wallet.setAddressPreFixString(Constant.ADD_PRE_FIX_STRING_MAINNET);
-    }
-
     if (StringUtils.isNoneBlank(INSTANCE.privateKey)) {
       INSTANCE.setLocalWitnesses(new LocalWitnesses(INSTANCE.privateKey));
       if (StringUtils.isNoneBlank(INSTANCE.witnessAddress)) {

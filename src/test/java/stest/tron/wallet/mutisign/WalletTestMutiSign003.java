@@ -19,7 +19,6 @@ import org.tron.common.utils.Utils;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 import stest.tron.wallet.common.client.utils.PublicMethedForMutiSign;
@@ -67,7 +66,6 @@ public class WalletTestMutiSign003 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -179,7 +177,7 @@ public class WalletTestMutiSign003 {
     Assert.assertTrue(PublicMethedForMutiSign.updateAccount(
         ownerAddress, updateName.getBytes(), ownerKey, blockingStubFull, ownerKeyString));
 
-    String voteStr = Base58.encode58Check(witnessAddress);
+    String voteStr = Base58.encodeBase58(witnessAddress);
     HashMap<String, String> smallVoteMap = new HashMap<String, String>();
     smallVoteMap.put(voteStr, "1");
     Assert.assertTrue(PublicMethedForMutiSign.voteWitness(

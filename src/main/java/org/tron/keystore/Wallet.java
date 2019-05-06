@@ -93,7 +93,7 @@ public class Wallet {
       int n, int p) {
 
     WalletFile walletFile = new WalletFile();
-    walletFile.setAddress(org.tron.core.Wallet.encode58Check(ecKeyPair.getAddress()));
+    walletFile.setAddress(org.tron.core.Wallet.encodeBase58(ecKeyPair.getAddress()));
 
     WalletFile.Crypto crypto = new WalletFile.Crypto();
     crypto.setCipher(CIPHER);

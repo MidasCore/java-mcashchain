@@ -20,7 +20,6 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -61,7 +60,6 @@ public class ContractTrcToken041 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -168,7 +166,7 @@ public class ContractTrcToken041 {
 
     // user trigger A to transfer token to B
     String param =
-        "\"" + Base58.encode58Check(dev001Address) + "\",\"" + fakeTokenId
+        "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + fakeTokenId
             .toStringUtf8()
             + "\",\"105\"";
 

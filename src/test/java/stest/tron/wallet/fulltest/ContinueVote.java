@@ -64,7 +64,6 @@ public class ContinueVote {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -94,8 +93,8 @@ public class ContinueVote {
     AccountNetMessage accountNetMessage = blockingStubFull.getAccountNet(request);
     Random rand = new Random();
     Integer randNum = rand.nextInt(30) + 1;
-    Base58.encode58Check(fromAddress);
-    logger.info(Base58.encode58Check(fromAddress));
+    Base58.encodeBase58(fromAddress);
+    logger.info(Base58.encodeBase58(fromAddress));
     String voteStr = "TB4B1RMhoPeivkj4Hebm6tttHjRY9yQFes";
     HashMap<String, String> smallVoteMap = new HashMap<String, String>();
     smallVoteMap.put(voteStr, "1");

@@ -20,7 +20,6 @@ import org.tron.common.utils.Utils;
 import org.tron.core.Wallet;
 import org.tron.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -58,7 +57,6 @@ public class ContractTrcToken078 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -121,8 +119,8 @@ public class ContractTrcToken078 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1)
-        + "\",\"" + Base58.encode58Check(contractAddress2) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1)
+        + "\",\"" + Base58.encodeBase58(contractAddress2) + "\"";
 
     String txid2 = "";
     txid2 = PublicMethed.triggerContract(contractAddress,
@@ -181,8 +179,8 @@ public class ContractTrcToken078 {
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
     PublicMethed.waitProduceNextBlock(blockingStubFull);
-    String initParmes = "\"" + Base58.encode58Check(contractAddress1)
-        + "\",\"" + Base58.encode58Check(contractAddress2) + "\"";
+    String initParmes = "\"" + Base58.encodeBase58(contractAddress1)
+        + "\",\"" + Base58.encodeBase58(contractAddress2) + "\"";
 
     String txid2 = "";
     txid2 = PublicMethed.triggerContract(contractAddress,

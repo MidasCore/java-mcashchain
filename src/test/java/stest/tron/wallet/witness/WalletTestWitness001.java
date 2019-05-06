@@ -61,7 +61,6 @@ public class WalletTestWitness001 {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -86,7 +85,7 @@ public class WalletTestWitness001 {
 
   @Test(enabled = true)
   public void testVoteWitness() {
-    String voteStr = Base58.encode58Check(witnessAddress);
+    String voteStr = Base58.encodeBase58(witnessAddress);
     HashMap<String, String> smallVoteMap = new HashMap<String, String>();
     smallVoteMap.put(voteStr, "1");
     HashMap<String, String> wrongVoteMap = new HashMap<String, String>();

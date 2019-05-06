@@ -30,7 +30,6 @@ import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.Transaction;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.WalletClient;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -76,7 +75,6 @@ public class SuperWitnessAllowance {
   @BeforeSuite
   public void beforeSuite() {
     Wallet wallet = new Wallet();
-    Wallet.setAddressPreFixByte(CommonConstant.ADD_PRE_FIX_BYTE_MAINNET);
   }
 
   /**
@@ -87,7 +85,7 @@ public class SuperWitnessAllowance {
   public void beforeClass() {
     logger.info(lowBalTest);
     logger.info(ByteArray.toHexString(PublicMethed.getFinalAddress(lowBalTest)));
-    logger.info(Base58.encode58Check(PublicMethed.getFinalAddress(lowBalTest)));
+    logger.info(Base58.encodeBase58(PublicMethed.getFinalAddress(lowBalTest)));
 
     channelFull = ManagedChannelBuilder.forTarget(fullnode)
         .usePlaintext(true)
@@ -116,7 +114,7 @@ public class SuperWitnessAllowance {
       Assert.assertTrue(PublicMethed.freezeBalance(lowBalAddress, 1000000,
           3, lowBalTest, blockingStubFull));
       Assert.assertTrue(createWitness(lowBalAddress, createUrl, lowBalTest));
-      String voteStr = Base58.encode58Check(PublicMethed.getFinalAddress(lowBalTest));
+      String voteStr = Base58.encodeBase58(PublicMethed.getFinalAddress(lowBalTest));
       HashMap<String, String> smallVoteMap = new HashMap<String, String>();
       smallVoteMap.put(voteStr, "1");
       Assert.assertTrue(voteWitness(smallVoteMap, lowBalAddress, lowBalTest));
