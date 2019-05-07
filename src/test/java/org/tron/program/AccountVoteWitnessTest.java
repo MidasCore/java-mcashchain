@@ -100,20 +100,22 @@ public class AccountVoteWitnessTest {
       logger.info("address is {}  , account is null", address.toStringUtf8());
       return;
     }
+    logger.info("address is {}", accountCapsule.getAddress().toStringUtf8());
     logger.info(
-        "address is {}  ,countVoteSize is {}",
+        "address is {}, countVote is {}",
         accountCapsule.getAddress().toStringUtf8(),
-        accountCapsule.getVotesList().size());
+        accountCapsule.getVote() != null ?
+        accountCapsule.getVote().getVoteCount() : 0);
   }
 
   private void printWitness(final ByteString address) {
     final WitnessCapsule witnessCapsule = dbManager.getWitnessStore().get(address.toByteArray());
     if (null == witnessCapsule) {
-      logger.info("address is {}  , witness is null", address.toStringUtf8());
+      logger.info("address is {}, witness is null", address.toStringUtf8());
       return;
     }
     logger.info(
-        "address is {}  ,countVote is {}",
+        "address is {}, countVote is {}",
         witnessCapsule.getAddress().toStringUtf8(),
         witnessCapsule.getVoteCount());
   }
@@ -145,25 +147,25 @@ public class AccountVoteWitnessTest {
             ByteString.copyFrom("00000000005".getBytes()),
             ByteString.copyFromUtf8("Vivider"),
             AccountType.Normal);
-    // accountTron addVotes
-    accountTron.addVotes(accountMarcus.getAddress(), 100);
-    accountTron.addVotes(accountOlivier.getAddress(), 100);
-    accountTron.addVotes(accountSasaXie.getAddress(), 100);
-    accountTron.addVotes(accountVivider.getAddress(), 100);
+    // accountTron setVote
+    accountTron.setVote(accountMarcus.getAddress(), 100);
+    accountTron.setVote(accountOlivier.getAddress(), 100);
+    accountTron.setVote(accountSasaXie.getAddress(), 100);
+    accountTron.setVote(accountVivider.getAddress(), 100);
 
-    // accountMarcus addVotes
-    accountMarcus.addVotes(accountTron.getAddress(), 100);
-    accountMarcus.addVotes(accountOlivier.getAddress(), 100);
-    accountMarcus.addVotes(accountSasaXie.getAddress(), 100);
-    accountMarcus.addVotes(ByteString.copyFrom("00000000006".getBytes()), 100);
-    accountMarcus.addVotes(ByteString.copyFrom("00000000007".getBytes()), 100);
-    // accountOlivier addVotes
-    accountOlivier.addVotes(accountTron.getAddress(), 100);
-    accountOlivier.addVotes(accountMarcus.getAddress(), 100);
-    accountOlivier.addVotes(accountSasaXie.getAddress(), 100);
-    accountOlivier.addVotes(accountVivider.getAddress(), 100);
-    // accountSasaXie addVotes
-    // accountVivider addVotes
+    // accountMarcus setVote
+    accountMarcus.setVote(accountTron.getAddress(), 100);
+    accountMarcus.setVote(accountOlivier.getAddress(), 100);
+    accountMarcus.setVote(accountSasaXie.getAddress(), 100);
+    accountMarcus.setVote(ByteString.copyFrom("00000000006".getBytes()), 100);
+    accountMarcus.setVote(ByteString.copyFrom("00000000007".getBytes()), 100);
+    // accountOlivier setVote
+    accountOlivier.setVote(accountTron.getAddress(), 100);
+    accountOlivier.setVote(accountMarcus.getAddress(), 100);
+    accountOlivier.setVote(accountSasaXie.getAddress(), 100);
+    accountOlivier.setVote(accountVivider.getAddress(), 100);
+    // accountSasaXie setVote
+    // accountVivider setVote
     accountCapsuleList.add(accountTron);
     accountCapsuleList.add(accountMarcus);
     accountCapsuleList.add(accountOlivier);

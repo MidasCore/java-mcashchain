@@ -21,7 +21,7 @@ import org.tron.common.utils.StringUtil;
 import org.tron.common.utils.Time;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.BlockCapsule;
-import org.tron.core.capsule.VotesCapsule;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.config.Parameter.ChainConstant;
 import org.tron.core.config.args.Args;
@@ -257,12 +257,12 @@ public class WitnessController {
 
   private Map<ByteString, Long> countVote(VotesStore votesStore) {
     final Map<ByteString, Long> countWitness = Maps.newHashMap();
-    Iterator<Map.Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator();
+    Iterator<Map.Entry<byte[], VoteChangeCapsule>> dbIterator = votesStore.iterator();
 
     long sizeCount = 0;
     while (dbIterator.hasNext()) {
-      Entry<byte[], VotesCapsule> next = dbIterator.next();
-      VotesCapsule votes = next.getValue();
+      Entry<byte[], VoteChangeCapsule> next = dbIterator.next();
+      VoteChangeCapsule voteChange = next.getValue();
 
 //      logger.info("there is account ,account address is {}",
 //          account.createReadableString());
@@ -273,26 +273,26 @@ public class WitnessController {
       //account.setBalance(account.getBalance() + reward);
       //accountStore.put(account.createDbKey(), account);
 
-      votes.getOldVotes().forEach(vote -> {
-        //TODO validate witness //active_witness
-        ByteString voteAddress = vote.getVoteAddress();
-        long voteCount = vote.getVoteCount();
-        if (countWitness.containsKey(voteAddress)) {
-          countWitness.put(voteAddress, countWitness.get(voteAddress) - voteCount);
+      //TODO validate witness //active_witness
+      if (voteChange.hasOldVote()) {
+        ByteString oldVoteAddress = voteChange.getOldVote().getVoteAddress();
+        long oldVoteCount = voteChange.getOldVote().getVoteCount();
+        if (countWitness.containsKey(oldVoteAddress)) {
+          countWitness.put(oldVoteAddress, countWitness.get(oldVoteAddress) - oldVoteCount);
         } else {
-          countWitness.put(voteAddress, -voteCount);
+          countWitness.put(oldVoteAddress, -oldVoteCount);
         }
-      });
-      votes.getNewVotes().forEach(vote -> {
-        //TODO validate witness //active_witness
-        ByteString voteAddress = vote.getVoteAddress();
-        long voteCount = vote.getVoteCount();
-        if (countWitness.containsKey(voteAddress)) {
-          countWitness.put(voteAddress, countWitness.get(voteAddress) + voteCount);
+      }
+      //TODO validate witness //active_witness
+      if (voteChange.hasNewVote()) {
+        ByteString newVoteAddress = voteChange.getNewVote().getVoteAddress();
+        long newVoteCount = voteChange.getNewVote().getVoteCount();
+        if (countWitness.containsKey(newVoteAddress)) {
+          countWitness.put(newVoteAddress, countWitness.get(newVoteAddress) + newVoteCount);
         } else {
-          countWitness.put(voteAddress, voteCount);
+          countWitness.put(newVoteAddress, newVoteCount);
         }
-      });
+      }
 
       sizeCount++;
       votesStore.delete(next.getKey());
@@ -354,11 +354,7 @@ public class WitnessController {
         setActiveWitnesses(newWitnessAddressList);
       }
 
-      if (newWitnessAddressList.size() > ChainConstant.WITNESS_STANDBY_LENGTH) {
-        payStandbyWitness(newWitnessAddressList.subList(0, ChainConstant.WITNESS_STANDBY_LENGTH));
-      } else {
-        payStandbyWitness(newWitnessAddressList);
-      }
+      payVoters();
 
       List<ByteString> newWits = getActiveWitnesses();
       if (witnessSetChanged(currentWits, newWits)) {
@@ -447,6 +443,11 @@ public class WitnessController {
         manager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
       }
     }
+
+  }
+
+  // TODO: nghiand
+  private void payVoters() {
 
   }
 

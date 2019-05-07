@@ -9,7 +9,7 @@ import org.tron.core.capsule.BytesCapsule;
 import org.tron.core.capsule.ContractCapsule;
 import org.tron.core.capsule.ProposalCapsule;
 import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.VotesCapsule;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.db.Manager;
 import org.tron.protos.Protocol;
@@ -26,7 +26,7 @@ public interface Deposit {
 
   WitnessCapsule getWitness(byte[] address);
 
-  VotesCapsule getVotesCapsule(byte[] address);
+  VoteChangeCapsule getVotesCapsule(byte[] address);
 
   ProposalCapsule getProposalCapsule(byte[] id);
 
@@ -80,7 +80,7 @@ public interface Deposit {
 
   void putAccountValue(byte[] address, AccountCapsule accountCapsule);
 
-  void putVoteValue(byte[] address, VotesCapsule votesCapsule);
+  void putVoteValue(byte[] address, VoteChangeCapsule voteChangeCapsule);
 
   void putProposalValue(byte[] address, ProposalCapsule proposalCapsule);
 

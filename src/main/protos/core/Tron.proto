@@ -80,8 +80,8 @@ message Account {
   bytes address = 3;
   // the trx balance
   int64 balance = 4;
-  // the votes
-  repeated Vote votes = 5;
+  // the vote
+  Vote vote = 5;
   // the other asset owned by this account
   map<string, int64> asset = 6;
 
@@ -199,13 +199,13 @@ message Witness {
 }
 
 // Vote Change
-message Votes {
+message VoteChange {
   bytes address = 1;
-  repeated Vote old_votes = 2;
-  repeated Vote new_votes = 3;
+  Vote old_vote = 2;
+  Vote new_vote = 3;
 }
 
-// Transcation
+// Transaction
 
 message TXOutput {
   int64 value = 1;
@@ -282,12 +282,12 @@ message Transaction {
 
   message Result {
     enum code {
-      SUCESS = 0;
+      SUCCESS = 0;
       FAILED = 1;
     }
     enum contractResult {
       DEFAULT = 0;
-      SUCCESS = 1;
+      OK = 1;
       REVERT = 2;
       BAD_JUMP_DESTINATION = 3;
       OUT_OF_MEMORY = 4;
@@ -338,7 +338,7 @@ message Transaction {
 
 message TransactionInfo {
   enum code {
-    SUCESS = 0;
+    SUCCESS = 0;
     FAILED = 1;
   }
   message Log {

@@ -250,7 +250,7 @@ public class ExchangeTransactionActuatorTest {
 
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       //V1
       exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
       Assert.assertNotNull(exchangeCapsule);
@@ -328,7 +328,7 @@ public class ExchangeTransactionActuatorTest {
 
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       //V1 not update
       exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
       Assert.assertNotNull(exchangeCapsule);
@@ -405,7 +405,7 @@ public class ExchangeTransactionActuatorTest {
 
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       // V1,Data is no longer update
       Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(exchangeId)));
 
@@ -482,7 +482,7 @@ public class ExchangeTransactionActuatorTest {
 
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       //V1
       exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
       Assert.assertNotNull(exchangeCapsule);
@@ -565,7 +565,7 @@ public class ExchangeTransactionActuatorTest {
 
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       // V1,Data is no longer update
       Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(exchangeId)));
 

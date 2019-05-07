@@ -12,11 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Wallet;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.tron.core.capsule.DelegatedResourceCapsule;
-import org.tron.core.capsule.TransactionResultCapsule;
-import org.tron.core.capsule.VotesCapsule;
+import org.tron.core.capsule.*;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
@@ -173,22 +170,22 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
         break;
     }
 
-    VotesCapsule votesCapsule;
+    VoteChangeCapsule voteChangeCapsule;
     if (!dbManager.getVotesStore().has(ownerAddress)) {
-      votesCapsule = new VotesCapsule(unfreezeBalanceContract.getOwnerAddress(),
-          accountCapsule.getVotesList());
+      voteChangeCapsule = new VoteChangeCapsule(unfreezeBalanceContract.getOwnerAddress(),
+          accountCapsule.getVote());
     } else {
-      votesCapsule = dbManager.getVotesStore().get(ownerAddress);
+      voteChangeCapsule = dbManager.getVotesStore().get(ownerAddress);
     }
-    accountCapsule.clearVotes();
-    votesCapsule.clearNewVotes();
+    accountCapsule.clearVote();
+    voteChangeCapsule.clearNewVote();
 
     dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
-    dbManager.getVotesStore().put(ownerAddress, votesCapsule);
+    dbManager.getVotesStore().put(ownerAddress, voteChangeCapsule);
 
     ret.setUnfreezeAmount(unfreezeBalance);
-    ret.setStatus(fee, code.SUCESS);
+    ret.setStatus(fee, code.SUCCESS);
 
     return true;
   }

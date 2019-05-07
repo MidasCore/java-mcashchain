@@ -2,15 +2,18 @@ package org.tron.core.config;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public interface Parameter {
 
   interface ChainConstant {
 
     long TRANSFER_FEE = 0; // free
-    int WITNESS_STANDBY_LENGTH = 127;
     int SOLIDIFIED_THRESHOLD = 70; // 70%
     int PRIVATE_KEY_LENGTH = 64;
-    int MAX_ACTIVE_WITNESS_NUM = 27;
+    int MAX_ACTIVE_WITNESS_NUM = 30;
     int BLOCK_SIZE = 2_000_000;
     int BLOCK_PRODUCED_INTERVAL = 3000; //ms,produce block period, must be divisible by 60. millisecond
     long CLOCK_MAX_DELAY = 3600000; // 3600 * 1000 ms
@@ -37,6 +40,14 @@ public interface Parameter {
     long MAX_BLOCKS_SYNC_FROM_ONE_PEER = 1000;
     long SYNC_CHAIN_LIMIT_NUM = 500;
     int MAX_TRANSACTION_PENDING = 2000;
+
+    List<NodeTier> NODE_TIERS = new ArrayList<>(Arrays.asList(
+            new NodeTier("Master Node", 5000000000000L, 20000, 20),
+            new NodeTier("Jedi Node", 500000000000L, 1800, 15),
+            new NodeTier("Guardian Node", 50000000000L, 150, 10),
+            new NodeTier("Warrior Node", 10000000000L, 25, 5),
+            new NodeTier("Apprentice Node", 5000000000L, 10, 0)
+    ));
   }
 
   interface NetConstants {

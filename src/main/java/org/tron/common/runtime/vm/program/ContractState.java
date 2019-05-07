@@ -31,7 +31,7 @@ import org.tron.core.capsule.BytesCapsule;
 import org.tron.core.capsule.ContractCapsule;
 import org.tron.core.capsule.ProposalCapsule;
 import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.VotesCapsule;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.db.Manager;
 import org.tron.protos.Protocol;
@@ -81,7 +81,7 @@ public class ContractState implements Deposit, ProgramListenerAware {
   }
 
   @Override
-  public VotesCapsule getVotesCapsule(byte[] address) {
+  public VoteChangeCapsule getVotesCapsule(byte[] address) {
     return deposit.getVotesCapsule(address);
   }
 
@@ -228,8 +228,8 @@ public class ContractState implements Deposit, ProgramListenerAware {
   }
 
   @Override
-  public void putVoteValue(byte[] address, VotesCapsule votesCapsule) {
-    this.deposit.putVoteValue(address, votesCapsule);
+  public void putVoteValue(byte[] address, VoteChangeCapsule voteChangeCapsule) {
+    this.deposit.putVoteValue(address, voteChangeCapsule);
   }
 
   @Override

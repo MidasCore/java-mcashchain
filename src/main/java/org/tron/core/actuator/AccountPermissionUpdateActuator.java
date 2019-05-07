@@ -48,7 +48,7 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
       dbManager.adjustBalance(ownerAddress, -fee);
       dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().createDbKey(), fee);
 
-      result.setStatus(fee, code.SUCESS);
+      result.setStatus(fee, code.SUCCESS);
     } catch (BalanceInsufficientException e) {
       logger.debug(e.getMessage(), e);
       result.setStatus(fee, code.FAILED);

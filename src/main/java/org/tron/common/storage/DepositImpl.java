@@ -14,15 +14,8 @@ import org.tron.common.runtime.vm.program.Storage;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.ByteUtil;
 import org.tron.common.utils.StringUtil;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.AssetIssueCapsule;
-import org.tron.core.capsule.BlockCapsule;
-import org.tron.core.capsule.BytesCapsule;
-import org.tron.core.capsule.ContractCapsule;
-import org.tron.core.capsule.ProposalCapsule;
-import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.VotesCapsule;
-import org.tron.core.capsule.WitnessCapsule;
+import org.tron.core.capsule.*;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.db.AccountStore;
 import org.tron.core.db.BlockStore;
 import org.tron.core.db.CodeStore;
@@ -191,23 +184,23 @@ public class DepositImpl implements Deposit {
 
 
   @Override
-  public synchronized VotesCapsule getVotesCapsule(byte[] address) {
+  public synchronized VoteChangeCapsule getVotesCapsule(byte[] address) {
     Key key = new Key(address);
     if (votesCache.containsKey(key)) {
       return votesCache.get(key).getVotes();
     }
 
-    VotesCapsule votesCapsule;
+    VoteChangeCapsule voteChangeCapsule;
     if (parent != null) {
-      votesCapsule = parent.getVotesCapsule(address);
+      voteChangeCapsule = parent.getVotesCapsule(address);
     } else {
-      votesCapsule = getVotesStore().get(address);
+      voteChangeCapsule = getVotesStore().get(address);
     }
 
-    if (votesCapsule != null) {
-      votesCache.put(key, Value.create(votesCapsule.getData()));
+    if (voteChangeCapsule != null) {
+      votesCache.put(key, Value.create(voteChangeCapsule.getData()));
     }
-    return votesCapsule;
+    return voteChangeCapsule;
   }
 
 
@@ -734,9 +727,9 @@ public class DepositImpl implements Deposit {
   }
 
   @Override
-  public void putVoteValue(byte[] address, VotesCapsule votesCapsule) {
+  public void putVoteValue(byte[] address, VoteChangeCapsule voteChangeCapsule) {
     Key key = new Key(address);
-    votesCache.put(key, new Value(votesCapsule.getData(), Type.VALUE_TYPE_CREATE));
+    votesCache.put(key, new Value(voteChangeCapsule.getData(), Type.VALUE_TYPE_CREATE));
   }
 
   @Override

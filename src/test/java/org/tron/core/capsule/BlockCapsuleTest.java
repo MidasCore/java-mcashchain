@@ -68,7 +68,7 @@ public class BlockCapsuleTest {
     blockCapsule0.setMerkleRoot();
 
     Assert.assertEquals(
-        "5bc862243292e6aa1d5e21a60bb6a673e4c2544709f6363d4a2f85ec29bcfe00",
+        "76bf01c3c983f526df005f311f12d0f1b4061adf390fc6b390e8aa7501cd0fda",
         blockCapsule0.getMerkleRoot().toString());
 
     logger.info("Transaction[O] Merkle Root : {}", blockCapsule0.getMerkleRoot().toString());

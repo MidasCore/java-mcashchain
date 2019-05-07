@@ -278,7 +278,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       //V1
       ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
@@ -352,7 +352,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       //V1 not update
       ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
@@ -425,7 +425,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       // V1,Data is no longer update
       Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(exchangeId)));
       //V2
@@ -490,7 +490,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       //V1
       ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore()
           .get(ByteArray.fromLong(exchangeId));
@@ -563,7 +563,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       // V1,Data is no longer update
       Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(exchangeId)));
       //V2
@@ -1341,7 +1341,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
       Assert.assertEquals("Not precise enough",
@@ -1394,7 +1394,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
       Assert.assertEquals("Not precise enough",
@@ -1447,7 +1447,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
       Assert.assertEquals("Not precise enough",
@@ -1500,7 +1500,7 @@ public class ExchangeWithdrawActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
     } catch (ContractValidateException e) {
       Assert.assertTrue(e instanceof ContractValidateException);
       Assert.assertEquals("Not precise enough",

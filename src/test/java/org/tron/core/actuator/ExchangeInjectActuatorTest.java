@@ -233,7 +233,7 @@ public class ExchangeInjectActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       Assert.assertEquals(ret.getExchangeInjectAnotherAmount(), secondTokenQuant);
       //V1
       ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore()
@@ -325,7 +325,7 @@ public class ExchangeInjectActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       Assert.assertEquals(ret.getExchangeInjectAnotherAmount(), secondTokenQuant);
       //V1
       ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore()
@@ -416,7 +416,7 @@ public class ExchangeInjectActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       // V1,Data is no longer update
       Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(id)));
@@ -489,7 +489,7 @@ public class ExchangeInjectActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       //V1
       ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore()
           .get(ByteArray.fromLong(exchangeId));
@@ -567,7 +567,7 @@ public class ExchangeInjectActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       // V1,Data is no longer update
       Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(exchangeId)));
 

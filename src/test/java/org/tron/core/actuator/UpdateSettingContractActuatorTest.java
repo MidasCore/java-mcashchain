@@ -132,7 +132,7 @@ public class UpdateSettingContractActuatorTest {
       actuator.execute(ret);
 
       // assert result state and consume_user_resource_percent
-      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
       Assert.assertEquals(
           dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS)).
               getConsumeUserResourcePercent(),
@@ -262,7 +262,7 @@ public class UpdateSettingContractActuatorTest {
       actuator.validate();
       actuator.execute(ret);
 
-      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
       Assert.assertEquals(
           dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS)).
               getConsumeUserResourcePercent(),
@@ -272,7 +272,7 @@ public class UpdateSettingContractActuatorTest {
       secondActuator.validate();
       secondActuator.execute(ret);
 
-      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
       Assert.assertEquals(
           dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS)).
               getConsumeUserResourcePercent(),

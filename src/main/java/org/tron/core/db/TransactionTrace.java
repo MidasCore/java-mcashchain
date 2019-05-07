@@ -238,7 +238,7 @@ public class TransactionTrace {
     RuntimeException exception = runtime.getResult().getException();
     if (Objects.isNull(exception) && StringUtils
         .isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
-      receipt.setResult(contractResult.SUCCESS);
+      receipt.setResult(contractResult.OK);
       return;
     }
     if (runtime.getResult().isRevert()) {

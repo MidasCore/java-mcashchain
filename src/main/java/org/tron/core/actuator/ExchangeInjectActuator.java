@@ -84,7 +84,7 @@ public class ExchangeInjectActuator extends AbstractActuator {
       dbManager.putExchangeCapsule(exchangeCapsule);
 
       ret.setExchangeInjectAnotherAmount(anotherTokenQuant);
-      ret.setStatus(fee, code.SUCESS);
+      ret.setStatus(fee, code.SUCCESS);
     } catch (ItemNotFoundException e) {
       logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);

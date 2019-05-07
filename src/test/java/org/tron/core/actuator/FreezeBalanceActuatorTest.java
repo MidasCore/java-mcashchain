@@ -15,7 +15,6 @@ import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.DelegatedResourceAccountIndexCapsule;
 import org.tron.core.capsule.DelegatedResourceCapsule;
@@ -153,14 +152,14 @@ public class FreezeBalanceActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
           - ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(owner.getFrozenBalance(), frozenBalance);
-      Assert.assertEquals(frozenBalance, owner.getTronPower());
+      Assert.assertEquals(frozenBalance, owner.getVotingPower());
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
     } catch (ContractExeException e) {
@@ -178,7 +177,7 @@ public class FreezeBalanceActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
@@ -186,7 +185,7 @@ public class FreezeBalanceActuatorTest {
           - ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
       Assert.assertEquals(frozenBalance, owner.getEnergyFrozenBalance());
-      Assert.assertEquals(frozenBalance, owner.getTronPower());
+      Assert.assertEquals(frozenBalance, owner.getVotingPower());
     } catch (ContractValidateException e) {
       Assert.assertFalse(e instanceof ContractValidateException);
     } catch (ContractExeException e) {
@@ -208,7 +207,7 @@ public class FreezeBalanceActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
@@ -216,13 +215,13 @@ public class FreezeBalanceActuatorTest {
           - ChainConstant.TRANSFER_FEE);
       Assert.assertEquals(0L, owner.getFrozenBalance());
       Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForBandwidth());
-      Assert.assertEquals(frozenBalance, owner.getTronPower());
+      Assert.assertEquals(frozenBalance, owner.getVotingPower());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
       Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEnergy());
-      Assert.assertEquals(0L, receiver.getTronPower());
+      Assert.assertEquals(0L, receiver.getVotingPower());
 
       DelegatedResourceCapsule delegatedResourceCapsule = dbManager.getDelegatedResourceStore()
           .get(DelegatedResourceCapsule
@@ -275,7 +274,7 @@ public class FreezeBalanceActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
@@ -284,13 +283,13 @@ public class FreezeBalanceActuatorTest {
       Assert.assertEquals(0L, owner.getFrozenBalance());
       Assert.assertEquals(0L, owner.getDelegatedFrozenBalanceForBandwidth());
       Assert.assertEquals(frozenBalance, owner.getDelegatedFrozenBalanceForEnergy());
-      Assert.assertEquals(frozenBalance, owner.getTronPower());
+      Assert.assertEquals(frozenBalance, owner.getVotingPower());
 
       AccountCapsule receiver =
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
       Assert.assertEquals(frozenBalance, receiver.getAcquiredDelegatedFrozenBalanceForEnergy());
-      Assert.assertEquals(0L, receiver.getTronPower());
+      Assert.assertEquals(0L, receiver.getVotingPower());
 
       DelegatedResourceCapsule delegatedResourceCapsule = dbManager.getDelegatedResourceStore()
           .get(DelegatedResourceCapsule
@@ -345,7 +344,7 @@ public class FreezeBalanceActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner = dbManager.getAccountStore()
           .get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertEquals(owner.getBalance(), initBalance - frozenBalance
@@ -359,7 +358,7 @@ public class FreezeBalanceActuatorTest {
           dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForBandwidth());
       Assert.assertEquals(0L, receiver.getAcquiredDelegatedFrozenBalanceForEnergy());
-      Assert.assertEquals(0L, receiver.getTronPower());
+      Assert.assertEquals(0L, receiver.getVotingPower());
 
       long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
       Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / 1000_000L,

@@ -885,34 +885,6 @@ public class RpcApiService implements Service {
       createTransactionExtention(request, ContractType.UnfreezeAssetContract, responseObserver);
     }
 
-    //refactor、test later
-    private void checkVoteWitnessAccount(VoteWitnessContract req) {
-      //send back to cli
-      ByteString ownerAddress = req.getOwnerAddress();
-      Preconditions.checkNotNull(ownerAddress, "OwnerAddress is null");
-
-      AccountCapsule account = dbManager.getAccountStore().get(ownerAddress.toByteArray());
-      Preconditions.checkNotNull(account,
-          "OwnerAddress[" + StringUtil.createReadableString(ownerAddress) + "] not exists");
-
-      int votesCount = req.getVotesCount();
-      Preconditions.checkArgument(votesCount <= 0, "VotesCount[" + votesCount + "] <= 0");
-      Preconditions.checkArgument(account.getTronPower() < votesCount,
-          "tron power[" + account.getTronPower() + "] <  VotesCount[" + votesCount + "]");
-
-      req.getVotesList().forEach(vote -> {
-        ByteString voteAddress = vote.getVoteAddress();
-        WitnessCapsule witness = dbManager.getWitnessStore()
-            .get(voteAddress.toByteArray());
-        String readableWitnessAddress = StringUtil.createReadableString(voteAddress);
-
-        Preconditions.checkNotNull(witness, "witness[" + readableWitnessAddress + "] not exists");
-        Preconditions.checkArgument(vote.getVoteCount() <= 0,
-            "VoteAddress[" + readableWitnessAddress + "],VotesCount[" + vote
-                .getVoteCount() + "] <= 0");
-      });
-    }
-
     @Override
     public void voteWitnessAccount(VoteWitnessContract request,
         StreamObserver<Transaction> responseObserver) {

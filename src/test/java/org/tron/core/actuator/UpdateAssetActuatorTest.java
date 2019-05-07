@@ -186,7 +186,7 @@ public class UpdateAssetActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
       //V1
       AssetIssueCapsule assetIssueCapsule =
           dbManager.getAssetIssueStore().get(ByteString.copyFromUtf8(NAME).toByteArray());
@@ -231,7 +231,7 @@ public class UpdateAssetActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
       //V1 old version exist but  not updata
       AssetIssueCapsule assetIssueCapsule =
           dbManager.getAssetIssueStore().get(ByteString.copyFromUtf8(NAME).toByteArray());
@@ -272,7 +272,7 @@ public class UpdateAssetActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
       //V1，Data is no longer update
       AssetIssueCapsule assetIssueCapsule =
           dbManager.getAssetIssueStore().get(ByteString.copyFromUtf8(NAME).toByteArray());

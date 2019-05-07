@@ -150,8 +150,8 @@ public class WalletTestWitness001 {
     ECKey ecKey = temKey;
     Account beforeVote = queryAccount(ecKey, blockingStubFull);
     Long beforeVoteNum = 0L;
-    if (beforeVote.getVotesCount() != 0) {
-      beforeVoteNum = beforeVote.getVotes(0).getVoteCount();
+    if (beforeVote.hasVote()) {
+      beforeVoteNum = beforeVote.getVote().getVoteCount();
     }
 
     Contract.VoteWitnessContract.Builder builder = Contract.VoteWitnessContract.newBuilder();
@@ -168,7 +168,7 @@ public class WalletTestWitness001 {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(address));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     Contract.VoteWitnessContract contract = builder.build();
@@ -193,17 +193,13 @@ public class WalletTestWitness001 {
     Account afterVote = queryAccount(ecKey, searchBlockingStubFull);
     //Long afterVoteNum = afterVote.getVotes(0).getVoteCount();
     for (String key : witness.keySet()) {
-      for (int j = 0; j < afterVote.getVotesCount(); j++) {
+      logger.info(Long.toString(Long.parseLong(witness.get(key))));
+      logger.info(key);
+      if (key.equals("TB4B1RMhoPeivkj4Hebm6tttHjRY9yQFes")) {
+        logger.info("catch it");
+        logger.info(Long.toString(afterVote.getVote().getVoteCount()));
         logger.info(Long.toString(Long.parseLong(witness.get(key))));
-        logger.info(key);
-        if (key.equals("TB4B1RMhoPeivkj4Hebm6tttHjRY9yQFes")) {
-          logger.info("catch it");
-          logger.info(Long.toString(afterVote.getVotes(j).getVoteCount()));
-          logger.info(Long.toString(Long.parseLong(witness.get(key))));
-          Assert
-              .assertTrue(afterVote.getVotes(j).getVoteCount() == Long.parseLong(witness.get(key)));
-        }
-
+        Assert.assertEquals(Long.parseLong(witness.get(key)), afterVote.getVote().getVoteCount());
       }
     }
     return true;

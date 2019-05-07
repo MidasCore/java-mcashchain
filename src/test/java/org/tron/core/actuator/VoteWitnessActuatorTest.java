@@ -16,7 +16,6 @@ import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.WitnessCapsule;
@@ -102,17 +101,17 @@ public class VoteWitnessActuatorTest {
     return Any.pack(
         VoteWitnessContract.newBuilder()
             .setOwnerAddress(StringUtil.hexString2ByteString(address))
-            .addVotes(Vote.newBuilder()
+            .setVote(Vote.newBuilder()
                 .setVoteAddress(StringUtil.hexString2ByteString(voteaddress))
                 .setVoteCount(value).build())
             .build());
   }
 
-  private Any getRepeateContract(String address, String voteaddress, Long value, int times) {
+  private Any getRepeatedContract(String address, String voteaddress, Long value, int times) {
     VoteWitnessContract.Builder builder = VoteWitnessContract.newBuilder();
     builder.setOwnerAddress(StringUtil.hexString2ByteString(address));
     for (int i = 0; i < times; i++) {
-      builder.addVotes(Vote.newBuilder()
+      builder.setVote(Vote.newBuilder()
           .setVoteAddress(StringUtil.hexString2ByteString(voteaddress))
           .setVoteCount(value).build());
     }
@@ -146,12 +145,10 @@ public class VoteWitnessActuatorTest {
       actuator.validate();
       actuator.execute(ret);
       Assert.assertEquals(1,
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-              .get(0).getVoteCount());
+          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteCount());
       Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-              .get(0).getVoteAddress().toByteArray());
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteAddress().toByteArray());
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       witnessController.updateWitness();
       WitnessCapsule witnessCapsule = witnessController
           .getWitnesseByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -204,9 +201,7 @@ public class VoteWitnessActuatorTest {
       actuator.execute(ret);
       fail("Account[" + WITNESS_ADDRESS_NOACCOUNT + "] not exists");
     } catch (ContractValidateException e) {
-      Assert.assertEquals(0, dbManager.getAccountStore()
-          .get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList().size());
-      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote());
       Assert.assertEquals("Account[" + WITNESS_ADDRESS_NOACCOUNT + "] not exists", e.getMessage());
       witnessController.updateWitness();
       WitnessCapsule witnessCapsule = witnessController
@@ -241,9 +236,7 @@ public class VoteWitnessActuatorTest {
       actuator.execute(ret);
       fail("Witness[" + OWNER_ADDRESS_NOACCOUNT + "] not exists");
     } catch (ContractValidateException e) {
-      Assert.assertEquals(0, dbManager.getAccountStore()
-          .get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList().size());
-      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote());
       Assert.assertEquals("Witness[" + WITNESS_ADDRESS_NOACCOUNT + "] not exists", e.getMessage());
       witnessController.updateWitness();
       WitnessCapsule witnessCapsule = witnessController
@@ -255,10 +248,10 @@ public class VoteWitnessActuatorTest {
   }
 
   /**
-   * invalideVoteAddress
+   * invalidVoteAddress
    */
   @Test
-  public void invalideVoteAddress() {
+  public void invalidVoteAddress() {
     AccountCapsule accountSecondCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8(WITNESS_NAME),
@@ -276,9 +269,7 @@ public class VoteWitnessActuatorTest {
       actuator.execute(ret);
       Assert.assertTrue(false);
     } catch (ContractValidateException e) {
-      Assert.assertEquals(0, dbManager.getAccountStore()
-          .get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList().size());
-      Assert.assertTrue(e instanceof ContractValidateException);
+      Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote());
       Assert.assertEquals("Invalid vote address!", e.getMessage());
       witnessController.updateWitness();
       WitnessCapsule witnessCapsule = witnessController
@@ -349,7 +340,7 @@ public class VoteWitnessActuatorTest {
     FreezeBalanceActuator freezeBalanceActuator = new FreezeBalanceActuator(
         getContract(OWNER_ADDRESS, frozenBalance, duration), dbManager);
     VoteWitnessActuator actuator = new VoteWitnessActuator(
-        getRepeateContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L, 0),
+        getRepeatedContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L, 0),
         dbManager);
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -369,7 +360,7 @@ public class VoteWitnessActuatorTest {
       Assert.assertFalse(e instanceof ContractExeException);
     }
 
-    actuator = new VoteWitnessActuator(getRepeateContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L, 31),
+    actuator = new VoteWitnessActuator(getRepeatedContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L, 31),
         dbManager);
     try {
       actuator.validate();
@@ -397,7 +388,7 @@ public class VoteWitnessActuatorTest {
     FreezeBalanceActuator freezeBalanceActuator = new FreezeBalanceActuator(
         getContract(OWNER_ADDRESS, frozenBalance, duration), dbManager);
     VoteWitnessActuator actuator = new VoteWitnessActuator(
-        getRepeateContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L, 30),
+        getRepeatedContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L, 30),
         dbManager);
     TransactionResultCapsule ret = new TransactionResultCapsule();
     try {
@@ -466,14 +457,13 @@ public class VoteWitnessActuatorTest {
       actuator.validate();
       actuator.execute(ret);
       fail("The total number of votes[" + 1000000 + "] is greater than the tronPower["
-          + balanceNotSufficientCapsule.getTronPower() + "]");
+          + balanceNotSufficientCapsule.getVotingPower() + "]");
     } catch (ContractValidateException e) {
-      Assert.assertEquals(0, dbManager.getAccountStore()
-          .get(ByteArray.fromHexString(OWNER_ADDRESS_BALANCENOTSUFFICIENT)).getVotesList().size());
+      Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS_BALANCENOTSUFFICIENT)).getVote());
       Assert.assertTrue(e instanceof ContractValidateException);
       Assert
           .assertEquals("The total number of votes[" + 1000000 + "] is greater than the tronPower["
-              + balanceNotSufficientCapsule.getTronPower() + "]", e.getMessage());
+              + balanceNotSufficientCapsule.getVotingPower() + "]", e.getMessage());
       witnessController.updateWitness();
       WitnessCapsule witnessCapsule = witnessController
           .getWitnesseByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -505,13 +495,11 @@ public class VoteWitnessActuatorTest {
       actuatorTwice.validate();
       actuatorTwice.execute(ret);
       Assert.assertEquals(3,
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-              .get(0).getVoteCount());
+          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteCount());
       Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-              .get(0).getVoteAddress().toByteArray());
+          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteAddress().toByteArray());
 
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       witnessController.updateWitness();
       WitnessCapsule witnessCapsule = witnessController
           .getWitnesseByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));

@@ -148,7 +148,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
     TransactionInfo.Builder builder = TransactionInfo.newBuilder();
     ReceiptCapsule traceReceipt = trace.getReceipt();
-    builder.setResult(code.SUCESS);
+    builder.setResult(code.SUCCESS);
     if (StringUtils.isNoneEmpty(trace.getRuntimeError()) || Objects
         .nonNull(trace.getRuntimeResult().getException())) {
       builder.setResult(code.FAILED);

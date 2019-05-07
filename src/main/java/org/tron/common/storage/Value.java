@@ -13,7 +13,7 @@ import org.tron.core.capsule.CodeCapsule;
 import org.tron.core.capsule.ContractCapsule;
 import org.tron.core.capsule.ProposalCapsule;
 import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.VotesCapsule;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.exception.BadItemException;
 
@@ -165,11 +165,11 @@ public class Value {
 
   }
 
-  public VotesCapsule getVotes() {
+  public VoteChangeCapsule getVotes() {
     if (ArrayUtils.isEmpty(any)) {
       return null;
     }
-    return new VotesCapsule(any);
+    return new VoteChangeCapsule(any);
   }
 
   /**

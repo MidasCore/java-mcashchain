@@ -355,8 +355,8 @@ public class SuperWitnessAllowance {
     Account beforeVote = PublicMethed.queryAccount(priKey, blockingStubFull);
     //Account beforeVote = queryAccount(ecKey, blockingStubFull);
     Long beforeVoteNum = 0L;
-    if (beforeVote.getVotesCount() != 0) {
-      beforeVoteNum = beforeVote.getVotes(0).getVoteCount();
+    if (beforeVote.hasVote()) {
+      beforeVoteNum = beforeVote.getVote().getVoteCount();
     }
 
     Contract.VoteWitnessContract.Builder builder = Contract.VoteWitnessContract.newBuilder();
@@ -373,7 +373,7 @@ public class SuperWitnessAllowance {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(address));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     Contract.VoteWitnessContract contract = builder.build();

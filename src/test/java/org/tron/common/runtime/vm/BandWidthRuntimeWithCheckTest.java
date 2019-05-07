@@ -189,7 +189,7 @@ public class BandWidthRuntimeWithCheckTest {
           Contract.newBuilder().setParameter(Any.pack(triggerContract))
               .setType(ContractType.TriggerSmartContract)).setFeeLimit(1000000000)).build();
       TransactionCapsule trxCap = new TransactionCapsule(transaction);
-      trxCap.setResultCode(contractResult.SUCCESS);
+      trxCap.setResultCode(contractResult.OK);
       TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
       dbManager.consumeBandwidth(trxCap, trace);
       long bandWidth = trxCap.getSerializedSize() + Constant.MAX_RESULT_SIZE_IN_TX;
@@ -235,7 +235,7 @@ public class BandWidthRuntimeWithCheckTest {
         Contract.newBuilder().setParameter(Any.pack(smartContract))
             .setType(ContractType.CreateSmartContract)).setFeeLimit(1000000000)).build();
     TransactionCapsule trxCap = new TransactionCapsule(transaction);
-    trxCap.setResultCode(contractResult.SUCCESS);
+    trxCap.setResultCode(contractResult.OK);
     TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
     dbManager.consumeBandwidth(trxCap, trace);
     BlockCapsule blockCapsule = null;

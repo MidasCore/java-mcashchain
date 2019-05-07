@@ -68,7 +68,7 @@ message VoteWitnessContract {
     int64 vote_count = 2;
   }
   bytes owner_address = 1;
-  repeated Vote votes = 2;
+  Vote vote = 2;
   bool support = 3;
 }
 

@@ -769,7 +769,7 @@ public class UpdateAccount2Test {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(addRess));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     Contract.VoteWitnessContract contract = builder.build();
@@ -817,7 +817,7 @@ public class UpdateAccount2Test {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(addRess));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     Contract.VoteWitnessContract contract = builder.build();

@@ -169,7 +169,7 @@ public class ExchangeCreateActuatorTest {
       actuator.execute(ret);
 
       Assert.assertEquals(ret.getInstance().getExchangeId(), 1L);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
       // check old(V1) version
@@ -255,7 +255,7 @@ public class ExchangeCreateActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
       // check old version
@@ -341,7 +341,7 @@ public class ExchangeCreateActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
       // V1,Data is no longer update
@@ -421,7 +421,7 @@ public class ExchangeCreateActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
 
@@ -492,7 +492,7 @@ public class ExchangeCreateActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       long id = 1;
       Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
       // V1,Data is no longer update

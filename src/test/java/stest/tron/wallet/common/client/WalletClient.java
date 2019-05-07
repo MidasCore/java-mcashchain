@@ -656,7 +656,7 @@ public class WalletClient {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(address));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     return builder.build();

@@ -29,7 +29,6 @@ import org.tron.common.utils.ByteUtil;
 import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.actuator.FreezeBalanceActuator;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.ProposalCapsule;
@@ -192,11 +191,9 @@ public class PrecompiledContractsTest {
     Boolean result = contract.execute(data).getLeft();
     deposit.commit();
     Assert.assertEquals(1,
-        dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-            .get(0).getVoteCount());
+        dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteCount());
     Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
-        dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVotesList()
-            .get(0).getVoteAddress().toByteArray());
+        dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteAddress().toByteArray());
     Assert.assertEquals(true, result);
   }
 

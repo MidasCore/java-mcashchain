@@ -374,10 +374,10 @@ public class Wallet {
 	/**
 	 * Broadcast a transaction.
 	 */
-	public GrpcAPI.Return broadcastTransaction(Transaction signaturedTransaction) {
+	public GrpcAPI.Return broadcastTransaction(Transaction signedTransaction) {
 		GrpcAPI.Return.Builder builder = GrpcAPI.Return.newBuilder();
-		TransactionCapsule trx = new TransactionCapsule(signaturedTransaction);
-		Message message = new TransactionMessage(signaturedTransaction);
+		TransactionCapsule trx = new TransactionCapsule(signedTransaction);
+		Message message = new TransactionMessage(signedTransaction);
 
 		try {
 			if (minEffectiveConnection != 0) {
@@ -408,8 +408,7 @@ public class Wallet {
 			}
 
 			if (dbManager.isGeneratingBlock()) {
-				logger
-						.warn("Broadcast transaction {} failed, is generating block.", trx.getTransactionId());
+				logger.warn("Broadcast transaction {} failed, is generating block.", trx.getTransactionId());
 				return builder.setResult(false).setCode(response_code.SERVER_BUSY).build();
 			}
 
@@ -1284,7 +1283,7 @@ public class Wallet {
 			TransactionResultCapsule ret = new TransactionResultCapsule();
 
 			builder.addConstantResult(ByteString.copyFrom(result.getHReturn()));
-			ret.setStatus(0, code.SUCESS);
+			ret.setStatus(0, code.SUCCESS);
 			if (StringUtils.isNoneEmpty(runtime.getRuntimeError())) {
 				ret.setStatus(0, code.FAILED);
 				retBuilder.setMessage(ByteString.copyFromUtf8(runtime.getRuntimeError())).build();

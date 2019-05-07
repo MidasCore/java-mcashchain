@@ -162,7 +162,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 
 		// block
 		Block.Builder blockBuild = Block.newBuilder();
-		transactionList.forEach(trx -> blockBuild.addTransactions(trx));
+		transactionList.forEach(blockBuild::addTransactions);
 		this.block = blockBuild.setBlockHeader(blockHeader).build();
 		initTxs();
 	}
@@ -192,7 +192,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 
 	private void initTxs() {
 		transactions = this.block.getTransactionsList().stream()
-				.map(trx -> new TransactionCapsule(trx))
+				.map(TransactionCapsule::new)
 				.collect(Collectors.toList());
 	}
 

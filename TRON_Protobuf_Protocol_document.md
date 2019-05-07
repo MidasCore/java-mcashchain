@@ -356,7 +356,7 @@ Input, transaction and block header all require signature.
      
         message Result {
           enum code {
-            SUCESS = 0;
+            SUCCESS = 0;
             FAILED = 1;
           }
           int64 fee = 1;

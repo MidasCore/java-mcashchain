@@ -113,7 +113,7 @@ public class BuyStorageActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
@@ -151,7 +151,7 @@ public class BuyStorageActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertEquals(owner.getBalance(), initBalance - quant
@@ -164,7 +164,7 @@ public class BuyStorageActuatorTest {
 
       actuator2.validate();
       actuator2.execute(ret2);
-      Assert.assertEquals(ret2.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret2.getInstance().getRet(), code.SUCCESS);
 
       owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -203,7 +203,7 @@ public class BuyStorageActuatorTest {
 //    try {
 //      actuator.validate();
 //      actuator.execute(ret);
-//      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+//      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
 //      AccountCapsule owner =
 //          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 //      Assert.assertEquals(owner.getBalance(), initBalance - quant
@@ -218,7 +218,7 @@ public class BuyStorageActuatorTest {
 //          .saveLatestBlockHeaderTimestamp(365 * 24 * 3600 * 1000L);
 //      actuator2.validate();
 //      actuator2.execute(ret);
-//      Assert.assertEquals(ret2.getInstance().getRet(), code.SUCESS);
+//      Assert.assertEquals(ret2.getInstance().getRet(), code.SUCCESS);
 //      owner =
 //          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 //      Assert.assertEquals(owner.getBalance(), initBalance - 2 * quant
@@ -297,7 +297,7 @@ public class BuyStorageActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       AccountCapsule owner =
           dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertEquals(owner.getBalance(), initBalance - quant

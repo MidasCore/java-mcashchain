@@ -60,7 +60,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
     }
 
     ret.setWithdrawAmount(allowance);
-    ret.setStatus(fee, code.SUCESS);
+    ret.setStatus(fee, code.SUCCESS);
 
     return true;
   }

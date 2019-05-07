@@ -112,7 +112,7 @@ public class AssetIssueActuator extends AbstractActuator {
       dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
       ret.setAssetIssueID(Long.toString(tokenIdNum));
-      ret.setStatus(fee, code.SUCESS);
+      ret.setStatus(fee, code.SUCCESS);
     } catch (InvalidProtocolBufferException e) {
       logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);

@@ -15,7 +15,6 @@ import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
@@ -85,16 +84,13 @@ public class AccountCapsuleTest {
 
   @Test
   public void addVotesTest() {
-    //test addVote and getVotesList function
+    //test addVote and getVote function
     ByteString voteAddress = ByteString.copyFrom(AccountCapsuleTest.randomBytes(32));
     long voteAdd = 10L;
-    accountCapsuleTest.addVotes(voteAddress, voteAdd);
-    List<Vote> votesList = accountCapsuleTest.getVotesList();
-    for (Vote vote :
-        votesList) {
-      Assert.assertEquals(voteAddress, vote.getVoteAddress());
-      Assert.assertEquals(voteAdd, vote.getVoteCount());
-    }
+    accountCapsuleTest.setVote(voteAddress, voteAdd);
+    Vote vote = accountCapsuleTest.getVote();
+    Assert.assertEquals(voteAddress, vote.getVoteAddress());
+    Assert.assertEquals(voteAdd, vote.getVoteCount());
   }
 
   @Test

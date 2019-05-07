@@ -464,7 +464,7 @@ public class WalletTestAccount003 {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(addRess));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     Contract.VoteWitnessContract contract = builder.build();

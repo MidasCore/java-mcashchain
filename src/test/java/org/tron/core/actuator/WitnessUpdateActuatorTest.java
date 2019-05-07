@@ -116,7 +116,7 @@ public class WitnessUpdateActuatorTest {
     try {
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
           .get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertNotNull(witnessCapsule);
@@ -190,7 +190,7 @@ public class WitnessUpdateActuatorTest {
           dbManager);
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
           .get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertNotNull(witnessCapsule);
@@ -207,7 +207,7 @@ public class WitnessUpdateActuatorTest {
           getContract(OWNER_ADDRESS, url256Bytes), dbManager);
       actuator.validate();
       actuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCESS);
+      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
       WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
           .get(ByteArray.fromHexString(OWNER_ADDRESS));
       Assert.assertNotNull(witnessCapsule);

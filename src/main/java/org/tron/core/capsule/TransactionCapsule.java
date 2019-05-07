@@ -709,7 +709,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
     RuntimeException exception = runtime.getResult().getException();
     if (Objects.isNull(exception) && StringUtils
         .isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
-      this.setResultCode(contractResult.SUCCESS);
+      this.setResultCode(contractResult.OK);
       return;
     }
     if (runtime.getResult().isRevert()) {

@@ -77,7 +77,7 @@ public class TransferAssetActuator extends AbstractActuator {
       toAccountCapsule.addAssetAmountV2(assetName.toByteArray(), amount, dbManager);
       accountStore.put(toAddress, toAccountCapsule);
 
-      ret.setStatus(fee, code.SUCESS);
+      ret.setStatus(fee, code.SUCCESS);
     } catch (BalanceInsufficientException e) {
       logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);

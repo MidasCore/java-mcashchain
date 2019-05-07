@@ -160,8 +160,8 @@ public class WalletTestAccount005 {
     ECKey ecKey = temKey;
     Account beforeVote = queryAccount(ecKey, blockingStubFull);
     Long beforeVoteNum = 0L;
-    if (beforeVote.getVotesCount() != 0) {
-      beforeVoteNum = beforeVote.getVotes(0).getVoteCount();
+    if (beforeVote.hasVote()) {
+      beforeVoteNum = beforeVote.getVote().getVoteCount();
     }
 
     Contract.VoteWitnessContract.Builder builder = Contract.VoteWitnessContract.newBuilder();
@@ -177,7 +177,7 @@ public class WalletTestAccount005 {
       }
       voteBuilder.setVoteAddress(ByteString.copyFrom(address));
       voteBuilder.setVoteCount(count);
-      builder.addVotes(voteBuilder.build());
+      builder.setVote(voteBuilder.build());
     }
 
     Contract.VoteWitnessContract contract = builder.build();
@@ -195,12 +195,10 @@ public class WalletTestAccount005 {
     Account afterVote = queryAccount(ecKey, searchBlockingStubFull);
     //Long afterVoteNum = afterVote.getVotes(0).getVoteCount();
     for (String key : witness.keySet()) {
-      for (int j = 0; j < afterVote.getVotesCount(); j++) {
-        if (key.equals(afterVote.getVotes(j).getVoteAddress())) {
-          Long afterVoteNum = Long.parseLong(witness.get(key));
-          Assert.assertTrue(afterVoteNum == afterVote.getVotes(j).getVoteCount());
-          logger.info("test equal vote");
-        }
+      if (key.equals(afterVote.getVote().getVoteAddress())) {
+        Long afterVoteNum = Long.parseLong(witness.get(key));
+        Assert.assertTrue(afterVoteNum == afterVote.getVote().getVoteCount());
+        logger.info("test equal vote");
       }
     }
     return true;
