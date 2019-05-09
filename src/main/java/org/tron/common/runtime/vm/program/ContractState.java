@@ -24,267 +24,284 @@ import org.tron.common.runtime.vm.program.listener.ProgramListenerAware;
 import org.tron.common.storage.Deposit;
 import org.tron.common.storage.Key;
 import org.tron.common.storage.Value;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.AssetIssueCapsule;
-import org.tron.core.capsule.BlockCapsule;
-import org.tron.core.capsule.BytesCapsule;
-import org.tron.core.capsule.ContractCapsule;
-import org.tron.core.capsule.ProposalCapsule;
-import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.VoteChangeCapsule;
-import org.tron.core.capsule.WitnessCapsule;
+import org.tron.core.capsule.*;
 import org.tron.core.db.Manager;
 import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.AccountType;
 
 public class ContractState implements Deposit, ProgramListenerAware {
 
-  private Deposit deposit;
-  // contract address
-  private final DataWord address;
-  private ProgramListener programListener;
+	private Deposit deposit;
+	// contract address
+	private final DataWord address;
+	private ProgramListener programListener;
 
-  ContractState(ProgramInvoke programInvoke) {
-    this.address = programInvoke.getContractAddress();
-    this.deposit = programInvoke.getDeposit();
-  }
+	ContractState(ProgramInvoke programInvoke) {
+		this.address = programInvoke.getContractAddress();
+		this.deposit = programInvoke.getDeposit();
+	}
 
-  @Override
-  public Manager getDbManager() {
-    return deposit.getDbManager();
-  }
+	@Override
+	public Manager getDbManager() {
+		return deposit.getDbManager();
+	}
 
-  @Override
-  public void setProgramListener(ProgramListener listener) {
-    this.programListener = listener;
-  }
+	@Override
+	public void setProgramListener(ProgramListener listener) {
+		this.programListener = listener;
+	}
 
-  @Override
-  public AccountCapsule createAccount(byte[] addr, Protocol.AccountType type) {
-    return deposit.createAccount(addr, type);
-  }
+	@Override
+	public AccountCapsule createAccount(byte[] addr, Protocol.AccountType type) {
+		return deposit.createAccount(addr, type);
+	}
 
-  @Override
-  public AccountCapsule createAccount(byte[] address, String accountName, AccountType type) {
-    return deposit.createAccount(address, accountName, type);
-  }
+	@Override
+	public AccountCapsule createAccount(byte[] address, String accountName, AccountType type) {
+		return deposit.createAccount(address, accountName, type);
+	}
 
 
-  @Override
-  public AccountCapsule getAccount(byte[] addr) {
-    return deposit.getAccount(addr);
-  }
+	@Override
+	public AccountCapsule getAccount(byte[] addr) {
+		return deposit.getAccount(addr);
+	}
 
-  @Override
-  public WitnessCapsule getWitness(byte[] address) {
-    return deposit.getWitness(address);
-  }
+	@Override
+	public WitnessCapsule getWitness(byte[] address) {
+		return deposit.getWitness(address);
+	}
 
-  @Override
-  public VoteChangeCapsule getVotesCapsule(byte[] address) {
-    return deposit.getVotesCapsule(address);
-  }
+	@Override
+	public VoteChangeCapsule getVoteChangeCapsule(byte[] address) {
+		return deposit.getVoteChangeCapsule(address);
+	}
 
-  @Override
-  public ProposalCapsule getProposalCapsule(byte[] id) {
-    return deposit.getProposalCapsule(id);
-  }
+	@Override
+	public ProposalCapsule getProposalCapsule(byte[] id) {
+		return deposit.getProposalCapsule(id);
+	}
 
-  @Override
-  public BytesCapsule getDynamic(byte[] bytesKey) {
-    return deposit.getDynamic(bytesKey);
-  }
+	@Override
+	public BytesCapsule getDynamic(byte[] bytesKey) {
+		return deposit.getDynamic(bytesKey);
+	}
 
-  @Override
-  public void deleteContract(byte[] address) {
-    deposit.deleteContract(address);
-  }
+	@Override
+	public StakeChangeCapsule getStakeChangeCapsule(byte[] address) {
+		return deposit.getStakeChangeCapsule(address);
+	}
 
-  @Override
-  public void createContract(byte[] codeHash, ContractCapsule contractCapsule) {
-    deposit.createContract(codeHash, contractCapsule);
-  }
+	@Override
+	public StakeAccountCapsule getStakeAccountCapsule(byte[] address) {
+		return deposit.getStakeAccountCapsule(address);
+	}
 
-  @Override
-  public ContractCapsule getContract(byte[] codeHash) {
-    return deposit.getContract(codeHash);
-  }
+	@Override
+	public void deleteContract(byte[] address) {
+		deposit.deleteContract(address);
+	}
 
-  @Override
-  public void saveCode(byte[] addr, byte[] code) {
-    deposit.saveCode(addr, code);
-  }
+	@Override
+	public void createContract(byte[] codeHash, ContractCapsule contractCapsule) {
+		deposit.createContract(codeHash, contractCapsule);
+	}
 
-  @Override
-  public byte[] getCode(byte[] addr) {
-    return deposit.getCode(addr);
-  }
+	@Override
+	public ContractCapsule getContract(byte[] codeHash) {
+		return deposit.getContract(codeHash);
+	}
 
-  @Override
-  public void putStorageValue(byte[] addr, DataWord key, DataWord value) {
-    if (canListenTrace(addr)) {
-      programListener.onStoragePut(key, value);
-    }
-    deposit.putStorageValue(addr, key, value);
-  }
+	@Override
+	public void saveCode(byte[] addr, byte[] code) {
+		deposit.saveCode(addr, code);
+	}
 
-  private boolean canListenTrace(byte[] address) {
-    return (programListener != null) && this.address.equals(new DataWord(address));
-  }
+	@Override
+	public byte[] getCode(byte[] addr) {
+		return deposit.getCode(addr);
+	}
 
-  @Override
-  public DataWord getStorageValue(byte[] addr, DataWord key) {
-    return deposit.getStorageValue(addr, key);
-  }
+	@Override
+	public void putStorageValue(byte[] addr, DataWord key, DataWord value) {
+		if (canListenTrace(addr)) {
+			programListener.onStoragePut(key, value);
+		}
+		deposit.putStorageValue(addr, key, value);
+	}
 
-  @Override
-  public long getBalance(byte[] addr) {
-    return deposit.getBalance(addr);
-  }
+	private boolean canListenTrace(byte[] address) {
+		return (programListener != null) && this.address.equals(new DataWord(address));
+	}
 
-  @Override
-  public long addBalance(byte[] addr, long value) {
-    return deposit.addBalance(addr, value);
-  }
+	@Override
+	public DataWord getStorageValue(byte[] addr, DataWord key) {
+		return deposit.getStorageValue(addr, key);
+	}
 
-  @Override
-  public Deposit newDepositChild() {
-    return deposit.newDepositChild();
-  }
+	@Override
+	public long getBalance(byte[] addr) {
+		return deposit.getBalance(addr);
+	}
 
-  @Override
-  public void commit() {
-    deposit.commit();
-  }
+	@Override
+	public long addBalance(byte[] addr, long value) {
+		return deposit.addBalance(addr, value);
+	}
 
-  @Override
-  public Storage getStorage(byte[] address) {
-    return deposit.getStorage(address);
-  }
+	@Override
+	public Deposit newDepositChild() {
+		return deposit.newDepositChild();
+	}
 
-  @Override
-  public void putAccount(Key key, Value value) {
-    deposit.putAccount(key, value);
-  }
+	@Override
+	public void commit() {
+		deposit.commit();
+	}
 
-  @Override
-  public void putTransaction(Key key, Value value) {
-    deposit.putTransaction(key, value);
-  }
+	@Override
+	public Storage getStorage(byte[] address) {
+		return deposit.getStorage(address);
+	}
 
-  @Override
-  public void putBlock(Key key, Value value) {
-    deposit.putBlock(key, value);
-  }
+	@Override
+	public void putAccount(Key key, Value value) {
+		deposit.putAccount(key, value);
+	}
 
-  @Override
-  public void putWitness(Key key, Value value) {
-    deposit.putWitness(key, value);
-  }
+	@Override
+	public void putTransaction(Key key, Value value) {
+		deposit.putTransaction(key, value);
+	}
 
-  @Override
-  public void putCode(Key key, Value value) {
-    deposit.putCode(key, value);
-  }
+	@Override
+	public void putBlock(Key key, Value value) {
+		deposit.putBlock(key, value);
+	}
 
-  @Override
-  public void putContract(Key key, Value value) {
-    deposit.putContract(key, value);
-  }
+	@Override
+	public void putWitness(Key key, Value value) {
+		deposit.putWitness(key, value);
+	}
 
-  @Override
-  public void putStorage(Key key, Storage cache) {
-    deposit.putStorage(key, cache);
-  }
+	@Override
+	public void putCode(Key key, Value value) {
+		deposit.putCode(key, value);
+	}
 
-  @Override
-  public void putVotes(Key key, Value value) {
-    deposit.putVotes(key, value);
-  }
+	@Override
+	public void putContract(Key key, Value value) {
+		deposit.putContract(key, value);
+	}
 
-  @Override
-  public void putProposal(Key key, Value value) {
-    deposit.putProposal(key, value);
-  }
+	@Override
+	public void putStorage(Key key, Storage cache) {
+		deposit.putStorage(key, cache);
+	}
 
-  @Override
-  public void putDynamicProperties(Key key, Value value) {
-    deposit.putDynamicProperties(key, value);
-  }
+	@Override
+	public void putVotes(Key key, Value value) {
+		deposit.putVotes(key, value);
+	}
 
-  @Override
-  public void setParent(Deposit deposit) {
-    this.deposit.setParent(deposit);
-  }
+	@Override
+	public void putProposal(Key key, Value value) {
+		deposit.putProposal(key, value);
+	}
 
-  @Override
-  public TransactionCapsule getTransaction(byte[] trxHash) {
-    return this.deposit.getTransaction(trxHash);
-  }
+	@Override
+	public void putDynamicProperties(Key key, Value value) {
+		deposit.putDynamicProperties(key, value);
+	}
 
-  @Override
-  public void putAccountValue(byte[] address, AccountCapsule accountCapsule) {
-    this.deposit.putAccountValue(address, accountCapsule);
-  }
+	@Override
+	public void putStakeChange(Key key, Value value) {
+		deposit.putStakeChange(key, value);
+	}
 
-  @Override
-  public void putVoteValue(byte[] address, VoteChangeCapsule voteChangeCapsule) {
-    this.deposit.putVoteValue(address, voteChangeCapsule);
-  }
+	@Override
+	public void setParent(Deposit deposit) {
+		this.deposit.setParent(deposit);
+	}
 
-  @Override
-  public void putProposalValue(byte[] address, ProposalCapsule proposalCapsule) {
-    deposit.putProposalValue(address, proposalCapsule);
-  }
+	@Override
+	public TransactionCapsule getTransaction(byte[] trxHash) {
+		return this.deposit.getTransaction(trxHash);
+	}
 
-  @Override
-  public void putDynamicPropertiesWithLatestProposalNum(long num) {
-    deposit.putDynamicPropertiesWithLatestProposalNum(num);
-  }
+	@Override
+	public void putAccountValue(byte[] address, AccountCapsule accountCapsule) {
+		this.deposit.putAccountValue(address, accountCapsule);
+	}
 
-  @Override
-  public long getLatestProposalNum() {
-    return deposit.getLatestProposalNum();
-  }
+	@Override
+	public void putVoteChangeValue(byte[] address, VoteChangeCapsule voteChangeCapsule) {
+		this.deposit.putVoteChangeValue(address, voteChangeCapsule);
+	}
 
-  @Override
-  public long getWitnessAllowanceFrozenTime() {
-    return deposit.getWitnessAllowanceFrozenTime();
-  }
+	@Override
+	public void putProposalValue(byte[] address, ProposalCapsule proposalCapsule) {
+		deposit.putProposalValue(address, proposalCapsule);
+	}
 
-  @Override
-  public long getMaintenanceTimeInterval() {
-    return deposit.getMaintenanceTimeInterval();
-  }
+	@Override
+	public void putStakeChangeValue(byte[] address, StakeChangeCapsule stakeChangeCapsule) {
+		deposit.putStakeChangeValue(address, stakeChangeCapsule);
+	}
 
-  @Override
-  public long getNextMaintenanceTime() {
-    return deposit.getNextMaintenanceTime();
-  }
+	@Override
+	public void putStakeAccountValue(byte[] address, StakeAccountCapsule stakeAccountCapsule) {
+		deposit.putStakeAccountValue(address, stakeAccountCapsule);
+	}
 
-  @Override
-  public long addTokenBalance(byte[] address, byte[] tokenId, long value) {
-    return deposit.addTokenBalance(address, tokenId, value);
-  }
+	@Override
+	public void putDynamicPropertiesWithLatestProposalNum(long num) {
+		deposit.putDynamicPropertiesWithLatestProposalNum(num);
+	}
 
-  @Override
-  public long getTokenBalance(byte[] address, byte[] tokenId) {
-    return deposit.getTokenBalance(address, tokenId);
-  }
+	@Override
+	public long getLatestProposalNum() {
+		return deposit.getLatestProposalNum();
+	}
 
-  @Override
-  public AssetIssueCapsule getAssetIssue(byte[] tokenId) {
-    return deposit.getAssetIssue(tokenId);
-  }
+	@Override
+	public long getWitnessAllowanceFrozenTime() {
+		return deposit.getWitnessAllowanceFrozenTime();
+	}
 
-  @Override
-  public BlockCapsule getBlock(byte[] blockHash) {
-    return this.deposit.getBlock(blockHash);
-  }
+	@Override
+	public long getMaintenanceTimeInterval() {
+		return deposit.getMaintenanceTimeInterval();
+	}
 
-  @Override
-  public byte[] getBlackHoleAddress() {
-    return deposit.getBlackHoleAddress();
-  }
+	@Override
+	public long getNextMaintenanceTime() {
+		return deposit.getNextMaintenanceTime();
+	}
+
+	@Override
+	public long addTokenBalance(byte[] address, byte[] tokenId, long value) {
+		return deposit.addTokenBalance(address, tokenId, value);
+	}
+
+	@Override
+	public long getTokenBalance(byte[] address, byte[] tokenId) {
+		return deposit.getTokenBalance(address, tokenId);
+	}
+
+	@Override
+	public AssetIssueCapsule getAssetIssue(byte[] tokenId) {
+		return deposit.getAssetIssue(tokenId);
+	}
+
+	@Override
+	public BlockCapsule getBlock(byte[] blockHash) {
+		return this.deposit.getBlock(blockHash);
+	}
+
+	@Override
+	public byte[] getBlackHoleAddress() {
+		return deposit.getBlackHoleAddress();
+	}
 
 }

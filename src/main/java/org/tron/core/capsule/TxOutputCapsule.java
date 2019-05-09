@@ -21,39 +21,39 @@ import org.tron.protos.Protocol.TXOutput;
 
 public class TxOutputCapsule implements ProtoCapsule<TXOutput> {
 
-  private TXOutput txOutput;
+	private TXOutput txOutput;
 
-  /**
-   * constructor TxOutputCapsule.
-   *
-   * @param value int value
-   * @param address String address
-   */
-  public TxOutputCapsule(long value, String address) {
-    this.txOutput = TXOutput.newBuilder()
-        .setValue(value)
-        .setPubKeyHash(ByteString.copyFrom(ByteArray.fromHexString(address)))
-        .build();
-  }
+	/**
+	 * constructor TxOutputCapsule.
+	 *
+	 * @param value   int value
+	 * @param address String address
+	 */
+	public TxOutputCapsule(long value, String address) {
+		this.txOutput = TXOutput.newBuilder()
+				.setValue(value)
+				.setPubKeyHash(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.build();
+	}
 
-  public TXOutput getTxOutput() {
-    return txOutput;
-  }
+	public TXOutput getTxOutput() {
+		return txOutput;
+	}
 
-  /**
-   * validateSignature.
-   */
-  public boolean validate() {
-    return true;
-  }
+	/**
+	 * validateSignature.
+	 */
+	public boolean validate() {
+		return true;
+	}
 
-  @Override
-  public byte[] getData() {
-    return new byte[0];
-  }
+	@Override
+	public byte[] getData() {
+		return new byte[0];
+	}
 
-  @Override
-  public TXOutput getInstance() {
-    return this.txOutput;
-  }
+	@Override
+	public TXOutput getInstance() {
+		return this.txOutput;
+	}
 }

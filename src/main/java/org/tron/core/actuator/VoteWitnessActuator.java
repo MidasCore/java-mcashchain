@@ -19,10 +19,7 @@ import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.VoteChangeCapsule;
-import org.tron.core.db.AccountStore;
-import org.tron.core.db.Manager;
-import org.tron.core.db.VotesStore;
-import org.tron.core.db.WitnessStore;
+import org.tron.core.db.*;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract.VoteWitnessContract;
@@ -77,6 +74,10 @@ public class VoteWitnessActuator extends AbstractActuator {
 		}
 		byte[] ownerAddress = contract.getOwnerAddress().toByteArray();
 		String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
+
+		if (!dbManager.getStakeAccountStore().has(ownerAddress)) {
+			throw new ContractValidateException("Account is not in staking node");
+		}
 
 		AccountStore accountStore = dbManager.getAccountStore();
 		WitnessStore witnessStore = dbManager.getWitnessStore();
@@ -142,25 +143,25 @@ public class VoteWitnessActuator extends AbstractActuator {
 		byte[] ownerAddress = voteContract.getOwnerAddress().toByteArray();
 
 		VoteChangeCapsule voteChangeCapsule;
-		VotesStore votesStore = dbManager.getVotesStore();
+		VoteChangeStore voteChangeStore = dbManager.getVoteChangeStore();
 		AccountStore accountStore = dbManager.getAccountStore();
 
 		AccountCapsule accountCapsule = (Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
 				: getDeposit().getAccount(ownerAddress);
 
 		if (!Objects.isNull(getDeposit())) {
-			VoteChangeCapsule vCapsule = getDeposit().getVotesCapsule(ownerAddress);
+			VoteChangeCapsule vCapsule = getDeposit().getVoteChangeCapsule(ownerAddress);
 			if (Objects.isNull(vCapsule)) {
 				voteChangeCapsule = new VoteChangeCapsule(voteContract.getOwnerAddress(),
 						accountCapsule.getVote());
 			} else {
 				voteChangeCapsule = vCapsule;
 			}
-		} else if (!votesStore.has(ownerAddress)) {
+		} else if (!voteChangeStore.has(ownerAddress)) {
 			voteChangeCapsule = new VoteChangeCapsule(voteContract.getOwnerAddress(),
 					accountCapsule.getVote());
 		} else {
-			voteChangeCapsule = votesStore.get(ownerAddress);
+			voteChangeCapsule = voteChangeStore.get(ownerAddress);
 		}
 
 		accountCapsule.clearVote();
@@ -169,17 +170,18 @@ public class VoteWitnessActuator extends AbstractActuator {
 		if (voteContract.hasVote()) {
 			logger.debug("countVoteAccount,address[{}]",
 					ByteArray.toHexString(voteContract.getVote().getVoteAddress().toByteArray()));
-			voteChangeCapsule.setNewVote(voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
+			voteChangeCapsule.setNewVote(
+					voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
 			accountCapsule.setVote(voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
 		}
 
 		if (Objects.isNull(deposit)) {
 			accountStore.put(accountCapsule.createDbKey(), accountCapsule);
-			votesStore.put(ownerAddress, voteChangeCapsule);
+			voteChangeStore.put(ownerAddress, voteChangeCapsule);
 		} else {
 			// cache
 			deposit.putAccountValue(accountCapsule.createDbKey(), accountCapsule);
-			deposit.putVoteValue(ownerAddress, voteChangeCapsule);
+			deposit.putVoteChangeValue(ownerAddress, voteChangeCapsule);
 		}
 
 	}

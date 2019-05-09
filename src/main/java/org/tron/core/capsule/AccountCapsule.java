@@ -15,7 +15,6 @@
 
 package org.tron.core.capsule;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -29,6 +28,7 @@ import org.tron.core.config.NodeTier;
 import org.tron.core.db.Manager;
 import org.tron.protos.Contract.AccountCreateContract;
 import org.tron.protos.Contract.AccountUpdateContract;
+import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Account.AccountResource;
 import org.tron.protos.Protocol.Account.Frozen;
@@ -420,7 +420,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public void clearVote() {
-		this.account.toBuilder().clearVote().build();
+		this.account = this.account.toBuilder().clearVote().build();
 	}
 
 	/**
@@ -435,21 +435,13 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public long getVotingPower() {
-		long frozenBalance = 0;
-		for (int i = 0; i < account.getFrozenCount(); ++i) {
-			frozenBalance += account.getFrozen(i).getFrozenBalance();
-		}
-
-		frozenBalance += account.getAccountResource().getFrozenBalanceForEnergy().getFrozenBalance();
-		frozenBalance += account.getDelegatedFrozenBalanceForBandwidth();
-		frozenBalance += account.getAccountResource().getDelegatedFrozenBalanceForEnergy();
-
+		long stakeAmount = getStakeAmount();
 		long votingPower = 0;
 
 		for (NodeTier tier : NODE_TIERS) {
-			long k = frozenBalance / tier.getStakeAmount();
+			long k = stakeAmount / tier.getStakeAmount();
 			votingPower += k * tier.getVotingPower();
-			frozenBalance -= k * tier.getStakeAmount();
+			stakeAmount -= k * tier.getStakeAmount();
 		}
 		return votingPower;
 	}
@@ -717,6 +709,38 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		return frozenSupplyBalance[0];
 	}
 
+	public List<Protocol.Stake> getStakeList() {
+		return getInstance().getStakesList();
+	}
+
+	public long getStakeAmount() {
+		List<Protocol.Stake> stakes = getStakeList();
+		long stakeAmount = 0;
+		for (Protocol.Stake stake : stakes) {
+			stakeAmount = Long.sum(stakeAmount, stake.getStakeAmount());
+		}
+		return stakeAmount;
+	}
+
+	public void setStake(long stakeAmount, long expireTime) {
+		Protocol.Stake newStake = Protocol.Stake.newBuilder()
+				.setStakeAmount(stakeAmount)
+				.setExpireTime(expireTime)
+				.build();
+
+		long stakeCount = getStakesCount();
+		if (stakeCount == 0) {
+			setInstance(getInstance().toBuilder()
+					.addStakes(newStake)
+					.build());
+		} else {
+			setInstance(getInstance().toBuilder()
+					.addStakes(0, newStake)
+					.build()
+			);
+		}
+	}
+
 	public ByteString getAssetIssuedName() {
 		return getInstance().getAssetIssuedName();
 	}
@@ -865,6 +889,10 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	public void setFreeNetUsage(long freeNetUsage) {
 		this.account = this.account.toBuilder()
 				.setFreeNetUsage(freeNetUsage).build();
+	}
+
+	public int getStakesCount() {
+		return getInstance().getStakesCount();
 	}
 
 

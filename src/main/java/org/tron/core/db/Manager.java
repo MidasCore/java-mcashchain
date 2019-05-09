@@ -67,18 +67,14 @@ import org.tron.common.utils.SessionOptional;
 import org.tron.common.utils.Sha256Hash;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Constant;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.BlockCapsule;
+import org.tron.core.capsule.*;
 import org.tron.core.capsule.BlockCapsule.BlockId;
-import org.tron.core.capsule.BytesCapsule;
-import org.tron.core.capsule.ExchangeCapsule;
-import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.TransactionInfoCapsule;
-import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.capsule.utils.BlockUtil;
+import org.tron.core.config.Parameter;
 import org.tron.core.config.Parameter.ChainConstant;
 import org.tron.core.config.args.Args;
 import org.tron.core.config.args.GenesisBlock;
+import org.tron.core.controller.StakeAccountController;
 import org.tron.core.db.KhaosDatabase.KhaosBlock;
 import org.tron.core.db.api.AssetUpdateHelper;
 import org.tron.core.db2.core.ISession;
@@ -146,7 +142,7 @@ public class Manager {
 	@Autowired
 	private RecentBlockStore recentBlockStore;
 	@Autowired
-	private VotesStore votesStore;
+	private VoteChangeStore voteChangeStore;
 	@Autowired
 	private ProposalStore proposalStore;
 	@Autowired
@@ -166,6 +162,10 @@ public class Manager {
 	@Autowired
 	@Getter
 	private StorageRowStore storageRowStore;
+	@Autowired
+	private StakeChangeStore stakeChangeStore;
+	@Autowired
+	private StakeAccountStore stakeAccountStore;
 
 	// for network
 	@Autowired
@@ -202,6 +202,10 @@ public class Manager {
 	@Getter
 	@Setter
 	private ProposalController proposalController;
+
+	@Getter
+	@Setter
+	private StakeAccountController stakeAccountController;
 
 	private ExecutorService validateSignService;
 
@@ -267,8 +271,8 @@ public class Manager {
 		return contractStore;
 	}
 
-	public VotesStore getVotesStore() {
-		return this.votesStore;
+	public VoteChangeStore getVoteChangeStore() {
+		return this.voteChangeStore;
 	}
 
 	public ProposalStore getProposalStore() {
@@ -434,6 +438,7 @@ public class Manager {
 		revokingStore.check();
 		this.setWitnessController(WitnessController.createInstance(this));
 		this.setProposalController(ProposalController.createInstance(this));
+		this.setStakeAccountController(StakeAccountController.createInstance(this));
 		this.pendingTransactions = Collections.synchronizedList(Lists.newArrayList());
 		this.repushTransactions = new LinkedBlockingQueue<>();
 		this.triggerCapsuleQueue = new LinkedBlockingQueue<>();
@@ -515,6 +520,7 @@ public class Manager {
 						this.genesisBlock.getTimeStamp());
 				this.initAccount();
 				this.initWitness();
+				this.initStaking();
 				this.witnessController.initWits();
 				this.khaosDb.start(genesisBlock);
 				this.updateRecentBlock(genesisBlock);
@@ -572,6 +578,27 @@ public class Manager {
 									new WitnessCapsule(address, key.getVoteCount(), key.getUrl());
 							witnessCapsule.setIsJobs(true);
 							this.witnessStore.put(keyAddress, witnessCapsule);
+						});
+	}
+
+	private void initStaking() {
+		final Args args = Args.getInstance();
+		final GenesisBlock genesisBlockArg = args.getGenesisBlock();
+		final long stakeAmount = Parameter.NodeConstant.NODE_TIERS.get(0).getStakeAmount();
+		genesisBlockArg
+				.getWitnesses()
+				.forEach(
+						key -> {
+							byte[] keyAddress = key.getAddress();
+							ByteString address = ByteString.copyFrom(keyAddress);
+							StakeAccountCapsule stakeAccountCapsule;
+							if (!this.stakeAccountStore.has(keyAddress)) {
+								stakeAccountCapsule = new StakeAccountCapsule(address);
+							} else {
+								stakeAccountCapsule = this.stakeAccountStore.get(keyAddress);
+							}
+							stakeAccountCapsule.setStake(stakeAmount);
+							this.stakeAccountStore.put(keyAddress, stakeAccountCapsule);
 						});
 	}
 
@@ -1548,7 +1575,7 @@ public class Manager {
 				witnessController
 						.getActiveWitnesses()
 						.stream()
-						.map(address -> witnessController.getWitnesseByAddress(address).getLatestBlockNum())
+						.map(address -> witnessController.getWitnessByAddress(address).getLatestBlockNum())
 						.sorted()
 						.collect(Collectors.toList());
 
@@ -1608,6 +1635,7 @@ public class Manager {
 	private void processMaintenance(BlockCapsule block) {
 		proposalController.processProposals();
 		witnessController.updateWitness();
+		stakeAccountController.updateStakeAccount();
 		this.dynamicPropertiesStore.updateNextMaintenanceTime(block.getTimeStamp());
 		forkController.reset();
 	}
@@ -1626,7 +1654,7 @@ public class Manager {
 		witnessCapsule.setLatestSlotNum(witnessController.getAbSlotAtTime(block.getTimeStamp()));
 
 		// Update memory witness status
-		WitnessCapsule wit = witnessController.getWitnesseByAddress(block.getWitnessAddress());
+		WitnessCapsule wit = witnessController.getWitnessByAddress(block.getWitnessAddress());
 		if (wit != null) {
 			wit.setTotalProduced(witnessCapsule.getTotalProduced() + 1);
 			wit.setLatestBlockNum(block.getNum());
@@ -1706,6 +1734,14 @@ public class Manager {
 		this.accountIndexStore = indexStore;
 	}
 
+	public StakeChangeStore getStakeChangeStore() {
+		return this.stakeChangeStore;
+	}
+
+	public StakeAccountStore getStakeAccountStore() {
+		return this.stakeAccountStore;
+	}
+
 	public void closeAllStore() {
 		logger.info("******** begin to close db ********");
 		closeOneStore(accountStore);
@@ -1726,11 +1762,13 @@ public class Manager {
 		closeOneStore(proposalStore);
 		closeOneStore(recentBlockStore);
 		closeOneStore(transactionHistoryStore);
-		closeOneStore(votesStore);
+		closeOneStore(voteChangeStore);
 		closeOneStore(delegatedResourceStore);
 		closeOneStore(delegatedResourceAccountIndexStore);
 		closeOneStore(assetIssueV2Store);
 		closeOneStore(exchangeV2Store);
+		closeOneStore(stakeChangeStore);
+		closeOneStore(stakeAccountStore);
 		logger.info("******** end to close db ********");
 	}
 
@@ -1927,7 +1965,7 @@ public class Manager {
 					result = triggerCapsuleQueue.offer(contractLogTriggerCapsule);
 				}
 				if (!result) {
-					logger.info("too many tigger, lost contract log trigger: {}", trigger.getTransactionId());
+					logger.info("too many triggers, lost contract log trigger: {}", trigger.getTransactionId());
 				}
 			}
 		}

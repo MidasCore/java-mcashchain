@@ -60,6 +60,8 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
   private static final byte[] WITNESS_STANDBY_ALLOWANCE = "WITNESS_STANDBY_ALLOWANCE".getBytes();
 
+  private static final byte[] STAKING_REWARD_PER_EPOCH = "STAKING_REWARD_PER_EPOCH".getBytes();
+
   private static class DynamicResourceProperties {
 
     private static final byte[] ONE_DAY_NET_LIMIT = "ONE_DAY_NET_LIMIT".getBytes();
@@ -291,6 +293,12 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
     }
 
     try {
+      this.getStakingRewardPerEpoch();
+    } catch (IllegalArgumentException e) {
+      this.saveStakingRewardPerEpoch(29_440_000_000L);
+    }
+
+    try {
       this.getMaintenanceTimeInterval();
     } catch (IllegalArgumentException e) {
       this.saveMaintenanceTimeInterval(Args.getInstance().getMaintenanceTimeInterval()); // 6 hours
@@ -299,7 +307,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
     try {
       this.getAccountUpgradeCost();
     } catch (IllegalArgumentException e) {
-      this.saveAccountUpgradeCost(9_999_000_000L);
+      this.saveAccountUpgradeCost(10_000_000_000L);
     }
 
     try {
@@ -329,7 +337,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
     try {
       this.getFreeNetLimit();
     } catch (IllegalArgumentException e) {
-      this.saveFreeNetLimit(5000L);
+      this.saveFreeNetLimit(10000L);
     }
 
     try {
@@ -765,6 +773,20 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
         .map(ByteArray::toLong)
         .orElseThrow(
             () -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
+  }
+
+  public void saveStakingRewardPerEpoch(long reward) {
+    logger.debug("STAKING_REWARD_PER_EPOCH:" + reward);
+    this.put(STAKING_REWARD_PER_EPOCH,
+            new BytesCapsule(ByteArray.fromLong(reward)));
+  }
+
+  public long getStakingRewardPerEpoch() {
+    return Optional.ofNullable(getUnchecked(STAKING_REWARD_PER_EPOCH))
+            .map(BytesCapsule::getData)
+            .map(ByteArray::toLong)
+            .orElseThrow(
+                    () ->new IllegalArgumentException("not found STAKING_REWARD_PER_EPOCH"));
   }
 
   public void saveOneDayNetLimit(long oneDayNetLimit) {

@@ -2,108 +2,110 @@ package org.tron.common.storage;
 
 import org.tron.common.runtime.vm.DataWord;
 import org.tron.common.runtime.vm.program.Storage;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.AssetIssueCapsule;
-import org.tron.core.capsule.BlockCapsule;
-import org.tron.core.capsule.BytesCapsule;
-import org.tron.core.capsule.ContractCapsule;
-import org.tron.core.capsule.ProposalCapsule;
-import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.VoteChangeCapsule;
-import org.tron.core.capsule.WitnessCapsule;
+import org.tron.core.capsule.*;
 import org.tron.core.db.Manager;
 import org.tron.protos.Protocol;
 
 public interface Deposit {
 
-  Manager getDbManager();
+	Manager getDbManager();
 
-  AccountCapsule createAccount(byte[] address, Protocol.AccountType type);
+	AccountCapsule createAccount(byte[] address, Protocol.AccountType type);
 
-  AccountCapsule createAccount(byte[] address, String accountName, Protocol.AccountType type);
+	AccountCapsule createAccount(byte[] address, String accountName, Protocol.AccountType type);
 
-  AccountCapsule getAccount(byte[] address);
+	AccountCapsule getAccount(byte[] address);
 
-  WitnessCapsule getWitness(byte[] address);
+	WitnessCapsule getWitness(byte[] address);
 
-  VoteChangeCapsule getVotesCapsule(byte[] address);
+	VoteChangeCapsule getVoteChangeCapsule(byte[] address);
 
-  ProposalCapsule getProposalCapsule(byte[] id);
+	ProposalCapsule getProposalCapsule(byte[] id);
 
-  BytesCapsule getDynamic(byte[] bytesKey);
+	BytesCapsule getDynamic(byte[] bytesKey);
 
-  void deleteContract(byte[] address);
+	StakeChangeCapsule getStakeChangeCapsule(byte[] address);
 
-  void createContract(byte[] address, ContractCapsule contractCapsule);
+	StakeAccountCapsule getStakeAccountCapsule(byte[] address);
 
-  ContractCapsule getContract(byte[] address);
+	void deleteContract(byte[] address);
 
-  void saveCode(byte[] codeHash, byte[] code);
+	void createContract(byte[] address, ContractCapsule contractCapsule);
 
-  byte[] getCode(byte[] codeHash);
+	ContractCapsule getContract(byte[] address);
 
-  void putStorageValue(byte[] address, DataWord key, DataWord value);
+	void saveCode(byte[] codeHash, byte[] code);
 
-  DataWord getStorageValue(byte[] address, DataWord key);
+	byte[] getCode(byte[] codeHash);
 
-  Storage getStorage(byte[] address);
+	void putStorageValue(byte[] address, DataWord key, DataWord value);
 
-  long getBalance(byte[] address);
+	DataWord getStorageValue(byte[] address, DataWord key);
 
-  long addBalance(byte[] address, long value);
+	Storage getStorage(byte[] address);
 
-  Deposit newDepositChild();
+	long getBalance(byte[] address);
 
-  void setParent(Deposit deposit);
+	long addBalance(byte[] address, long value);
 
-  void commit();
+	Deposit newDepositChild();
 
-  void putAccount(Key key, Value value);
+	void setParent(Deposit deposit);
 
-  void putTransaction(Key key, Value value);
+	void commit();
 
-  void putBlock(Key key, Value value);
+	void putAccount(Key key, Value value);
 
-  void putWitness(Key key, Value value);
+	void putTransaction(Key key, Value value);
 
-  void putCode(Key key, Value value);
+	void putBlock(Key key, Value value);
 
-  void putContract(Key key, Value value);
+	void putWitness(Key key, Value value);
 
-  void putStorage(Key key, Storage cache);
+	void putCode(Key key, Value value);
 
-  void putVotes(Key key, Value value);
+	void putContract(Key key, Value value);
 
-  void putProposal(Key key, Value value);
+	void putStorage(Key key, Storage cache);
 
-  void putDynamicProperties(Key key, Value value);
+	void putVotes(Key key, Value value);
 
-  void putAccountValue(byte[] address, AccountCapsule accountCapsule);
+	void putProposal(Key key, Value value);
 
-  void putVoteValue(byte[] address, VoteChangeCapsule voteChangeCapsule);
+	void putDynamicProperties(Key key, Value value);
 
-  void putProposalValue(byte[] address, ProposalCapsule proposalCapsule);
+	void putStakeChange(Key key, Value value);
 
-  void putDynamicPropertiesWithLatestProposalNum(long num);
+	void putAccountValue(byte[] address, AccountCapsule accountCapsule);
 
-  long getLatestProposalNum();
+	void putVoteChangeValue(byte[] address, VoteChangeCapsule voteChangeCapsule);
 
-  long getWitnessAllowanceFrozenTime();
+	void putProposalValue(byte[] address, ProposalCapsule proposalCapsule);
 
-  long getMaintenanceTimeInterval();
+	void putStakeChangeValue(byte[] address, StakeChangeCapsule stakeChangeCapsule);
 
-  long getNextMaintenanceTime();
+	void putStakeAccountValue(byte[] address, StakeAccountCapsule stakeAccountCapsule);
 
-  long addTokenBalance(byte[] address, byte[] tokenId, long value);
+	void putDynamicPropertiesWithLatestProposalNum(long num);
 
-  long getTokenBalance(byte[] address, byte[] tokenId);
+	long getLatestProposalNum();
 
-  AssetIssueCapsule getAssetIssue(byte[] tokenId);
+	long getWitnessAllowanceFrozenTime();
 
-  TransactionCapsule getTransaction(byte[] trxHash);
+	long getMaintenanceTimeInterval();
 
-  BlockCapsule getBlock(byte[] blockHash);
+	long getNextMaintenanceTime();
 
-  byte[] getBlackHoleAddress();
+	long addTokenBalance(byte[] address, byte[] tokenId, long value);
+
+	long getTokenBalance(byte[] address, byte[] tokenId);
+
+	AssetIssueCapsule getAssetIssue(byte[] tokenId);
+
+	TransactionCapsule getTransaction(byte[] trxHash);
+
+	BlockCapsule getBlock(byte[] blockHash);
+
+	byte[] getBlackHoleAddress();
 
 }

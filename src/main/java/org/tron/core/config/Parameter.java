@@ -23,12 +23,16 @@ public interface Parameter {
     long MS_PER_DAY = 24 * 3600 * 1000L;
     long MS_PER_YEAR = 365 * 24 * 3600 * 1000L;
 
+    long STAKE_TIME_IN_DAY = 3;
+
     long MAINTENANCE_SKIP_SLOTS = 2;
     int SINGLE_REPEAT = 1;
     int BLOCK_FILLED_SLOTS_NUMBER = 128;
-    int MAX_VOTE_NUMBER = 30;
     int MAX_FROZEN_NUMBER = 1;
     int BLOCK_VERSION = 7;
+
+    int DECIMALS = 8;
+    long TEN_POW_DECIMALS = 100000000L;
   }
 
   interface NodeConstant {
@@ -41,12 +45,14 @@ public interface Parameter {
     long SYNC_CHAIN_LIMIT_NUM = 500;
     int MAX_TRANSACTION_PENDING = 2000;
 
+    float PENALTY_RATE = 0.5f;
+
     List<NodeTier> NODE_TIERS = new ArrayList<>(Arrays.asList(
-            new NodeTier("Master Node", 5000000000000L, 20000, 20),
-            new NodeTier("Jedi Node", 500000000000L, 1800, 15),
-            new NodeTier("Guardian Node", 50000000000L, 150, 10),
-            new NodeTier("Warrior Node", 10000000000L, 25, 5),
-            new NodeTier("Apprentice Node", 5000000000L, 10, 0)
+            new NodeTier("Master Node", 5000000L * ChainConstant.TEN_POW_DECIMALS, 20000, 20),
+            new NodeTier("Jedi Node", 500000L * ChainConstant.TEN_POW_DECIMALS, 1800, 15),
+            new NodeTier("Guardian Node", 50000L * ChainConstant.TEN_POW_DECIMALS, 150, 10),
+            new NodeTier("Warrior Node", 10000L * ChainConstant.TEN_POW_DECIMALS, 25, 5),
+            new NodeTier("Apprentice Node", 5000L * ChainConstant.TEN_POW_DECIMALS, 10, 0)
     ));
   }
 

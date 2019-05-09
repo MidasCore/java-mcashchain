@@ -157,6 +157,10 @@ public class FullNodeHttpApiService implements Service {
 	private GetDelegatedResourceAccountIndexServlet getDelegatedResourceAccountIndexServlet;
 	@Autowired
 	private GetDelegatedResourceServlet getDelegatedResourceServlet;
+	@Autowired
+	private StakeServlet stakeServlet;
+	@Autowired
+	private UnstakeServlet unstakeServlet;
 
 	@Override
 	public void init() {
@@ -258,7 +262,8 @@ public class FullNodeHttpApiService implements Service {
 			context.addServlet(
 					new ServletHolder(getDelegatedResourceAccountIndexServlet),
 					"/getdelegatedresourceaccountindex");
-
+			context.addServlet(new ServletHolder(stakeServlet), "/stake");
+			context.addServlet(new ServletHolder(unstakeServlet), "/unstake");
 			server.start();
 		} catch (Exception e) {
 			logger.debug("IOException: {}", e.getMessage());
