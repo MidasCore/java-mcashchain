@@ -20,6 +20,7 @@ package org.tron.common.overlay.discover;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 import org.tron.common.overlay.discover.node.Node;
 import org.tron.common.overlay.discover.node.NodeManager;
@@ -29,73 +30,73 @@ import org.tron.common.overlay.discover.table.NodeEntry;
 @Slf4j(topic = "discover")
 public class DiscoverTask implements Runnable {
 
-  NodeManager nodeManager;
+	NodeManager nodeManager;
 
-  byte[] nodeId;
+	byte[] nodeId;
 
-  public DiscoverTask(NodeManager nodeManager) {
-    this.nodeManager = nodeManager;
-    nodeId = nodeManager.getPublicHomeNode().getId();
-  }
+	public DiscoverTask(NodeManager nodeManager) {
+		this.nodeManager = nodeManager;
+		nodeId = nodeManager.getPublicHomeNode().getId();
+	}
 
-  @Override
-  public void run() {
-    discover(nodeId, 0, new ArrayList<Node>());
-  }
+	@Override
+	public void run() {
+		discover(nodeId, 0, new ArrayList<Node>());
+	}
 
-  public synchronized void discover(byte[] nodeId, int round, List<Node> prevTried) {
+	public synchronized void discover(byte[] nodeId, int round, List<Node> prevTried) {
 
-    try {
-      if (round == KademliaOptions.MAX_STEPS) {
-        logger.debug("Node table contains [{}] peers", nodeManager.getTable().getNodesCount());
-        logger.debug("{}", String
-            .format("(KademliaOptions.MAX_STEPS) Terminating discover after %d rounds.", round));
-        logger.trace("{}\n{}",
-            String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
-            dumpNodes());
-        return;
-      }
+		try {
+			if (round == KademliaOptions.MAX_STEPS) {
+				logger.debug("Node table contains [{}] peers", nodeManager.getTable().getNodesCount());
+				logger.debug("{}", String
+						.format("(KademliaOptions.MAX_STEPS) Terminating discover after %d rounds.", round));
+				logger.trace("{}\n{}",
+						String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
+						dumpNodes());
+				return;
+			}
 
-      List<Node> closest = nodeManager.getTable().getClosestNodes(nodeId);
-      List<Node> tried = new ArrayList<>();
-      for (Node n : closest) {
-        if (!tried.contains(n) && !prevTried.contains(n)) {
-          try {
-            nodeManager.getNodeHandler(n).sendFindNode(nodeId);
-            tried.add(n);
-            wait(50);
-          } catch (InterruptedException e) {
-          } catch (Exception ex) {
-            logger.error("Unexpected Exception " + ex, ex);
-          }
-        }
-        if (tried.size() == KademliaOptions.ALPHA) {
-          break;
-        }
-      }
+			List<Node> closest = nodeManager.getTable().getClosestNodes(nodeId);
+			List<Node> tried = new ArrayList<>();
+			for (Node n : closest) {
+				if (!tried.contains(n) && !prevTried.contains(n)) {
+					try {
+						nodeManager.getNodeHandler(n).sendFindNode(nodeId);
+						tried.add(n);
+						wait(50);
+					} catch (InterruptedException e) {
+					} catch (Exception ex) {
+						logger.error("Unexpected Exception " + ex, ex);
+					}
+				}
+				if (tried.size() == KademliaOptions.ALPHA) {
+					break;
+				}
+			}
 
-      if (tried.isEmpty()) {
-        logger.debug("{}",
-            String.format("(tried.isEmpty()) Terminating discover after %d rounds.", round));
-        logger.trace("{}\n{}",
-            String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
-            dumpNodes());
-        return;
-      }
+			if (tried.isEmpty()) {
+				logger.debug("{}",
+						String.format("(tried.isEmpty()) Terminating discover after %d rounds.", round));
+				logger.trace("{}\n{}",
+						String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
+						dumpNodes());
+				return;
+			}
 
-      tried.addAll(prevTried);
+			tried.addAll(prevTried);
 
-      discover(nodeId, round + 1, tried);
-    } catch (Exception ex) {
-      logger.error("{}", ex);
-    }
-  }
+			discover(nodeId, round + 1, tried);
+		} catch (Exception ex) {
+			logger.error("{}", ex);
+		}
+	}
 
-  private String dumpNodes() {
-    String ret = "";
-    for (NodeEntry entry : nodeManager.getTable().getAllNodes()) {
-      ret += "    " + entry.getNode() + "\n";
-    }
-    return ret;
-  }
+	private String dumpNodes() {
+		String ret = "";
+		for (NodeEntry entry : nodeManager.getTable().getAllNodes()) {
+			ret += "    " + entry.getNode() + "\n";
+		}
+		return ret;
+	}
 }

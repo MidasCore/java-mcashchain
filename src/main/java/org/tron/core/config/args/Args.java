@@ -1,34 +1,11 @@
 package org.tron.core.config.args;
 
-import static java.lang.Math.max;
-import static java.lang.System.exit;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.netty.NettyServerBuilder;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -55,6 +32,16 @@ import org.tron.keystore.CipherException;
 import org.tron.keystore.Credentials;
 import org.tron.keystore.WalletUtils;
 import org.tron.program.Version;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.lang.Math.max;
+import static java.lang.System.exit;
 
 @Slf4j(topic = "app")
 @NoArgsConstructor
@@ -946,30 +933,6 @@ public class Args {
 		return INSTANCE;
 	}
 
-	/**
-	 * Get storage path by name of database
-	 *
-	 * @param dbName name of database
-	 * @return path of that database
-	 */
-	public String getOutputDirectoryByDbName(String dbName) {
-		String path = storage.getPathByDbName(dbName);
-		if (!StringUtils.isBlank(path)) {
-			return path;
-		}
-		return getOutputDirectory();
-	}
-
-	/**
-	 * get output directory.
-	 */
-	public String getOutputDirectory() {
-		if (!this.outputDirectory.equals("") && !this.outputDirectory.endsWith(File.separator)) {
-			return this.outputDirectory + File.separator;
-		}
-		return this.outputDirectory;
-	}
-
 	private static List<Node> getNodes(final com.typesafe.config.Config config, String path) {
 		if (!config.hasPath(path)) {
 			return Collections.emptyList();
@@ -1085,7 +1048,6 @@ public class Args {
 		return filter;
 	}
 
-
 	private static String getGeneratedNodePrivateKey() {
 		String nodeId;
 		try {
@@ -1174,19 +1136,10 @@ public class Args {
 		}
 	}
 
-	public ECKey getMyKey() {
-		if (StringUtils.isEmpty(INSTANCE.p2pNodeId)) {
-			INSTANCE.p2pNodeId = getGeneratedNodePrivateKey();
-		}
-
-		return ECKey.fromPrivate(Hex.decode(INSTANCE.p2pNodeId));
-	}
-
 	private static double calcMaxTimeRatio() {
 		//return max(2.0, min(5.0, 5 * 4.0 / max(Runtime.getRuntime().availableProcessors(), 1)));
 		return 5.0;
 	}
-
 
 	private static void initRocksDbSettings(Config config) {
 		String prefix = "storage.dbSettings.";
@@ -1231,7 +1184,6 @@ public class Args {
 				.initArgs(enable, propPath, bak1path, bak2path, frequency);
 	}
 
-
 	private static void initBackupProperty(Config config) {
 		INSTANCE.backupPriority = config.hasPath("node.backup.priority")
 				? config.getInt("node.backup.priority") : 0;
@@ -1269,5 +1221,37 @@ public class Args {
 		logger.info("DB engine : {}", args.getStorage().getDbEngine());
 		logger.info("***************************************************************");
 		logger.info("\n");
+	}
+
+	/**
+	 * Get storage path by name of database
+	 *
+	 * @param dbName name of database
+	 * @return path of that database
+	 */
+	public String getOutputDirectoryByDbName(String dbName) {
+		String path = storage.getPathByDbName(dbName);
+		if (!StringUtils.isBlank(path)) {
+			return path;
+		}
+		return getOutputDirectory();
+	}
+
+	/**
+	 * get output directory.
+	 */
+	public String getOutputDirectory() {
+		if (!this.outputDirectory.equals("") && !this.outputDirectory.endsWith(File.separator)) {
+			return this.outputDirectory + File.separator;
+		}
+		return this.outputDirectory;
+	}
+
+	public ECKey getMyKey() {
+		if (StringUtils.isEmpty(INSTANCE.p2pNodeId)) {
+			INSTANCE.p2pNodeId = getGeneratedNodePrivateKey();
+		}
+
+		return ECKey.fromPrivate(Hex.decode(INSTANCE.p2pNodeId));
 	}
 }

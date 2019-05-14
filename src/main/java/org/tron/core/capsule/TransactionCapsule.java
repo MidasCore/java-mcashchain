@@ -15,23 +15,9 @@
 
 package org.tron.core.capsule;
 
-import static org.tron.protos.Contract.AssetIssueContract;
-import static org.tron.protos.Contract.VoteAssetContract;
-import static org.tron.protos.Contract.VoteWitnessContract;
-import static org.tron.protos.Contract.WitnessCreateContract;
-import static org.tron.protos.Contract.WitnessUpdateContract;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +25,7 @@ import org.springframework.util.StringUtils;
 import org.tron.common.crypto.ECKey;
 import org.tron.common.crypto.ECKey.ECDSASignature;
 import org.tron.common.runtime.Runtime;
-import org.tron.common.runtime.vm.program.Program.BadJumpDestinationException;
-import org.tron.common.runtime.vm.program.Program.IllegalOperationException;
-import org.tron.common.runtime.vm.program.Program.JVMStackOverFlowException;
-import org.tron.common.runtime.vm.program.Program.OutOfEnergyException;
-import org.tron.common.runtime.vm.program.Program.OutOfMemoryException;
-import org.tron.common.runtime.vm.program.Program.OutOfTimeException;
-import org.tron.common.runtime.vm.program.Program.PrecompiledContractException;
-import org.tron.common.runtime.vm.program.Program.StackTooLargeException;
-import org.tron.common.runtime.vm.program.Program.StackTooSmallException;
+import org.tron.common.runtime.vm.program.Program.*;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Sha256Hash;
 import org.tron.core.Wallet;
@@ -59,29 +37,7 @@ import org.tron.core.exception.PermissionException;
 import org.tron.core.exception.SignatureFormatException;
 import org.tron.core.exception.ValidateSignatureException;
 import org.tron.protos.Contract;
-import org.tron.protos.Contract.AccountCreateContract;
-import org.tron.protos.Contract.AccountPermissionUpdateContract;
-import org.tron.protos.Contract.AccountUpdateContract;
-import org.tron.protos.Contract.CreateSmartContract;
-import org.tron.protos.Contract.ExchangeCreateContract;
-import org.tron.protos.Contract.ExchangeInjectContract;
-import org.tron.protos.Contract.ExchangeTransactionContract;
-import org.tron.protos.Contract.ExchangeWithdrawContract;
-import org.tron.protos.Contract.FreezeBalanceContract;
-import org.tron.protos.Contract.ParticipateAssetIssueContract;
-import org.tron.protos.Contract.ProposalApproveContract;
-import org.tron.protos.Contract.ProposalCreateContract;
-import org.tron.protos.Contract.ProposalDeleteContract;
-import org.tron.protos.Contract.SetAccountIdContract;
-import org.tron.protos.Contract.TransferAssetContract;
-import org.tron.protos.Contract.TransferContract;
-import org.tron.protos.Contract.TriggerSmartContract;
-import org.tron.protos.Contract.UnfreezeAssetContract;
-import org.tron.protos.Contract.UnfreezeBalanceContract;
-import org.tron.protos.Contract.UpdateAssetContract;
-import org.tron.protos.Contract.UpdateEnergyLimitContract;
-import org.tron.protos.Contract.UpdateSettingContract;
-import org.tron.protos.Contract.WithdrawBalanceContract;
+import org.tron.protos.Contract.*;
 import org.tron.protos.Protocol.Key;
 import org.tron.protos.Protocol.Permission;
 import org.tron.protos.Protocol.Permission.PermissionType;
@@ -90,6 +46,17 @@ import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 import org.tron.protos.Protocol.Transaction.Result;
 import org.tron.protos.Protocol.Transaction.Result.contractResult;
 import org.tron.protos.Protocol.Transaction.raw;
+
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.tron.protos.Contract.*;
+
+import java.lang.Exception;
 
 @Slf4j(topic = "capsule")
 public class TransactionCapsule implements ProtoCapsule<Transaction> {
@@ -105,23 +72,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	@Getter
 	@Setter
 	private TransactionTrace trxTrace;
+	private StringBuffer toStringBuff = new StringBuffer();
 
 	/**
 	 * constructor TransactionCapsule.
 	 */
 	public TransactionCapsule(Transaction trx) {
 		this.transaction = trx;
-	}
-
-	/**
-	 * get account from bytes data.
-	 */
-	public TransactionCapsule(byte[] data) throws BadItemException {
-		try {
-			this.transaction = Transaction.parseFrom(data);
-		} catch (InvalidProtocolBufferException e) {
-			throw new BadItemException("Transaction proto data parse exception");
-		}
 	}
 
 //	public TransactionCapsule(byte[] key, long value) throws IllegalArgumentException {
@@ -139,6 +96,17 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 //		logger.info("Transaction create succeeded！");
 //		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
 //	}
+
+	/**
+	 * get account from bytes data.
+	 */
+	public TransactionCapsule(byte[] data) throws BadItemException {
+		try {
+			this.transaction = Transaction.parseFrom(data);
+		} catch (InvalidProtocolBufferException e) {
+			throw new BadItemException("Transaction proto data parse exception");
+		}
+	}
 
 	public TransactionCapsule(AccountCreateContract contract, AccountStore accountStore) {
 		AccountCapsule account = accountStore.get(contract.getOwnerAddress().toByteArray());
@@ -185,50 +153,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 				.build();
 	}
 
-	public void resetResult() {
-		if (this.getInstance().getRetCount() > 0) {
-			this.transaction = this.getInstance().toBuilder().clearRet().build();
-		}
-	}
-
-	public void setResult(TransactionResultCapsule transactionResultCapsule) {
-		this.transaction = this.getInstance().toBuilder().addRet(transactionResultCapsule.getInstance())
-				.build();
-	}
-
-	public void setReference(long blockNum, byte[] blockHash) {
-		byte[] refBlockNum = ByteArray.fromLong(blockNum);
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
-				.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
-				.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
-				.build();
-		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-	}
-
-	/**
-	 * @param expiration must be in milliseconds format
-	 */
-	public void setExpiration(long expiration) {
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
-				.build();
-		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-	}
-
-	public long getExpiration() {
-		return transaction.getRawData().getExpiration();
-	}
-
-	public void setTimestamp() {
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
-				.setTimestamp(System.currentTimeMillis())
-				.build();
-		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
-	}
-
-	public long getTimestamp() {
-		return transaction.getRawData().getTimestamp();
-	}
-
 	@Deprecated
 	public TransactionCapsule(AssetIssueContract assetIssueContract) {
 		createTransaction(assetIssueContract, ContractType.AssetIssueContract);
@@ -239,30 +163,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 				Transaction.Contract.newBuilder().setType(contractType).setParameter(
 						Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
-	}
-
-	@Deprecated
-	public void createTransaction(com.google.protobuf.Message message, ContractType contractType) {
-		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
-				Transaction.Contract.newBuilder().setType(contractType).setParameter(
-						Any.pack(message)).build());
-		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
-	}
-
-	public Sha256Hash getMerkleHash() {
-		byte[] transBytes = this.transaction.toByteArray();
-		return Sha256Hash.of(transBytes);
-	}
-
-	private Sha256Hash getRawHash() {
-		return Sha256Hash.of(this.transaction.getRawData().toByteArray());
-	}
-
-	public void sign(byte[] privateKey) {
-		ECKey ecKey = ECKey.fromPrivate(privateKey);
-		ECDSASignature signature = ecKey.sign(getRawHash().getBytes());
-		ByteString sig = ByteString.copyFrom(signature.toByteArray());
-		this.transaction = this.transaction.toBuilder().addSignature(sig).build();
 	}
 
 	public static long getWeight(Permission permission, byte[] address) {
@@ -311,50 +211,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 			currentWeight += weight;
 		}
 		return currentWeight;
-	}
-
-	public void addSign(byte[] privateKey, AccountStore accountStore)
-			throws PermissionException, SignatureException, SignatureFormatException {
-		Transaction.Contract contract = this.transaction.getRawData().getContract(0);
-		int permissionId = contract.getPermissionId();
-		byte[] owner = getOwner(contract);
-		AccountCapsule account = accountStore.get(owner);
-		if (account == null) {
-			throw new PermissionException("Account is not exist!");
-		}
-		Permission permission = account.getPermissionById(permissionId);
-		if (permission == null) {
-			throw new PermissionException("permission isn't exit");
-		}
-		if (permissionId != 0) {
-			if (permission.getType() != PermissionType.Active) {
-				throw new PermissionException("Permission type is error");
-			}
-			//check oprations
-			if (!Wallet.checkPermissionOprations(permission, contract)) {
-				throw new PermissionException("Permission denied");
-			}
-		}
-		List<ByteString> approveList = new ArrayList<>();
-		ECKey ecKey = ECKey.fromPrivate(privateKey);
-		byte[] address = ecKey.getAddress();
-		if (this.transaction.getSignatureCount() > 0) {
-			checkWeight(permission, this.transaction.getSignatureList(), this.getRawHash().getBytes(),
-					approveList);
-			if (approveList.contains(ByteString.copyFrom(address))) {
-				throw new PermissionException(Wallet.encodeBase58(address) + " had signed!");
-			}
-		}
-
-		long weight = getWeight(permission, address);
-		if (weight == 0) {
-			throw new PermissionException(
-					ByteArray.toHexString(privateKey) + "'s address is " + Wallet
-							.encodeBase58(address) + " but it is not contained of permission.");
-		}
-		ECDSASignature signature = ecKey.sign(getRawHash().getBytes());
-		ByteString sig = ByteString.copyFrom(signature.toByteArray());
-		this.transaction = this.transaction.toBuilder().addSignature(sig).build();
 	}
 
 	// todo mv this static function to capsule util
@@ -595,6 +451,118 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		return false;
 	}
 
+	public void resetResult() {
+		if (this.getInstance().getRetCount() > 0) {
+			this.transaction = this.getInstance().toBuilder().clearRet().build();
+		}
+	}
+
+	public void setResult(TransactionResultCapsule transactionResultCapsule) {
+		this.transaction = this.getInstance().toBuilder().addRet(transactionResultCapsule.getInstance())
+				.build();
+	}
+
+	public void setReference(long blockNum, byte[] blockHash) {
+		byte[] refBlockNum = ByteArray.fromLong(blockNum);
+		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+				.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
+				.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
+				.build();
+		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+	}
+
+	public long getExpiration() {
+		return transaction.getRawData().getExpiration();
+	}
+
+	/**
+	 * @param expiration must be in milliseconds format
+	 */
+	public void setExpiration(long expiration) {
+		Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
+				.build();
+		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+	}
+
+	public void setTimestamp() {
+		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+				.setTimestamp(System.currentTimeMillis())
+				.build();
+		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
+	}
+
+	public long getTimestamp() {
+		return transaction.getRawData().getTimestamp();
+	}
+
+	@Deprecated
+	public void createTransaction(com.google.protobuf.Message message, ContractType contractType) {
+		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+				Transaction.Contract.newBuilder().setType(contractType).setParameter(
+						Any.pack(message)).build());
+		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
+	}
+
+	public Sha256Hash getMerkleHash() {
+		byte[] transBytes = this.transaction.toByteArray();
+		return Sha256Hash.of(transBytes);
+	}
+
+	private Sha256Hash getRawHash() {
+		return Sha256Hash.of(this.transaction.getRawData().toByteArray());
+	}
+
+	public void sign(byte[] privateKey) {
+		ECKey ecKey = ECKey.fromPrivate(privateKey);
+		ECDSASignature signature = ecKey.sign(getRawHash().getBytes());
+		ByteString sig = ByteString.copyFrom(signature.toByteArray());
+		this.transaction = this.transaction.toBuilder().addSignature(sig).build();
+	}
+
+	public void addSign(byte[] privateKey, AccountStore accountStore)
+			throws PermissionException, SignatureException, SignatureFormatException {
+		Transaction.Contract contract = this.transaction.getRawData().getContract(0);
+		int permissionId = contract.getPermissionId();
+		byte[] owner = getOwner(contract);
+		AccountCapsule account = accountStore.get(owner);
+		if (account == null) {
+			throw new PermissionException("Account is not exist!");
+		}
+		Permission permission = account.getPermissionById(permissionId);
+		if (permission == null) {
+			throw new PermissionException("permission isn't exit");
+		}
+		if (permissionId != 0) {
+			if (permission.getType() != PermissionType.Active) {
+				throw new PermissionException("Permission type is error");
+			}
+			//check oprations
+			if (!Wallet.checkPermissionOprations(permission, contract)) {
+				throw new PermissionException("Permission denied");
+			}
+		}
+		List<ByteString> approveList = new ArrayList<>();
+		ECKey ecKey = ECKey.fromPrivate(privateKey);
+		byte[] address = ecKey.getAddress();
+		if (this.transaction.getSignatureCount() > 0) {
+			checkWeight(permission, this.transaction.getSignatureList(), this.getRawHash().getBytes(),
+					approveList);
+			if (approveList.contains(ByteString.copyFrom(address))) {
+				throw new PermissionException(Wallet.encodeBase58(address) + " had signed!");
+			}
+		}
+
+		long weight = getWeight(permission, address);
+		if (weight == 0) {
+			throw new PermissionException(
+					ByteArray.toHexString(privateKey) + "'s address is " + Wallet
+							.encodeBase58(address) + " but it is not contained of permission.");
+		}
+		ECDSASignature signature = ecKey.sign(getRawHash().getBytes());
+		ByteString sig = ByteString.copyFrom(signature.toByteArray());
+		this.transaction = this.transaction.toBuilder().addSignature(sig).build();
+	}
+
 	/**
 	 * validate signature
 	 */
@@ -657,8 +625,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	public Transaction getInstance() {
 		return this.transaction;
 	}
-
-	private StringBuffer toStringBuff = new StringBuffer();
 
 	@Override
 	public String toString() {

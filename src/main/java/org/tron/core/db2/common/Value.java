@@ -1,85 +1,86 @@
 package org.tron.core.db2.common;
 
-import java.util.Arrays;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.tron.core.db.common.WrappedByteArray;
 
+import java.util.Arrays;
+
 @EqualsAndHashCode(exclude = "operator")
 public final class Value {
 
-  public byte[] encode() {
-    if (data.getBytes() == null) {
-      return new byte[]{operator.getValue()};
-    }
+	@Getter
+	final private Operator operator;
+	final private WrappedByteArray data;
 
-    byte[] r = new byte[1 + data.getBytes().length];
-    r[0] = operator.getValue();
-    System.arraycopy(data.getBytes(), 0, r, 1, data.getBytes().length);
-    return r;
-  }
+	private Value(Operator operator, WrappedByteArray data) {
+		this.operator = operator;
+		this.data = data;
+	}
 
-  public static Value decode(byte[] bytes) {
-    Operator operator = Operator.valueOf(bytes[0]);
-    byte[] value = null;
-    if (bytes.length > 1) {
-      value = Arrays.copyOfRange(bytes, 1, bytes.length);
-    }
-    return Value.of(operator, value);
-  }
+	public static Value decode(byte[] bytes) {
+		Operator operator = Operator.valueOf(bytes[0]);
+		byte[] value = null;
+		if (bytes.length > 1) {
+			value = Arrays.copyOfRange(bytes, 1, bytes.length);
+		}
+		return Value.of(operator, value);
+	}
 
-  public enum Operator {
-    CREATE((byte) 0),
-    MODIFY((byte) 1),
-    DELETE((byte) 2),
-    PUT((byte) 3);
+	public static Value copyOf(Operator operator, byte[] data) {
+		return new Value(operator, WrappedByteArray.copyOf(data));
+	}
 
-    @Getter
-    private byte value;
+	public static Value of(Operator operator, byte[] data) {
+		return new Value(operator, WrappedByteArray.of(data));
+	}
 
-    Operator(byte value) {
-      this.value = value;
-    }
+	public byte[] encode() {
+		if (data.getBytes() == null) {
+			return new byte[]{operator.getValue()};
+		}
 
-    static Operator valueOf(byte b) {
-      switch (b) {
-        case 0:
-          return Operator.CREATE;
-        case 1:
-          return Operator.MODIFY;
-        case 2:
-          return Operator.DELETE;
-        case 3:
-          return Operator.PUT;
-        default:
-          return null;
-      }
-    }
-  }
+		byte[] r = new byte[1 + data.getBytes().length];
+		r[0] = operator.getValue();
+		System.arraycopy(data.getBytes(), 0, r, 1, data.getBytes().length);
+		return r;
+	}
 
-  @Getter
-  final private Operator operator;
-  final private WrappedByteArray data;
+	public byte[] getBytes() {
+		byte[] value = data.getBytes();
+		if (value == null) {
+			return null;
+		}
 
-  private Value(Operator operator, WrappedByteArray data) {
-    this.operator = operator;
-    this.data = data;
-  }
+		return Arrays.copyOf(value, value.length);
+	}
 
-  public static Value copyOf(Operator operator, byte[] data) {
-    return new Value(operator, WrappedByteArray.copyOf(data));
-  }
+	public enum Operator {
+		CREATE((byte) 0),
+		MODIFY((byte) 1),
+		DELETE((byte) 2),
+		PUT((byte) 3);
 
-  public static Value of(Operator operator, byte[] data) {
-    return new Value(operator, WrappedByteArray.of(data));
-  }
+		@Getter
+		private byte value;
 
-  public byte[] getBytes() {
-    byte[] value = data.getBytes();
-    if (value == null) {
-      return null;
-    }
+		Operator(byte value) {
+			this.value = value;
+		}
 
-    return Arrays.copyOf(value, value.length);
-  }
+		static Operator valueOf(byte b) {
+			switch (b) {
+				case 0:
+					return Operator.CREATE;
+				case 1:
+					return Operator.MODIFY;
+				case 2:
+					return Operator.DELETE;
+				case 3:
+					return Operator.PUT;
+				default:
+					return null;
+			}
+		}
+	}
 }

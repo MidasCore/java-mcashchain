@@ -2,20 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -34,11 +22,15 @@ import org.tron.protos.Contract.AssetIssueContract.FrozenSupply;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 @Slf4j
 public class AssetIssueActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_asset_issue_test";
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_SECOND;
@@ -49,6 +41,8 @@ public class AssetIssueActuatorTest {
 	private static final String DESCRIPTION = "myCoin";
 	private static final String URL = "tron-my.com";
 	private static final String ASSET_NAME_SECOND = "asset_name2";
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 	private static long now = 0;
 	private static long startTime = 0;
 	private static long endTime = 0;
@@ -70,6 +64,20 @@ public class AssetIssueActuatorTest {
 		//        "config-junit.conf");
 		//    dbManager = new Manager();
 		//    dbManager.init();
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -105,20 +113,6 @@ public class AssetIssueActuatorTest {
 	public void removeCapsule() {
 		byte[] address = ByteArray.fromHexString(OWNER_ADDRESS);
 		dbManager.getAccountStore().delete(address);
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
-		}
 	}
 
 	private Any getContract() {
@@ -261,7 +255,7 @@ public class AssetIssueActuatorTest {
 	}
 
 	/**
-	 Total supply must greater than zero. Else can't asset issue and balance do not change.
+	 * Total supply must greater than zero. Else can't asset issue and balance do not change.
 	 */
 	@Test
 	public void negativeTotalSupplyTest() {
@@ -306,7 +300,7 @@ public class AssetIssueActuatorTest {
 	}
 
 	/**
-	 Total supply must greater than zero. Else can't asset issue and balance do not change.
+	 * Total supply must greater than zero. Else can't asset issue and balance do not change.
 	 */
 	@Test
 	public void zeroTotalSupplyTest() {
@@ -396,7 +390,7 @@ public class AssetIssueActuatorTest {
 	}
 
 	/**
-	  Trx num must greater than zero. Else can't asset issue and balance do not change.
+	 * Trx num must greater than zero. Else can't asset issue and balance do not change.
 	 */
 	@Test
 	public void zeroTrxNumTest() {
@@ -486,7 +480,7 @@ public class AssetIssueActuatorTest {
 	}
 
 	/**
-	  Trx num must greater than zero. Else can't asset issue and balance do not change.
+	 * Trx num must greater than zero. Else can't asset issue and balance do not change.
 	 */
 	@Test
 	public void zeroNumTest() {

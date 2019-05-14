@@ -25,67 +25,67 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import org.tron.common.runtime.vm.DataWord;
 import org.tron.common.runtime.vm.OpCode;
 
+import java.io.IOException;
+
 @Slf4j(topic = "VM")
 public final class Serializers {
 
-  public static class DataWordSerializer extends JsonSerializer<DataWord> {
+	public static String serializeFieldsOnly(Object value, boolean pretty) {
+		try {
+			ObjectMapper mapper = createMapper(pretty);
+			mapper.setVisibilityChecker(fieldsOnlyVisibilityChecker(mapper));
 
-    @Override
-    public void serialize(DataWord energy, JsonGenerator jgen, SerializerProvider provider)
-        throws IOException, JsonProcessingException {
-      jgen.writeString(energy.value().toString());
-    }
-  }
+			return mapper.writeValueAsString(value);
+		} catch (Exception e) {
+			logger.error("JSON serialization error: ", e);
+			return "{}";
+		}
+	}
 
-  public static class ByteArraySerializer extends JsonSerializer<byte[]> {
+	private static VisibilityChecker<?> fieldsOnlyVisibilityChecker(ObjectMapper mapper) {
+		return mapper.getSerializationConfig().getDefaultVisibilityChecker()
+				.withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+				.withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+				.withIsGetterVisibility(JsonAutoDetect.Visibility.NONE);
+	}
 
-    @Override
-    public void serialize(byte[] memory, JsonGenerator jgen, SerializerProvider provider)
-        throws IOException, JsonProcessingException {
-      jgen.writeString(Hex.toHexString(memory));
-    }
-  }
+	public static ObjectMapper createMapper(boolean pretty) {
+		ObjectMapper mapper = new ObjectMapper();
+		if (pretty) {
+			mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		}
+		return mapper;
+	}
 
-  public static class OpCodeSerializer extends JsonSerializer<Byte> {
+	public static class DataWordSerializer extends JsonSerializer<DataWord> {
 
-    @Override
-    public void serialize(Byte op, JsonGenerator jgen, SerializerProvider provider)
-        throws IOException, JsonProcessingException {
-      jgen.writeString(OpCode.code(op).name());
-    }
-  }
+		@Override
+		public void serialize(DataWord energy, JsonGenerator jgen, SerializerProvider provider)
+				throws IOException, JsonProcessingException {
+			jgen.writeString(energy.value().toString());
+		}
+	}
 
+	public static class ByteArraySerializer extends JsonSerializer<byte[]> {
 
-  public static String serializeFieldsOnly(Object value, boolean pretty) {
-    try {
-      ObjectMapper mapper = createMapper(pretty);
-      mapper.setVisibilityChecker(fieldsOnlyVisibilityChecker(mapper));
+		@Override
+		public void serialize(byte[] memory, JsonGenerator jgen, SerializerProvider provider)
+				throws IOException, JsonProcessingException {
+			jgen.writeString(Hex.toHexString(memory));
+		}
+	}
 
-      return mapper.writeValueAsString(value);
-    } catch (Exception e) {
-      logger.error("JSON serialization error: ", e);
-      return "{}";
-    }
-  }
+	public static class OpCodeSerializer extends JsonSerializer<Byte> {
 
-  private static VisibilityChecker<?> fieldsOnlyVisibilityChecker(ObjectMapper mapper) {
-    return mapper.getSerializationConfig().getDefaultVisibilityChecker()
-        .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-        .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-        .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE);
-  }
-
-  public static ObjectMapper createMapper(boolean pretty) {
-    ObjectMapper mapper = new ObjectMapper();
-    if (pretty) {
-      mapper.enable(SerializationFeature.INDENT_OUTPUT);
-    }
-    return mapper;
-  }
+		@Override
+		public void serialize(Byte op, JsonGenerator jgen, SerializerProvider provider)
+				throws IOException, JsonProcessingException {
+			jgen.writeString(OpCode.code(op).name());
+		}
+	}
 }

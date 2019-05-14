@@ -1,22 +1,10 @@
 package org.tron.common.runtime.vm;
 
 
-import static junit.framework.TestCase.fail;
-import static org.tron.common.runtime.utils.MUtil.convertToTronAddress;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.spongycastle.util.Arrays;
 import org.spongycastle.util.encoders.Hex;
 import org.tron.common.application.Application;
@@ -47,6 +35,13 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Proposal.State;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import static junit.framework.TestCase.fail;
+import static org.tron.common.runtime.utils.MUtil.convertToTronAddress;
+
 @Slf4j
 public class PrecompiledContractsTest {
 
@@ -69,10 +64,6 @@ public class PrecompiledContractsTest {
 			"0000000000000000000000000000000000000000000000000000000000010008");
 	private static final DataWord convertFromTronBase58AddressAddr = new DataWord(
 			"0000000000000000000000000000000000000000000000000000000000010009");
-
-	private static TronApplicationContext context;
-	private static Application appT;
-	private static Manager dbManager;
 	private static final String dbPath = "output_PrecompiledContracts_test";
 	private static final String ACCOUNT_NAME = "account";
 	private static final String OWNER_ADDRESS;
@@ -81,10 +72,12 @@ public class PrecompiledContractsTest {
 	private static final String WITNESS_ADDRESS_BASE = "548794500882809695a8a687866e76d4271a1abc";
 	private static final String WITNESS_OWNER_ADDRESS;
 	private static final String URL = "https://tron.network";
-
 	// withdraw
 	private static final long initBalance = 10_000_000_000L;
 	private static final long allowance = 32_000_000L;
+	private static TronApplicationContext context;
+	private static Application appT;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
@@ -103,6 +96,22 @@ public class PrecompiledContractsTest {
 	@BeforeClass
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		appT.shutdownServices();
+		appT.shutdown();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -142,7 +151,6 @@ public class PrecompiledContractsTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderNumber(10);
 		dbManager.getDynamicPropertiesStore().saveNextMaintenanceTime(2000000);
 	}
-
 
 	private Any getFreezeContract(String ownerAddress, long frozenBalance, long duration) {
 		return Any.pack(
@@ -234,7 +242,6 @@ public class PrecompiledContractsTest {
 		Assert.assertNotEquals(0, witnessAccount.getLatestWithdrawTime());
 	}
 
-
 	//@Test
 	public void proposalTest() {
 
@@ -309,7 +316,6 @@ public class PrecompiledContractsTest {
 		}
 	}
 
-
 	@Test
 	public void convertFromTronBytesAddressNativeTest() {
 //    PrecompiledContract contract = createPrecompiledContract(convertFromTronBytesAddressAddr, WITNESS_ADDRESS);
@@ -334,22 +340,6 @@ public class PrecompiledContractsTest {
 		byte[] solidityAddress = contract.execute(data).getRight();
 		Assert.assertArrayEquals(solidityAddress,
 				new DataWord(Hex.decode(WITNESS_ADDRESS_BASE)).getData());
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		appT.shutdownServices();
-		appT.shutdown();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
-		}
 	}
 
 }

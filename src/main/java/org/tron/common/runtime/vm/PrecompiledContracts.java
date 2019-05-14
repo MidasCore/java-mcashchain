@@ -18,36 +18,13 @@
 
 package org.tron.common.runtime.vm;
 
-import static org.tron.common.runtime.utils.MUtil.convertToTronAddress;
-import static org.tron.common.utils.BIUtil.addSafely;
-import static org.tron.common.utils.BIUtil.isLessThan;
-import static org.tron.common.utils.BIUtil.isZero;
-import static org.tron.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
-import static org.tron.common.utils.ByteUtil.bytesToBigInteger;
-import static org.tron.common.utils.ByteUtil.numberOfLeadingZeros;
-import static org.tron.common.utils.ByteUtil.parseBytes;
-import static org.tron.common.utils.ByteUtil.parseWord;
-import static org.tron.common.utils.ByteUtil.stripLeadingZeroes;
-
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongycastle.util.encoders.Hex;
 import org.tron.common.crypto.ECKey;
-import org.tron.common.crypto.zksnark.BN128;
-import org.tron.common.crypto.zksnark.BN128Fp;
-import org.tron.common.crypto.zksnark.BN128G1;
-import org.tron.common.crypto.zksnark.BN128G2;
-import org.tron.common.crypto.zksnark.Fp;
-import org.tron.common.crypto.zksnark.PairingCheck;
+import org.tron.common.crypto.zksnark.*;
 import org.tron.common.runtime.vm.program.Program;
 import org.tron.common.runtime.vm.program.ProgramResult;
 import org.tron.common.storage.Deposit;
@@ -55,23 +32,23 @@ import org.tron.common.utils.BIUtil;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Sha256Hash;
 import org.tron.core.Wallet;
-import org.tron.core.actuator.Actuator;
-import org.tron.core.actuator.ActuatorFactory;
-import org.tron.core.actuator.ProposalApproveActuator;
-import org.tron.core.actuator.ProposalCreateActuator;
-import org.tron.core.actuator.ProposalDeleteActuator;
-import org.tron.core.actuator.VoteWitnessActuator;
-import org.tron.core.actuator.WithdrawBalanceActuator;
+import org.tron.core.actuator.*;
 import org.tron.core.capsule.TransactionCapsule;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract;
-import org.tron.protos.Contract.ProposalApproveContract;
-import org.tron.protos.Contract.ProposalCreateContract;
-import org.tron.protos.Contract.ProposalDeleteContract;
-import org.tron.protos.Contract.VoteWitnessContract;
-import org.tron.protos.Contract.WithdrawBalanceContract;
+import org.tron.protos.Contract.*;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static org.tron.common.runtime.utils.MUtil.convertToTronAddress;
+import static org.tron.common.utils.BIUtil.*;
+import static org.tron.common.utils.ByteUtil.*;
 
 /**
  * @author Roman Mandeleil
@@ -227,38 +204,37 @@ public class PrecompiledContracts {
 
 	public static abstract class PrecompiledContract {
 
+		private byte[] callerAddress;
+		private Deposit deposit;
+		private ProgramResult result;
+		private boolean isRootCallConstant;
+
 		public abstract long getEnergyForData(byte[] data);
 
 		public abstract Pair<Boolean, byte[]> execute(byte[] data);
 
-		private byte[] callerAddress;
+		public byte[] getCallerAddress() {
+			return callerAddress.clone();
+		}
 
 		public void setCallerAddress(byte[] callerAddress) {
 			this.callerAddress = callerAddress.clone();
-		}
-
-		public void setDeposit(Deposit deposit) {
-			this.deposit = deposit;
-		}
-
-		public void setResult(ProgramResult result) {
-			this.result = result;
-		}
-
-		private Deposit deposit;
-
-		private ProgramResult result;
-
-		public byte[] getCallerAddress() {
-			return callerAddress.clone();
 		}
 
 		public Deposit getDeposit() {
 			return deposit;
 		}
 
+		public void setDeposit(Deposit deposit) {
+			this.deposit = deposit;
+		}
+
 		public ProgramResult getResult() {
 			return result;
+		}
+
+		public void setResult(ProgramResult result) {
+			this.result = result;
 		}
 
 		public boolean isRootCallConstant() {
@@ -268,8 +244,6 @@ public class PrecompiledContracts {
 		public void setRootCallConstant(boolean rootCallConstant) {
 			isRootCallConstant = rootCallConstant;
 		}
-
-		private boolean isRootCallConstant;
 
 
 	}
@@ -351,6 +325,15 @@ public class PrecompiledContracts {
 
 	public static class ECRecover extends PrecompiledContract {
 
+		private static boolean validateV(byte[] v) {
+			for (int i = 0; i < v.length - 1; i++) {
+				if (v[i] != 0) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		@Override
 		public long getEnergyForData(byte[] data) {
 			return 3000;
@@ -386,15 +369,6 @@ public class PrecompiledContracts {
 			} else {
 				return Pair.of(true, out.getData());
 			}
-		}
-
-		private static boolean validateV(byte[] v) {
-			for (int i = 0; i < v.length - 1; i++) {
-				if (v[i] != 0) {
-					return false;
-				}
-			}
-			return true;
 		}
 	}
 

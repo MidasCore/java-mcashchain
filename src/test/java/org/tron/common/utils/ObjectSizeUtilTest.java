@@ -15,48 +15,48 @@
 
 package org.tron.common.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ObjectSizeUtilTest {
 
-  class Person {
+	@Test
+	public void testGetObjectSize() {
 
-    int age;
-    String name;
-    int[] scores;
+		Person person = new Person();
+		assertEquals(48, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person));
+		Person person1 = new Person(1, "tom", new int[]{});
+		assertEquals(112, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person1));
 
-    public Person() {
-    }
+		Person person2 = new Person(1, "tom", new int[]{100});
+		assertEquals(120, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person2));
 
-    public Person(int age, String name, int[] scores) {
-      this.age = age;
-      this.name = name;
-      this.scores = scores;
-    }
-  }
+		Person person3 = new Person(1, "tom", new int[]{100, 100});
+		assertEquals(120, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person3));
+		Person person4 = new Person(1, "tom", new int[]{100, 100, 100});
+		assertEquals(128, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person4));
+		Person person5 = new Person(1, "tom", new int[]{100, 100, 100, 100});
+		assertEquals(128, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person5));
+		Person person6 = new Person(1, "tom", new int[]{100, 100, 100, 100, 100});
+		assertEquals(136, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person6));
 
-  @Test
-  public void testGetObjectSize() {
+	}
 
-    Person person = new Person();
-    assertEquals(48, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person));
-    Person person1 = new Person(1, "tom", new int[]{});
-    assertEquals(112, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person1));
+	class Person {
 
-    Person person2 = new Person(1, "tom", new int[]{100});
-    assertEquals(120, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person2));
+		int age;
+		String name;
+		int[] scores;
 
-    Person person3 = new Person(1, "tom", new int[]{100, 100});
-    assertEquals(120, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person3));
-    Person person4 = new Person(1, "tom", new int[]{100, 100, 100});
-    assertEquals(128, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person4));
-    Person person5 = new Person(1, "tom", new int[]{100, 100, 100, 100});
-    assertEquals(128, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person5));
-    Person person6 = new Person(1, "tom", new int[]{100, 100, 100, 100, 100});
-    assertEquals(136, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person6));
+		public Person() {
+		}
 
-  }
+		public Person(int age, String name, int[] scores) {
+			this.age = age;
+			this.name = name;
+			this.scores = scores;
+		}
+	}
 
 }

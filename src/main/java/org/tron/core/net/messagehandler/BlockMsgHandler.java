@@ -1,8 +1,5 @@
 package org.tron.core.net.messagehandler;
 
-import static org.tron.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
-import static org.tron.core.config.Parameter.ChainConstant.BLOCK_SIZE;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,85 +18,88 @@ import org.tron.core.net.service.SyncService;
 import org.tron.core.services.WitnessProductBlockService;
 import org.tron.protos.Protocol.Inventory.InventoryType;
 
+import static org.tron.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
+import static org.tron.core.config.Parameter.ChainConstant.BLOCK_SIZE;
+
 @Slf4j
 @Component
 public class BlockMsgHandler implements TronMsgHandler {
 
-  @Autowired
-  private TronNetDelegate tronNetDelegate;
+	@Autowired
+	private TronNetDelegate tronNetDelegate;
 
-  @Autowired
-  private AdvService advService;
+	@Autowired
+	private AdvService advService;
 
-  @Autowired
-  private SyncService syncService;
+	@Autowired
+	private SyncService syncService;
 
-  @Autowired
-  private WitnessProductBlockService witnessProductBlockService;
+	@Autowired
+	private WitnessProductBlockService witnessProductBlockService;
 
-  private int maxBlockSize = BLOCK_SIZE + 1000;
+	private int maxBlockSize = BLOCK_SIZE + 1000;
 
-  private boolean fastForward = Args.getInstance().isFastForward();
+	private boolean fastForward = Args.getInstance().isFastForward();
 
-  @Override
-  public void processMessage(PeerConnection peer, TronMessage msg) throws P2pException {
+	@Override
+	public void processMessage(PeerConnection peer, TronMessage msg) throws P2pException {
 
-    BlockMessage blockMessage = (BlockMessage) msg;
+		BlockMessage blockMessage = (BlockMessage) msg;
 
-    check(peer, blockMessage);
+		check(peer, blockMessage);
 
-    BlockId blockId = blockMessage.getBlockId();
-    Item item = new Item(blockId, InventoryType.BLOCK);
-    if (peer.getSyncBlockRequested().containsKey(blockId)) {
-      peer.getSyncBlockRequested().remove(blockId);
-      syncService.processBlock(peer, blockMessage);
-    } else {
-      peer.getAdvInvRequest().remove(item);
-      processBlock(peer, blockMessage.getBlockCapsule());
-    }
-  }
+		BlockId blockId = blockMessage.getBlockId();
+		Item item = new Item(blockId, InventoryType.BLOCK);
+		if (peer.getSyncBlockRequested().containsKey(blockId)) {
+			peer.getSyncBlockRequested().remove(blockId);
+			syncService.processBlock(peer, blockMessage);
+		} else {
+			peer.getAdvInvRequest().remove(item);
+			processBlock(peer, blockMessage.getBlockCapsule());
+		}
+	}
 
-  private void check(PeerConnection peer, BlockMessage msg) throws P2pException {
-    Item item = new Item(msg.getBlockId(), InventoryType.BLOCK);
-    if (!peer.getSyncBlockRequested().containsKey(msg.getBlockId()) && !peer.getAdvInvRequest()
-        .containsKey(item)) {
-      throw new P2pException(TypeEnum.BAD_MESSAGE, "no request");
-    }
-    BlockCapsule blockCapsule = msg.getBlockCapsule();
-    if (blockCapsule.getInstance().getSerializedSize() > maxBlockSize) {
-      throw new P2pException(TypeEnum.BAD_MESSAGE, "block size over limit");
-    }
-    long gap = blockCapsule.getTimeStamp() - System.currentTimeMillis();
-    if (gap >= BLOCK_PRODUCED_INTERVAL) {
-      throw new P2pException(TypeEnum.BAD_MESSAGE, "block time error");
-    }
-  }
+	private void check(PeerConnection peer, BlockMessage msg) throws P2pException {
+		Item item = new Item(msg.getBlockId(), InventoryType.BLOCK);
+		if (!peer.getSyncBlockRequested().containsKey(msg.getBlockId()) && !peer.getAdvInvRequest()
+				.containsKey(item)) {
+			throw new P2pException(TypeEnum.BAD_MESSAGE, "no request");
+		}
+		BlockCapsule blockCapsule = msg.getBlockCapsule();
+		if (blockCapsule.getInstance().getSerializedSize() > maxBlockSize) {
+			throw new P2pException(TypeEnum.BAD_MESSAGE, "block size over limit");
+		}
+		long gap = blockCapsule.getTimeStamp() - System.currentTimeMillis();
+		if (gap >= BLOCK_PRODUCED_INTERVAL) {
+			throw new P2pException(TypeEnum.BAD_MESSAGE, "block time error");
+		}
+	}
 
-  private void processBlock(PeerConnection peer, BlockCapsule block) throws P2pException {
-    BlockId blockId = block.getBlockId();
-    if (!tronNetDelegate.containBlock(block.getParentBlockId())) {
-      logger.warn("Get unlink block {} from {}, head is {}.", blockId.getString(),
-          peer.getInetAddress(), tronNetDelegate
-              .getHeadBlockId().getString());
-      syncService.startSync(peer);
-      return;
-    }
+	private void processBlock(PeerConnection peer, BlockCapsule block) throws P2pException {
+		BlockId blockId = block.getBlockId();
+		if (!tronNetDelegate.containBlock(block.getParentBlockId())) {
+			logger.warn("Get unlink block {} from {}, head is {}.", blockId.getString(),
+					peer.getInetAddress(), tronNetDelegate
+							.getHeadBlockId().getString());
+			syncService.startSync(peer);
+			return;
+		}
 
-    if (fastForward && tronNetDelegate.validBlock(block)) {
-      advService.broadcast(new BlockMessage(block));
-    }
+		if (fastForward && tronNetDelegate.validBlock(block)) {
+			advService.broadcast(new BlockMessage(block));
+		}
 
-    tronNetDelegate.processBlock(block);
-    witnessProductBlockService.validWitnessProductTwoBlock(block);
-    tronNetDelegate.getActivePeer().forEach(p -> {
-      if (p.getAdvInvReceive().getIfPresent(blockId) != null) {
-        p.setBlockBothHave(blockId);
-      }
-    });
+		tronNetDelegate.processBlock(block);
+		witnessProductBlockService.validWitnessProductTwoBlock(block);
+		tronNetDelegate.getActivePeer().forEach(p -> {
+			if (p.getAdvInvReceive().getIfPresent(blockId) != null) {
+				p.setBlockBothHave(blockId);
+			}
+		});
 
-    if (!fastForward) {
-      advService.broadcast(new BlockMessage(block));
-    }
-  }
+		if (!fastForward) {
+			advService.broadcast(new BlockMessage(block));
+		}
+	}
 
 }

@@ -2,15 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -30,12 +23,12 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 @Slf4j
 public class UnfreezeBalanceActuatorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_unfreeze_balance_test";
-	private static TronApplicationContext context;
 	private static final String OWNER_ADDRESS;
 	private static final String RECEIVER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
@@ -43,6 +36,8 @@ public class UnfreezeBalanceActuatorTest {
 	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000);
 	private static final long frozenBalance = ConversionUtil.McashToMatoshi(1_000);
 	private static final long smallTatalResource = 100L;
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -287,7 +282,7 @@ public class UnfreezeBalanceActuatorTest {
 					.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
 			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleReceiver.getToAccountsList().size());
 			Assert.assertEquals(0,
-							delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
+					delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
 
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());

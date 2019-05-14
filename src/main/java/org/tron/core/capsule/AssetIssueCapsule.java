@@ -17,86 +17,91 @@ package org.tron.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.db.Manager;
 import org.tron.protos.Contract.AssetIssueContract;
 import org.tron.protos.Contract.AssetIssueContract.FrozenSupply;
 
+import java.util.List;
+
 @Slf4j(topic = "capsule")
 public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
-  private AssetIssueContract assetIssueContract;
+	private AssetIssueContract assetIssueContract;
 
-  /**
-   * get asset issue contract from bytes data.
-   */
-  public AssetIssueCapsule(byte[] data) {
-    try {
-      this.assetIssueContract = AssetIssueContract.parseFrom(data);
-    } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage());
-    }
-  }
+	/**
+	 * get asset issue contract from bytes data.
+	 */
+	public AssetIssueCapsule(byte[] data) {
+		try {
+			this.assetIssueContract = AssetIssueContract.parseFrom(data);
+		} catch (InvalidProtocolBufferException e) {
+			logger.debug(e.getMessage());
+		}
+	}
 
-  public AssetIssueCapsule(AssetIssueContract assetIssueContract) {
-    this.assetIssueContract = assetIssueContract;
-  }
+	public AssetIssueCapsule(AssetIssueContract assetIssueContract) {
+		this.assetIssueContract = assetIssueContract;
+	}
 
-  public byte[] getData() {
-    return this.assetIssueContract.toByteArray();
-  }
+	public static String createDbKeyString(String name, long order) {
+		return name + "_" + order;
+	}
 
-  @Override
-  public AssetIssueContract getInstance() {
-    return this.assetIssueContract;
-  }
+	public byte[] getData() {
+		return this.assetIssueContract.toByteArray();
+	}
 
-  @Override
-  public String toString() {
-    return this.assetIssueContract.toString();
-  }
+	@Override
+	public AssetIssueContract getInstance() {
+		return this.assetIssueContract;
+	}
 
-  public ByteString getName() {
-    return this.assetIssueContract.getName();
-  }
+	@Override
+	public String toString() {
+		return this.assetIssueContract.toString();
+	}
 
-  public void setId(String id) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setId(id)
-        .build();
-  }
+	public ByteString getName() {
+		return this.assetIssueContract.getName();
+	}
 
-  public String getId() {
-    return this.assetIssueContract.getId();
-  }
+	public String getId() {
+		return this.assetIssueContract.getId();
+	}
 
-  public void setPrecision(int precision) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPrecision(precision)
-        .build();
-  }
+	public void setId(String id) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setId(id)
+				.build();
+	}
 
-  public int getPrecision() {
-    return this.assetIssueContract.getPrecision();
-  }
+	public int getPrecision() {
+		return this.assetIssueContract.getPrecision();
+	}
 
-  public void setOrder(long order) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setOrder(order)
-        .build();
-  }
+	public void setPrecision(int precision) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setPrecision(precision)
+				.build();
+	}
 
-  public long getOrder() {
-    return this.assetIssueContract.getOrder();
-  }
+	public long getOrder() {
+		return this.assetIssueContract.getOrder();
+	}
 
-  public byte[] createDbV2Key() {
-    return ByteArray.fromString(this.assetIssueContract.getId());
-  }
+	public void setOrder(long order) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setOrder(order)
+				.build();
+	}
 
-  public byte[] createDbKey() {
+	public byte[] createDbV2Key() {
+		return ByteArray.fromString(this.assetIssueContract.getId());
+	}
+
+	public byte[] createDbKey() {
 //    long order = getOrder();
 //    if (order == 0) {
 //      return getName().toByteArray();
@@ -104,100 +109,96 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 //    String name = new String(getName().toByteArray(), Charset.forName("UTF-8"));
 //    String nameKey = createDbKeyString(name, order);
 //    return nameKey.getBytes();
-    return getName().toByteArray();
-  }
+		return getName().toByteArray();
+	}
 
-  public byte[] createDbKeyFinal(Manager manager) {
-    if (manager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-      return createDbKey();
-    } else {
-      return createDbV2Key();
-    }
-  }
+	public byte[] createDbKeyFinal(Manager manager) {
+		if (manager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
+			return createDbKey();
+		} else {
+			return createDbV2Key();
+		}
+	}
 
-  public static String createDbKeyString(String name, long order) {
-    return name + "_" + order;
-  }
+	public int getNum() {
+		return this.assetIssueContract.getNum();
+	}
 
-  public int getNum() {
-    return this.assetIssueContract.getNum();
-  }
+	public int getTrxNum() {
+		return this.assetIssueContract.getTrxNum();
+	}
 
-  public int getTrxNum() {
-    return this.assetIssueContract.getTrxNum();
-  }
+	public long getStartTime() {
+		return this.assetIssueContract.getStartTime();
+	}
 
-  public long getStartTime() {
-    return this.assetIssueContract.getStartTime();
-  }
+	public long getEndTime() {
+		return this.assetIssueContract.getEndTime();
+	}
 
-  public long getEndTime() {
-    return this.assetIssueContract.getEndTime();
-  }
+	public ByteString getOwnerAddress() {
+		return this.assetIssueContract.getOwnerAddress();
+	}
 
-  public ByteString getOwnerAddress() {
-    return this.assetIssueContract.getOwnerAddress();
-  }
+	public int getFrozenSupplyCount() {
+		return getInstance().getFrozenSupplyCount();
+	}
 
-  public int getFrozenSupplyCount() {
-    return getInstance().getFrozenSupplyCount();
-  }
+	public List<FrozenSupply> getFrozenSupplyList() {
+		return getInstance().getFrozenSupplyList();
+	}
 
-  public List<FrozenSupply> getFrozenSupplyList() {
-    return getInstance().getFrozenSupplyList();
-  }
+	public long getFrozenSupply() {
+		List<FrozenSupply> frozenList = getFrozenSupplyList();
+		final long[] frozenBalance = {0};
+		frozenList.forEach(frozen -> frozenBalance[0] = Long.sum(frozenBalance[0],
+				frozen.getFrozenAmount()));
+		return frozenBalance[0];
+	}
 
-  public long getFrozenSupply() {
-    List<FrozenSupply> frozenList = getFrozenSupplyList();
-    final long[] frozenBalance = {0};
-    frozenList.forEach(frozen -> frozenBalance[0] = Long.sum(frozenBalance[0],
-        frozen.getFrozenAmount()));
-    return frozenBalance[0];
-  }
+	public long getFreeAssetNetLimit() {
+		return this.assetIssueContract.getFreeAssetNetLimit();
+	}
 
-  public long getFreeAssetNetLimit() {
-    return this.assetIssueContract.getFreeAssetNetLimit();
-  }
+	public void setFreeAssetNetLimit(long newLimit) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setFreeAssetNetLimit(newLimit).build();
+	}
 
-  public void setFreeAssetNetLimit(long newLimit) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setFreeAssetNetLimit(newLimit).build();
-  }
+	public long getPublicFreeAssetNetLimit() {
+		return this.assetIssueContract.getPublicFreeAssetNetLimit();
+	}
 
-  public long getPublicFreeAssetNetLimit() {
-    return this.assetIssueContract.getPublicFreeAssetNetLimit();
-  }
+	public void setPublicFreeAssetNetLimit(long newPublicLimit) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setPublicFreeAssetNetLimit(newPublicLimit).build();
+	}
 
-  public void setPublicFreeAssetNetLimit(long newPublicLimit) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPublicFreeAssetNetLimit(newPublicLimit).build();
-  }
+	public long getPublicFreeAssetNetUsage() {
+		return this.assetIssueContract.getPublicFreeAssetNetUsage();
+	}
 
-  public long getPublicFreeAssetNetUsage() {
-    return this.assetIssueContract.getPublicFreeAssetNetUsage();
-  }
+	public void setPublicFreeAssetNetUsage(long value) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setPublicFreeAssetNetUsage(value).build();
+	}
 
-  public void setPublicFreeAssetNetUsage(long value) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPublicFreeAssetNetUsage(value).build();
-  }
+	public long getPublicLatestFreeNetTime() {
+		return this.assetIssueContract.getPublicLatestFreeNetTime();
+	}
 
-  public long getPublicLatestFreeNetTime() {
-    return this.assetIssueContract.getPublicLatestFreeNetTime();
-  }
+	public void setPublicLatestFreeNetTime(long time) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setPublicLatestFreeNetTime(time).build();
+	}
 
-  public void setPublicLatestFreeNetTime(long time) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setPublicLatestFreeNetTime(time).build();
-  }
+	public void setUrl(ByteString newUrl) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setUrl(newUrl).build();
+	}
 
-  public void setUrl(ByteString newUrl) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setUrl(newUrl).build();
-  }
-
-  public void setDescription(ByteString description) {
-    this.assetIssueContract = this.assetIssueContract.toBuilder()
-        .setDescription(description).build();
-  }
+	public void setDescription(ByteString description) {
+		this.assetIssueContract = this.assetIssueContract.toBuilder()
+				.setDescription(description).build();
+	}
 }

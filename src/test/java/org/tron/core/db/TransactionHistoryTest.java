@@ -1,7 +1,5 @@
 package org.tron.core.db;
 
-import java.io.File;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -15,14 +13,16 @@ import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.core.exception.BadItemException;
 
+import java.io.File;
+
 public class TransactionHistoryTest {
 
+	private static final byte[] transactionId = TransactionStoreTest.randomBytes(32);
 	private static String dbPath = "output_transaction_history_store_test";
 	private static String dbDirectory = "db__transaction_history_store_test";
 	private static String indexDirectory = "index_transaction_history_store_test";
 	private static TronApplicationContext context;
 	private static TransactionHistoryStore transactionHistoryStore;
-	private static final byte[] transactionId = TransactionStoreTest.randomBytes(32);
 
 	static {
 		Args.setParam(

@@ -1,13 +1,6 @@
 package org.tron.core.witness;
 
-import static org.junit.Assert.assertEquals;
-
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,6 +13,12 @@ import org.tron.core.config.args.Args;
 import org.tron.core.config.args.Witness;
 import org.tron.core.db.Manager;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 public class WitnessControllerTest {
 
 	private static Manager dbManager = new Manager();
@@ -30,6 +29,8 @@ public class WitnessControllerTest {
 		Args.setParam(new String[]{"-d", dbPath}, Constant.TEST_CONF);
 		context = new TronApplicationContext(DefaultConfig.class);
 	}
+
+	ByteString blank = ByteString.copyFrom(new byte[1]);
 
 	@BeforeClass
 	public static void init() {
@@ -43,8 +44,6 @@ public class WitnessControllerTest {
 		FileUtil.deleteDir(new File(dbPath));
 	}
 
-	ByteString blank = ByteString.copyFrom(new byte[1]);
-
 	@Test
 	public void testSlot() {
 
@@ -57,7 +56,7 @@ public class WitnessControllerTest {
 
 	}
 
-//	  @Test
+	//	  @Test
 	public void testWitnessSchedule() {
 
 		// no witness produce block

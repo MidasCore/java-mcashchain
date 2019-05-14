@@ -1,7 +1,5 @@
 package org.tron.core.db;
 
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -12,11 +10,12 @@ import org.tron.core.Constant;
 import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 
+import java.io.File;
+
 @Slf4j
 public class BlockStoreTest {
 
 	private static final String dbPath = "output_blockStore_test";
-	private BlockStore blockStore;
 	private static TronApplicationContext context;
 
 	static {
@@ -24,6 +23,8 @@ public class BlockStoreTest {
 				Constant.TEST_CONF);
 		context = new TronApplicationContext(DefaultConfig.class);
 	}
+
+	private BlockStore blockStore;
 
 	@Before
 	public void init() {

@@ -25,21 +25,21 @@ package org.tron.common.crypto.zksnark;
  */
 interface Field<T> {
 
-  T add(T o);
+	T add(T o);
 
-  T mul(T o);
+	T mul(T o);
 
-  T sub(T o);
+	T sub(T o);
 
-  T squared();
+	T squared();
 
-  T dbl();
+	T dbl();
 
-  T inverse();
+	T inverse();
 
-  T negate();
+	T negate();
 
-  boolean isZero();
+	boolean isZero();
 
-  boolean isValid();
+	boolean isValid();
 }

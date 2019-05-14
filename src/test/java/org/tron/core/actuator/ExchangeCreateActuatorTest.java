@@ -2,16 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -32,12 +24,13 @@ import org.tron.protos.Contract.AssetIssueContract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+import java.util.Map;
+
 @Slf4j
 
 public class ExchangeCreateActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_ExchangeCreate_test";
 	private static final String ACCOUNT_NAME_FIRST = "ownerF";
 	private static final String OWNER_ADDRESS_FIRST;
@@ -47,6 +40,8 @@ public class ExchangeCreateActuatorTest {
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ADDRESS_NOACCOUNT;
 	private static final String OWNER_ADDRESS_BALANCENOTSUFFIENT;
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -134,14 +129,14 @@ public class ExchangeCreateActuatorTest {
 
 		AssetIssueCapsule assetIssueCapsule1 =
 				new AssetIssueCapsule(AssetIssueContract.newBuilder()
-								.setName(ByteString.copyFrom(firstTokenId.getBytes()))
-								.build());
+						.setName(ByteString.copyFrom(firstTokenId.getBytes()))
+						.build());
 		assetIssueCapsule1.setId(String.valueOf(1L));
 
 		AssetIssueCapsule assetIssueCapsule2 =
 				new AssetIssueCapsule(AssetIssueContract.newBuilder()
-								.setName(ByteString.copyFrom(secondTokenId.getBytes()))
-								.build());
+						.setName(ByteString.copyFrom(secondTokenId.getBytes()))
+						.build());
 		assetIssueCapsule2.setId(String.valueOf(2L));
 
 		dbManager.getAssetIssueStore().put(assetIssueCapsule1.getName().toByteArray(), assetIssueCapsule1);

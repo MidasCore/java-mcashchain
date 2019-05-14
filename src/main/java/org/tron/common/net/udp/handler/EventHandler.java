@@ -2,8 +2,8 @@ package org.tron.common.net.udp.handler;
 
 public interface EventHandler {
 
-  void channelActivated();
+	void channelActivated();
 
-  void handleEvent(UdpEvent event);
+	void handleEvent(UdpEvent event);
 
 }

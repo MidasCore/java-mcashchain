@@ -189,15 +189,15 @@ check.dependsOn 'lint'
 //    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
 //
 //}
-checkstyle {
-    toolVersion = "${versions.checkstyle}"
-    configFile = file("config/checkstyle/checkStyleAll.xml")
-}
+//checkstyle {
+//    toolVersion = "${versions.checkstyle}"
+//    configFile = file("config/checkstyle/checkStyleAll.xml")
+//}
 
 
-checkstyleMain {
-    source = 'src/main/java'
-}
+//checkstyleMain {
+//    source = 'src/main/java'
+//}
 
 task lint(type: Checkstyle) {
     // Cleaning the old log because of the creation of the new ones (not sure if totaly needed)

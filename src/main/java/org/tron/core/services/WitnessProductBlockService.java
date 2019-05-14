@@ -2,118 +2,115 @@ package org.tron.core.services;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.capsule.BlockCapsule;
 
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Slf4j(topic = "witness")
 @Service
 public class WitnessProductBlockService {
 
-  private Cache<Long, BlockCapsule> historyBlockCapsuleCache = CacheBuilder.newBuilder()
-      .initialCapacity(200).maximumSize(200).build();
+	private Cache<Long, BlockCapsule> historyBlockCapsuleCache = CacheBuilder.newBuilder()
+			.initialCapacity(200).maximumSize(200).build();
 
-  private Map<String, CheatWitnessInfo> cheatWitnessInfoMap = new HashMap<>();
+	private Map<String, CheatWitnessInfo> cheatWitnessInfoMap = new HashMap<>();
 
-  public static class CheatWitnessInfo {
+	public void validWitnessProductTwoBlock(BlockCapsule block) {
+		try {
+			BlockCapsule blockCapsule = historyBlockCapsuleCache.getIfPresent(block.getNum());
+			if (blockCapsule != null && Arrays.equals(blockCapsule.getWitnessAddress().toByteArray(),
+					block.getWitnessAddress().toByteArray()) && !Arrays.equals(block.getBlockId().getBytes(),
+					blockCapsule.getBlockId().getBytes())) {
+				String key = ByteArray.toHexString(block.getWitnessAddress().toByteArray());
+				if (!cheatWitnessInfoMap.containsKey(key)) {
+					CheatWitnessInfo cheatWitnessInfo = new CheatWitnessInfo();
+					cheatWitnessInfoMap.put(key, cheatWitnessInfo);
+				}
+				cheatWitnessInfoMap.get(key).clear().setTime(System.currentTimeMillis())
+						.setLatestBlockNum(block.getNum()).add(block).add(blockCapsule).increment();
+			} else {
+				historyBlockCapsuleCache.put(block.getNum(), block);
+			}
+		} catch (Exception e) {
+			logger.error("valid witness same time product two block fail! blockNum: {}, blockHash: {}",
+					block.getNum(), block.getBlockId().toString(), e);
+		}
+	}
 
-    private AtomicInteger times = new AtomicInteger(0);
-    private long latestBlockNum;
-    private Set<BlockCapsule> blockCapsuleSet = new HashSet<>();
-    private long time;
+	public Map<String, CheatWitnessInfo> queryCheatWitnessInfo() {
+		return cheatWitnessInfoMap;
+	}
 
-    public CheatWitnessInfo increment() {
-      times.incrementAndGet();
-      return this;
-    }
+	public static class CheatWitnessInfo {
 
-    public AtomicInteger getTimes() {
-      return times;
-    }
+		private AtomicInteger times = new AtomicInteger(0);
+		private long latestBlockNum;
+		private Set<BlockCapsule> blockCapsuleSet = new HashSet<>();
+		private long time;
 
-    public CheatWitnessInfo setTimes(AtomicInteger times) {
-      this.times = times;
-      return this;
-    }
+		public CheatWitnessInfo increment() {
+			times.incrementAndGet();
+			return this;
+		}
 
-    public long getLatestBlockNum() {
-      return latestBlockNum;
-    }
+		public AtomicInteger getTimes() {
+			return times;
+		}
 
-    public CheatWitnessInfo setLatestBlockNum(long latestBlockNum) {
-      this.latestBlockNum = latestBlockNum;
-      return this;
-    }
+		public CheatWitnessInfo setTimes(AtomicInteger times) {
+			this.times = times;
+			return this;
+		}
 
-    public Set<BlockCapsule> getBlockCapsuleSet() {
-      return new HashSet<>(blockCapsuleSet);
-    }
+		public long getLatestBlockNum() {
+			return latestBlockNum;
+		}
 
-    public CheatWitnessInfo clear() {
-      blockCapsuleSet.clear();
-      return this;
-    }
+		public CheatWitnessInfo setLatestBlockNum(long latestBlockNum) {
+			this.latestBlockNum = latestBlockNum;
+			return this;
+		}
 
-    public CheatWitnessInfo add(BlockCapsule blockCapsule) {
-      blockCapsuleSet.add(blockCapsule);
-      return this;
-    }
+		public Set<BlockCapsule> getBlockCapsuleSet() {
+			return new HashSet<>(blockCapsuleSet);
+		}
 
-    public CheatWitnessInfo setBlockCapsuleSet(Set<BlockCapsule> blockCapsuleSet) {
-      this.blockCapsuleSet = new HashSet<>(blockCapsuleSet);
-      return this;
-    }
+		public CheatWitnessInfo setBlockCapsuleSet(Set<BlockCapsule> blockCapsuleSet) {
+			this.blockCapsuleSet = new HashSet<>(blockCapsuleSet);
+			return this;
+		}
 
-    public long getTime() {
-      return time;
-    }
+		public CheatWitnessInfo clear() {
+			blockCapsuleSet.clear();
+			return this;
+		}
 
-    public CheatWitnessInfo setTime(long time) {
-      this.time = time;
-      return this;
-    }
+		public CheatWitnessInfo add(BlockCapsule blockCapsule) {
+			blockCapsuleSet.add(blockCapsule);
+			return this;
+		}
 
-    @Override
-    public String toString() {
-      return "{" +
-          "times=" + times.get() +
-          ", time=" + time +
-          ", latestBlockNum=" + latestBlockNum +
-          ", blockCapsuleSet=" + blockCapsuleSet +
-          '}';
-    }
-  }
+		public long getTime() {
+			return time;
+		}
 
-  public void validWitnessProductTwoBlock(BlockCapsule block) {
-    try {
-      BlockCapsule blockCapsule = historyBlockCapsuleCache.getIfPresent(block.getNum());
-      if (blockCapsule != null && Arrays.equals(blockCapsule.getWitnessAddress().toByteArray(),
-          block.getWitnessAddress().toByteArray()) && !Arrays.equals(block.getBlockId().getBytes(),
-          blockCapsule.getBlockId().getBytes())) {
-        String key = ByteArray.toHexString(block.getWitnessAddress().toByteArray());
-        if (!cheatWitnessInfoMap.containsKey(key)) {
-          CheatWitnessInfo cheatWitnessInfo = new CheatWitnessInfo();
-          cheatWitnessInfoMap.put(key, cheatWitnessInfo);
-        }
-        cheatWitnessInfoMap.get(key).clear().setTime(System.currentTimeMillis())
-            .setLatestBlockNum(block.getNum()).add(block).add(blockCapsule).increment();
-      } else {
-        historyBlockCapsuleCache.put(block.getNum(), block);
-      }
-    } catch (Exception e) {
-      logger.error("valid witness same time product two block fail! blockNum: {}, blockHash: {}",
-          block.getNum(), block.getBlockId().toString(), e);
-    }
-  }
+		public CheatWitnessInfo setTime(long time) {
+			this.time = time;
+			return this;
+		}
 
-  public Map<String, CheatWitnessInfo> queryCheatWitnessInfo() {
-    return cheatWitnessInfoMap;
-  }
+		@Override
+		public String toString() {
+			return "{" +
+					"times=" + times.get() +
+					", time=" + time +
+					", latestBlockNum=" + latestBlockNum +
+					", blockCapsuleSet=" + blockCapsuleSet +
+					'}';
+		}
+	}
 }

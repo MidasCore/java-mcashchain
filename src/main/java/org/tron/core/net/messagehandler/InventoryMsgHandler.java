@@ -17,68 +17,68 @@ import org.tron.protos.Protocol.Inventory.InventoryType;
 @Component
 public class InventoryMsgHandler implements TronMsgHandler {
 
-  @Autowired
-  private TronNetDelegate tronNetDelegate;
+	@Autowired
+	private TronNetDelegate tronNetDelegate;
 
-  @Autowired
-  private AdvService advService;
+	@Autowired
+	private AdvService advService;
 
-  @Autowired
-  private TransactionsMsgHandler transactionsMsgHandler;
+	@Autowired
+	private TransactionsMsgHandler transactionsMsgHandler;
 
-  private int maxCountIn10s = 10_000;
+	private int maxCountIn10s = 10_000;
 
-  private boolean fastForward = Args.getInstance().isFastForward();
+	private boolean fastForward = Args.getInstance().isFastForward();
 
-  @Override
-  public void processMessage(PeerConnection peer, TronMessage msg) {
-    InventoryMessage inventoryMessage = (InventoryMessage) msg;
-    InventoryType type = inventoryMessage.getInventoryType();
+	@Override
+	public void processMessage(PeerConnection peer, TronMessage msg) {
+		InventoryMessage inventoryMessage = (InventoryMessage) msg;
+		InventoryType type = inventoryMessage.getInventoryType();
 
-    if (fastForward && inventoryMessage.getInventoryType().equals(InventoryType.TRX)) {
-      return;
-    }
+		if (fastForward && inventoryMessage.getInventoryType().equals(InventoryType.TRX)) {
+			return;
+		}
 
-    if (!check(peer, inventoryMessage)) {
-      return;
-    }
+		if (!check(peer, inventoryMessage)) {
+			return;
+		}
 
-    for (Sha256Hash id : inventoryMessage.getHashList()) {
-      Item item = new Item(id, type);
-      peer.getAdvInvReceive().put(item, System.currentTimeMillis());
-      advService.addInv(item);
-    }
-  }
+		for (Sha256Hash id : inventoryMessage.getHashList()) {
+			Item item = new Item(id, type);
+			peer.getAdvInvReceive().put(item, System.currentTimeMillis());
+			advService.addInv(item);
+		}
+	}
 
-  private boolean check(PeerConnection peer, InventoryMessage inventoryMessage) {
-    InventoryType type = inventoryMessage.getInventoryType();
-    int size = inventoryMessage.getHashList().size();
+	private boolean check(PeerConnection peer, InventoryMessage inventoryMessage) {
+		InventoryType type = inventoryMessage.getInventoryType();
+		int size = inventoryMessage.getHashList().size();
 
 //    if (size > NetConstants.MAX_INV_FETCH_PER_PEER) {
 //      throw new P2pException(TypeEnum.BAD_MESSAGE, "size: " + size);
 //    }
 
-    if (peer.isNeedSyncFromPeer() || peer.isNeedSyncFromUs()) {
-      logger.warn("Drop inv: {} size: {} from Peer {}, syncFromUs: {}, syncFromPeer: {}.",
-          type, size, peer.getInetAddress(), peer.isNeedSyncFromUs(), peer.isNeedSyncFromPeer());
-      return false;
-    }
+		if (peer.isNeedSyncFromPeer() || peer.isNeedSyncFromUs()) {
+			logger.warn("Drop inv: {} size: {} from Peer {}, syncFromUs: {}, syncFromPeer: {}.",
+					type, size, peer.getInetAddress(), peer.isNeedSyncFromUs(), peer.isNeedSyncFromPeer());
+			return false;
+		}
 
-    if (type.equals(InventoryType.TRX)) {
-      int count = peer.getNodeStatistics().messageStatistics.tronInTrxInventoryElement.getCount(10);
-      if (count > maxCountIn10s) {
-        logger.warn("Drop inv: {} size: {} from Peer {}, Inv count: {} is overload.",
-            type, size, peer.getInetAddress(), count);
-        return false;
-      }
+		if (type.equals(InventoryType.TRX)) {
+			int count = peer.getNodeStatistics().messageStatistics.tronInTrxInventoryElement.getCount(10);
+			if (count > maxCountIn10s) {
+				logger.warn("Drop inv: {} size: {} from Peer {}, Inv count: {} is overload.",
+						type, size, peer.getInetAddress(), count);
+				return false;
+			}
 
-      if (transactionsMsgHandler.isBusy()) {
-        logger.warn("Drop inv: {} size: {} from Peer {}, transactionsMsgHandler is busy.",
-            type, size, peer.getInetAddress());
-        return false;
-      }
-    }
+			if (transactionsMsgHandler.isBusy()) {
+				logger.warn("Drop inv: {} size: {} from Peer {}, transactionsMsgHandler is busy.",
+						type, size, peer.getInetAddress());
+				return false;
+			}
+		}
 
-    return true;
-  }
+		return true;
+	}
 }

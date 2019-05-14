@@ -1,6 +1,5 @@
 package org.tron.common.runtime;
 
-import lombok.Setter;
 import org.tron.common.runtime.vm.program.InternalTransaction.TrxType;
 import org.tron.common.runtime.vm.program.ProgramResult;
 import org.tron.core.exception.ContractExeException;
@@ -10,19 +9,19 @@ import org.tron.core.exception.VMIllegalException;
 
 public interface Runtime {
 
-  boolean isCallConstant() throws ContractValidateException;
+	boolean isCallConstant() throws ContractValidateException;
 
-  void execute() throws ContractValidateException, ContractExeException, VMIllegalException;
+	void execute() throws ContractValidateException, ContractExeException, VMIllegalException;
 
-  void go();
+	void go();
 
-  TrxType getTrxType();
+	TrxType getTrxType();
 
-  void finalization();
+	void finalization();
 
-  ProgramResult getResult();
+	ProgramResult getResult();
 
-  String getRuntimeError();
+	String getRuntimeError();
 
-  void setEnableEventLinstener(boolean enableEventLinstener);
+	void setEnableEventLinstener(boolean enableEventLinstener);
 }

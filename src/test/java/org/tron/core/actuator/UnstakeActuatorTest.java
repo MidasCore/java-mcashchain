@@ -8,7 +8,10 @@ import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.core.Constant;
-import org.tron.core.capsule.*;
+import org.tron.core.capsule.AccountCapsule;
+import org.tron.core.capsule.StakeAccountCapsule;
+import org.tron.core.capsule.TransactionResultCapsule;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.capsule.utils.StakeUtil;
 import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
@@ -25,14 +28,14 @@ import java.io.File;
 @Slf4j
 public class UnstakeActuatorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_unstake_test";
-	private static TronApplicationContext context;
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000_000);
 	private static final long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

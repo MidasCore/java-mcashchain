@@ -1,19 +1,5 @@
 package org.tron.keystore;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.UUID;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import org.spongycastle.crypto.digests.SHA256Digest;
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.spongycastle.crypto.generators.SCrypt;
@@ -21,6 +7,21 @@ import org.spongycastle.crypto.params.KeyParameter;
 import org.tron.common.crypto.ECKey;
 import org.tron.common.crypto.Hash;
 import org.tron.common.utils.ByteArray;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.UUID;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * <p>Ethereum wallet file management. For reference, refer to <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">
@@ -43,197 +44,193 @@ import org.tron.common.utils.ByteArray;
  */
 public class Wallet {
 
-  private static final int N_LIGHT = 1 << 12;
-  private static final int P_LIGHT = 6;
+	protected static final String AES_128_CTR = "pbkdf2";
+	protected static final String SCRYPT = "scrypt";
+	private static final int N_LIGHT = 1 << 12;
+	private static final int P_LIGHT = 6;
+	private static final int N_STANDARD = 1 << 18;
+	private static final int P_STANDARD = 1;
+	private static final int R = 8;
+	private static final int DKLEN = 32;
+	private static final int CURRENT_VERSION = 3;
+	private static final String CIPHER = "aes-128-ctr";
 
-  private static final int N_STANDARD = 1 << 18;
-  private static final int P_STANDARD = 1;
+	public static WalletFile create(String password, ECKey ecKeyPair, int n, int p)
+			throws CipherException {
 
-  private static final int R = 8;
-  private static final int DKLEN = 32;
+		byte[] salt = generateRandomBytes(32);
 
-  private static final int CURRENT_VERSION = 3;
+		byte[] derivedKey = generateDerivedScryptKey(password.getBytes(UTF_8), salt, n, R, p, DKLEN);
 
-  private static final String CIPHER = "aes-128-ctr";
-  protected static final String AES_128_CTR = "pbkdf2";
-  protected static final String SCRYPT = "scrypt";
+		byte[] encryptKey = Arrays.copyOfRange(derivedKey, 0, 16);
+		byte[] iv = generateRandomBytes(16);
 
-  public static WalletFile create(String password, ECKey ecKeyPair, int n, int p)
-      throws CipherException {
+		byte[] privateKeyBytes = ecKeyPair.getPrivKeyBytes();
 
-    byte[] salt = generateRandomBytes(32);
+		byte[] cipherText = performCipherOperation(Cipher.ENCRYPT_MODE, iv, encryptKey,
+				privateKeyBytes);
 
-    byte[] derivedKey = generateDerivedScryptKey(password.getBytes(UTF_8), salt, n, R, p, DKLEN);
+		byte[] mac = generateMac(derivedKey, cipherText);
 
-    byte[] encryptKey = Arrays.copyOfRange(derivedKey, 0, 16);
-    byte[] iv = generateRandomBytes(16);
+		return createWalletFile(ecKeyPair, cipherText, iv, salt, mac, n, p);
+	}
 
-    byte[] privateKeyBytes = ecKeyPair.getPrivKeyBytes();
+	public static WalletFile createStandard(String password, ECKey ecKeyPair)
+			throws CipherException {
+		return create(password, ecKeyPair, N_STANDARD, P_STANDARD);
+	}
 
-    byte[] cipherText = performCipherOperation(Cipher.ENCRYPT_MODE, iv, encryptKey,
-        privateKeyBytes);
+	public static WalletFile createLight(String password, ECKey ecKeyPair)
+			throws CipherException {
+		return create(password, ecKeyPair, N_LIGHT, P_LIGHT);
+	}
 
-    byte[] mac = generateMac(derivedKey, cipherText);
+	private static WalletFile createWalletFile(
+			ECKey ecKeyPair, byte[] cipherText, byte[] iv, byte[] salt, byte[] mac,
+			int n, int p) {
 
-    return createWalletFile(ecKeyPair, cipherText, iv, salt, mac, n, p);
-  }
+		WalletFile walletFile = new WalletFile();
+		walletFile.setAddress(org.tron.core.Wallet.encodeBase58(ecKeyPair.getAddress()));
 
-  public static WalletFile createStandard(String password, ECKey ecKeyPair)
-      throws CipherException {
-    return create(password, ecKeyPair, N_STANDARD, P_STANDARD);
-  }
+		WalletFile.Crypto crypto = new WalletFile.Crypto();
+		crypto.setCipher(CIPHER);
+		crypto.setCiphertext(ByteArray.toHexString(cipherText));
+		walletFile.setCrypto(crypto);
 
-  public static WalletFile createLight(String password, ECKey ecKeyPair)
-      throws CipherException {
-    return create(password, ecKeyPair, N_LIGHT, P_LIGHT);
-  }
+		WalletFile.CipherParams cipherParams = new WalletFile.CipherParams();
+		cipherParams.setIv(ByteArray.toHexString(iv));
+		crypto.setCipherparams(cipherParams);
 
-  private static WalletFile createWalletFile(
-      ECKey ecKeyPair, byte[] cipherText, byte[] iv, byte[] salt, byte[] mac,
-      int n, int p) {
+		crypto.setKdf(SCRYPT);
+		WalletFile.ScryptKdfParams kdfParams = new WalletFile.ScryptKdfParams();
+		kdfParams.setDklen(DKLEN);
+		kdfParams.setN(n);
+		kdfParams.setP(p);
+		kdfParams.setR(R);
+		kdfParams.setSalt(ByteArray.toHexString(salt));
+		crypto.setKdfparams(kdfParams);
 
-    WalletFile walletFile = new WalletFile();
-    walletFile.setAddress(org.tron.core.Wallet.encodeBase58(ecKeyPair.getAddress()));
+		crypto.setMac(ByteArray.toHexString(mac));
+		walletFile.setCrypto(crypto);
+		walletFile.setId(UUID.randomUUID().toString());
+		walletFile.setVersion(CURRENT_VERSION);
 
-    WalletFile.Crypto crypto = new WalletFile.Crypto();
-    crypto.setCipher(CIPHER);
-    crypto.setCiphertext(ByteArray.toHexString(cipherText));
-    walletFile.setCrypto(crypto);
+		return walletFile;
+	}
 
-    WalletFile.CipherParams cipherParams = new WalletFile.CipherParams();
-    cipherParams.setIv(ByteArray.toHexString(iv));
-    crypto.setCipherparams(cipherParams);
+	private static byte[] generateDerivedScryptKey(
+			byte[] password, byte[] salt, int n, int r, int p, int dkLen) throws CipherException {
+		return SCrypt.generate(password, salt, n, r, p, dkLen);
+	}
 
-    crypto.setKdf(SCRYPT);
-    WalletFile.ScryptKdfParams kdfParams = new WalletFile.ScryptKdfParams();
-    kdfParams.setDklen(DKLEN);
-    kdfParams.setN(n);
-    kdfParams.setP(p);
-    kdfParams.setR(R);
-    kdfParams.setSalt(ByteArray.toHexString(salt));
-    crypto.setKdfparams(kdfParams);
+	private static byte[] generateAes128CtrDerivedKey(
+			byte[] password, byte[] salt, int c, String prf) throws CipherException {
 
-    crypto.setMac(ByteArray.toHexString(mac));
-    walletFile.setCrypto(crypto);
-    walletFile.setId(UUID.randomUUID().toString());
-    walletFile.setVersion(CURRENT_VERSION);
+		if (!prf.equals("hmac-sha256")) {
+			throw new CipherException("Unsupported prf:" + prf);
+		}
 
-    return walletFile;
-  }
+		// Java 8 supports this, but you have to convert the password to a character array, see
+		// http://stackoverflow.com/a/27928435/3211687
 
-  private static byte[] generateDerivedScryptKey(
-      byte[] password, byte[] salt, int n, int r, int p, int dkLen) throws CipherException {
-    return SCrypt.generate(password, salt, n, r, p, dkLen);
-  }
+		PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
+		gen.init(password, salt, c);
+		return ((KeyParameter) gen.generateDerivedParameters(256)).getKey();
+	}
 
-  private static byte[] generateAes128CtrDerivedKey(
-      byte[] password, byte[] salt, int c, String prf) throws CipherException {
+	private static byte[] performCipherOperation(
+			int mode, byte[] iv, byte[] encryptKey, byte[] text) throws CipherException {
 
-    if (!prf.equals("hmac-sha256")) {
-      throw new CipherException("Unsupported prf:" + prf);
-    }
+		try {
+			IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+			Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
 
-    // Java 8 supports this, but you have to convert the password to a character array, see
-    // http://stackoverflow.com/a/27928435/3211687
+			SecretKeySpec secretKeySpec = new SecretKeySpec(encryptKey, "AES");
+			cipher.init(mode, secretKeySpec, ivParameterSpec);
+			return cipher.doFinal(text);
+		} catch (NoSuchPaddingException | NoSuchAlgorithmException
+				| InvalidAlgorithmParameterException | InvalidKeyException
+				| BadPaddingException | IllegalBlockSizeException e) {
+			throw new CipherException("Error performing cipher operation", e);
+		}
+	}
 
-    PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
-    gen.init(password, salt, c);
-    return ((KeyParameter) gen.generateDerivedParameters(256)).getKey();
-  }
+	private static byte[] generateMac(byte[] derivedKey, byte[] cipherText) {
+		byte[] result = new byte[16 + cipherText.length];
 
-  private static byte[] performCipherOperation(
-      int mode, byte[] iv, byte[] encryptKey, byte[] text) throws CipherException {
+		System.arraycopy(derivedKey, 16, result, 0, 16);
+		System.arraycopy(cipherText, 0, result, 16, cipherText.length);
 
-    try {
-      IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-      Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
+		return Hash.sha3(result);
+	}
 
-      SecretKeySpec secretKeySpec = new SecretKeySpec(encryptKey, "AES");
-      cipher.init(mode, secretKeySpec, ivParameterSpec);
-      return cipher.doFinal(text);
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException
-        | InvalidAlgorithmParameterException | InvalidKeyException
-        | BadPaddingException | IllegalBlockSizeException e) {
-      throw new CipherException("Error performing cipher operation", e);
-    }
-  }
+	public static ECKey decrypt(String password, WalletFile walletFile)
+			throws CipherException {
 
-  private static byte[] generateMac(byte[] derivedKey, byte[] cipherText) {
-    byte[] result = new byte[16 + cipherText.length];
+		validate(walletFile);
 
-    System.arraycopy(derivedKey, 16, result, 0, 16);
-    System.arraycopy(cipherText, 0, result, 16, cipherText.length);
+		WalletFile.Crypto crypto = walletFile.getCrypto();
 
-    return Hash.sha3(result);
-  }
+		byte[] mac = ByteArray.fromHexString(crypto.getMac());
+		byte[] iv = ByteArray.fromHexString(crypto.getCipherparams().getIv());
+		byte[] cipherText = ByteArray.fromHexString(crypto.getCiphertext());
 
-  public static ECKey decrypt(String password, WalletFile walletFile)
-      throws CipherException {
+		byte[] derivedKey;
 
-    validate(walletFile);
+		WalletFile.KdfParams kdfParams = crypto.getKdfparams();
+		if (kdfParams instanceof WalletFile.ScryptKdfParams) {
+			WalletFile.ScryptKdfParams scryptKdfParams =
+					(WalletFile.ScryptKdfParams) crypto.getKdfparams();
+			int dklen = scryptKdfParams.getDklen();
+			int n = scryptKdfParams.getN();
+			int p = scryptKdfParams.getP();
+			int r = scryptKdfParams.getR();
+			byte[] salt = ByteArray.fromHexString(scryptKdfParams.getSalt());
+			derivedKey = generateDerivedScryptKey(password.getBytes(UTF_8), salt, n, r, p, dklen);
+		} else if (kdfParams instanceof WalletFile.Aes128CtrKdfParams) {
+			WalletFile.Aes128CtrKdfParams aes128CtrKdfParams =
+					(WalletFile.Aes128CtrKdfParams) crypto.getKdfparams();
+			int c = aes128CtrKdfParams.getC();
+			String prf = aes128CtrKdfParams.getPrf();
+			byte[] salt = ByteArray.fromHexString(aes128CtrKdfParams.getSalt());
 
-    WalletFile.Crypto crypto = walletFile.getCrypto();
+			derivedKey = generateAes128CtrDerivedKey(password.getBytes(UTF_8), salt, c, prf);
+		} else {
+			throw new CipherException("Unable to deserialize params: " + crypto.getKdf());
+		}
 
-    byte[] mac = ByteArray.fromHexString(crypto.getMac());
-    byte[] iv = ByteArray.fromHexString(crypto.getCipherparams().getIv());
-    byte[] cipherText = ByteArray.fromHexString(crypto.getCiphertext());
+		byte[] derivedMac = generateMac(derivedKey, cipherText);
 
-    byte[] derivedKey;
+		if (!Arrays.equals(derivedMac, mac)) {
+			throw new CipherException("Invalid password provided");
+		}
 
-    WalletFile.KdfParams kdfParams = crypto.getKdfparams();
-    if (kdfParams instanceof WalletFile.ScryptKdfParams) {
-      WalletFile.ScryptKdfParams scryptKdfParams =
-          (WalletFile.ScryptKdfParams) crypto.getKdfparams();
-      int dklen = scryptKdfParams.getDklen();
-      int n = scryptKdfParams.getN();
-      int p = scryptKdfParams.getP();
-      int r = scryptKdfParams.getR();
-      byte[] salt = ByteArray.fromHexString(scryptKdfParams.getSalt());
-      derivedKey = generateDerivedScryptKey(password.getBytes(UTF_8), salt, n, r, p, dklen);
-    } else if (kdfParams instanceof WalletFile.Aes128CtrKdfParams) {
-      WalletFile.Aes128CtrKdfParams aes128CtrKdfParams =
-          (WalletFile.Aes128CtrKdfParams) crypto.getKdfparams();
-      int c = aes128CtrKdfParams.getC();
-      String prf = aes128CtrKdfParams.getPrf();
-      byte[] salt = ByteArray.fromHexString(aes128CtrKdfParams.getSalt());
+		byte[] encryptKey = Arrays.copyOfRange(derivedKey, 0, 16);
+		byte[] privateKey = performCipherOperation(Cipher.DECRYPT_MODE, iv, encryptKey, cipherText);
 
-      derivedKey = generateAes128CtrDerivedKey(password.getBytes(UTF_8), salt, c, prf);
-    } else {
-      throw new CipherException("Unable to deserialize params: " + crypto.getKdf());
-    }
+		return ECKey.fromPrivate(privateKey);
 
-    byte[] derivedMac = generateMac(derivedKey, cipherText);
+	}
 
-    if (!Arrays.equals(derivedMac, mac)) {
-      throw new CipherException("Invalid password provided");
-    }
+	static void validate(WalletFile walletFile) throws CipherException {
+		WalletFile.Crypto crypto = walletFile.getCrypto();
 
-    byte[] encryptKey = Arrays.copyOfRange(derivedKey, 0, 16);
-    byte[] privateKey = performCipherOperation(Cipher.DECRYPT_MODE, iv, encryptKey, cipherText);
+		if (walletFile.getVersion() != CURRENT_VERSION) {
+			throw new CipherException("Wallet version is not supported");
+		}
 
-    return ECKey.fromPrivate(privateKey);
+		if (!crypto.getCipher().equals(CIPHER)) {
+			throw new CipherException("Wallet cipher is not supported");
+		}
 
-  }
+		if (!crypto.getKdf().equals(AES_128_CTR) && !crypto.getKdf().equals(SCRYPT)) {
+			throw new CipherException("KDF type is not supported");
+		}
+	}
 
-  static void validate(WalletFile walletFile) throws CipherException {
-    WalletFile.Crypto crypto = walletFile.getCrypto();
-
-    if (walletFile.getVersion() != CURRENT_VERSION) {
-      throw new CipherException("Wallet version is not supported");
-    }
-
-    if (!crypto.getCipher().equals(CIPHER)) {
-      throw new CipherException("Wallet cipher is not supported");
-    }
-
-    if (!crypto.getKdf().equals(AES_128_CTR) && !crypto.getKdf().equals(SCRYPT)) {
-      throw new CipherException("KDF type is not supported");
-    }
-  }
-
-  static byte[] generateRandomBytes(int size) {
-    byte[] bytes = new byte[size];
-    new SecureRandom().nextBytes(bytes);
-    return bytes;
-  }
+	static byte[] generateRandomBytes(int size) {
+		byte[] bytes = new byte[size];
+		new SecureRandom().nextBytes(bytes);
+		return bytes;
+	}
 }

@@ -1,17 +1,5 @@
 package org.tron.core.db;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.util.Pair;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,340 +13,342 @@ import org.tron.core.exception.BadNumberBlockException;
 import org.tron.core.exception.NonCommonBlockException;
 import org.tron.core.exception.UnLinkedBlockException;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Component
 public class KhaosDatabase extends TronDatabase {
 
-  public static class KhaosBlock {
+	private KhaosBlock head;
+	@Getter
+	private KhaosStore miniStore = new KhaosStore();
+	@Getter
+	private KhaosStore miniUnlinkedStore = new KhaosStore();
 
-    public Sha256Hash getParentHash() {
-      return this.blk.getParentHash();
-    }
+	@Autowired
+	protected KhaosDatabase(@Value("block_KDB") String dbName) {
+		super(dbName);
+	}
 
-    public KhaosBlock(BlockCapsule blk) {
-      this.blk = blk;
-      this.id = blk.getBlockId();
-      this.num = blk.getNum();
-    }
+	@Override
+	public void put(byte[] key, Object item) {
+	}
 
-    @Getter
-    BlockCapsule blk;
-    Reference<KhaosBlock> parent = new WeakReference<>(null);
-    BlockId id;
-    Boolean invalid;
-    long num;
+	@Override
+	public void delete(byte[] key) {
+	}
 
-    public KhaosBlock getParent() {
-      return parent == null ? null : parent.get();
-    }
+	@Override
+	public Object get(byte[] key) {
+		return null;
+	}
 
-    public void setParent(KhaosBlock parent) {
-      this.parent = new WeakReference<>(parent);
-    }
+	@Override
+	public boolean has(byte[] key) {
+		return false;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      KhaosBlock that = (KhaosBlock) o;
-      return Objects.equals(id, that.id);
-    }
+	void start(BlockCapsule blk) {
+		this.head = new KhaosBlock(blk);
+		miniStore.insert(this.head);
+	}
 
-    @Override
-    public int hashCode() {
+	void removeBlk(Sha256Hash hash) {
+		if (!miniStore.remove(hash)) {
+			miniUnlinkedStore.remove(hash);
+		}
 
-      return Objects.hash(id);
-    }
-  }
+		head = miniStore.numKblkMap.entrySet().stream()
+				.max(Comparator.comparingLong(Map.Entry::getKey))
+				.map(Map.Entry::getValue)
+				.map(list -> list.get(0))
+				.orElseThrow(() -> new RuntimeException("khaosDB head should not be null."));
+	}
 
-  public class KhaosStore {
+	/**
+	 * check if the id is contained in the KhoasDB.
+	 */
+	public Boolean containBlock(Sha256Hash hash) {
+		return miniStore.getByHash(hash) != null || miniUnlinkedStore.getByHash(hash) != null;
+	}
 
-    private HashMap<BlockId, KhaosBlock> hashKblkMap = new HashMap<>();
-    // private HashMap<Sha256Hash, KhaosBlock> parentHashKblkMap = new HashMap<>();
-    private int maxCapcity = 1024;
+	public Boolean containBlockInMiniStore(Sha256Hash hash) {
+		return miniStore.getByHash(hash) != null;
+	}
 
-    @Getter
-    private LinkedHashMap<Long, ArrayList<KhaosBlock>> numKblkMap =
-        new LinkedHashMap<Long, ArrayList<KhaosBlock>>() {
+	/**
+	 * Get the Block form KhoasDB, if it doesn't exist ,return null.
+	 */
+	public BlockCapsule getBlock(Sha256Hash hash) {
+		return Stream.of(miniStore.getByHash(hash), miniUnlinkedStore.getByHash(hash))
+				.filter(Objects::nonNull)
+				.map(block -> block.blk)
+				.findFirst()
+				.orElse(null);
+	}
 
-          @Override
-          protected boolean removeEldestEntry(Map.Entry<Long, ArrayList<KhaosBlock>> entry) {
-            long minNum = Long.max(0L, head.num - maxCapcity);
-            Map<Long, ArrayList<KhaosBlock>> minNumMap = numKblkMap.entrySet().stream()
-                .filter(e -> e.getKey() < minNum)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	/**
+	 * Push the block in the KhoasDB.
+	 */
+	public BlockCapsule push(BlockCapsule blk)
+			throws UnLinkedBlockException, BadNumberBlockException {
+		KhaosBlock block = new KhaosBlock(blk);
+		if (head != null && block.getParentHash() != Sha256Hash.ZERO_HASH) {
+			KhaosBlock kblock = miniStore.getByHash(block.getParentHash());
+			if (kblock != null) {
+				if (blk.getNum() != kblock.num + 1) {
+					throw new BadNumberBlockException(
+							"parent number :" + kblock.num + ",block number :" + blk.getNum());
+				}
+				block.setParent(kblock);
+			} else {
+				miniUnlinkedStore.insert(block);
+				throw new UnLinkedBlockException();
+			}
+		}
 
-            minNumMap.forEach((k, v) -> {
-              numKblkMap.remove(k);
-              v.forEach(b -> hashKblkMap.remove(b.id));
-            });
+		miniStore.insert(block);
 
-            return false;
-          }
-        };
+		if (head == null || block.num > head.num) {
+			head = block;
+		}
+		return head.blk;
+	}
 
-    public void setMaxCapcity(int maxCapcity) {
-      this.maxCapcity = maxCapcity;
-    }
+	public BlockCapsule getHead() {
+		return head.blk;
+	}
 
-    public void insert(KhaosBlock block) {
-      hashKblkMap.put(block.id, block);
-      numKblkMap.computeIfAbsent(block.num, listBlk -> new ArrayList<>()).add(block);
-    }
+	void setHead(KhaosBlock blk) {
+		this.head = blk;
+	}
 
-    public boolean remove(Sha256Hash hash) {
-      KhaosBlock block = this.hashKblkMap.get(hash);
-      // Sha256Hash parentHash = Sha256Hash.ZERO_HASH;
-      if (block != null) {
-        long num = block.num;
-        // parentHash = block.getParentHash();
-        ArrayList<KhaosBlock> listBlk = numKblkMap.get(num);
-        if (listBlk != null) {
-          listBlk.removeIf(b -> b.id.equals(hash));
-        }
+	/**
+	 * pop the head block then remove it.
+	 */
+	public boolean pop() {
+		KhaosBlock prev = head.getParent();
+		if (prev != null) {
+			head = prev;
+			return true;
+		}
+		return false;
+	}
 
-        if (CollectionUtils.isEmpty(listBlk)) {
-          numKblkMap.remove(num);
-        }
+	public void setMaxSize(int maxSize) {
+		miniUnlinkedStore.setMaxCapcity(maxSize);
+		miniStore.setMaxCapcity(maxSize);
+	}
 
-        this.hashKblkMap.remove(hash);
-        return true;
-      }
-      return false;
-    }
+	/**
+	 * Find two block's most recent common parent block.
+	 */
+	public Pair<LinkedList<KhaosBlock>, LinkedList<KhaosBlock>> getBranch(Sha256Hash block1,
+																		  Sha256Hash block2)
+			throws NonCommonBlockException {
+		LinkedList<KhaosBlock> list1 = new LinkedList<>();
+		LinkedList<KhaosBlock> list2 = new LinkedList<>();
+		KhaosBlock kblk1 = miniStore.getByHash(block1);
+		checkNull(kblk1);
+		KhaosBlock kblk2 = miniStore.getByHash(block2);
+		checkNull(kblk2);
 
-    public List<KhaosBlock> getBlockByNum(Long num) {
-      return numKblkMap.get(num);
-    }
+		while (kblk1.num > kblk2.num) {
+			list1.add(kblk1);
+			kblk1 = kblk1.getParent();
+			checkNull(kblk1);
+			checkNull(miniStore.getByHash(kblk1.id));
+		}
 
-    public KhaosBlock getByHash(Sha256Hash hash) {
-      return hashKblkMap.get(hash);
-    }
+		while (kblk2.num > kblk1.num) {
+			list2.add(kblk2);
+			kblk2 = kblk2.getParent();
+			checkNull(kblk2);
+			checkNull(miniStore.getByHash(kblk2.id));
+		}
 
-    public int size() {
-      return hashKblkMap.size();
-    }
+		while (!Objects.equals(kblk1, kblk2)) {
+			list1.add(kblk1);
+			list2.add(kblk2);
+			kblk1 = kblk1.getParent();
+			checkNull(kblk1);
+			checkNull(miniStore.getByHash(kblk1.id));
+			kblk2 = kblk2.getParent();
+			checkNull(kblk2);
+			checkNull(miniStore.getByHash(kblk2.id));
+		}
 
-  }
+		return new Pair<>(list1, list2);
+	}
 
-  private KhaosBlock head;
+	private void checkNull(Object o) throws NonCommonBlockException {
+		if (o == null) {
+			throw new NonCommonBlockException();
+		}
+	}
 
-  @Getter
-  private KhaosStore miniStore = new KhaosStore();
+	/**
+	 * Find two block's most recent common parent block.
+	 */
+	@Deprecated
+	public Pair<LinkedList<BlockCapsule>, LinkedList<BlockCapsule>> getBranch(
+			BlockId block1, BlockId block2) {
+		LinkedList<BlockCapsule> list1 = new LinkedList<>();
+		LinkedList<BlockCapsule> list2 = new LinkedList<>();
+		KhaosBlock kblk1 = miniStore.getByHash(block1);
+		KhaosBlock kblk2 = miniStore.getByHash(block2);
 
-  @Getter
-  private KhaosStore miniUnlinkedStore = new KhaosStore();
+		if (kblk1 != null && kblk2 != null) {
+			while (!Objects.equals(kblk1, kblk2)) {
+				if (kblk1.num > kblk2.num) {
+					list1.add(kblk1.blk);
+					kblk1 = kblk1.getParent();
+				} else if (kblk1.num < kblk2.num) {
+					list2.add(kblk2.blk);
+					kblk2 = kblk2.getParent();
+				} else {
+					list1.add(kblk1.blk);
+					list2.add(kblk2.blk);
+					kblk1 = kblk1.getParent();
+					kblk2 = kblk2.getParent();
+				}
+			}
+		}
 
-  @Autowired
-  protected KhaosDatabase(@Value("block_KDB") String dbName) {
-    super(dbName);
-  }
+		return new Pair<>(list1, list2);
+	}
 
-  @Override
-  public void put(byte[] key, Object item) {
-  }
+	// only for unittest
+	public BlockCapsule getParentBlock(Sha256Hash hash) {
+		return Stream.of(miniStore.getByHash(hash), miniUnlinkedStore.getByHash(hash))
+				.filter(Objects::nonNull)
+				.map(KhaosBlock::getParent)
+				.map(khaosBlock -> khaosBlock == null ? null : khaosBlock.blk)
+				.filter(Objects::nonNull)
+				.filter(b -> containBlock(b.getBlockId()))
+				.findFirst()
+				.orElse(null);
+	}
 
-  @Override
-  public void delete(byte[] key) {
-  }
+	public boolean hasData() {
+		return !this.miniStore.hashKblkMap.isEmpty();
+	}
 
-  @Override
-  public Object get(byte[] key) {
-    return null;
-  }
+	public static class KhaosBlock {
 
-  @Override
-  public boolean has(byte[] key) {
-    return false;
-  }
+		@Getter
+		BlockCapsule blk;
+		Reference<KhaosBlock> parent = new WeakReference<>(null);
+		BlockId id;
+		Boolean invalid;
+		long num;
+		public KhaosBlock(BlockCapsule blk) {
+			this.blk = blk;
+			this.id = blk.getBlockId();
+			this.num = blk.getNum();
+		}
 
-  void start(BlockCapsule blk) {
-    this.head = new KhaosBlock(blk);
-    miniStore.insert(this.head);
-  }
+		public Sha256Hash getParentHash() {
+			return this.blk.getParentHash();
+		}
 
-  void setHead(KhaosBlock blk) {
-    this.head = blk;
-  }
+		public KhaosBlock getParent() {
+			return parent == null ? null : parent.get();
+		}
 
-  void removeBlk(Sha256Hash hash) {
-    if (!miniStore.remove(hash)) {
-      miniUnlinkedStore.remove(hash);
-    }
+		public void setParent(KhaosBlock parent) {
+			this.parent = new WeakReference<>(parent);
+		}
 
-    head = miniStore.numKblkMap.entrySet().stream()
-        .max(Comparator.comparingLong(Map.Entry::getKey))
-        .map(Map.Entry::getValue)
-        .map(list -> list.get(0))
-        .orElseThrow(() -> new RuntimeException("khaosDB head should not be null."));
-  }
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			KhaosBlock that = (KhaosBlock) o;
+			return Objects.equals(id, that.id);
+		}
 
-  /**
-   * check if the id is contained in the KhoasDB.
-   */
-  public Boolean containBlock(Sha256Hash hash) {
-    return miniStore.getByHash(hash) != null || miniUnlinkedStore.getByHash(hash) != null;
-  }
+		@Override
+		public int hashCode() {
 
-  public Boolean containBlockInMiniStore(Sha256Hash hash) {
-    return miniStore.getByHash(hash) != null;
-  }
+			return Objects.hash(id);
+		}
+	}
 
-  /**
-   * Get the Block form KhoasDB, if it doesn't exist ,return null.
-   */
-  public BlockCapsule getBlock(Sha256Hash hash) {
-    return Stream.of(miniStore.getByHash(hash), miniUnlinkedStore.getByHash(hash))
-        .filter(Objects::nonNull)
-        .map(block -> block.blk)
-        .findFirst()
-        .orElse(null);
-  }
+	public class KhaosStore {
 
-  /**
-   * Push the block in the KhoasDB.
-   */
-  public BlockCapsule push(BlockCapsule blk)
-      throws UnLinkedBlockException, BadNumberBlockException {
-    KhaosBlock block = new KhaosBlock(blk);
-    if (head != null && block.getParentHash() != Sha256Hash.ZERO_HASH) {
-      KhaosBlock kblock = miniStore.getByHash(block.getParentHash());
-      if (kblock != null) {
-        if (blk.getNum() != kblock.num + 1) {
-          throw new BadNumberBlockException(
-              "parent number :" + kblock.num + ",block number :" + blk.getNum());
-        }
-        block.setParent(kblock);
-      } else {
-        miniUnlinkedStore.insert(block);
-        throw new UnLinkedBlockException();
-      }
-    }
+		private HashMap<BlockId, KhaosBlock> hashKblkMap = new HashMap<>();
+		// private HashMap<Sha256Hash, KhaosBlock> parentHashKblkMap = new HashMap<>();
+		private int maxCapcity = 1024;
 
-    miniStore.insert(block);
+		@Getter
+		private LinkedHashMap<Long, ArrayList<KhaosBlock>> numKblkMap =
+				new LinkedHashMap<Long, ArrayList<KhaosBlock>>() {
 
-    if (head == null || block.num > head.num) {
-      head = block;
-    }
-    return head.blk;
-  }
+					@Override
+					protected boolean removeEldestEntry(Map.Entry<Long, ArrayList<KhaosBlock>> entry) {
+						long minNum = Long.max(0L, head.num - maxCapcity);
+						Map<Long, ArrayList<KhaosBlock>> minNumMap = numKblkMap.entrySet().stream()
+								.filter(e -> e.getKey() < minNum)
+								.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-  public BlockCapsule getHead() {
-    return head.blk;
-  }
+						minNumMap.forEach((k, v) -> {
+							numKblkMap.remove(k);
+							v.forEach(b -> hashKblkMap.remove(b.id));
+						});
 
-  /**
-   * pop the head block then remove it.
-   */
-  public boolean pop() {
-    KhaosBlock prev = head.getParent();
-    if (prev != null) {
-      head = prev;
-      return true;
-    }
-    return false;
-  }
+						return false;
+					}
+				};
 
-  public void setMaxSize(int maxSize) {
-    miniUnlinkedStore.setMaxCapcity(maxSize);
-    miniStore.setMaxCapcity(maxSize);
-  }
+		public void setMaxCapcity(int maxCapcity) {
+			this.maxCapcity = maxCapcity;
+		}
 
-  /**
-   * Find two block's most recent common parent block.
-   */
-  public Pair<LinkedList<KhaosBlock>, LinkedList<KhaosBlock>> getBranch(Sha256Hash block1,
-      Sha256Hash block2)
-      throws NonCommonBlockException {
-    LinkedList<KhaosBlock> list1 = new LinkedList<>();
-    LinkedList<KhaosBlock> list2 = new LinkedList<>();
-    KhaosBlock kblk1 = miniStore.getByHash(block1);
-    checkNull(kblk1);
-    KhaosBlock kblk2 = miniStore.getByHash(block2);
-    checkNull(kblk2);
+		public void insert(KhaosBlock block) {
+			hashKblkMap.put(block.id, block);
+			numKblkMap.computeIfAbsent(block.num, listBlk -> new ArrayList<>()).add(block);
+		}
 
-    while (kblk1.num > kblk2.num) {
-      list1.add(kblk1);
-      kblk1 = kblk1.getParent();
-      checkNull(kblk1);
-      checkNull(miniStore.getByHash(kblk1.id));
-    }
+		public boolean remove(Sha256Hash hash) {
+			KhaosBlock block = this.hashKblkMap.get(hash);
+			// Sha256Hash parentHash = Sha256Hash.ZERO_HASH;
+			if (block != null) {
+				long num = block.num;
+				// parentHash = block.getParentHash();
+				ArrayList<KhaosBlock> listBlk = numKblkMap.get(num);
+				if (listBlk != null) {
+					listBlk.removeIf(b -> b.id.equals(hash));
+				}
 
-    while (kblk2.num > kblk1.num) {
-      list2.add(kblk2);
-      kblk2 = kblk2.getParent();
-      checkNull(kblk2);
-      checkNull(miniStore.getByHash(kblk2.id));
-    }
+				if (CollectionUtils.isEmpty(listBlk)) {
+					numKblkMap.remove(num);
+				}
 
-    while (!Objects.equals(kblk1, kblk2)) {
-      list1.add(kblk1);
-      list2.add(kblk2);
-      kblk1 = kblk1.getParent();
-      checkNull(kblk1);
-      checkNull(miniStore.getByHash(kblk1.id));
-      kblk2 = kblk2.getParent();
-      checkNull(kblk2);
-      checkNull(miniStore.getByHash(kblk2.id));
-    }
+				this.hashKblkMap.remove(hash);
+				return true;
+			}
+			return false;
+		}
 
-    return new Pair<>(list1, list2);
-  }
+		public List<KhaosBlock> getBlockByNum(Long num) {
+			return numKblkMap.get(num);
+		}
 
-  private void checkNull(Object o) throws NonCommonBlockException {
-    if (o == null) {
-      throw new NonCommonBlockException();
-    }
-  }
+		public KhaosBlock getByHash(Sha256Hash hash) {
+			return hashKblkMap.get(hash);
+		}
 
-  /**
-   * Find two block's most recent common parent block.
-   */
-  @Deprecated
-  public Pair<LinkedList<BlockCapsule>, LinkedList<BlockCapsule>> getBranch(
-      BlockId block1, BlockId block2) {
-    LinkedList<BlockCapsule> list1 = new LinkedList<>();
-    LinkedList<BlockCapsule> list2 = new LinkedList<>();
-    KhaosBlock kblk1 = miniStore.getByHash(block1);
-    KhaosBlock kblk2 = miniStore.getByHash(block2);
+		public int size() {
+			return hashKblkMap.size();
+		}
 
-    if (kblk1 != null && kblk2 != null) {
-      while (!Objects.equals(kblk1, kblk2)) {
-        if (kblk1.num > kblk2.num) {
-          list1.add(kblk1.blk);
-          kblk1 = kblk1.getParent();
-        } else if (kblk1.num < kblk2.num) {
-          list2.add(kblk2.blk);
-          kblk2 = kblk2.getParent();
-        } else {
-          list1.add(kblk1.blk);
-          list2.add(kblk2.blk);
-          kblk1 = kblk1.getParent();
-          kblk2 = kblk2.getParent();
-        }
-      }
-    }
-
-    return new Pair<>(list1, list2);
-  }
-
-
-  // only for unittest
-  public BlockCapsule getParentBlock(Sha256Hash hash) {
-    return Stream.of(miniStore.getByHash(hash), miniUnlinkedStore.getByHash(hash))
-        .filter(Objects::nonNull)
-        .map(KhaosBlock::getParent)
-        .map(khaosBlock -> khaosBlock == null ? null : khaosBlock.blk)
-        .filter(Objects::nonNull)
-        .filter(b -> containBlock(b.getBlockId()))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public boolean hasData() {
-    return !this.miniStore.hashKblkMap.isEmpty();
-  }
+	}
 }

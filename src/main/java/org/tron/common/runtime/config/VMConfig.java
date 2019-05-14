@@ -17,83 +17,76 @@
  */
 package org.tron.common.runtime.config;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.tron.common.utils.ForkController;
 import org.tron.core.config.Parameter.ForkBlockVersionConsts;
-import org.tron.core.config.Parameter.ForkBlockVersionEnum;
 import org.tron.core.config.args.Args;
-import org.tron.core.db.Manager;
 
 /**
  * For developer only
  */
 public class VMConfig {
 
-  public static final int MAX_CODE_LENGTH = 1024 * 1024;
+	public static final int MAX_CODE_LENGTH = 1024 * 1024;
 
-  public static final int MAX_FEE_LIMIT = 1_000_000_000; //1000 trx
-
-  private boolean vmTraceCompressed = false;
-  private boolean vmTrace = Args.getInstance().isVmTrace();
-
-  //Odyssey3.2 hard fork -- ForkBlockVersionConsts.ENERGY_LIMIT
-  @Setter
-  private static boolean ENERGY_LIMIT_HARD_FORK = false;
+	public static final int MAX_FEE_LIMIT = 1_000_000_000; //1000 trx
+	//Odyssey3.2 hard fork -- ForkBlockVersionConsts.ENERGY_LIMIT
+	@Setter
+	private static boolean ENERGY_LIMIT_HARD_FORK = false;
+	@Setter
+	private static boolean ALLOW_TVM_TRANSFER_TRC10 = false;
+	@Setter
+	private static boolean ALLOW_MULTI_SIGN = false;
 
 //  @Getter
 //  @Setter
 //  private static boolean VERSION_3_5_HARD_FORK = false;
+	private boolean vmTraceCompressed = false;
+	private boolean vmTrace = Args.getInstance().isVmTrace();
 
-  @Setter
-  private static boolean ALLOW_TVM_TRANSFER_TRC10 = false;
+	private VMConfig() {
+	}
 
-  @Setter
-  private static boolean ALLOW_MULTI_SIGN = false;
+	public static VMConfig getInstance() {
+		return SystemPropertiesInstance.INSTANCE;
+	}
 
-  private VMConfig() {
-  }
+	public static void initVmHardFork() {
+		ENERGY_LIMIT_HARD_FORK = ForkController.instance().pass(ForkBlockVersionConsts.ENERGY_LIMIT);
+		//VERSION_3_5_HARD_FORK = ForkController.instance().pass(ForkBlockVersionEnum.VERSION_3_5);
+	}
 
-  private static class SystemPropertiesInstance {
+	public static void initAllowMultiSign(long allow) {
+		ALLOW_MULTI_SIGN = allow == 1;
+	}
 
-    private static final VMConfig INSTANCE = new VMConfig();
-  }
+	public static void initAllowTvmTransferTrc10(long allow) {
+		ALLOW_TVM_TRANSFER_TRC10 = allow == 1;
+	}
 
-  public static VMConfig getInstance() {
-    return SystemPropertiesInstance.INSTANCE;
-  }
+	public static boolean getEnergyLimitHardFork() {
+		return ENERGY_LIMIT_HARD_FORK;
+	}
 
-  public boolean vmTrace() {
-    return vmTrace;
-  }
+	public static boolean allowTvmTransferTrc10() {
+		return ALLOW_TVM_TRANSFER_TRC10;
+	}
 
-  public boolean vmTraceCompressed() {
-    return vmTraceCompressed;
-  }
+	public static boolean allowMultiSign() {
+		return ALLOW_MULTI_SIGN;
+	}
 
-  public static void initVmHardFork() {
-    ENERGY_LIMIT_HARD_FORK = ForkController.instance().pass(ForkBlockVersionConsts.ENERGY_LIMIT);
-    //VERSION_3_5_HARD_FORK = ForkController.instance().pass(ForkBlockVersionEnum.VERSION_3_5);
-  }
+	public boolean vmTrace() {
+		return vmTrace;
+	}
 
-  public static void initAllowMultiSign(long allow) {
-    ALLOW_MULTI_SIGN = allow == 1;
-  }
+	public boolean vmTraceCompressed() {
+		return vmTraceCompressed;
+	}
 
-  public static void initAllowTvmTransferTrc10(long allow) {
-    ALLOW_TVM_TRANSFER_TRC10 = allow == 1;
-  }
+	private static class SystemPropertiesInstance {
 
-  public static boolean getEnergyLimitHardFork() {
-    return ENERGY_LIMIT_HARD_FORK;
-  }
-
-  public static boolean allowTvmTransferTrc10() {
-    return ALLOW_TVM_TRANSFER_TRC10;
-  }
-
-  public static boolean allowMultiSign() {
-    return ALLOW_MULTI_SIGN;
-  }
+		private static final VMConfig INSTANCE = new VMConfig();
+	}
 
 }

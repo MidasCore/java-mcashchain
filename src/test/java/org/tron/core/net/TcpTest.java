@@ -1,12 +1,5 @@
 package org.tron.core.net;
 
-import static org.tron.core.net.message.MessageTypes.P2P_DISCONNECT;
-import static org.tron.core.net.message.MessageTypes.P2P_HELLO;
-import static org.tron.protos.Protocol.ReasonCode.DUPLICATE_PEER;
-import static org.tron.protos.Protocol.ReasonCode.FORKED;
-import static org.tron.protos.Protocol.ReasonCode.INCOMPATIBLE_CHAIN;
-import static org.tron.protos.Protocol.ReasonCode.INCOMPATIBLE_VERSION;
-
 import com.google.common.cache.CacheBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -14,21 +7,12 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.overlay.discover.node.Node;
-import org.tron.common.overlay.message.DisconnectMessage;
-import org.tron.common.overlay.message.HelloMessage;
-import org.tron.common.overlay.message.Message;
-import org.tron.common.overlay.message.P2pMessage;
-import org.tron.common.overlay.message.P2pMessageFactory;
+import org.tron.common.overlay.message.*;
 import org.tron.common.overlay.server.ChannelManager;
 import org.tron.common.overlay.server.SyncPool;
 import org.tron.common.utils.ReflectUtils;
@@ -40,73 +24,31 @@ import org.tron.core.net.message.BlockMessage;
 import org.tron.core.net.peer.PeerConnection;
 import org.tron.protos.Protocol.Block;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.tron.core.net.message.MessageTypes.P2P_DISCONNECT;
+import static org.tron.core.net.message.MessageTypes.P2P_HELLO;
+import static org.tron.protos.Protocol.ReasonCode.*;
+
 @Slf4j
 public class TcpTest {
 
+	Node node = Node.instanceOf("127.0.0.1:" + Args.getInstance().getNodeListenPort());
 	private ChannelManager channelManager;
 	private Manager manager;
 	private SyncPool pool;
 	private TronNetDelegate tronNetDelegate;
-
 	private int tryTimes = 10;
 	private int sleepTime = 1000;
 	private boolean finish = false;
-
-	Node node = Node.instanceOf("127.0.0.1:" + Args.getInstance().getNodeListenPort());
 
 	public TcpTest(TronApplicationContext context) {
 		channelManager = context.getBean(ChannelManager.class);
 		manager = context.getBean(Manager.class);
 		pool = context.getBean(SyncPool.class);
 		tronNetDelegate = context.getBean(TronNetDelegate.class);
-	}
-
-	private enum TestType {
-		normal, errorGenesisBlock, errorVersion, errorSolid, repeatConnect
-	}
-
-	private class HandshakeHandler extends ByteToMessageDecoder {
-
-		private P2pMessageFactory messageFactory = new P2pMessageFactory();
-
-		private TestType testType;
-
-		public HandshakeHandler(TestType testType) {
-			this.testType = testType;
-		}
-
-		@Override
-		protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out)
-				throws Exception {
-			byte[] encoded = new byte[buffer.readableBytes()];
-			buffer.readBytes(encoded);
-			P2pMessage msg = messageFactory.create(encoded);
-			switch (testType) {
-				case normal:
-					Assert.assertEquals(msg.getType(), P2P_HELLO);
-					break;
-				case errorGenesisBlock:
-					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
-					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), INCOMPATIBLE_CHAIN);
-					break;
-				case errorVersion:
-					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
-					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), INCOMPATIBLE_VERSION);
-					break;
-				case errorSolid:
-					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
-					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), FORKED);
-					break;
-				case repeatConnect:
-					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
-					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), DUPLICATE_PEER);
-					break;
-				default:
-					break;
-			}
-
-			finish = true;
-		}
 	}
 
 	public void normalTest() throws InterruptedException {
@@ -260,5 +202,53 @@ public class TcpTest {
 		unHandshakeTest();
 		logger.info("begin errorMsg test");
 		errorMsgTest();
+	}
+
+	private enum TestType {
+		normal, errorGenesisBlock, errorVersion, errorSolid, repeatConnect
+	}
+
+	private class HandshakeHandler extends ByteToMessageDecoder {
+
+		private P2pMessageFactory messageFactory = new P2pMessageFactory();
+
+		private TestType testType;
+
+		public HandshakeHandler(TestType testType) {
+			this.testType = testType;
+		}
+
+		@Override
+		protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out)
+				throws Exception {
+			byte[] encoded = new byte[buffer.readableBytes()];
+			buffer.readBytes(encoded);
+			P2pMessage msg = messageFactory.create(encoded);
+			switch (testType) {
+				case normal:
+					Assert.assertEquals(msg.getType(), P2P_HELLO);
+					break;
+				case errorGenesisBlock:
+					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
+					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), INCOMPATIBLE_CHAIN);
+					break;
+				case errorVersion:
+					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
+					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), INCOMPATIBLE_VERSION);
+					break;
+				case errorSolid:
+					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
+					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), FORKED);
+					break;
+				case repeatConnect:
+					Assert.assertEquals(msg.getType(), P2P_DISCONNECT);
+					Assert.assertEquals(((DisconnectMessage) msg).getReasonCode(), DUPLICATE_PEER);
+					break;
+				default:
+					break;
+			}
+
+			finish = true;
+		}
 	}
 }

@@ -28,45 +28,45 @@ import org.tron.common.overlay.message.Message;
  */
 public class MessageRoundtrip {
 
-  private final Message msg;
-  private long lastTimestamp = 0;
-  private long retryTimes = 0;
-  private boolean answered = false;
+	private final Message msg;
+	private long lastTimestamp = 0;
+	private long retryTimes = 0;
+	private boolean answered = false;
 
-  public MessageRoundtrip(Message msg) {
-    this.msg = msg;
-    saveTime();
-  }
+	public MessageRoundtrip(Message msg) {
+		this.msg = msg;
+		saveTime();
+	}
 
-  public boolean isAnswered() {
-    return answered;
-  }
+	public boolean isAnswered() {
+		return answered;
+	}
 
-  public void answer() {
-    answered = true;
-  }
+	public void answer() {
+		answered = true;
+	}
 
-  public long getRetryTimes() {
-    return retryTimes;
-  }
+	public long getRetryTimes() {
+		return retryTimes;
+	}
 
-  public void incRetryTimes() {
-    ++retryTimes;
-  }
+	public void incRetryTimes() {
+		++retryTimes;
+	}
 
-  public void saveTime() {
-    lastTimestamp = System.currentTimeMillis();
-  }
+	public void saveTime() {
+		lastTimestamp = System.currentTimeMillis();
+	}
 
-  public long getTime() {
-    return lastTimestamp;
-  }
+	public long getTime() {
+		return lastTimestamp;
+	}
 
-  public boolean hasToRetry() {
-    return 20000 < System.currentTimeMillis() - lastTimestamp;
-  }
+	public boolean hasToRetry() {
+		return 20000 < System.currentTimeMillis() - lastTimestamp;
+	}
 
-  public Message getMsg() {
-    return msg;
-  }
+	public Message getMsg() {
+		return msg;
+	}
 }

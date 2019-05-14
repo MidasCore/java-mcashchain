@@ -7,6 +7,6 @@ option java_outer_classname = "TronInventoryItems"; //Specify the class name of 
 option go_package = "github.com/tronprotocol/grpc-gateway/core";
 
 message InventoryItems {
-  int32 type = 1;
-  repeated bytes items = 2;
+    int32 type = 1;
+    repeated bytes items = 2;
 }

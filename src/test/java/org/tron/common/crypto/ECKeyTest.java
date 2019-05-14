@@ -1,23 +1,16 @@
 package org.tron.common.crypto;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import org.spongycastle.util.encoders.Hex;
+import org.tron.common.crypto.ECKey.ECDSASignature;
 
 import java.math.BigInteger;
 import java.security.KeyPairGenerator;
 import java.security.Security;
 import java.security.SignatureException;
-import java.util.Arrays;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.spongycastle.util.encoders.Hex;
-import org.tron.core.Wallet;
-import org.tron.common.crypto.ECKey.ECDSASignature;
+import static org.junit.Assert.*;
 
 @Slf4j
 public class ECKeyTest {

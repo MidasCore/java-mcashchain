@@ -2,16 +2,9 @@ package org.tron.core;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -35,12 +28,12 @@ import org.tron.protos.Contract.TransferAssetContract;
 import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.AccountType;
 
+import java.io.File;
+
 @Slf4j
 public class BandwidthProcessorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_bandwidth_test";
-	private static TronApplicationContext context;
 	private static final String ASSET_NAME;
 	private static final String ASSET_NAME_V2;
 	private static final String OWNER_ADDRESS;
@@ -53,6 +46,8 @@ public class BandwidthProcessorTest {
 	private static final int VOTE_SCORE = 2;
 	private static final String DESCRIPTION = "TRX";
 	private static final String URL = "https://tron.network";
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 	private static long START_TIME;
 	private static long END_TIME;
 

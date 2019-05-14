@@ -1,11 +1,5 @@
 package org.tron.common.runtime.vm.program;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static org.apache.commons.collections4.CollectionUtils.size;
-import static org.tron.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
-
-import java.util.*;
-
 import lombok.Setter;
 import org.tron.common.logsfilter.trigger.ContractTrigger;
 import org.tron.common.runtime.vm.CallCreate;
@@ -14,212 +8,218 @@ import org.tron.common.runtime.vm.LogInfo;
 import org.tron.common.utils.ByteArraySet;
 import org.tron.core.capsule.TransactionResultCapsule;
 
+import java.util.*;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.size;
+import static org.tron.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
+
 public class ProgramResult {
 
-  private long energyUsed = 0;
-  private long futureRefund = 0;
+	private long energyUsed = 0;
+	private long futureRefund = 0;
 
-  private byte[] hReturn = EMPTY_BYTE_ARRAY;
-  private byte[] contractAddress = EMPTY_BYTE_ARRAY;
-  private RuntimeException exception;
-  private boolean revert;
+	private byte[] hReturn = EMPTY_BYTE_ARRAY;
+	private byte[] contractAddress = EMPTY_BYTE_ARRAY;
+	private RuntimeException exception;
+	private boolean revert;
 
-  private Set<DataWord> deleteAccounts;
-  private ByteArraySet touchedAccounts = new ByteArraySet();
-  private List<InternalTransaction> internalTransactions;
-  private List<LogInfo> logInfoList;
+	private Set<DataWord> deleteAccounts;
+	private ByteArraySet touchedAccounts = new ByteArraySet();
+	private List<InternalTransaction> internalTransactions;
+	private List<LogInfo> logInfoList;
 
-  private TransactionResultCapsule ret = new TransactionResultCapsule();
+	private TransactionResultCapsule ret = new TransactionResultCapsule();
 
-  @Setter
-  private List<ContractTrigger> triggerList;
+	@Setter
+	private List<ContractTrigger> triggerList;
 
-  /*
-   * for testing runs ,
-   * call/create is not executed
-   * but dummy recorded
-   */
-  private List<CallCreate> callCreateList;
+	/*
+	 * for testing runs ,
+	 * call/create is not executed
+	 * but dummy recorded
+	 */
+	private List<CallCreate> callCreateList;
 
-  public void spendEnergy(long energy) {
-    energyUsed += energy;
-  }
+	public static ProgramResult createEmpty() {
+		ProgramResult result = new ProgramResult();
+		result.setHReturn(EMPTY_BYTE_ARRAY);
+		return result;
+	}
 
-  public void setRevert() {
-    this.revert = true;
-  }
+	public void spendEnergy(long energy) {
+		energyUsed += energy;
+	}
 
-  public boolean isRevert() {
-    return revert;
-  }
+	public void setRevert() {
+		this.revert = true;
+	}
 
-  public void refundEnergy(long energy) {
-    energyUsed -= energy;
-  }
+	public boolean isRevert() {
+		return revert;
+	}
 
-  public void setContractAddress(byte[] contractAddress) {
-    this.contractAddress = Arrays.copyOf(contractAddress, contractAddress.length);
-  }
+	public void refundEnergy(long energy) {
+		energyUsed -= energy;
+	}
 
-  public byte[] getContractAddress() {
-    return Arrays.copyOf(contractAddress, contractAddress.length);
-  }
+	public byte[] getContractAddress() {
+		return Arrays.copyOf(contractAddress, contractAddress.length);
+	}
 
-  public void setHReturn(byte[] hReturn) {
-    this.hReturn = hReturn;
+	public void setContractAddress(byte[] contractAddress) {
+		this.contractAddress = Arrays.copyOf(contractAddress, contractAddress.length);
+	}
 
-  }
+	public byte[] getHReturn() {
+		return hReturn;
+	}
 
-  public byte[] getHReturn() {
-    return hReturn;
-  }
+	public void setHReturn(byte[] hReturn) {
+		this.hReturn = hReturn;
 
-  public List<ContractTrigger> getTriggerList() {
-    return triggerList != null ? triggerList : new LinkedList<>();
-  }
+	}
 
-  public TransactionResultCapsule getRet() {
-    return ret;
-  }
+	public List<ContractTrigger> getTriggerList() {
+		return triggerList != null ? triggerList : new LinkedList<>();
+	}
 
-  public void setRet(TransactionResultCapsule ret) {
-    this.ret = ret;
-  }
+	public TransactionResultCapsule getRet() {
+		return ret;
+	}
 
-  public RuntimeException getException() {
-    return exception;
-  }
+	public void setRet(TransactionResultCapsule ret) {
+		this.ret = ret;
+	}
 
-  public long getEnergyUsed() {
-    return energyUsed;
-  }
+	public RuntimeException getException() {
+		return exception;
+	}
 
-  public void setException(RuntimeException exception) {
-    this.exception = exception;
-  }
+	public void setException(RuntimeException exception) {
+		this.exception = exception;
+	}
 
-  public Set<DataWord> getDeleteAccounts() {
-    if (deleteAccounts == null) {
-      deleteAccounts = new HashSet<>();
-    }
-    return deleteAccounts;
-  }
+	public long getEnergyUsed() {
+		return energyUsed;
+	}
 
-  public void addDeleteAccount(DataWord address) {
-    getDeleteAccounts().add(address);
-  }
+	public Set<DataWord> getDeleteAccounts() {
+		if (deleteAccounts == null) {
+			deleteAccounts = new HashSet<>();
+		}
+		return deleteAccounts;
+	}
 
-  public void addDeleteAccounts(Set<DataWord> accounts) {
-    if (!isEmpty(accounts)) {
-      getDeleteAccounts().addAll(accounts);
-    }
-  }
+	public void addDeleteAccount(DataWord address) {
+		getDeleteAccounts().add(address);
+	}
 
-  public void addTouchAccount(byte[] addr) {
-    touchedAccounts.add(addr);
-  }
+	public void addDeleteAccounts(Set<DataWord> accounts) {
+		if (!isEmpty(accounts)) {
+			getDeleteAccounts().addAll(accounts);
+		}
+	}
 
-  public Set<byte[]> getTouchedAccounts() {
-    return touchedAccounts;
-  }
+	public void addTouchAccount(byte[] addr) {
+		touchedAccounts.add(addr);
+	}
 
-  public void addTouchAccounts(Set<byte[]> accounts) {
-    if (!isEmpty(accounts)) {
-      getTouchedAccounts().addAll(accounts);
-    }
-  }
+	public Set<byte[]> getTouchedAccounts() {
+		return touchedAccounts;
+	}
 
-  public List<LogInfo> getLogInfoList() {
-    if (logInfoList == null) {
-      logInfoList = new ArrayList<>();
-    }
-    return logInfoList;
-  }
+	public void addTouchAccounts(Set<byte[]> accounts) {
+		if (!isEmpty(accounts)) {
+			getTouchedAccounts().addAll(accounts);
+		}
+	}
 
-  public void addLogInfo(LogInfo logInfo) {
-    getLogInfoList().add(logInfo);
-  }
+	public List<LogInfo> getLogInfoList() {
+		if (logInfoList == null) {
+			logInfoList = new ArrayList<>();
+		}
+		return logInfoList;
+	}
 
-  public void addLogInfos(List<LogInfo> logInfos) {
-    if (!isEmpty(logInfos)) {
-      getLogInfoList().addAll(logInfos);
-    }
-  }
+	public void addLogInfo(LogInfo logInfo) {
+		getLogInfoList().add(logInfo);
+	}
 
-  public List<CallCreate> getCallCreateList() {
-    if (callCreateList == null) {
-      callCreateList = new ArrayList<>();
-    }
-    return callCreateList;
-  }
+	public void addLogInfos(List<LogInfo> logInfos) {
+		if (!isEmpty(logInfos)) {
+			getLogInfoList().addAll(logInfos);
+		}
+	}
 
-  public void addCallCreate(byte[] data, byte[] destination, byte[] energyLimit, byte[] value) {
-    getCallCreateList().add(new CallCreate(data, destination, energyLimit, value));
-  }
+	public List<CallCreate> getCallCreateList() {
+		if (callCreateList == null) {
+			callCreateList = new ArrayList<>();
+		}
+		return callCreateList;
+	}
 
-  public List<InternalTransaction> getInternalTransactions() {
-    if (internalTransactions == null) {
-      internalTransactions = new ArrayList<>();
-    }
-    return internalTransactions;
-  }
+	public void addCallCreate(byte[] data, byte[] destination, byte[] energyLimit, byte[] value) {
+		getCallCreateList().add(new CallCreate(data, destination, energyLimit, value));
+	}
 
-  public InternalTransaction addInternalTransaction(byte[] parentHash, int deep,
-      byte[] senderAddress, byte[] transferAddress, long value, byte[] data, String note,
-      long nonce, Map<String, Long> token) {
-    InternalTransaction transaction = new InternalTransaction(parentHash, deep,
-        size(internalTransactions), senderAddress, transferAddress, value, data, note, nonce,
-        token);
-    getInternalTransactions().add(transaction);
-    return transaction;
-  }
+	public List<InternalTransaction> getInternalTransactions() {
+		if (internalTransactions == null) {
+			internalTransactions = new ArrayList<>();
+		}
+		return internalTransactions;
+	}
 
-  public void addInternalTransaction(InternalTransaction internalTransaction) {
-    getInternalTransactions().add(internalTransaction);
-  }
+	public InternalTransaction addInternalTransaction(byte[] parentHash, int deep,
+													  byte[] senderAddress, byte[] transferAddress, long value, byte[] data, String note,
+													  long nonce, Map<String, Long> token) {
+		InternalTransaction transaction = new InternalTransaction(parentHash, deep,
+				size(internalTransactions), senderAddress, transferAddress, value, data, note, nonce,
+				token);
+		getInternalTransactions().add(transaction);
+		return transaction;
+	}
 
-  public void addInternalTransactions(List<InternalTransaction> internalTransactions) {
-    getInternalTransactions().addAll(internalTransactions);
-  }
+	public void addInternalTransaction(InternalTransaction internalTransaction) {
+		getInternalTransactions().add(internalTransaction);
+	}
 
-  public void rejectInternalTransactions() {
-    for (InternalTransaction internalTx : getInternalTransactions()) {
-      internalTx.reject();
-    }
-  }
+	public void addInternalTransactions(List<InternalTransaction> internalTransactions) {
+		getInternalTransactions().addAll(internalTransactions);
+	}
 
-  public void addFutureRefund(long energyValue) {
-    futureRefund += energyValue;
-  }
+	public void rejectInternalTransactions() {
+		for (InternalTransaction internalTx : getInternalTransactions()) {
+			internalTx.reject();
+		}
+	}
 
-  public long getFutureRefund() {
-    return futureRefund;
-  }
+	public void addFutureRefund(long energyValue) {
+		futureRefund += energyValue;
+	}
 
-  public void resetFutureRefund() {
-    futureRefund = 0;
-  }
+	public long getFutureRefund() {
+		return futureRefund;
+	}
 
-  public void reset() {
-    getDeleteAccounts().clear();
-    getLogInfoList().clear();
-    resetFutureRefund();
-  }
+	public void resetFutureRefund() {
+		futureRefund = 0;
+	}
 
-  public void merge(ProgramResult another) {
-    addInternalTransactions(another.getInternalTransactions());
-    if (another.getException() == null && !another.isRevert()) {
-      addDeleteAccounts(another.getDeleteAccounts());
-      addLogInfos(another.getLogInfoList());
-      addFutureRefund(another.getFutureRefund());
-      addTouchAccounts(another.getTouchedAccounts());
-    }
-  }
+	public void reset() {
+		getDeleteAccounts().clear();
+		getLogInfoList().clear();
+		resetFutureRefund();
+	}
 
-  public static ProgramResult createEmpty() {
-    ProgramResult result = new ProgramResult();
-    result.setHReturn(EMPTY_BYTE_ARRAY);
-    return result;
-  }
+	public void merge(ProgramResult another) {
+		addInternalTransactions(another.getInternalTransactions());
+		if (another.getException() == null && !another.isRevert()) {
+			addDeleteAccounts(another.getDeleteAccounts());
+			addLogInfos(another.getLogInfoList());
+			addFutureRefund(another.getFutureRefund());
+			addTouchAccounts(another.getTouchedAccounts());
+		}
+	}
 
 }

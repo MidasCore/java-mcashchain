@@ -1,9 +1,6 @@
 package org.tron.core.capsule;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,6 +15,8 @@ import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
 import org.tron.protos.Protocol.AccountType;
+
+import java.io.File;
 
 @Slf4j
 public class TransactionCapsuleTest {
@@ -73,6 +72,15 @@ public class TransactionCapsuleTest {
 		KEY_ADDRESS_33 = "5CBDD86A2FA8DC4BDDD8A8F69DBA48572EEC07FB";
 	}
 
+	@AfterClass
+	public static void removeDb() {
+		Args.clearParam();
+		AppT.shutdownServices();
+		AppT.shutdown();
+		context.destroy();
+		FileUtil.deleteDir(new File(dbPath));
+	}
+
 	/**
 	 * create temp Capsule test need.
 	 */
@@ -85,16 +93,6 @@ public class TransactionCapsuleTest {
 						AccountType.Normal,
 						10_000_000_000L);
 		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
-	}
-
-
-	@AfterClass
-	public static void removeDb() {
-		Args.clearParam();
-		AppT.shutdownServices();
-		AppT.shutdown();
-		context.destroy();
-		FileUtil.deleteDir(new File(dbPath));
 	}
 
 //  @Test

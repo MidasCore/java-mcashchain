@@ -1,19 +1,9 @@
 package org.tron.core.actuator;
 
-import static junit.framework.TestCase.fail;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.HashMap;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -33,12 +23,15 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+import java.util.HashMap;
+
+import static junit.framework.TestCase.fail;
+
 @Slf4j
 
 public class ProposalCreateActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_ProposalCreate_test";
 	private static final String ACCOUNT_NAME_FIRST = "ownerF";
 	private static final String SUPERNODE_ADDRESS_FIRST;
@@ -49,6 +42,8 @@ public class ProposalCreateActuatorTest {
 	private static final String SUPERNODE_ADDRESS_NOACCOUNT;
 	private static final String SUPERNODE_ADDRESS_BALANCENOTSUFFIENT;
 	private static final String OWNER_ADDRESS;
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

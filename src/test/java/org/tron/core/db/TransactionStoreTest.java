@@ -1,15 +1,7 @@
 package org.tron.core.db;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.Random;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.Application;
 import org.tron.common.application.ApplicationFactory;
 import org.tron.common.application.TronApplicationContext;
@@ -34,27 +26,27 @@ import org.tron.protos.Contract.WitnessCreateContract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 
+import java.io.File;
+import java.util.Random;
+
 @Ignore
 public class TransactionStoreTest {
 
+	private static final byte[] key1 = TransactionStoreTest.randomBytes(21);
+	private static final byte[] key2 = TransactionStoreTest.randomBytes(21);
+	private static final String URL = "https://midasprotocol.io";
+	private static final String ACCOUNT_NAME = "ownerF";
+	private static final String OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+	private static final String TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+	private static final long AMOUNT = 100;
+	private static final String WITNESS_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
 	private static String dbPath = "output_transaction_store_test";
 	private static String dbDirectory = "db_transaction_store_test";
 	private static String indexDirectory = "index_transaction_store_test";
 	private static TransactionStore transactionStore;
 	private static TronApplicationContext context;
 	private static Application AppT;
-	private static final byte[] key1 = TransactionStoreTest.randomBytes(21);
 	private static Manager dbManager;
-	private static final byte[] key2 = TransactionStoreTest.randomBytes(21);
-
-
-	private static final String URL = "https://midasprotocol.io";
-
-	private static final String ACCOUNT_NAME = "ownerF";
-	private static final String OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
-	private static final String TO_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
-	private static final long AMOUNT = 100;
-	private static final String WITNESS_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
 
 	static {
 		Args.setParam(
@@ -78,6 +70,22 @@ public class TransactionStoreTest {
 		dbManager = context.getBean(Manager.class);
 		transactionStore = dbManager.getTransactionStore();
 
+	}
+
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		AppT.shutdownServices();
+		AppT.shutdown();
+		context.destroy();
+		FileUtil.deleteDir(new File(dbPath));
+	}
+
+	static byte[] randomBytes(int length) {
+		// generate the random number
+		byte[] result = new byte[length];
+		new Random().nextBytes(result);
+		return result;
 	}
 
 	/**
@@ -115,11 +123,11 @@ public class TransactionStoreTest {
 	 */
 	private VoteWitnessContract getVoteWitnessContract(String address, String voteaddress, Long value) {
 		return VoteWitnessContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setVote(Vote.newBuilder()
-								.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
-								.setVoteCount(value).build())
-						.build();
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.setVote(Vote.newBuilder()
+						.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
+						.setVoteCount(value).build())
+				.build();
 	}
 
 	@Test
@@ -328,21 +336,5 @@ public class TransactionStoreTest {
 		} catch (RuntimeException e) {
 			Assert.assertEquals("The key argument cannot be null", e.getMessage());
 		}
-	}
-
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		AppT.shutdownServices();
-		AppT.shutdown();
-		context.destroy();
-		FileUtil.deleteDir(new File(dbPath));
-	}
-
-	static byte[] randomBytes(int length) {
-		// generate the random number
-		byte[] result = new byte[length];
-		new Random().nextBytes(result);
-		return result;
 	}
 }

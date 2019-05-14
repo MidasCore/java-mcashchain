@@ -1,15 +1,8 @@
 package org.tron.core;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -24,15 +17,17 @@ import org.tron.protos.Contract;
 import org.tron.protos.Contract.AssetIssueContract;
 import org.tron.protos.Protocol.AccountType;
 
+import java.io.File;
+
 @Slf4j
 public class EnergyProcessorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_energy_processor_test";
-	private static TronApplicationContext context;
 	private static final String ASSET_NAME;
 	private static final String CONTRACT_PROVIDER_ADDRESS;
 	private static final String USER_ADDRESS;
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

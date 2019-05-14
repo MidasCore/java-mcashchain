@@ -15,13 +15,13 @@
 
 package org.tron.core.config.args;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.tron.common.utils.ByteArray;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenesisBlockTest {
 

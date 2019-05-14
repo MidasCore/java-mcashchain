@@ -12,11 +12,6 @@ public class StakeAccountCapsule implements ProtoCapsule<Protocol.StakeAccount>,
 
 	private Protocol.StakeAccount stakeAccount;
 
-	@Override
-	public int compareTo(Protocol.StakeAccount o) {
-		return Long.compare(o.getStakeAmount(), this.stakeAccount.getStakeAmount());
-	}
-
 	/**
 	 * get StakeAccount from bytes data.
 	 */
@@ -47,6 +42,11 @@ public class StakeAccountCapsule implements ProtoCapsule<Protocol.StakeAccount>,
 				.setStakeAmount(stakeAmount)
 				.setVotingPower(votingPower)
 				.build();
+	}
+
+	@Override
+	public int compareTo(Protocol.StakeAccount o) {
+		return Long.compare(o.getStakeAmount(), this.stakeAccount.getStakeAmount());
 	}
 
 	@Override

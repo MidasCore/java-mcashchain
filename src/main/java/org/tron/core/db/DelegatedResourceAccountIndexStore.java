@@ -8,18 +8,18 @@ import org.tron.core.capsule.DelegatedResourceAccountIndexCapsule;
 
 @Component
 public class DelegatedResourceAccountIndexStore extends
-    TronStoreWithRevoking<DelegatedResourceAccountIndexCapsule> {
+		TronStoreWithRevoking<DelegatedResourceAccountIndexCapsule> {
 
-  @Autowired
-  public DelegatedResourceAccountIndexStore(@Value("DelegatedResourceAccountIndex") String dbName) {
-    super(dbName);
-  }
+	@Autowired
+	public DelegatedResourceAccountIndexStore(@Value("DelegatedResourceAccountIndex") String dbName) {
+		super(dbName);
+	}
 
-  @Override
-  public DelegatedResourceAccountIndexCapsule get(byte[] key) {
+	@Override
+	public DelegatedResourceAccountIndexCapsule get(byte[] key) {
 
-    byte[] value = revokingDB.getUnchecked(key);
-    return ArrayUtils.isEmpty(value) ? null : new DelegatedResourceAccountIndexCapsule(value);
-  }
+		byte[] value = revokingDB.getUnchecked(key);
+		return ArrayUtils.isEmpty(value) ? null : new DelegatedResourceAccountIndexCapsule(value);
+	}
 
 }

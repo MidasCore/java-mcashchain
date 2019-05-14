@@ -3,9 +3,6 @@ package stest.tron.wallet.dailybuild.manual;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -19,46 +16,37 @@ import org.tron.core.Wallet;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Block;
 import stest.tron.wallet.common.client.Configuration;
-import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.PublicMethed;
+
+import java.math.BigInteger;
+import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class WalletTestAccount002 {
 
-  private final String testKey002 = Configuration.getByPath("testng.conf")
-      .getString("foundationAccount.key1");
-  private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
+	private final String testKey002 = Configuration.getByPath("testng.conf")
+			.getString("foundationAccount.key1");
+	private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
 
-  private ManagedChannel channelFull = null;
-  private ManagedChannel searchChannelFull = null;
-  private WalletGrpc.WalletBlockingStub blockingStubFull = null;
-  private WalletGrpc.WalletBlockingStub searchBlockingStubFull = null;
-  private String fullnode = Configuration.getByPath("testng.conf").getStringList("fullnode.ip.list")
-      .get(0);
-  private String searchFullnode = Configuration.getByPath("testng.conf")
-      .getStringList("fullnode.ip.list").get(1);
+	private ManagedChannel channelFull = null;
+	private ManagedChannel searchChannelFull = null;
+	private WalletGrpc.WalletBlockingStub blockingStubFull = null;
+	private WalletGrpc.WalletBlockingStub searchBlockingStubFull = null;
+	private String fullnode = Configuration.getByPath("testng.conf").getStringList("fullnode.ip.list")
+			.get(0);
+	private String searchFullnode = Configuration.getByPath("testng.conf")
+			.getStringList("fullnode.ip.list").get(1);
 
-  @BeforeSuite
-  public void beforeSuite() {
-    Wallet wallet = new Wallet();
-  }
+	public static String loadPubKey() {
+		char[] buf = new char[0x100];
+		return String.valueOf(buf, 32, 130);
+	}
 
-  /**
-   * constructor.
-   */
-
-  @BeforeClass
-  public void beforeClass() {
-    channelFull = ManagedChannelBuilder.forTarget(fullnode)
-        .usePlaintext(true)
-        .build();
-    blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
-
-    searchChannelFull = ManagedChannelBuilder.forTarget(searchFullnode)
-        .usePlaintext(true)
-        .build();
-    searchBlockingStubFull = WalletGrpc.newBlockingStub(searchChannelFull);
-  }
+	@BeforeSuite
+	public void beforeSuite() {
+		Wallet wallet = new Wallet();
+	}
 
   /*    @Test(enabled = true)
     public void TestGetAllAccount(){
@@ -84,84 +72,95 @@ public class WalletTestAccount002 {
 
     }*/
 
-  /**
-   * constructor.
-   */
+	/**
+	 * constructor.
+	 */
 
-  @AfterClass
-  public void shutdown() throws InterruptedException {
-    if (channelFull != null) {
-      channelFull.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-    }
-    if (searchChannelFull != null) {
-      searchChannelFull.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-    }
-  }
+	@BeforeClass
+	public void beforeClass() {
+		channelFull = ManagedChannelBuilder.forTarget(fullnode)
+				.usePlaintext(true)
+				.build();
+		blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
 
-  class AccountComparator implements Comparator {
+		searchChannelFull = ManagedChannelBuilder.forTarget(searchFullnode)
+				.usePlaintext(true)
+				.build();
+		searchBlockingStubFull = WalletGrpc.newBlockingStub(searchChannelFull);
+	}
 
-    public int compare(Object o1, Object o2) {
-      return Long.compare(((Account) o2).getBalance(), ((Account) o1).getBalance());
-    }
-  }
+	/**
+	 * constructor.
+	 */
 
-  /**
-   * constructor.
-   */
+	@AfterClass
+	public void shutdown() throws InterruptedException {
+		if (channelFull != null) {
+			channelFull.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+		}
+		if (searchChannelFull != null) {
+			searchChannelFull.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+		}
+	}
 
-  public Account queryAccount(String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
-    byte[] address;
-    ECKey temKey = null;
-    try {
-      BigInteger priK = new BigInteger(priKey, 16);
-      temKey = ECKey.fromPrivate(priK);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    ECKey ecKey = temKey;
-    if (ecKey == null) {
-      String pubKey = loadPubKey(); //04 PubKey[128]
-      if (StringUtils.isEmpty(pubKey)) {
-        logger.warn("Warning: QueryAccount failed, no wallet address !!");
-        return null;
-      }
-      byte[] pubKeyAsc = pubKey.getBytes();
-      byte[] pubKeyHex = Hex.decode(pubKeyAsc);
-      ecKey = ECKey.fromPublicOnly(pubKeyHex);
-    }
-    return grpcQueryAccount(ecKey.getAddress(), blockingStubFull);
-  }
+	/**
+	 * constructor.
+	 */
 
+	public Account queryAccount(String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
+		byte[] address;
+		ECKey temKey = null;
+		try {
+			BigInteger priK = new BigInteger(priKey, 16);
+			temKey = ECKey.fromPrivate(priK);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		ECKey ecKey = temKey;
+		if (ecKey == null) {
+			String pubKey = loadPubKey(); //04 PubKey[128]
+			if (StringUtils.isEmpty(pubKey)) {
+				logger.warn("Warning: QueryAccount failed, no wallet address !!");
+				return null;
+			}
+			byte[] pubKeyAsc = pubKey.getBytes();
+			byte[] pubKeyHex = Hex.decode(pubKeyAsc);
+			ecKey = ECKey.fromPublicOnly(pubKeyHex);
+		}
+		return grpcQueryAccount(ecKey.getAddress(), blockingStubFull);
+	}
 
-  public static String loadPubKey() {
-    char[] buf = new char[0x100];
-    return String.valueOf(buf, 32, 130);
-  }
+	public byte[] getAddress(ECKey ecKey) {
+		return ecKey.getAddress();
+	}
 
-  public byte[] getAddress(ECKey ecKey) {
-    return ecKey.getAddress();
-  }
+	/**
+	 * constructor.
+	 */
 
-  /**
-   * constructor.
-   */
+	public Account grpcQueryAccount(byte[] address, WalletGrpc.WalletBlockingStub blockingStubFull) {
+		ByteString addressBs = ByteString.copyFrom(address);
+		Account request = Account.newBuilder().setAddress(addressBs).build();
+		return blockingStubFull.getAccount(request);
+	}
 
-  public Account grpcQueryAccount(byte[] address, WalletGrpc.WalletBlockingStub blockingStubFull) {
-    ByteString addressBs = ByteString.copyFrom(address);
-    Account request = Account.newBuilder().setAddress(addressBs).build();
-    return blockingStubFull.getAccount(request);
-  }
+	/**
+	 * constructor.
+	 */
 
-  /**
-   * constructor.
-   */
+	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+		NumberMessage.Builder builder = NumberMessage.newBuilder();
+		builder.setNum(blockNum);
+		return blockingStubFull.getBlockByNum(builder.build());
 
-  public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
-    NumberMessage.Builder builder = NumberMessage.newBuilder();
-    builder.setNum(blockNum);
-    return blockingStubFull.getBlockByNum(builder.build());
+	}
 
-  }
+	class AccountComparator implements Comparator {
+
+		public int compare(Object o1, Object o2) {
+			return Long.compare(((Account) o2).getBalance(), ((Account) o1).getBalance());
+		}
+	}
 }
 
 

@@ -2,14 +2,14 @@ package org.tron.core.db2.core;
 
 public interface ISession extends AutoCloseable {
 
-  void commit();
+	void commit();
 
-  void revoke();
+	void revoke();
 
-  void merge();
+	void merge();
 
-  void destroy();
+	void destroy();
 
-  void close();
+	void close();
 
 }

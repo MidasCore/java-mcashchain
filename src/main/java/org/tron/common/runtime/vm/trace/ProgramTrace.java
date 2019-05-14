@@ -17,105 +17,106 @@
  */
 package org.tron.common.runtime.vm.trace;
 
-import static java.lang.String.format;
-import static org.tron.common.runtime.utils.MUtil.convertToTronAddress;
-import static org.tron.common.runtime.vm.trace.Serializers.serializeFieldsOnly;
-import static org.tron.common.utils.ByteUtil.toHexString;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.spongycastle.util.encoders.Hex;
 import org.tron.common.runtime.config.VMConfig;
 import org.tron.common.runtime.vm.DataWord;
 import org.tron.common.runtime.vm.OpCode;
 import org.tron.common.runtime.vm.program.invoke.ProgramInvoke;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
+import static org.tron.common.runtime.utils.MUtil.convertToTronAddress;
+import static org.tron.common.runtime.vm.trace.Serializers.serializeFieldsOnly;
+import static org.tron.common.utils.ByteUtil.toHexString;
+
 public class ProgramTrace {
 
-  private List<Op> ops = new ArrayList<>();
-  private String result;
-  private String error;
-  private String contractAddress;
+	private List<Op> ops = new ArrayList<>();
+	private String result;
+	private String error;
+	private String contractAddress;
 
-  public ProgramTrace() {
-    this(null, null);
-  }
+	public ProgramTrace() {
+		this(null, null);
+	}
 
-  public ProgramTrace(VMConfig config, ProgramInvoke programInvoke) {
-    if (programInvoke != null && config.vmTrace()) {
-      contractAddress = Hex
-          .toHexString(convertToTronAddress(programInvoke.getContractAddress().getLast20Bytes()));
-    }
-  }
+	public ProgramTrace(VMConfig config, ProgramInvoke programInvoke) {
+		if (programInvoke != null && config.vmTrace()) {
+			contractAddress = Hex
+					.toHexString(convertToTronAddress(programInvoke.getContractAddress().getLast20Bytes()));
+		}
+	}
 
-  public List<Op> getOps() {
-    return ops;
-  }
+	public List<Op> getOps() {
+		return ops;
+	}
 
-  public void setOps(List<Op> ops) {
-    this.ops = ops;
-  }
+	public void setOps(List<Op> ops) {
+		this.ops = ops;
+	}
 
-  public String getResult() {
-    return result;
-  }
+	public String getResult() {
+		return result;
+	}
 
-  public void setResult(String result) {
-    this.result = result;
-  }
+	public void setResult(String result) {
+		this.result = result;
+	}
 
-  public String getError() {
-    return error;
-  }
+	public String getError() {
+		return error;
+	}
 
-  public void setError(String error) {
-    this.error = error;
-  }
+	public void setError(String error) {
+		this.error = error;
+	}
 
-  public String getContractAddress() {
-    return contractAddress;
-  }
+	public String getContractAddress() {
+		return contractAddress;
+	}
 
-  public void setContractAddress(String contractAddress) {
-    this.contractAddress = contractAddress;
-  }
+	public void setContractAddress(String contractAddress) {
+		this.contractAddress = contractAddress;
+	}
 
-  public ProgramTrace result(byte[] result) {
-    setResult(toHexString(result));
-    return this;
-  }
+	public ProgramTrace result(byte[] result) {
+		setResult(toHexString(result));
+		return this;
+	}
 
-  public ProgramTrace error(Exception error) {
-    setError(error == null ? "" : format("%s: %s", error.getClass(), error.getMessage()));
-    return this;
-  }
+	public ProgramTrace error(Exception error) {
+		setError(error == null ? "" : format("%s: %s", error.getClass(), error.getMessage()));
+		return this;
+	}
 
-  public Op addOp(byte code, int pc, int deep, DataWord energy, OpActions actions) {
-    Op op = new Op();
-    op.setActions(actions);
-    op.setCode(OpCode.code(code));
-    op.setDeep(deep);
-    op.setEnergy(energy.value());
-    op.setPc(pc);
+	public Op addOp(byte code, int pc, int deep, DataWord energy, OpActions actions) {
+		Op op = new Op();
+		op.setActions(actions);
+		op.setCode(OpCode.code(code));
+		op.setDeep(deep);
+		op.setEnergy(energy.value());
+		op.setPc(pc);
 
-    ops.add(op);
+		ops.add(op);
 
-    return op;
-  }
+		return op;
+	}
 
-  /**
-   * Used for merging sub calls execution.
-   */
-  public void merge(ProgramTrace programTrace) {
-    this.ops.addAll(programTrace.ops);
-  }
+	/**
+	 * Used for merging sub calls execution.
+	 */
+	public void merge(ProgramTrace programTrace) {
+		this.ops.addAll(programTrace.ops);
+	}
 
-  public String asJsonString(boolean formatted) {
-    return serializeFieldsOnly(this, formatted);
-  }
+	public String asJsonString(boolean formatted) {
+		return serializeFieldsOnly(this, formatted);
+	}
 
-  @Override
-  public String toString() {
-    return asJsonString(true);
-  }
+	@Override
+	public String toString() {
+		return asJsonString(true);
+	}
 }

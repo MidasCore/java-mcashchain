@@ -21,14 +21,14 @@ import org.tron.common.overlay.message.Message;
 
 public abstract class TronMessage extends Message {
 
-  public TronMessage() {
-  }
+	public TronMessage() {
+	}
 
-  public TronMessage(byte[] rawData) {
-    super(rawData);
-  }
+	public TronMessage(byte[] rawData) {
+		super(rawData);
+	}
 
-  public TronMessage(byte type, byte[] rawData) {
-    super(type, rawData);
-  }
+	public TronMessage(byte type, byte[] rawData) {
+		super(type, rawData);
+	}
 }

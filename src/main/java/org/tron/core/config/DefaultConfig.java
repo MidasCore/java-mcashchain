@@ -25,83 +25,83 @@ import org.tron.core.services.interfaceOnSolidity.http.solidity.HttpApiOnSolidit
 @Import(CommonConfig.class)
 public class DefaultConfig {
 
-  static {
-    RocksDB.loadLibrary();
-  }
+	static {
+		RocksDB.loadLibrary();
+	}
 
-  @Autowired
-  ApplicationContext appCtx;
+	@Autowired
+	ApplicationContext appCtx;
 
-  @Autowired
-  CommonConfig commonConfig;
+	@Autowired
+	CommonConfig commonConfig;
 
-  public DefaultConfig() {
-    Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception", e));
-  }
+	public DefaultConfig() {
+		Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception", e));
+	}
 
-  @Bean
-  public IndexHelper indexHelper() {
-    if (Args.getInstance().isSolidityNode()
-        && BooleanUtils.toBoolean(Args.getInstance().getStorage().getIndexSwitch())) {
-      return new IndexHelper();
-    }
-    return null;
-  }
+	@Bean
+	public IndexHelper indexHelper() {
+		if (Args.getInstance().isSolidityNode()
+				&& BooleanUtils.toBoolean(Args.getInstance().getStorage().getIndexSwitch())) {
+			return new IndexHelper();
+		}
+		return null;
+	}
 
-  @Bean
-  public RevokingDatabase revokingDatabase() {
-    int dbVersion = Args.getInstance().getStorage().getDbVersion();
-    RevokingDatabase revokingDatabase;
-    try {
-      if (dbVersion == 1) {
-        revokingDatabase = RevokingStore.getInstance();
-      } else if (dbVersion == 2) {
-        revokingDatabase = new SnapshotManager();
-      } else {
-        throw new RuntimeException("db version is error.");
-      }
-      return revokingDatabase;
-    } finally {
-      logger.info("key-value data source created.");
-    }
-  }
+	@Bean
+	public RevokingDatabase revokingDatabase() {
+		int dbVersion = Args.getInstance().getStorage().getDbVersion();
+		RevokingDatabase revokingDatabase;
+		try {
+			if (dbVersion == 1) {
+				revokingDatabase = RevokingStore.getInstance();
+			} else if (dbVersion == 2) {
+				revokingDatabase = new SnapshotManager();
+			} else {
+				throw new RuntimeException("db version is error.");
+			}
+			return revokingDatabase;
+		} finally {
+			logger.info("key-value data source created.");
+		}
+	}
 
 
-  @Bean
-  public RpcApiServiceOnSolidity getRpcApiServiceOnSolidity() {
-    boolean isSolidityNode = Args.getInstance().isSolidityNode();
-    int dbVersion = Args.getInstance().getStorage().getDbVersion();
-    if (!isSolidityNode && dbVersion == 2) {
-      return new RpcApiServiceOnSolidity();
-    }
+	@Bean
+	public RpcApiServiceOnSolidity getRpcApiServiceOnSolidity() {
+		boolean isSolidityNode = Args.getInstance().isSolidityNode();
+		int dbVersion = Args.getInstance().getStorage().getDbVersion();
+		if (!isSolidityNode && dbVersion == 2) {
+			return new RpcApiServiceOnSolidity();
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  @Bean
-  public HttpApiOnSolidityService getHttpApiOnSolidityService() {
-    boolean isSolidityNode = Args.getInstance().isSolidityNode();
-    int dbVersion = Args.getInstance().getStorage().getDbVersion();
-    if (!isSolidityNode && dbVersion == 2) {
-      return new HttpApiOnSolidityService();
-    }
+	@Bean
+	public HttpApiOnSolidityService getHttpApiOnSolidityService() {
+		boolean isSolidityNode = Args.getInstance().isSolidityNode();
+		int dbVersion = Args.getInstance().getStorage().getDbVersion();
+		if (!isSolidityNode && dbVersion == 2) {
+			return new HttpApiOnSolidityService();
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  @Bean
-  public TransactionCache transactionCache() {
-    int dbVersion = Args.getInstance().getStorage().getDbVersion();
-    if (dbVersion == 2) {
-      return new TransactionCache("trans-cache");
-    }
+	@Bean
+	public TransactionCache transactionCache() {
+		int dbVersion = Args.getInstance().getStorage().getDbVersion();
+		if (dbVersion == 2) {
+			return new TransactionCache("trans-cache");
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  @Bean
-  @Conditional(NeedBeanCondition.class)
-  public BackupRocksDBAspect backupRocksDBAspect() {
-    return new BackupRocksDBAspect();
-  }
+	@Bean
+	@Conditional(NeedBeanCondition.class)
+	public BackupRocksDBAspect backupRocksDBAspect() {
+		return new BackupRocksDBAspect();
+	}
 }

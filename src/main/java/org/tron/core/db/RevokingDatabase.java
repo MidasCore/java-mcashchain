@@ -6,36 +6,36 @@ import org.tron.core.exception.RevokingStoreIllegalStateException;
 
 public interface RevokingDatabase {
 
-  ISession buildSession();
+	ISession buildSession();
 
-  ISession buildSession(boolean forceEnable);
+	ISession buildSession(boolean forceEnable);
 
-  void setMode(boolean mode);
+	void setMode(boolean mode);
 
-  void add(IRevokingDB revokingDB);
+	void add(IRevokingDB revokingDB);
 
-  void merge() throws RevokingStoreIllegalStateException;
+	void merge() throws RevokingStoreIllegalStateException;
 
-  void revoke() throws RevokingStoreIllegalStateException;
+	void revoke() throws RevokingStoreIllegalStateException;
 
-  void commit() throws RevokingStoreIllegalStateException;
+	void commit() throws RevokingStoreIllegalStateException;
 
-  void pop() throws RevokingStoreIllegalStateException;
+	void pop() throws RevokingStoreIllegalStateException;
 
-  void fastPop() throws RevokingStoreIllegalStateException;
+	void fastPop() throws RevokingStoreIllegalStateException;
 
-  void enable();
+	void enable();
 
-  int size();
+	int size();
 
-  void check();
+	void check();
 
-  void setMaxSize(int maxSize);
+	void setMaxSize(int maxSize);
 
-  void disable();
+	void disable();
 
-  void setMaxFlushCount(int maxFlushCount);
+	void setMaxFlushCount(int maxFlushCount);
 
-  void shutdown();
+	void shutdown();
 
 }

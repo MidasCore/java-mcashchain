@@ -17,11 +17,12 @@
  */
 package org.tron.common.runtime.vm.program;
 
-import java.util.HashSet;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.tron.common.runtime.vm.DataWord;
 import org.tron.common.runtime.vm.OpCode;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Slf4j(topic = "VM")
@@ -30,59 +31,59 @@ import org.tron.common.runtime.vm.OpCode;
  */
 public class ProgramPrecompile {
 
-  private Set<Integer> jumpdest = new HashSet<>();
+	private Set<Integer> jumpdest = new HashSet<>();
 
-  public static ProgramPrecompile compile(byte[] ops) {
-    ProgramPrecompile ret = new ProgramPrecompile();
-    for (int i = 0; i < ops.length; ++i) {
+	public static ProgramPrecompile compile(byte[] ops) {
+		ProgramPrecompile ret = new ProgramPrecompile();
+		for (int i = 0; i < ops.length; ++i) {
 
-      OpCode op = OpCode.code(ops[i]);
-      if (op == null) {
-        continue;
-      }
+			OpCode op = OpCode.code(ops[i]);
+			if (op == null) {
+				continue;
+			}
 
-      if (op.equals(OpCode.JUMPDEST)) {
-        logger.debug("JUMPDEST:" + i);
-        ret.jumpdest.add(i);
-      }
+			if (op.equals(OpCode.JUMPDEST)) {
+				logger.debug("JUMPDEST:" + i);
+				ret.jumpdest.add(i);
+			}
 
-      if (op.asInt() >= OpCode.PUSH1.asInt() && op.asInt() <= OpCode.PUSH32.asInt()) {
-        i += op.asInt() - OpCode.PUSH1.asInt() + 1;
-      }
-    }
-    return ret;
-  }
+			if (op.asInt() >= OpCode.PUSH1.asInt() && op.asInt() <= OpCode.PUSH32.asInt()) {
+				i += op.asInt() - OpCode.PUSH1.asInt() + 1;
+			}
+		}
+		return ret;
+	}
 
-  public static byte[] getCode(byte[] ops) {
-    for (int i = 0; i < ops.length; ++i) {
+	public static byte[] getCode(byte[] ops) {
+		for (int i = 0; i < ops.length; ++i) {
 
-      OpCode op = OpCode.code(ops[i]);
-      if (op == null) {
-        continue;
-      }
+			OpCode op = OpCode.code(ops[i]);
+			if (op == null) {
+				continue;
+			}
 
-      if (op.equals(OpCode.RETURN)) {
-        logger.debug("return");
-      }
+			if (op.equals(OpCode.RETURN)) {
+				logger.debug("return");
+			}
 
-      if (op.equals(OpCode.RETURN) && i + 1 < ops.length && OpCode.code(ops[i + 1]) != null
-          && OpCode.code(ops[i + 1]).equals(OpCode.STOP)) {
-        byte[] ret;
-        i++;
-        ret = new byte[ops.length - i - 1];
+			if (op.equals(OpCode.RETURN) && i + 1 < ops.length && OpCode.code(ops[i + 1]) != null
+					&& OpCode.code(ops[i + 1]).equals(OpCode.STOP)) {
+				byte[] ret;
+				i++;
+				ret = new byte[ops.length - i - 1];
 
-        System.arraycopy(ops, i + 1, ret, 0, ops.length - i - 1);
-        return ret;
-      }
+				System.arraycopy(ops, i + 1, ret, 0, ops.length - i - 1);
+				return ret;
+			}
 
-      if (op.asInt() >= OpCode.PUSH1.asInt() && op.asInt() <= OpCode.PUSH32.asInt()) {
-        i += op.asInt() - OpCode.PUSH1.asInt() + 1;
-      }
-    }
-    return new DataWord(0).getData();
-  }
+			if (op.asInt() >= OpCode.PUSH1.asInt() && op.asInt() <= OpCode.PUSH32.asInt()) {
+				i += op.asInt() - OpCode.PUSH1.asInt() + 1;
+			}
+		}
+		return new DataWord(0).getData();
+	}
 
-  public boolean hasJumpDest(int pc) {
-    return jumpdest.contains(pc);
-  }
+	public boolean hasJumpDest(int pc) {
+		return jumpdest.contains(pc);
+	}
 }

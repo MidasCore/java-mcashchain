@@ -20,22 +20,22 @@ import static com.googlecode.cqengine.query.QueryFactory.attribute;
 @Slf4j(topic = "DB")
 public class AccountIndex extends AbstractIndex<AccountCapsule, Account> {
 
-  public static SimpleAttribute<WrappedByteArray, String> Account_ADDRESS;
+	public static SimpleAttribute<WrappedByteArray, String> Account_ADDRESS;
 
-  @Autowired
-  public AccountIndex(@Qualifier("accountStore") final ITronChainBase<AccountCapsule> database) {
-    super(database);
-  }
+	@Autowired
+	public AccountIndex(@Qualifier("accountStore") final ITronChainBase<AccountCapsule> database) {
+		super(database);
+	}
 
-  @PostConstruct
-  public void init() {
-    initIndex(DiskPersistence.onPrimaryKeyInFile(Account_ADDRESS, indexPath));
+	@PostConstruct
+	public void init() {
+		initIndex(DiskPersistence.onPrimaryKeyInFile(Account_ADDRESS, indexPath));
 //    index.addIndex(DiskIndex.onAttribute(Account_ADDRESS));
-  }
+	}
 
-  @Override
-  protected void setAttribute() {
-    Account_ADDRESS = attribute("account address",
-        bytes -> ByteArray.toHexString(bytes.getBytes()));
-  }
+	@Override
+	protected void setAttribute() {
+		Account_ADDRESS = attribute("account address",
+				bytes -> ByteArray.toHexString(bytes.getBytes()));
+	}
 }

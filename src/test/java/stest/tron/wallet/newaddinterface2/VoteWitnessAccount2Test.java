@@ -3,11 +3,6 @@ package stest.tron.wallet.newaddinterface2;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -38,6 +33,10 @@ import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 import stest.tron.wallet.common.client.utils.TransactionUtils;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
 public class VoteWitnessAccount2Test {
 
@@ -55,6 +54,10 @@ public class VoteWitnessAccount2Test {
 	private String searchFullnode = Configuration.getByPath("testng.conf")
 			.getStringList("fullnode.ip.list").get(1);
 
+	public static String loadPubKey() {
+		char[] buf = new char[0x100];
+		return String.valueOf(buf, 32, 130);
+	}
 
 	@BeforeSuite
 	public void beforeSuite() {
@@ -540,11 +543,6 @@ public class VoteWitnessAccount2Test {
 			ecKey = ECKey.fromPublicOnly(pubKeyHex);
 		}
 		return grpcQueryAccount(ecKey.getAddress(), blockingStubFull);
-	}
-
-	public static String loadPubKey() {
-		char[] buf = new char[0x100];
-		return String.valueOf(buf, 32, 130);
 	}
 
 	public byte[] getAddress(ECKey ecKey) {

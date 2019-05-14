@@ -15,72 +15,72 @@
 
 package org.tron.core.capsule;
 
-import java.util.Arrays;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.encoders.Hex;
 import org.tron.common.runtime.vm.DataWord;
 import org.tron.common.utils.Sha256Hash;
+
+import java.util.Arrays;
 
 
 @Slf4j(topic = "capsule")
 public class StorageRowCapsule implements ProtoCapsule<byte[]> {
 
-  @Getter
-  private byte[] rowValue;
-  @Setter
-  @Getter
-  private byte[] rowKey;
+	@Getter
+	private byte[] rowValue;
+	@Setter
+	@Getter
+	private byte[] rowKey;
 
-  @Getter
-  private boolean dirty = false;
+	@Getter
+	private boolean dirty = false;
 
-  public StorageRowCapsule(StorageRowCapsule rowCapsule) {
-    this.rowKey = rowCapsule.getRowKey().clone();
-    this.rowValue = rowCapsule.getRowValue().clone();
-    this.dirty = rowCapsule.isDirty();
-  }
+	public StorageRowCapsule(StorageRowCapsule rowCapsule) {
+		this.rowKey = rowCapsule.getRowKey().clone();
+		this.rowValue = rowCapsule.getRowValue().clone();
+		this.dirty = rowCapsule.isDirty();
+	}
 
-  public StorageRowCapsule(byte[] rowKey, byte[] rowValue) {
-    this.rowKey = rowKey;
-    this.rowValue = rowValue;
-    markDirty();
-  }
+	public StorageRowCapsule(byte[] rowKey, byte[] rowValue) {
+		this.rowKey = rowKey;
+		this.rowValue = rowValue;
+		markDirty();
+	}
 
-  public StorageRowCapsule(byte[] rowValue) {
-    this.rowValue = rowValue;
-  }
+	public StorageRowCapsule(byte[] rowValue) {
+		this.rowValue = rowValue;
+	}
 
-  private void markDirty() {
-    dirty = true;
-  }
+	private void markDirty() {
+		dirty = true;
+	}
 
-  public Sha256Hash getHash() {
-    return Sha256Hash.of(this.rowValue);
-  }
+	public Sha256Hash getHash() {
+		return Sha256Hash.of(this.rowValue);
+	}
 
-  public DataWord getValue() {
-    return new DataWord(this.rowValue);
-  }
+	public DataWord getValue() {
+		return new DataWord(this.rowValue);
+	}
 
-  public void setValue(DataWord value) {
-    this.rowValue = value.getData();
-    markDirty();
-  }
+	public void setValue(DataWord value) {
+		this.rowValue = value.getData();
+		markDirty();
+	}
 
-  @Override
-  public byte[] getData() {
-    return this.rowValue;
-  }
+	@Override
+	public byte[] getData() {
+		return this.rowValue;
+	}
 
-  @Override
-  public byte[] getInstance() {
-    return this.rowValue;
-  }
+	@Override
+	public byte[] getInstance() {
+		return this.rowValue;
+	}
 
-  @Override
-  public String toString() {
-    return Arrays.toString(rowValue);
-  }
+	@Override
+	public String toString() {
+		return Arrays.toString(rowValue);
+	}
 }

@@ -2,15 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -26,17 +19,19 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 @Slf4j
 public class UpdateAccountActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_update_account_test";
 	private static final String ACCOUNT_NAME = "ownerTest";
 	private static final String ACCOUNT_NAME_1 = "ownerTest1";
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_1;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -51,6 +46,20 @@ public class UpdateAccountActuatorTest {
 	@BeforeClass
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -323,19 +332,5 @@ public class UpdateAccountActuatorTest {
 //		} catch (ContractExeException e) {
 //			Assert.assertFalse(e instanceof ContractExeException);
 //		}
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
-		}
 	}
 }

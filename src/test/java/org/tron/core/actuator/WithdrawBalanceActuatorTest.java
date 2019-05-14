@@ -2,15 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -30,18 +23,20 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 @Slf4j
 public class WithdrawBalanceActuatorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_withdraw_balance_test";
-	private static TronApplicationContext context;
 	private static final String SUPERNODE_ADDRESS;
 	private static final String SUPERNODE_ADDRESS_INVALID = "aaaa";
 	private static final String SUPERNODE_ACCOUNT_INVALID;
 	private static final String OWNER_ADDRESS;
 	private static final long initBalance = 10_000_000_000L;
 	private static final long allowance = 32_000_000L;
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -170,7 +165,8 @@ public class WithdrawBalanceActuatorTest {
 			Assert.assertEquals("Account " + SUPERNODE_ACCOUNT_INVALID + " does not exist",
 					e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.fail(e.getMessage());		}
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	@Test
@@ -193,7 +189,8 @@ public class WithdrawBalanceActuatorTest {
 			Assert.assertEquals("Account " + SUPERNODE_ADDRESS + " is not a witnessAccount",
 					e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.fail(e.getMessage());		}
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	@Test
@@ -273,7 +270,8 @@ public class WithdrawBalanceActuatorTest {
 			Assert.assertEquals("Account " + readableOwnerAddress
 					+ " is a guard representative and is not allowed to withdraw Balance", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.fail(e.getMessage());		}
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	@Test

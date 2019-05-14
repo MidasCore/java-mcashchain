@@ -1,13 +1,13 @@
 package org.tron.common.storage;
 
-import static org.tron.common.storage.Type.VALUE_TYPE_UNKNOWN;
-
-import java.util.Arrays;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.tron.common.runtime.config.VMConfig;
 import org.tron.core.capsule.*;
 import org.tron.core.exception.BadItemException;
+
+import java.util.Arrays;
+
+import static org.tron.common.storage.Type.VALUE_TYPE_UNKNOWN;
 
 public class Value {
 
@@ -54,6 +54,14 @@ public class Value {
 				this.type = new Type(VALUE_TYPE_UNKNOWN);
 			}
 		}
+	}
+
+	public static Value create(byte[] any, int type) {
+		return new Value(any, type);
+	}
+
+	public static Value create(byte[] any) {
+		return new Value(any, Type.VALUE_TYPE_NORMAL);
 	}
 
 	/**
@@ -194,7 +202,6 @@ public class Value {
 		return new ContractCapsule(any);
 	}
 
-
 	public AssetIssueCapsule getAssetIssue() {
 		if (ArrayUtils.isEmpty(any)) {
 			return null;
@@ -246,26 +253,15 @@ public class Value {
 		}
 
 		Value V = (Value) obj;
-		if (Arrays.equals(this.any, V.getAny())) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return new Integer(type.hashCode() + Arrays.hashCode(any)).hashCode();
-	}
-
-	public static Value create(byte[] any, int type) {
-		return new Value(any, type);
+		return Arrays.equals(this.any, V.getAny());
 	}
 
 //    public static Value create(byte[] any, Type type) {
 //        return new Value(any, type);
 //    }
 
-	public static Value create(byte[] any) {
-		return new Value(any, Type.VALUE_TYPE_NORMAL);
+	@Override
+	public int hashCode() {
+		return new Integer(type.hashCode() + Arrays.hashCode(any)).hashCode();
 	}
 }

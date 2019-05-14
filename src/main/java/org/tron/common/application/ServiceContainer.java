@@ -22,43 +22,43 @@ import org.tron.core.config.args.Args;
 @Slf4j(topic = "app")
 public class ServiceContainer {
 
-  private ArrayList<Service> services;
+	private ArrayList<Service> services;
 
-  public ServiceContainer() {
-    this.services = new ArrayList<>();
-  }
+	public ServiceContainer() {
+		this.services = new ArrayList<>();
+	}
 
-  public void add(Service service) {
-    this.services.add(service);
-  }
+	public void add(Service service) {
+		this.services.add(service);
+	}
 
 
-  public void init() {
-    for (Service service : this.services) {
-      logger.debug("Initing " + service.getClass().getSimpleName());
-      service.init();
-    }
-  }
+	public void init() {
+		for (Service service : this.services) {
+			logger.debug("Initing " + service.getClass().getSimpleName());
+			service.init();
+		}
+	}
 
-  public void init(Args args) {
-    for (Service service : this.services) {
-      logger.debug("Initing " + service.getClass().getSimpleName());
-      service.init(args);
-    }
-  }
+	public void init(Args args) {
+		for (Service service : this.services) {
+			logger.debug("Initing " + service.getClass().getSimpleName());
+			service.init(args);
+		}
+	}
 
-  public void start() {
-    logger.debug("Starting services");
-    for (Service service : this.services) {
-      logger.debug("Starting " + service.getClass().getSimpleName());
-      service.start();
-    }
-  }
+	public void start() {
+		logger.debug("Starting services");
+		for (Service service : this.services) {
+			logger.debug("Starting " + service.getClass().getSimpleName());
+			service.start();
+		}
+	}
 
-  public void stop() {
-    for (Service service : this.services) {
-      logger.debug("Stopping " + service.getClass().getSimpleName());
-      service.stop();
-    }
-  }
+	public void stop() {
+		for (Service service : this.services) {
+			logger.debug("Stopping " + service.getClass().getSimpleName());
+			service.stop();
+		}
+	}
 }

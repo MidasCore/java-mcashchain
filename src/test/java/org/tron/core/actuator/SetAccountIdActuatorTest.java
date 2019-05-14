@@ -2,20 +2,12 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.config.DefaultConfig;
@@ -27,17 +19,19 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 @Slf4j
 public class SetAccountIdActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_set_account_id_test";
 	private static final String ACCOUNT_NAME = "ownertest";
 	private static final String ACCOUNT_NAME_1 = "ownertest1";
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_1;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -52,6 +46,20 @@ public class SetAccountIdActuatorTest {
 	@BeforeClass
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -78,6 +86,10 @@ public class SetAccountIdActuatorTest {
 						.build());
 	}
 
+	/**
+	 * Unit test.
+	 */
+
 	private Any getContract(ByteString name, String address) {
 		return Any.pack(
 				Contract.SetAccountIdContract.newBuilder()
@@ -86,9 +98,6 @@ public class SetAccountIdActuatorTest {
 						.build());
 	}
 
-	/**
-	 * Unit test.
-	 */
 	/**
 	 * set account id when all right.
 	 */
@@ -353,20 +362,6 @@ public class SetAccountIdActuatorTest {
 			Assert.assertEquals("Invalid accountId", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
-		}
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
 		}
 	}
 }

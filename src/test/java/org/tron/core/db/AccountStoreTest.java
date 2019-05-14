@@ -1,9 +1,6 @@
 package org.tron.core.db;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,14 +14,16 @@ import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.protos.Protocol.AccountType;
 
+import java.io.File;
+
 public class AccountStoreTest {
 
+	private static final byte[] data = TransactionStoreTest.randomBytes(32);
 	private static String dbPath = "output_account_store_test";
 	private static String dbDirectory = "db_account_store_test";
 	private static String indexDirectory = "index_account_store_test";
 	private static TronApplicationContext context;
 	private static AccountStore accountStore;
-	private static final byte[] data = TransactionStoreTest.randomBytes(32);
 	private static byte[] address = TransactionStoreTest.randomBytes(32);
 	private static byte[] accountName = TransactionStoreTest.randomBytes(32);
 
@@ -60,9 +59,9 @@ public class AccountStoreTest {
 	public void get() {
 		//test get and has Method
 		Assert.assertEquals(ByteArray.toHexString(address), ByteArray
-						.toHexString(accountStore.get(data).getInstance().getAddress().toByteArray()));
+				.toHexString(accountStore.get(data).getInstance().getAddress().toByteArray()));
 		Assert.assertEquals(ByteArray.toHexString(accountName), ByteArray
-						.toHexString(accountStore.get(data).getInstance().getAccountName().toByteArray()));
+				.toHexString(accountStore.get(data).getInstance().getAccountName().toByteArray()));
 		Assert.assertTrue(accountStore.has(data));
 	}
 }

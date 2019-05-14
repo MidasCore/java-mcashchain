@@ -4,43 +4,43 @@ import java.util.Map;
 
 public interface Snapshot extends Iterable<Map.Entry<byte[], byte[]>> {
 
-  static boolean isRoot(Snapshot snapshot) {
-    return snapshot != null && snapshot.getClass() == SnapshotRoot.class;
-  }
+	static boolean isRoot(Snapshot snapshot) {
+		return snapshot != null && snapshot.getClass() == SnapshotRoot.class;
+	}
 
-  static boolean isImpl(Snapshot snapshot) {
-    return snapshot != null && snapshot.getClass() == SnapshotImpl.class;
-  }
+	static boolean isImpl(Snapshot snapshot) {
+		return snapshot != null && snapshot.getClass() == SnapshotImpl.class;
+	}
 
-  byte[] get(byte[] key);
+	byte[] get(byte[] key);
 
-  void put(byte[] key, byte[] value);
+	void put(byte[] key, byte[] value);
 
-  void remove(byte[] key);
+	void remove(byte[] key);
 
-  void merge(Snapshot from);
+	void merge(Snapshot from);
 
-  Snapshot advance();
+	Snapshot advance();
 
-  Snapshot retreat();
+	Snapshot retreat();
 
-  Snapshot getPrevious();
+	Snapshot getPrevious();
 
-  void setPrevious(Snapshot previous);
+	void setPrevious(Snapshot previous);
 
-  Snapshot getRoot();
+	Snapshot getRoot();
 
-  Snapshot getNext();
+	Snapshot getNext();
 
-  void setNext(Snapshot next);
+	void setNext(Snapshot next);
 
-  Snapshot getSolidity();
+	Snapshot getSolidity();
 
-  void close();
+	void close();
 
-  void reset();
+	void reset();
 
-  void resetSolidity();
+	void resetSolidity();
 
-  void updateSolidity();
+	void updateSolidity();
 }

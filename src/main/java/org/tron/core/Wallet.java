@@ -18,9 +18,6 @@
 
 package org.tron.core;
 
-import static org.tron.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
-import static org.tron.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
-
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
@@ -28,15 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -45,25 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tron.api.GrpcAPI;
-import org.tron.api.GrpcAPI.AccountNetMessage;
-import org.tron.api.GrpcAPI.AccountResourceMessage;
-import org.tron.api.GrpcAPI.Address;
-import org.tron.api.GrpcAPI.AssetIssueList;
-import org.tron.api.GrpcAPI.BlockList;
-import org.tron.api.GrpcAPI.DelegatedResourceList;
-import org.tron.api.GrpcAPI.ExchangeList;
-import org.tron.api.GrpcAPI.Node;
-import org.tron.api.GrpcAPI.NodeList;
-import org.tron.api.GrpcAPI.NumberMessage;
-import org.tron.api.GrpcAPI.ProposalList;
-import org.tron.api.GrpcAPI.Return;
+import org.tron.api.GrpcAPI.*;
 import org.tron.api.GrpcAPI.Return.response_code;
-import org.tron.api.GrpcAPI.TransactionApprovedList;
-import org.tron.api.GrpcAPI.TransactionExtention;
 import org.tron.api.GrpcAPI.TransactionExtention.Builder;
-import org.tron.api.GrpcAPI.TransactionSignWeight;
 import org.tron.api.GrpcAPI.TransactionSignWeight.Result;
-import org.tron.api.GrpcAPI.WitnessList;
 import org.tron.common.crypto.ECKey;
 import org.tron.common.crypto.Hash;
 import org.tron.common.overlay.discover.node.NodeHandler;
@@ -81,41 +54,12 @@ import org.tron.common.utils.Sha256Hash;
 import org.tron.common.utils.Utils;
 import org.tron.core.actuator.Actuator;
 import org.tron.core.actuator.ActuatorFactory;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.AssetIssueCapsule;
-import org.tron.core.capsule.BlockCapsule;
+import org.tron.core.capsule.*;
 import org.tron.core.capsule.BlockCapsule.BlockId;
-import org.tron.core.capsule.ContractCapsule;
-import org.tron.core.capsule.DelegatedResourceAccountIndexCapsule;
-import org.tron.core.capsule.DelegatedResourceCapsule;
-import org.tron.core.capsule.ExchangeCapsule;
-import org.tron.core.capsule.ProposalCapsule;
-import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.capsule.TransactionInfoCapsule;
-import org.tron.core.capsule.TransactionResultCapsule;
-import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.config.Parameter.ChainConstant;
 import org.tron.core.config.args.Args;
-import org.tron.core.db.AccountIdIndexStore;
-import org.tron.core.db.AccountStore;
-import org.tron.core.db.BandwidthProcessor;
-import org.tron.core.db.ContractStore;
-import org.tron.core.db.EnergyProcessor;
-import org.tron.core.db.Manager;
-import org.tron.core.exception.AccountResourceInsufficientException;
-import org.tron.core.exception.ContractExeException;
-import org.tron.core.exception.ContractValidateException;
-import org.tron.core.exception.DupTransactionException;
-import org.tron.core.exception.HeaderNotFound;
-import org.tron.core.exception.NonUniqueObjectException;
-import org.tron.core.exception.PermissionException;
-import org.tron.core.exception.SignatureFormatException;
-import org.tron.core.exception.StoreException;
-import org.tron.core.exception.TaposException;
-import org.tron.core.exception.TooBigTransactionException;
-import org.tron.core.exception.TransactionExpirationException;
-import org.tron.core.exception.VMIllegalException;
-import org.tron.core.exception.ValidateSignatureException;
+import org.tron.core.db.*;
+import org.tron.core.exception.*;
 import org.tron.core.net.TronNetDelegate;
 import org.tron.core.net.TronNetService;
 import org.tron.core.net.message.TransactionMessage;
@@ -124,22 +68,19 @@ import org.tron.protos.Contract.CreateSmartContract;
 import org.tron.protos.Contract.TransferContract;
 import org.tron.protos.Contract.TriggerSmartContract;
 import org.tron.protos.Protocol;
-import org.tron.protos.Protocol.Account;
-import org.tron.protos.Protocol.Block;
-import org.tron.protos.Protocol.DelegatedResourceAccountIndex;
-import org.tron.protos.Protocol.Exchange;
-import org.tron.protos.Protocol.Permission;
+import org.tron.protos.Protocol.*;
 import org.tron.protos.Protocol.Permission.PermissionType;
-import org.tron.protos.Protocol.Proposal;
-import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.SmartContract.ABI;
 import org.tron.protos.Protocol.SmartContract.ABI.Entry.StateMutabilityType;
-import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Transaction.Contract;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 import org.tron.protos.Protocol.Transaction.Result.code;
-import org.tron.protos.Protocol.TransactionInfo;
-import org.tron.protos.Protocol.TransactionSign;
+
+import java.security.SignatureException;
+import java.util.*;
+
+import static org.tron.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
+import static org.tron.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
 
 @Slf4j
 @Component
@@ -188,10 +129,6 @@ public class Wallet {
 		} catch (Exception e) {
 			return false;
 		}
-	}
-
-	public byte[] getAddress() {
-		return ecKey.getAddress();
 	}
 
 	public static boolean addressValid(byte[] address) {
@@ -270,6 +207,84 @@ public class Wallet {
 		return address;
 	}
 
+	public static boolean checkPermissionOprations(Permission permission, Contract contract)
+			throws PermissionException {
+		ByteString operations = permission.getOperations();
+		if (operations.size() != 32) {
+			throw new PermissionException("operations size must 32");
+		}
+		int contractType = contract.getTypeValue();
+		boolean b = (operations.byteAt(contractType / 8) & (1 << (contractType % 8))) != 0;
+		return b;
+	}
+
+	public static String makeUpperCamelMethod(String originName) {
+		return "get" + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, originName)
+				.replace("_", "");
+	}
+
+	private static byte[] getSelector(byte[] data) {
+		if (data == null ||
+				data.length < 4) {
+			return null;
+		}
+
+		byte[] ret = new byte[4];
+		System.arraycopy(data, 0, ret, 0, 4);
+		return ret;
+	}
+
+	/**
+	 * Create a transaction.
+	 */
+  /*public Transaction createTransaction(byte[] address, String to, long amount) {
+    long balance = getBalance(address);
+    return new TransactionCapsule(address, to, amount, balance, utxoStore).getInstance();
+  } */
+
+	private static boolean isConstant(SmartContract.ABI abi, byte[] selector) {
+
+		if (selector == null || selector.length != 4 || abi.getEntrysList().size() == 0) {
+			return false;
+		}
+
+		for (int i = 0; i < abi.getEntrysCount(); i++) {
+			ABI.Entry entry = abi.getEntrys(i);
+			if (entry.getType() != ABI.Entry.EntryType.Function) {
+				continue;
+			}
+
+			int inputCount = entry.getInputsCount();
+			StringBuffer sb = new StringBuffer();
+			sb.append(entry.getName());
+			sb.append("(");
+			for (int k = 0; k < inputCount; k++) {
+				ABI.Entry.Param param = entry.getInputs(k);
+				sb.append(param.getType());
+				if (k + 1 < inputCount) {
+					sb.append(",");
+				}
+			}
+			sb.append(")");
+
+			byte[] funcSelector = new byte[4];
+			System.arraycopy(Hash.sha3(sb.toString().getBytes()), 0, funcSelector, 0, 4);
+			if (Arrays.equals(funcSelector, selector)) {
+				if (entry.getConstant() == true || entry.getStateMutability()
+						.equals(StateMutabilityType.View)) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public byte[] getAddress() {
+		return ecKey.getAddress();
+	}
 
 	public Account getAccount(Account account) {
 		AccountStore accountStore = dbManager.getAccountStore();
@@ -294,7 +309,6 @@ public class Wallet {
 		return accountCapsule.getInstance();
 	}
 
-
 	public Account getAccountById(Account account) {
 		AccountStore accountStore = dbManager.getAccountStore();
 		AccountIdIndexStore accountIdIndexStore = dbManager.getAccountIdIndexStore();
@@ -316,14 +330,6 @@ public class Wallet {
 	}
 
 	/**
-	 * Create a transaction.
-	 */
-  /*public Transaction createTransaction(byte[] address, String to, long amount) {
-    long balance = getBalance(address);
-    return new TransactionCapsule(address, to, amount, balance, utxoStore).getInstance();
-  } */
-
-	/**
 	 * Create a transaction by contract.
 	 */
 	@Deprecated
@@ -331,7 +337,6 @@ public class Wallet {
 		AccountStore accountStore = dbManager.getAccountStore();
 		return new TransactionCapsule(contract, accountStore).getInstance();
 	}
-
 
 	public TransactionCapsule createTransactionCapsule(com.google.protobuf.Message message,
 													   ContractType contractType) throws ContractValidateException {
@@ -486,17 +491,6 @@ public class Wallet {
 		TransactionCapsule trx = new TransactionCapsule(transactionSign.getTransaction());
 		trx.addSign(privateKey, dbManager.getAccountStore());
 		return trx;
-	}
-
-	public static boolean checkPermissionOprations(Permission permission, Contract contract)
-			throws PermissionException {
-		ByteString operations = permission.getOperations();
-		if (operations.size() != 32) {
-			throw new PermissionException("operations size must 32");
-		}
-		int contractType = contract.getTypeValue();
-		boolean b = (operations.byteAt(contractType / 8) & (1 << (contractType % 8))) != 0;
-		return b;
 	}
 
 	public TransactionSignWeight getTransactionSignWeight(Transaction trx) {
@@ -856,11 +850,6 @@ public class Wallet {
 		return builder.build();
 	}
 
-	public static String makeUpperCamelMethod(String originName) {
-		return "get" + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, originName)
-				.replace("_", "");
-	}
-
 	public AssetIssueList getAssetIssueList() {
 		AssetIssueList.Builder builder = AssetIssueList.newBuilder();
 
@@ -869,7 +858,6 @@ public class Wallet {
 
 		return builder.build();
 	}
-
 
 	public AssetIssueList getAssetIssueList(long offset, long limit) {
 		AssetIssueList.Builder builder = AssetIssueList.newBuilder();
@@ -1202,7 +1190,6 @@ public class Wallet {
 		return null;
 	}
 
-
 	public NodeList listNodes() {
 		List<NodeHandler> handlerList = nodeManager.dumpActiveNodes();
 
@@ -1308,58 +1295,6 @@ public class Wallet {
 			return contractCapsule.getInstance();
 		}
 		return null;
-	}
-
-
-	private static byte[] getSelector(byte[] data) {
-		if (data == null ||
-				data.length < 4) {
-			return null;
-		}
-
-		byte[] ret = new byte[4];
-		System.arraycopy(data, 0, ret, 0, 4);
-		return ret;
-	}
-
-	private static boolean isConstant(SmartContract.ABI abi, byte[] selector) {
-
-		if (selector == null || selector.length != 4 || abi.getEntrysList().size() == 0) {
-			return false;
-		}
-
-		for (int i = 0; i < abi.getEntrysCount(); i++) {
-			ABI.Entry entry = abi.getEntrys(i);
-			if (entry.getType() != ABI.Entry.EntryType.Function) {
-				continue;
-			}
-
-			int inputCount = entry.getInputsCount();
-			StringBuffer sb = new StringBuffer();
-			sb.append(entry.getName());
-			sb.append("(");
-			for (int k = 0; k < inputCount; k++) {
-				ABI.Entry.Param param = entry.getInputs(k);
-				sb.append(param.getType());
-				if (k + 1 < inputCount) {
-					sb.append(",");
-				}
-			}
-			sb.append(")");
-
-			byte[] funcSelector = new byte[4];
-			System.arraycopy(Hash.sha3(sb.toString().getBytes()), 0, funcSelector, 0, 4);
-			if (Arrays.equals(funcSelector, selector)) {
-				if (entry.getConstant() == true || entry.getStateMutability()
-						.equals(StateMutabilityType.View)) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	/*

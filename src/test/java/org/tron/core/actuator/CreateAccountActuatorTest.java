@@ -2,21 +2,13 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.config.DefaultConfig;
@@ -28,15 +20,17 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 @Slf4j
 public class CreateAccountActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_CreateAccount_test";
 	private static final String OWNER_ADDRESS_FIRST;
 	private static final String ACCOUNT_NAME_SECOND = "ownerS";
 	private static final String OWNER_ADDRESS_SECOND;
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -55,6 +49,20 @@ public class CreateAccountActuatorTest {
 		//        "config-junit.conf");
 		//    dbManager = new Manager();
 		//    dbManager.init();
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -127,20 +135,6 @@ public class CreateAccountActuatorTest {
 					ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS_SECOND)));
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
-		}
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
 		}
 	}
 }

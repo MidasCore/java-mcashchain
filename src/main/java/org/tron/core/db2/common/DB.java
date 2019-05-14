@@ -4,13 +4,13 @@ import java.util.Map;
 
 public interface DB<K, V> extends Iterable<Map.Entry<K, V>> {
 
-  V get(K k);
+	V get(K k);
 
-  void put(K k, V v);
+	void put(K k, V v);
 
-  long size();
+	long size();
 
-  boolean isEmpty();
+	boolean isEmpty();
 
-  void remove(K k);
+	void remove(K k);
 }

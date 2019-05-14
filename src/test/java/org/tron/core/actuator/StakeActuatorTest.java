@@ -9,7 +9,9 @@ import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Constant;
-import org.tron.core.capsule.*;
+import org.tron.core.capsule.AccountCapsule;
+import org.tron.core.capsule.StakeAccountCapsule;
+import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.Parameter.ChainConstant;
 import org.tron.core.config.args.Args;
@@ -28,14 +30,14 @@ import java.util.List;
 @Slf4j
 public class StakeActuatorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_stake_test";
-	private static TronApplicationContext context;
-	private static StakeAccountController stakeAccountController;
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(1_000_000);
+	private static Manager dbManager;
+	private static TronApplicationContext context;
+	private static StakeAccountController stakeAccountController;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

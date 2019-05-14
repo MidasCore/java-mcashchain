@@ -23,28 +23,28 @@ import java.util.Arrays;
 @Slf4j(topic = "capsule")
 public class CodeCapsule implements ProtoCapsule<byte[]> {
 
-  private byte[] code;
+	private byte[] code;
 
-  public CodeCapsule(byte[] code) {
-    this.code = code;
-  }
+	public CodeCapsule(byte[] code) {
+		this.code = code;
+	}
 
-  public Sha256Hash getCodeHash() {
-    return Sha256Hash.of(this.code);
-  }
+	public Sha256Hash getCodeHash() {
+		return Sha256Hash.of(this.code);
+	}
 
-  @Override
-  public byte[] getData() {
-    return this.code;
-  }
+	@Override
+	public byte[] getData() {
+		return this.code;
+	}
 
-  @Override
-  public byte[] getInstance() {
-    return this.code;
-  }
+	@Override
+	public byte[] getInstance() {
+		return this.code;
+	}
 
-  @Override
-  public String toString() {
-    return Arrays.toString(this.code);
-  }
+	@Override
+	public String toString() {
+		return Arrays.toString(this.code);
+	}
 }

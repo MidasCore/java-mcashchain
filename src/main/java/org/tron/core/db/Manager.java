@@ -1,8 +1,5 @@
 package org.tron.core.db;
 
-import static org.tron.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
-import static org.tron.core.config.Parameter.NodeConstant.MAX_TRANSACTION_PENDING;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -13,34 +10,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-
 import javafx.util.Pair;
-
-import javax.annotation.PostConstruct;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,21 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.common.logsfilter.EventPluginLoader;
 import org.tron.common.logsfilter.FilterQuery;
-import org.tron.common.logsfilter.capsule.BlockLogTriggerCapsule;
-import org.tron.common.logsfilter.capsule.ContractEventTriggerCapsule;
-import org.tron.common.logsfilter.capsule.ContractLogTriggerCapsule;
-import org.tron.common.logsfilter.capsule.TransactionLogTriggerCapsule;
-import org.tron.common.logsfilter.capsule.TriggerCapsule;
+import org.tron.common.logsfilter.capsule.*;
 import org.tron.common.logsfilter.trigger.ContractLogTrigger;
 import org.tron.common.logsfilter.trigger.ContractTrigger;
 import org.tron.common.overlay.discover.node.Node;
 import org.tron.common.runtime.config.VMConfig;
 import org.tron.common.runtime.vm.LogEventWrapper;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.utils.ForkController;
-import org.tron.common.utils.SessionOptional;
-import org.tron.common.utils.Sha256Hash;
-import org.tron.common.utils.StringUtil;
+import org.tron.common.utils.*;
 import org.tron.core.Constant;
 import org.tron.core.capsule.*;
 import org.tron.core.capsule.BlockCapsule.BlockId;
@@ -80,27 +42,7 @@ import org.tron.core.db.api.AssetUpdateHelper;
 import org.tron.core.db2.core.ISession;
 import org.tron.core.db2.core.ITronChainBase;
 import org.tron.core.db2.core.SnapshotManager;
-import org.tron.core.exception.AccountResourceInsufficientException;
-import org.tron.core.exception.BadBlockException;
-import org.tron.core.exception.BadItemException;
-import org.tron.core.exception.BadNumberBlockException;
-import org.tron.core.exception.BalanceInsufficientException;
-import org.tron.core.exception.ContractExeException;
-import org.tron.core.exception.ContractSizeNotEqualToOneException;
-import org.tron.core.exception.ContractValidateException;
-import org.tron.core.exception.DupTransactionException;
-import org.tron.core.exception.HeaderNotFound;
-import org.tron.core.exception.ItemNotFoundException;
-import org.tron.core.exception.NonCommonBlockException;
-import org.tron.core.exception.ReceiptCheckErrException;
-import org.tron.core.exception.TaposException;
-import org.tron.core.exception.TooBigTransactionException;
-import org.tron.core.exception.TooBigTransactionResultException;
-import org.tron.core.exception.TransactionExpirationException;
-import org.tron.core.exception.UnLinkedBlockException;
-import org.tron.core.exception.VMIllegalException;
-import org.tron.core.exception.ValidateScheduleException;
-import org.tron.core.exception.ValidateSignatureException;
+import org.tron.core.exception.*;
 import org.tron.core.services.WitnessService;
 import org.tron.core.witness.ProposalController;
 import org.tron.core.witness.WitnessController;
@@ -108,11 +50,24 @@ import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Transaction.Contract;
 
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
+import static org.tron.core.config.Parameter.ChainConstant.SOLIDIFIED_THRESHOLD;
+import static org.tron.core.config.Parameter.NodeConstant.MAX_TRANSACTION_PENDING;
+
 
 @Slf4j(topic = "DB")
 @Component
 public class Manager {
 
+	@Getter
+	@Setter
+	public boolean eventPluginLoaded = false;
 	// db store
 	@Autowired
 	private AccountStore accountStore;
@@ -166,59 +121,39 @@ public class Manager {
 	private StakeChangeStore stakeChangeStore;
 	@Autowired
 	private StakeAccountStore stakeAccountStore;
-
 	// for network
 	@Autowired
 	private PeersStore peersStore;
-
 	@Autowired
 	private KhaosDatabase khaosDb;
-
-
 	private BlockCapsule genesisBlock;
 	@Getter
 	@Autowired
 	private RevokingDatabase revokingStore;
-
 	@Getter
 	private SessionOptional session = SessionOptional.instance();
-
 	@Getter
 	@Setter
 	private boolean isSyncMode;
-
 	@Getter
 	@Setter
 	private String netType;
-
 	@Getter
 	@Setter
 	private WitnessService witnessService;
-
 	@Getter
 	@Setter
 	private WitnessController witnessController;
-
 	@Getter
 	@Setter
 	private ProposalController proposalController;
-
 	@Getter
 	@Setter
 	private StakeAccountController stakeAccountController;
-
 	private ExecutorService validateSignService;
-
 	private boolean isRunRepushThread = true;
-
 	private boolean isRunTriggerCapsuleProcessThread = true;
-
 	private long latestSolidifiedBlockNumber;
-
-	@Getter
-	@Setter
-	public boolean eventPluginLoaded = false;
-
 	private BlockingQueue<TransactionCapsule> pushTransactionQueue = new LinkedBlockingQueue<>();
 
 	@Getter
@@ -229,6 +164,61 @@ public class Manager {
 	private ForkController forkController = ForkController.instance();
 
 	private Set<String> ownerAddressSet = new HashSet<>();
+	// transactions cache
+	private List<TransactionCapsule> pendingTransactions;
+	// transactions popped
+	private List<TransactionCapsule> popedTransactions =
+			Collections.synchronizedList(Lists.newArrayList());
+	// the capacity is equal to Integer.MAX_VALUE default
+	private BlockingQueue<TransactionCapsule> repushTransactions;
+	private BlockingQueue<TriggerCapsule> triggerCapsuleQueue;
+	/**
+	 * Cycle thread to repush Transactions
+	 */
+	private Runnable repushLoop =
+			() -> {
+				while (isRunRepushThread) {
+					TransactionCapsule tx = null;
+					try {
+						if (isGeneratingBlock()) {
+							TimeUnit.MILLISECONDS.sleep(10L);
+							continue;
+						}
+						tx = getRepushTransactions().peek();
+						if (tx != null) {
+							this.rePush(tx);
+						} else {
+							TimeUnit.MILLISECONDS.sleep(50L);
+						}
+					} catch (Exception ex) {
+						logger.error("unknown exception happened in repush loop", ex);
+					} catch (Throwable throwable) {
+						logger.error("unknown throwable happened in repush loop", throwable);
+					} finally {
+						if (tx != null) {
+							getRepushTransactions().remove(tx);
+						}
+					}
+				}
+			};
+	private Runnable triggerCapsuleProcessLoop =
+			() -> {
+				while (isRunTriggerCapsuleProcessThread) {
+					try {
+						TriggerCapsule tiggerCapsule = triggerCapsuleQueue.poll(1, TimeUnit.SECONDS);
+						if (tiggerCapsule != null) {
+							tiggerCapsule.processTrigger();
+						}
+					} catch (InterruptedException ex) {
+						logger.info(ex.getMessage());
+						Thread.currentThread().interrupt();
+					} catch (Exception ex) {
+						logger.error("unknown exception happened in process capsule loop", ex);
+					} catch (Throwable throwable) {
+						logger.error("unknown throwable happened in process capsule loop", throwable);
+					}
+				}
+			};
 
 	public WitnessStore getWitnessStore() {
 		return this.witnessStore;
@@ -253,7 +243,6 @@ public class Manager {
 	public void setWitnessScheduleStore(final WitnessScheduleStore witnessScheduleStore) {
 		this.witnessScheduleStore = witnessScheduleStore;
 	}
-
 
 	public DelegatedResourceStore getDelegatedResourceStore() {
 		return delegatedResourceStore;
@@ -318,18 +307,6 @@ public class Manager {
 		return repushTransactions;
 	}
 
-	// transactions cache
-	private List<TransactionCapsule> pendingTransactions;
-
-	// transactions popped
-	private List<TransactionCapsule> popedTransactions =
-			Collections.synchronizedList(Lists.newArrayList());
-
-	// the capacity is equal to Integer.MAX_VALUE default
-	private BlockingQueue<TransactionCapsule> repushTransactions;
-
-	private BlockingQueue<TriggerCapsule> triggerCapsuleQueue;
-
 	// for test only
 	public List<ByteString> getWitnesses() {
 		return witnessController.getActiveWitnesses();
@@ -366,7 +343,6 @@ public class Manager {
 		return getDynamicPropertiesStore().getLatestBlockHeaderTimestamp();
 	}
 
-
 	public void clearAndWriteNeighbours(Set<Node> nodes) {
 		this.peersStore.put("neighbours".getBytes(), nodes);
 	}
@@ -374,55 +350,6 @@ public class Manager {
 	public Set<Node> readNeighbours() {
 		return this.peersStore.get("neighbours".getBytes());
 	}
-
-	/**
-	 * Cycle thread to repush Transactions
-	 */
-	private Runnable repushLoop =
-			() -> {
-				while (isRunRepushThread) {
-					TransactionCapsule tx = null;
-					try {
-						if (isGeneratingBlock()) {
-							TimeUnit.MILLISECONDS.sleep(10L);
-							continue;
-						}
-						tx = getRepushTransactions().peek();
-						if (tx != null) {
-							this.rePush(tx);
-						} else {
-							TimeUnit.MILLISECONDS.sleep(50L);
-						}
-					} catch (Exception ex) {
-						logger.error("unknown exception happened in repush loop", ex);
-					} catch (Throwable throwable) {
-						logger.error("unknown throwable happened in repush loop", throwable);
-					} finally {
-						if (tx != null) {
-							getRepushTransactions().remove(tx);
-						}
-					}
-				}
-			};
-
-	private Runnable triggerCapsuleProcessLoop =
-			() -> {
-				while (isRunTriggerCapsuleProcessThread) {
-					try {
-						TriggerCapsule tiggerCapsule = triggerCapsuleQueue.poll(1, TimeUnit.SECONDS);
-						if (tiggerCapsule != null) {
-							tiggerCapsule.processTrigger();
-						}
-					} catch (InterruptedException ex) {
-						logger.info(ex.getMessage());
-						Thread.currentThread().interrupt();
-					} catch (Exception ex) {
-						logger.error("unknown exception happened in process capsule loop", ex);
-					} catch (Throwable throwable) {
-						logger.error("unknown throwable happened in process capsule loop", throwable);
-					}
-				}
-			};
 
 	public void stopRepushThread() {
 		isRunRepushThread = false;
@@ -1707,6 +1634,10 @@ public class Manager {
 		return assetIssueStore;
 	}
 
+	public void setAssetIssueStore(AssetIssueStore assetIssueStore) {
+		this.assetIssueStore = assetIssueStore;
+	}
+
 	public AssetIssueV2Store getAssetIssueV2Store() {
 		return assetIssueV2Store;
 	}
@@ -1717,10 +1648,6 @@ public class Manager {
 		} else {
 			return getAssetIssueV2Store();
 		}
-	}
-
-	public void setAssetIssueStore(AssetIssueStore assetIssueStore) {
-		this.assetIssueStore = assetIssueStore;
 	}
 
 	public void setBlockIndexStore(BlockIndexStore indexStore) {
@@ -1802,32 +1729,6 @@ public class Manager {
 			return witnessController.isGeneratingBlock();
 		}
 		return false;
-	}
-
-	private static class ValidateSignTask implements Callable<Boolean> {
-
-		private TransactionCapsule trx;
-		private CountDownLatch countDownLatch;
-		private Manager manager;
-
-		ValidateSignTask(TransactionCapsule trx, CountDownLatch countDownLatch,
-						 Manager manager) {
-			this.trx = trx;
-			this.countDownLatch = countDownLatch;
-			this.manager = manager;
-		}
-
-		@Override
-		public Boolean call() throws ValidateSignatureException {
-			try {
-				trx.validateSignature(manager);
-			} catch (ValidateSignatureException e) {
-				throw e;
-			} finally {
-				countDownLatch.countDown();
-			}
-			return true;
-		}
 	}
 
 	public void preValidateTransactionSign(BlockCapsule block)
@@ -1977,6 +1878,32 @@ public class Manager {
 					logger.info("too many triggers, lost contract log trigger: {}", trigger.getTransactionId());
 				}
 			}
+		}
+	}
+
+	private static class ValidateSignTask implements Callable<Boolean> {
+
+		private TransactionCapsule trx;
+		private CountDownLatch countDownLatch;
+		private Manager manager;
+
+		ValidateSignTask(TransactionCapsule trx, CountDownLatch countDownLatch,
+						 Manager manager) {
+			this.trx = trx;
+			this.countDownLatch = countDownLatch;
+			this.manager = manager;
+		}
+
+		@Override
+		public Boolean call() throws ValidateSignatureException {
+			try {
+				trx.validateSignature(manager);
+			} catch (ValidateSignatureException e) {
+				throw e;
+			} finally {
+				countDownLatch.countDown();
+			}
+			return true;
 		}
 	}
 }

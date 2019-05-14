@@ -4,16 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
-import org.tron.api.GrpcAPI.BlockList;
-import org.tron.api.GrpcAPI.EasyTransferResponse;
-import org.tron.api.GrpcAPI.TransactionApprovedList;
-import org.tron.api.GrpcAPI.TransactionExtention;
-import org.tron.api.GrpcAPI.TransactionList;
-import org.tron.api.GrpcAPI.TransactionSignWeight;
+import org.tron.api.GrpcAPI.*;
 import org.tron.common.crypto.Hash;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Sha256Hash;
@@ -22,36 +14,12 @@ import org.tron.core.capsule.TransactionCapsule;
 import org.tron.core.config.args.Args;
 import org.tron.core.services.http.JsonFormat.ParseException;
 import org.tron.protos.Contract;
-import org.tron.protos.Contract.AccountCreateContract;
-import org.tron.protos.Contract.AccountPermissionUpdateContract;
-import org.tron.protos.Contract.AccountUpdateContract;
-import org.tron.protos.Contract.AssetIssueContract;
-import org.tron.protos.Contract.CreateSmartContract;
-import org.tron.protos.Contract.ExchangeCreateContract;
-import org.tron.protos.Contract.ExchangeInjectContract;
-import org.tron.protos.Contract.ExchangeTransactionContract;
-import org.tron.protos.Contract.ExchangeWithdrawContract;
-import org.tron.protos.Contract.FreezeBalanceContract;
-import org.tron.protos.Contract.ParticipateAssetIssueContract;
-import org.tron.protos.Contract.ProposalApproveContract;
-import org.tron.protos.Contract.ProposalCreateContract;
-import org.tron.protos.Contract.ProposalDeleteContract;
-import org.tron.protos.Contract.TransferAssetContract;
-import org.tron.protos.Contract.TransferContract;
-import org.tron.protos.Contract.TriggerSmartContract;
-import org.tron.protos.Contract.UnfreezeAssetContract;
-import org.tron.protos.Contract.UnfreezeBalanceContract;
-import org.tron.protos.Contract.UpdateAssetContract;
-import org.tron.protos.Contract.UpdateEnergyLimitContract;
-import org.tron.protos.Contract.UpdateSettingContract;
-import org.tron.protos.Contract.VoteAssetContract;
-import org.tron.protos.Contract.VoteWitnessContract;
-import org.tron.protos.Contract.WithdrawBalanceContract;
-import org.tron.protos.Contract.WitnessCreateContract;
-import org.tron.protos.Contract.WitnessUpdateContract;
+import org.tron.protos.Contract.*;
 import org.tron.protos.Protocol.Block;
 import org.tron.protos.Protocol.SmartContract;
 import org.tron.protos.Protocol.Transaction;
+
+import java.util.List;
 
 
 @Slf4j(topic = "API")
@@ -325,7 +293,7 @@ public class Util {
 						Contract.UnstakeContract unstakeContract = contractParameter
 								.unpack(Contract.UnstakeContract.class);
 						contractJson = JSONObject.parseObject(JsonFormat.printToString(unstakeContract));
-					// todo add other contract
+						// todo add other contract
 					default:
 				}
 				JSONObject parameter = new JSONObject();

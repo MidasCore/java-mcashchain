@@ -10,16 +10,6 @@ import org.tron.protos.Protocol.StakeChange;
 public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
 	private StakeChange stakeChange;
 
-	@Override
-	public byte[] getData() {
-		return this.stakeChange.toByteArray();
-	}
-
-	@Override
-	public StakeChange getInstance() {
-		return this.stakeChange;
-	}
-
 	/**
 	 * StakeChangeCapsule constructor with address.
 	 */
@@ -43,6 +33,16 @@ public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
 		StakeChange.Builder builder = StakeChange.newBuilder().setAddress(address);
 		builder.setOldStakeAmount(stakeAmount);
 		this.stakeChange = builder.build();
+	}
+
+	@Override
+	public byte[] getData() {
+		return this.stakeChange.toByteArray();
+	}
+
+	@Override
+	public StakeChange getInstance() {
+		return this.stakeChange;
 	}
 
 	public byte[] createDbKey() {

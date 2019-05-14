@@ -1,7 +1,5 @@
 package org.tron.core.net.messagehandler;
 
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,6 +12,8 @@ import org.tron.core.net.peer.Item;
 import org.tron.core.net.peer.PeerConnection;
 import org.tron.protos.Protocol.Inventory.InventoryType;
 import org.tron.protos.Protocol.Transaction;
+
+import java.util.List;
 
 @Slf4j
 public class BlockMsgHandlerTest {

@@ -1,81 +1,82 @@
 package org.tron.core.capsule;
 
 import com.google.protobuf.ByteString;
-import java.util.Arrays;
 import org.tron.common.utils.Sha256Hash;
+
+import java.util.Arrays;
 
 public class BlockIdCapsule extends Sha256Hash implements ProtoCapsule {
 
-  @Override
-  public byte[] getData() {
-    return new byte[0];
-  }
+	private long num;
 
-  @Override
-  public Object getInstance() {
-    return null;
-  }
+	public BlockIdCapsule() {
+		super(Sha256Hash.ZERO_HASH.getBytes());
+		num = 0;
+	}
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || (getClass() != o.getClass() && !(o instanceof Sha256Hash))) {
-      return false;
-    }
-    return Arrays.equals(getBytes(), ((Sha256Hash) o).getBytes());
-  }
+	/**
+	 * Use {@link #wrap(byte[])} instead.
+	 */
+	public BlockIdCapsule(Sha256Hash hash, long num) {
+		super(hash.getBytes());
+		this.num = num;
+	}
 
-  public String getString() {
-    return "Num: " + num + ",ID:" + super.toString();
-  }
+	public BlockIdCapsule(byte[] hash, long num) {
+		super(hash);
+		this.num = num;
+	}
 
-  @Override
-  public String toString() {
-    return super.toString();
-  }
+	public BlockIdCapsule(ByteString hash, long num) {
+		super(hash.toByteArray());
+		this.num = num;
+	}
 
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
+	@Override
+	public byte[] getData() {
+		return new byte[0];
+	}
 
-  @Override
-  public int compareTo(Sha256Hash other) {
-    if (other.getClass().equals(BlockIdCapsule.class)) {
-      long otherNum = ((BlockIdCapsule) other).getNum();
-      return Long.compare(num, otherNum);
-    }
-    return super.compareTo(other);
-  }
+	@Override
+	public Object getInstance() {
+		return null;
+	}
 
-  private long num;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || (getClass() != o.getClass() && !(o instanceof Sha256Hash))) {
+			return false;
+		}
+		return Arrays.equals(getBytes(), ((Sha256Hash) o).getBytes());
+	}
 
-  public BlockIdCapsule() {
-    super(Sha256Hash.ZERO_HASH.getBytes());
-    num = 0;
-  }
+	public String getString() {
+		return "Num: " + num + ",ID:" + super.toString();
+	}
 
-  /**
-   * Use {@link #wrap(byte[])} instead.
-   */
-  public BlockIdCapsule(Sha256Hash hash, long num) {
-    super(hash.getBytes());
-    this.num = num;
-  }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 
-  public BlockIdCapsule(byte[] hash, long num) {
-    super(hash);
-    this.num = num;
-  }
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 
-  public BlockIdCapsule(ByteString hash, long num) {
-    super(hash.toByteArray());
-    this.num = num;
-  }
+	@Override
+	public int compareTo(Sha256Hash other) {
+		if (other.getClass().equals(BlockIdCapsule.class)) {
+			long otherNum = ((BlockIdCapsule) other).getNum();
+			return Long.compare(num, otherNum);
+		}
+		return super.compareTo(other);
+	}
 
-  public long getNum() {
-    return num;
-  }
+	public long getNum() {
+		return num;
+	}
 }

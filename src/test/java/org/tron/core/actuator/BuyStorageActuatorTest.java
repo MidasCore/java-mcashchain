@@ -2,15 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -28,16 +21,18 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 @Slf4j
 public class BuyStorageActuatorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_buy_storage_test";
-	private static TronApplicationContext context;
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000_000_000L);
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

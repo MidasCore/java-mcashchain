@@ -1,10 +1,6 @@
 package org.tron.core.db;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.Random;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,11 +13,11 @@ import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.protos.Protocol.AccountType;
 
+import java.io.File;
+import java.util.Random;
+
 public class AccountIdIndexStoreTest {
 
-	private static String dbPath = "output_account_index_store_test";
-	private static TronApplicationContext context;
-	private static AccountIdIndexStore accountIdIndexStore;
 	private static final byte[] ACCOUNT_ADDRESS_ONE = randomBytes(16);
 	private static final byte[] ACCOUNT_ADDRESS_TWO = randomBytes(16);
 	private static final byte[] ACCOUNT_ADDRESS_THREE = randomBytes(16);
@@ -31,6 +27,9 @@ public class AccountIdIndexStoreTest {
 	private static final byte[] ACCOUNT_NAME_THREE = randomBytes(6);
 	private static final byte[] ACCOUNT_NAME_FOUR = randomBytes(6);
 	private static final byte[] ACCOUNT_NAME_FIVE = randomBytes(6);
+	private static String dbPath = "output_account_index_store_test";
+	private static TronApplicationContext context;
+	private static AccountIdIndexStore accountIdIndexStore;
 	private static AccountCapsule accountCapsule1;
 	private static AccountCapsule accountCapsule2;
 	private static AccountCapsule accountCapsule3;
@@ -70,6 +69,13 @@ public class AccountIdIndexStoreTest {
 		accountIdIndexStore.put(accountCapsule4);
 	}
 
+	private static byte[] randomBytes(int length) {
+		// generate the random number
+		byte[] result = new byte[length];
+		new Random().nextBytes(result);
+		return result;
+	}
+
 	@Test
 	public void putAndGet() {
 		byte[] address = accountIdIndexStore.get(ByteString.copyFrom(ACCOUNT_NAME_ONE));
@@ -99,7 +105,6 @@ public class AccountIdIndexStoreTest {
 		Assert.assertFalse("putAndGet4", result);
 	}
 
-
 	@Test
 	public void testCaseInsensitive() {
 		byte[] accountName = "aABbCcDd_ssd1234".getBytes();
@@ -127,12 +132,5 @@ public class AccountIdIndexStoreTest {
 
 		Assert.assertNotNull("getLowerCase fail", accountIdIndexStore.get(upperCase));
 
-	}
-
-	private static byte[] randomBytes(int length) {
-		// generate the random number
-		byte[] result = new byte[length];
-		new Random().nextBytes(result);
-		return result;
 	}
 }

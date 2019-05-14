@@ -16,7 +16,6 @@
 package org.tron.core.config.args;
 
 import com.google.common.collect.Lists;
-import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,84 +24,86 @@ import org.tron.common.crypto.ECKey;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.config.Parameter.ChainConstant;
 
+import java.util.List;
+
 @Slf4j(topic = "app")
 public class LocalWitnesses {
 
-  @Getter
-  private List<String> privateKeys = Lists.newArrayList();
+	@Getter
+	private List<String> privateKeys = Lists.newArrayList();
 
-  private byte[] witnessAccountAddress;
+	private byte[] witnessAccountAddress;
 
-  public LocalWitnesses() {
-  }
+	public LocalWitnesses() {
+	}
 
-  public LocalWitnesses(String privateKey) {
-    addPrivateKeys(privateKey);
-  }
+	public LocalWitnesses(String privateKey) {
+		addPrivateKeys(privateKey);
+	}
 
-  public LocalWitnesses(List<String> privateKeys) {
-    setPrivateKeys(privateKeys);
-  }
+	public LocalWitnesses(List<String> privateKeys) {
+		setPrivateKeys(privateKeys);
+	}
 
-  public void setWitnessAccountAddress(final byte[] localWitnessAccountAddress) {
-    this.witnessAccountAddress = localWitnessAccountAddress;
-  }
+	public byte[] getWitnessAccountAddress() {
+		if (witnessAccountAddress == null) {
+			byte[] privateKey = ByteArray.fromHexString(getPrivateKey());
+			final ECKey ecKey = ECKey.fromPrivate(privateKey);
+			this.witnessAccountAddress = ecKey.getAddress();
+		}
+		return witnessAccountAddress;
+	}
 
-  public byte[] getWitnessAccountAddress() {
-    if (witnessAccountAddress == null) {
-      byte[] privateKey = ByteArray.fromHexString(getPrivateKey());
-      final ECKey ecKey = ECKey.fromPrivate(privateKey);
-      this.witnessAccountAddress = ecKey.getAddress();
-    }
-    return witnessAccountAddress;
-  }
+	public void setWitnessAccountAddress(final byte[] localWitnessAccountAddress) {
+		this.witnessAccountAddress = localWitnessAccountAddress;
+	}
 
-  public void initWitnessAccountAddress() {
-    if (witnessAccountAddress == null) {
-      byte[] privateKey = ByteArray.fromHexString(getPrivateKey());
-      final ECKey ecKey = ECKey.fromPrivate(privateKey);
-      this.witnessAccountAddress = ecKey.getAddress();
-    }
-  }
+	public void initWitnessAccountAddress() {
+		if (witnessAccountAddress == null) {
+			byte[] privateKey = ByteArray.fromHexString(getPrivateKey());
+			final ECKey ecKey = ECKey.fromPrivate(privateKey);
+			this.witnessAccountAddress = ecKey.getAddress();
+		}
+	}
 
-  /**
-   * Private key of ECKey.
-   */
-  public void setPrivateKeys(final List<String> privateKeys) {
-    if (CollectionUtils.isEmpty(privateKeys)) {
-      return;
-    }
-    for (String privateKey : privateKeys) {
-      validate(privateKey);
-    }
-    this.privateKeys = privateKeys;
-  }
+	/**
+	 * Private key of ECKey.
+	 */
+	public void setPrivateKeys(final List<String> privateKeys) {
+		if (CollectionUtils.isEmpty(privateKeys)) {
+			return;
+		}
+		for (String privateKey : privateKeys) {
+			validate(privateKey);
+		}
+		this.privateKeys = privateKeys;
+	}
 
-  private void validate(String privateKey) {
-    if (StringUtils.startsWithIgnoreCase(privateKey, "0X")) {
-      privateKey = privateKey.substring(2);
-    }
+	private void validate(String privateKey) {
+		if (StringUtils.startsWithIgnoreCase(privateKey, "0X")) {
+			privateKey = privateKey.substring(2);
+		}
 
-    if (StringUtils.isNotBlank(privateKey)
-        && privateKey.length() != ChainConstant.PRIVATE_KEY_LENGTH) {
-      throw new IllegalArgumentException(
-          "Private key(" + privateKey + ") must be " + ChainConstant.PRIVATE_KEY_LENGTH
-              + "-bits hex string.");
-    }
-  }
+		if (StringUtils.isNotBlank(privateKey)
+				&& privateKey.length() != ChainConstant.PRIVATE_KEY_LENGTH) {
+			throw new IllegalArgumentException(
+					"Private key(" + privateKey + ") must be " + ChainConstant.PRIVATE_KEY_LENGTH
+							+ "-bits hex string.");
+		}
+	}
 
-  public void addPrivateKeys(String privateKey) {
-    validate(privateKey);
-    this.privateKeys.add(privateKey);
-  }
+	public void addPrivateKeys(String privateKey) {
+		validate(privateKey);
+		this.privateKeys.add(privateKey);
+	}
 
-  //get the first one recently
-  public String getPrivateKey() {
-    if (CollectionUtils.isEmpty(privateKeys)) {
-      logger.warn("privateKey is null");
-      return null;
-    }
-    return privateKeys.get(0);
-  }
+	//get the first one recently
+	public String getPrivateKey() {
+		if (CollectionUtils.isEmpty(privateKeys)) {
+			logger.warn("privateKey is null");
+			return null;
+		}
+		return privateKeys.get(0);
+	}
 
 }

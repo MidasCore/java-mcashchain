@@ -1,18 +1,9 @@
 package org.tron.core.actuator;
 
-import static junit.framework.TestCase.fail;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -29,11 +20,13 @@ import org.tron.protos.Contract;
 import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
+import static junit.framework.TestCase.fail;
+
 @Slf4j
 public class WitnessUpdateActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_WitnessUpdate_test";
 	private static final String SUPERNODE_ADDRESS;
 	private static final String SUPERNODE_ADDRESS_ACCOUNT_NAME = "test_account";
@@ -44,6 +37,8 @@ public class WitnessUpdateActuatorTest {
 	private static final String URL = "https://tron.network";
 	private static final String NewURL = "https://tron.org";
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -60,6 +55,20 @@ public class WitnessUpdateActuatorTest {
 	@BeforeClass
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -261,20 +270,6 @@ public class WitnessUpdateActuatorTest {
 			Assert.assertEquals("Account does not exist", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
-		}
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
 		}
 	}
 }

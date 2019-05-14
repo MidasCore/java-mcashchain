@@ -31,9 +31,9 @@ import org.tron.protos.Protocol.AccountType;
 
 public class ContractState implements Deposit, ProgramListenerAware {
 
-	private Deposit deposit;
 	// contract address
 	private final DataWord address;
+	private Deposit deposit;
 	private ProgramListener programListener;
 
 	ContractState(ProgramInvoke programInvoke) {

@@ -2,15 +2,8 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import org.joda.time.DateTime;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tron.common.application.TronApplicationContext;
@@ -31,12 +24,12 @@ import org.tron.protos.Contract.AssetIssueContract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+
 public class ParticipateAssetIssueActuatorTest {
 
 	private static final Logger logger = LoggerFactory.getLogger("Test");
-	private static Manager dbManager;
 	private static final String dbPath = "output_participate_asset_test";
-	private static TronApplicationContext context;
 	private static final String OWNER_ADDRESS;
 	private static final String TO_ADDRESS;
 	private static final String TO_ADDRESS_2;
@@ -51,6 +44,8 @@ public class ParticipateAssetIssueActuatorTest {
 	private static final int VOTE_SCORE = 2;
 	private static final String DESCRIPTION = "MCASH";
 	private static final String URL = "https://midasprotocol.io";
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

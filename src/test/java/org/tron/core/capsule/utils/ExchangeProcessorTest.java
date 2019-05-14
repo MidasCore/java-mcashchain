@@ -1,7 +1,5 @@
 package org.tron.core.capsule.utils;
 
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -10,20 +8,21 @@ import org.junit.Test;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.FileUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
+
+import java.io.File;
 
 @Slf4j
 public class ExchangeProcessorTest {
 
-	private static ExchangeProcessor processor;
 	private static final String dbPath = "output_buy_exchange_processor_test";
-	private static TronApplicationContext context;
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = 10_000_000_000_000_000L;
+	private static ExchangeProcessor processor;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

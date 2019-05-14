@@ -22,12 +22,12 @@ import org.tron.protos.Protocol.Block;
 
 public interface BlockStoreInput {
 
-  Block getBestBlock();
+	Block getBestBlock();
 
-  Block getChainBlockByNumber(long blockNumber);
+	Block getChainBlockByNumber(long blockNumber);
 
-  boolean isBlockExist(byte[] hash);
+	boolean isBlockExist(byte[] hash);
 
-  Block getBlockByHash(byte[] hash);
+	Block getBlockByHash(byte[] hash);
 
 }

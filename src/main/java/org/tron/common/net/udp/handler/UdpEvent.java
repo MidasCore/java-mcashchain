@@ -18,31 +18,32 @@
 package org.tron.common.net.udp.handler;
 
 import java.net.InetSocketAddress;
+
 import org.tron.common.net.udp.message.Message;
 
 public class UdpEvent {
 
-  private Message message;
-  private InetSocketAddress address;
+	private Message message;
+	private InetSocketAddress address;
 
-  public UdpEvent(Message message, InetSocketAddress address) {
-    this.message = message;
-    this.address = address;
-  }
+	public UdpEvent(Message message, InetSocketAddress address) {
+		this.message = message;
+		this.address = address;
+	}
 
-  public Message getMessage() {
-    return message;
-  }
+	public Message getMessage() {
+		return message;
+	}
 
-  public void setMessage(Message message) {
-    this.message = message;
-  }
+	public void setMessage(Message message) {
+		this.message = message;
+	}
 
-  public InetSocketAddress getAddress() {
-    return address;
-  }
+	public InetSocketAddress getAddress() {
+		return address;
+	}
 
-  public void setAddress(InetSocketAddress address) {
-    this.address = address;
-  }
+	public void setAddress(InetSocketAddress address) {
+		this.address = address;
+	}
 }

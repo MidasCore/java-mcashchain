@@ -19,85 +19,85 @@ import org.tron.protos.Protocol.Transaction.Result.code;
 @Slf4j(topic = "actuator")
 public class SetAccountIdActuator extends AbstractActuator {
 
-  SetAccountIdActuator(Any contract, Manager dbManager) {
-    super(contract, dbManager);
-  }
+	SetAccountIdActuator(Any contract, Manager dbManager) {
+		super(contract, dbManager);
+	}
 
-  @Override
-  public boolean execute(TransactionResultCapsule ret) throws ContractExeException {
-    final SetAccountIdContract setAccountIdContract;
-    final long fee = calcFee();
-    try {
-      setAccountIdContract = contract.unpack(SetAccountIdContract.class);
-    } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
-      ret.setStatus(fee, code.FAILED);
-      throw new ContractExeException(e.getMessage());
-    }
+	@Override
+	public boolean execute(TransactionResultCapsule ret) throws ContractExeException {
+		final SetAccountIdContract setAccountIdContract;
+		final long fee = calcFee();
+		try {
+			setAccountIdContract = contract.unpack(SetAccountIdContract.class);
+		} catch (InvalidProtocolBufferException e) {
+			logger.debug(e.getMessage(), e);
+			ret.setStatus(fee, code.FAILED);
+			throw new ContractExeException(e.getMessage());
+		}
 
-    byte[] ownerAddress = setAccountIdContract.getOwnerAddress().toByteArray();
-    AccountStore accountStore = dbManager.getAccountStore();
-    AccountIdIndexStore accountIdIndexStore = dbManager.getAccountIdIndexStore();
-    AccountCapsule account = accountStore.get(ownerAddress);
+		byte[] ownerAddress = setAccountIdContract.getOwnerAddress().toByteArray();
+		AccountStore accountStore = dbManager.getAccountStore();
+		AccountIdIndexStore accountIdIndexStore = dbManager.getAccountIdIndexStore();
+		AccountCapsule account = accountStore.get(ownerAddress);
 
-    account.setAccountId(setAccountIdContract.getAccountId().toByteArray());
-    accountStore.put(ownerAddress, account);
-    accountIdIndexStore.put(account);
-    ret.setStatus(fee, code.SUCCESS);
+		account.setAccountId(setAccountIdContract.getAccountId().toByteArray());
+		accountStore.put(ownerAddress, account);
+		accountIdIndexStore.put(account);
+		ret.setStatus(fee, code.SUCCESS);
 
-    return true;
-  }
+		return true;
+	}
 
-  @Override
-  public boolean validate() throws ContractValidateException {
-    if (this.contract == null) {
-      throw new ContractValidateException("No contract!");
-    }
-    if (this.dbManager == null) {
-      throw new ContractValidateException("No dbManager!");
-    }
-    if (!this.contract.is(SetAccountIdContract.class)) {
-      throw new ContractValidateException(
-          "contract type error,expected type [SetAccountIdContract],real type[" + contract
-              .getClass() + "]");
-    }
-    final SetAccountIdContract setAccountIdContract;
-    try {
-      setAccountIdContract = contract.unpack(SetAccountIdContract.class);
-    } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
-      throw new ContractValidateException(e.getMessage());
-    }
-    byte[] ownerAddress = setAccountIdContract.getOwnerAddress().toByteArray();
-    byte[] accountId = setAccountIdContract.getAccountId().toByteArray();
-    if (!TransactionUtil.validAccountId(accountId)) {
-      throw new ContractValidateException("Invalid accountId");
-    }
-    if (!Wallet.addressValid(ownerAddress)) {
-      throw new ContractValidateException("Invalid ownerAddress");
-    }
+	@Override
+	public boolean validate() throws ContractValidateException {
+		if (this.contract == null) {
+			throw new ContractValidateException("No contract!");
+		}
+		if (this.dbManager == null) {
+			throw new ContractValidateException("No dbManager!");
+		}
+		if (!this.contract.is(SetAccountIdContract.class)) {
+			throw new ContractValidateException(
+					"contract type error,expected type [SetAccountIdContract],real type[" + contract
+							.getClass() + "]");
+		}
+		final SetAccountIdContract setAccountIdContract;
+		try {
+			setAccountIdContract = contract.unpack(SetAccountIdContract.class);
+		} catch (InvalidProtocolBufferException e) {
+			logger.debug(e.getMessage(), e);
+			throw new ContractValidateException(e.getMessage());
+		}
+		byte[] ownerAddress = setAccountIdContract.getOwnerAddress().toByteArray();
+		byte[] accountId = setAccountIdContract.getAccountId().toByteArray();
+		if (!TransactionUtil.validAccountId(accountId)) {
+			throw new ContractValidateException("Invalid accountId");
+		}
+		if (!Wallet.addressValid(ownerAddress)) {
+			throw new ContractValidateException("Invalid ownerAddress");
+		}
 
-    AccountCapsule account = dbManager.getAccountStore().get(ownerAddress);
-    if (account == null) {
-      throw new ContractValidateException("Account has not existed");
-    }
-    if (account.getAccountId() != null && !account.getAccountId().isEmpty()) {
-      throw new ContractValidateException("This account id already set");
-    }
-    if (dbManager.getAccountIdIndexStore().has(accountId)) {
-      throw new ContractValidateException("This id has existed");
-    }
+		AccountCapsule account = dbManager.getAccountStore().get(ownerAddress);
+		if (account == null) {
+			throw new ContractValidateException("Account has not existed");
+		}
+		if (account.getAccountId() != null && !account.getAccountId().isEmpty()) {
+			throw new ContractValidateException("This account id already set");
+		}
+		if (dbManager.getAccountIdIndexStore().has(accountId)) {
+			throw new ContractValidateException("This id has existed");
+		}
 
-    return true;
-  }
+		return true;
+	}
 
-  @Override
-  public ByteString getOwnerAddress() throws InvalidProtocolBufferException {
-    return contract.unpack(SetAccountIdContract.class).getOwnerAddress();
-  }
+	@Override
+	public ByteString getOwnerAddress() throws InvalidProtocolBufferException {
+		return contract.unpack(SetAccountIdContract.class).getOwnerAddress();
+	}
 
-  @Override
-  public long calcFee() {
-    return 0;
-  }
+	@Override
+	public long calcFee() {
+		return 0;
+	}
 }

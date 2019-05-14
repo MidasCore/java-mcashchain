@@ -31,82 +31,82 @@ import static java.lang.Math.min;
 @Slf4j(topic = "capsule")
 public class ContractCapsule implements ProtoCapsule<SmartContract> {
 
-  private SmartContract smartContract;
+	private SmartContract smartContract;
 
-  /**
-   * constructor TransactionCapsule.
-   */
-  public ContractCapsule(SmartContract smartContract) {
-    this.smartContract = smartContract;
-  }
+	/**
+	 * constructor TransactionCapsule.
+	 */
+	public ContractCapsule(SmartContract smartContract) {
+		this.smartContract = smartContract;
+	}
 
-  public ContractCapsule(byte[] data) {
-    try {
-      this.smartContract = SmartContract.parseFrom(data);
-    } catch (InvalidProtocolBufferException e) {
-      // logger.debug(e.getMessage());
-    }
-  }
+	public ContractCapsule(byte[] data) {
+		try {
+			this.smartContract = SmartContract.parseFrom(data);
+		} catch (InvalidProtocolBufferException e) {
+			// logger.debug(e.getMessage());
+		}
+	}
 
-  public static CreateSmartContract getSmartContractFromTransaction(Transaction trx) {
-    try {
-      Any any = trx.getRawData().getContract(0).getParameter();
-      CreateSmartContract createSmartContract = any.unpack(CreateSmartContract.class);
-      return createSmartContract;
-    } catch (InvalidProtocolBufferException e) {
-      return null;
-    }
-  }
+	public static CreateSmartContract getSmartContractFromTransaction(Transaction trx) {
+		try {
+			Any any = trx.getRawData().getContract(0).getParameter();
+			CreateSmartContract createSmartContract = any.unpack(CreateSmartContract.class);
+			return createSmartContract;
+		} catch (InvalidProtocolBufferException e) {
+			return null;
+		}
+	}
 
-  public static TriggerSmartContract getTriggerContractFromTransaction(Transaction trx) {
-    try {
-      Any any = trx.getRawData().getContract(0).getParameter();
-      TriggerSmartContract contractTriggerContract = any.unpack(TriggerSmartContract.class);
-      return contractTriggerContract;
-    } catch (InvalidProtocolBufferException e) {
-      return null;
-    }
-  }
+	public static TriggerSmartContract getTriggerContractFromTransaction(Transaction trx) {
+		try {
+			Any any = trx.getRawData().getContract(0).getParameter();
+			TriggerSmartContract contractTriggerContract = any.unpack(TriggerSmartContract.class);
+			return contractTriggerContract;
+		} catch (InvalidProtocolBufferException e) {
+			return null;
+		}
+	}
 
-  public Sha256Hash getHash() {
-    byte[] transBytes = this.smartContract.toByteArray();
-    return Sha256Hash.of(transBytes);
-  }
+	public Sha256Hash getHash() {
+		byte[] transBytes = this.smartContract.toByteArray();
+		return Sha256Hash.of(transBytes);
+	}
 
-  public Sha256Hash getCodeHash() {
-    byte[] bytecode = smartContract.getBytecode().toByteArray();
-    return Sha256Hash.of(bytecode);
-  }
+	public Sha256Hash getCodeHash() {
+		byte[] bytecode = smartContract.getBytecode().toByteArray();
+		return Sha256Hash.of(bytecode);
+	}
 
-  @Override
-  public byte[] getData() {
-    return this.smartContract.toByteArray();
-  }
+	@Override
+	public byte[] getData() {
+		return this.smartContract.toByteArray();
+	}
 
-  @Override
-  public SmartContract getInstance() {
-    return this.smartContract;
-  }
+	@Override
+	public SmartContract getInstance() {
+		return this.smartContract;
+	}
 
-  @Override
-  public String toString() {
-    return this.smartContract.toString();
-  }
+	@Override
+	public String toString() {
+		return this.smartContract.toString();
+	}
 
-  public byte[] getOriginAddress() {
-    return this.smartContract.getOriginAddress().toByteArray();
-  }
+	public byte[] getOriginAddress() {
+		return this.smartContract.getOriginAddress().toByteArray();
+	}
 
-  public long getConsumeUserResourcePercent() {
-    long percent = this.smartContract.getConsumeUserResourcePercent();
-    return max(0, min(percent, Constant.ONE_HUNDRED));
-  }
+	public long getConsumeUserResourcePercent() {
+		long percent = this.smartContract.getConsumeUserResourcePercent();
+		return max(0, min(percent, Constant.ONE_HUNDRED));
+	}
 
-  public long getOriginEnergyLimit() {
-    long originEnergyLimit = this.smartContract.getOriginEnergyLimit();
-    if (originEnergyLimit == Constant.PB_DEFAULT_ENERGY_LIMIT) {
-      originEnergyLimit = Constant.CREATOR_DEFAULT_ENERGY_LIMIT;
-    }
-    return originEnergyLimit;
-  }
+	public long getOriginEnergyLimit() {
+		long originEnergyLimit = this.smartContract.getOriginEnergyLimit();
+		if (originEnergyLimit == Constant.PB_DEFAULT_ENERGY_LIMIT) {
+			originEnergyLimit = Constant.CREATOR_DEFAULT_ENERGY_LIMIT;
+		}
+		return originEnergyLimit;
+	}
 }

@@ -1,27 +1,15 @@
 package org.tron.core.actuator;
 
-import static org.testng.Assert.fail;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.Application;
 import org.tron.common.application.ApplicationFactory;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.config.DefaultConfig;
@@ -38,14 +26,16 @@ import org.tron.protos.Protocol.Permission;
 import org.tron.protos.Protocol.Permission.PermissionType;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.testng.Assert.fail;
+
 @Slf4j
 public class AccountPermissionUpdateActuatorTest {
 
-	private static Manager dbManager;
 	private static final String dbPath = "output_transfer_test";
-	private static TronApplicationContext context;
-	public static Application AppT;
-
 	private static final String OWNER_ADDRESS;
 	private static final String WITNESS_ADDRESS;
 	private static final String KEY_ADDRESS;
@@ -61,10 +51,12 @@ public class AccountPermissionUpdateActuatorTest {
 	private static final Key VALID_KEY4;
 	private static final Key VALID_KEY5;
 	private static final long KEY_WEIGHT = 2;
-
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ADDRESS_NOACCOUNT;
 	private static final String KEY_ADDRESS_INVALID = "bbbb";
+	public static Application AppT;
+	private static Manager dbManager;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);

@@ -15,37 +15,37 @@ import org.tron.core.config.args.Args;
 @Aspect
 public class BackupRocksDBAspect {
 
-  @Autowired
-  private BackupDbUtil util;
+	@Autowired
+	private BackupDbUtil util;
 
-  @Autowired
-  private BackupManager backupManager;
+	@Autowired
+	private BackupManager backupManager;
 
 
-  @Pointcut("execution(** org.tron.core.db.Manager.pushBlock(..)) && args(block)")
-  public void pointPushBlock(BlockCapsule block) {
+	@Pointcut("execution(** org.tron.core.db.Manager.pushBlock(..)) && args(block)")
+	public void pointPushBlock(BlockCapsule block) {
 
-  }
+	}
 
-  @Before("pointPushBlock(block)")
-  public void backupDb(BlockCapsule block) {
-    //SR-Master Node do not backup db;
-    if (Args.getInstance().isWitness() && !(backupManager.getStatus() == BackupStatusEnum.SLAVER)) {
-      return;
-    }
+	@Before("pointPushBlock(block)")
+	public void backupDb(BlockCapsule block) {
+		//SR-Master Node do not backup db;
+		if (Args.getInstance().isWitness() && !(backupManager.getStatus() == BackupStatusEnum.SLAVER)) {
+			return;
+		}
 
-    //backup db when reach frequency.
-    if (block.getNum() % Args.getInstance().getDbBackupConfig().getFrequency() == 0) {
-      try {
-        util.doBackup(block);
-      } catch (Exception e) {
-        logger.error("backup db failure: {}", e);
-      }
-    }
-  }
+		//backup db when reach frequency.
+		if (block.getNum() % Args.getInstance().getDbBackupConfig().getFrequency() == 0) {
+			try {
+				util.doBackup(block);
+			} catch (Exception e) {
+				logger.error("backup db failure: {}", e);
+			}
+		}
+	}
 
-  @AfterThrowing("pointPushBlock(block)")
-  public void logErrorPushBlock(BlockCapsule block) {
-    logger.info("AfterThrowing pushBlock");
-  }
+	@AfterThrowing("pointPushBlock(block)")
+	public void logErrorPushBlock(BlockCapsule block) {
+		logger.info("AfterThrowing pushBlock");
+	}
 }

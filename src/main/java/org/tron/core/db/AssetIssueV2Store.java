@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AssetIssueV2Store extends AssetIssueStore {
 
-  @Autowired
-  private AssetIssueV2Store(@Value("asset-issue-v2") String dbName) {
-    super(dbName);
-  }
+	@Autowired
+	private AssetIssueV2Store(@Value("asset-issue-v2") String dbName) {
+		super(dbName);
+	}
 
 }

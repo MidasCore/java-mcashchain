@@ -3,17 +3,8 @@ package org.tron.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.io.File;
-import java.util.Arrays;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.runtime.config.VMConfig;
 import org.tron.common.utils.ByteArray;
@@ -33,18 +24,16 @@ import org.tron.core.exception.TronException;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol;
 
+import java.io.File;
+import java.util.Arrays;
+
 
 @Slf4j
 @Ignore
 public class UpdateEnergyLimitContractActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_updateEnergyLimitContractActuator_test";
-	private static String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_ACCOUNT_NAME = "test_account";
-	private static String SECOND_ACCOUNT_ADDRESS;
-	private static String OWNER_ADDRESS_NOTEXIST;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String SMART_CONTRACT_NAME = "smart_contarct";
 	private static final String CONTRACT_ADDRESS = "111111";
@@ -52,6 +41,11 @@ public class UpdateEnergyLimitContractActuatorTest {
 	private static final long SOURCE_ENERGY_LIMIT = 10L;
 	private static final long TARGET_ENERGY_LIMIT = 30L;
 	private static final long INVALID_ENERGY_LIMIT = -200L;
+	private static TronApplicationContext context;
+	private static Manager dbManager;
+	private static String OWNER_ADDRESS;
+	private static String SECOND_ACCOUNT_ADDRESS;
+	private static String OWNER_ADDRESS_NOTEXIST;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -73,6 +67,21 @@ public class UpdateEnergyLimitContractActuatorTest {
 		dbManager.getDynamicPropertiesStore()
 				.statsByVersion(ForkBlockVersionConsts.ENERGY_LIMIT, stats);
 		VMConfig.initVmHardFork();
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
+		VMConfig.setENERGY_LIMIT_HARD_FORK(false);
 	}
 
 	/**
@@ -108,21 +117,6 @@ public class UpdateEnergyLimitContractActuatorTest {
 
 		// address does not exist in accountStore
 		dbManager.getAccountStore().delete(ByteArray.fromHexString(OWNER_ADDRESS_NOTEXIST));
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
-		}
-		VMConfig.setENERGY_LIMIT_HARD_FORK(false);
 	}
 
 	private Any getContract(String accountAddress, String contractAddress, long originEnergyLimit) {

@@ -1,19 +1,17 @@
 package org.tron.core.config.args;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.Getter;
-
 public class GenesisBlock implements Serializable {
-
-	private static final long serialVersionUID = 3559533002594201715L;
 
 	public static final String DEFAULT_NUMBER = "0";
 	public static final String DEFAULT_TIMESTAMP = "0";
 	public static final String DEFAULT_PARENT_HASH = "0";
-
+	private static final long serialVersionUID = 3559533002594201715L;
 	@Getter
 	private List<Account> assets;
 

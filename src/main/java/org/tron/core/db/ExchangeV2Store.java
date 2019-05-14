@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExchangeV2Store extends ExchangeStore {
 
-  @Autowired
-  public ExchangeV2Store(@Value("exchange-v2") String dbName) {
-    super(dbName);
-  }
+	@Autowired
+	public ExchangeV2Store(@Value("exchange-v2") String dbName) {
+		super(dbName);
+	}
 
 }

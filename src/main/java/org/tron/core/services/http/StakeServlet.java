@@ -19,27 +19,27 @@ import java.util.stream.Collectors;
 @Slf4j(topic = "API")
 public class StakeServlet extends HttpServlet {
 
-  @Autowired
-  private Wallet wallet;
+	@Autowired
+	private Wallet wallet;
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-    try {
-      String contract = request.getReader().lines()
-          .collect(Collectors.joining(System.lineSeparator()));
-      Util.checkBodySize(contract);
-      Contract.StakeContract.Builder build = Contract.StakeContract.newBuilder();
-      JsonFormat.merge(contract, build);
-      Transaction tx = wallet
-          .createTransactionCapsule(build.build(), ContractType.StakeContract)
-          .getInstance();
-      response.getWriter().println(Util.printTransaction(tx));
-    } catch (Exception e) {
-      logger.debug("Exception: {}", e.getMessage());
-      try {
-        response.getWriter().println(Util.printErrorMsg(e));
-      } catch (IOException ioe) {
-        logger.debug("IOException: {}", ioe.getMessage());
-      }
-    }
-  }
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			String contract = request.getReader().lines()
+					.collect(Collectors.joining(System.lineSeparator()));
+			Util.checkBodySize(contract);
+			Contract.StakeContract.Builder build = Contract.StakeContract.newBuilder();
+			JsonFormat.merge(contract, build);
+			Transaction tx = wallet
+					.createTransactionCapsule(build.build(), ContractType.StakeContract)
+					.getInstance();
+			response.getWriter().println(Util.printTransaction(tx));
+		} catch (Exception e) {
+			logger.debug("Exception: {}", e.getMessage());
+			try {
+				response.getWriter().println(Util.printErrorMsg(e));
+			} catch (IOException ioe) {
+				logger.debug("IOException: {}", ioe.getMessage());
+			}
+		}
+	}
 }

@@ -1,24 +1,14 @@
 package org.tron.core.actuator;
 
-import static junit.framework.TestCase.fail;
-
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.ContractCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
@@ -30,12 +20,12 @@ import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol;
 
+import java.io.File;
+
 
 @Slf4j
 public class UpdateSettingContractActuatorTest {
 
-	private static TronApplicationContext context;
-	private static Manager dbManager;
 	private static final String dbPath = "output_update_setting_contract_test";
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_ACCOUNT_NAME = "test_account";
@@ -48,6 +38,8 @@ public class UpdateSettingContractActuatorTest {
 	private static final long SOURCE_PERCENT = 10L;
 	private static final long TARGET_PERCENT = 30L;
 	private static final long INVALID_PERCENT = 200L;
+	private static TronApplicationContext context;
+	private static Manager dbManager;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -63,6 +55,20 @@ public class UpdateSettingContractActuatorTest {
 	@BeforeClass
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
+	}
+
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
 	}
 
 	/**
@@ -98,20 +104,6 @@ public class UpdateSettingContractActuatorTest {
 
 		// address does not exist in accountStore
 		dbManager.getAccountStore().delete(ByteArray.fromHexString(OWNER_ADDRESS_NOTEXIST));
-	}
-
-	/**
-	 * Release resources.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		context.destroy();
-		if (FileUtil.deleteDir(new File(dbPath))) {
-			logger.info("Release resources successful.");
-		} else {
-			logger.info("Release resources failure.");
-		}
 	}
 
 	private Any getContract(String accountAddress, String contractAddress, long percent) {

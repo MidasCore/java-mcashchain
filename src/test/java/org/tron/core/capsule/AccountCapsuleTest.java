@@ -1,16 +1,7 @@
 package org.tron.core.capsule;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-import java.util.Map;
-import java.util.Random;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -23,6 +14,10 @@ import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Key;
 import org.tron.protos.Protocol.Permission;
 import org.tron.protos.Protocol.Vote;
+
+import java.io.File;
+import java.util.Map;
+import java.util.Random;
 
 @Ignore
 public class AccountCapsuleTest {
@@ -70,6 +65,13 @@ public class AccountCapsuleTest {
 		Args.clearParam();
 		context.destroy();
 		FileUtil.deleteDir(new File(dbPath));
+	}
+
+	private static byte[] randomBytes(int length) {
+		//generate the random number
+		byte[] result = new byte[length];
+		new Random().nextBytes(result);
+		return result;
 	}
 
 	@Test
@@ -128,14 +130,6 @@ public class AccountCapsuleTest {
 		long amountValue = 33L;
 		boolean addAsssetTrue = accountCapsuleTest.addAsset(keyName.getBytes(), amountValue);
 		Assert.assertTrue(addAsssetTrue);
-	}
-
-
-	private static byte[] randomBytes(int length) {
-		//generate the random number
-		byte[] result = new byte[length];
-		new Random().nextBytes(result);
-		return result;
 	}
 
 	/**

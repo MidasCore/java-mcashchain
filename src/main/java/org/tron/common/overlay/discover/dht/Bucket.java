@@ -23,137 +23,137 @@ import java.util.List;
 
 public class Bucket {
 
-  public static int MAX_KADEMLIA_K = 5;
+	public static int MAX_KADEMLIA_K = 5;
 
-  // if bit = 1 go left
-  Bucket left;
+	// if bit = 1 go left
+	Bucket left;
 
-  // if bit = 0 go right
-  Bucket right;
+	// if bit = 0 go right
+	Bucket right;
 
-  String name;
+	String name;
 
-  List<Peer> peers = new ArrayList<>();
-
-
-  public Bucket(String name) {
-    this.name = name;
-  }
+	List<Peer> peers = new ArrayList<>();
 
 
-  public void add(Peer peer) {
-
-    if (peer == null) {
-      throw new Error("Not a leaf");
-    }
-
-    if (peers == null) {
-
-      if (peer.nextBit(name) == 1) {
-        left.add(peer);
-      } else {
-        right.add(peer);
-      }
-
-      return;
-    }
-
-    peers.add(peer);
-
-    if (peers.size() > MAX_KADEMLIA_K) {
-      splitBucket();
-    }
-  }
-
-  public void splitBucket() {
-    left = new Bucket(name + "1");
-    right = new Bucket(name + "0");
-
-    for (Peer id : peers) {
-      if (id.nextBit(name) == 1) {
-        left.add(id);
-      } else {
-        right.add(id);
-      }
-    }
-
-    this.peers = null;
-  }
+	public Bucket(String name) {
+		this.name = name;
+	}
 
 
-  public Bucket left() {
-    return left;
-  }
+	public void add(Peer peer) {
 
-  public Bucket right() {
-    return right;
-  }
+		if (peer == null) {
+			throw new Error("Not a leaf");
+		}
 
+		if (peers == null) {
 
-  @Override
-  public String toString() {
+			if (peer.nextBit(name) == 1) {
+				left.add(peer);
+			} else {
+				right.add(peer);
+			}
 
-    StringBuilder sb = new StringBuilder();
+			return;
+		}
 
-    sb.append(name).append("\n");
+		peers.add(peer);
 
-    if (peers == null) {
-      return sb.toString();
-    }
+		if (peers.size() > MAX_KADEMLIA_K) {
+			splitBucket();
+		}
+	}
 
-    for (Peer id : peers) {
-      sb.append(id.toBinaryString()).append("\n");
-    }
+	public void splitBucket() {
+		left = new Bucket(name + "1");
+		right = new Bucket(name + "0");
 
-    return sb.toString();
-  }
+		for (Peer id : peers) {
+			if (id.nextBit(name) == 1) {
+				left.add(id);
+			} else {
+				right.add(id);
+			}
+		}
 
-
-  public void traverseTree(DoOnTree doOnTree) {
-
-    if (left != null) {
-      left.traverseTree(doOnTree);
-    }
-    if (right != null) {
-      right.traverseTree(doOnTree);
-    }
-
-    doOnTree.call(this);
-  }
-
-  //tree operations
-
-  public interface DoOnTree {
-
-    void call(Bucket bucket);
-  }
+		this.peers = null;
+	}
 
 
-  public static class SaveLeaf implements DoOnTree {
+	public Bucket left() {
+		return left;
+	}
 
-    List<Bucket> leafs = new ArrayList<>();
+	public Bucket right() {
+		return right;
+	}
 
-    @Override
-    public void call(Bucket bucket) {
-      if (bucket.peers != null) {
-        leafs.add(bucket);
-      }
-    }
 
-    public List<Bucket> getLeafs() {
-      return leafs;
-    }
+	@Override
+	public String toString() {
 
-    public void setLeafs(List<Bucket> leafs) {
-      this.leafs = leafs;
-    }
-  }
+		StringBuilder sb = new StringBuilder();
 
-  public String getName() {
-    return name;
-  }
+		sb.append(name).append("\n");
 
-  public List<Peer> getPeers() {
-    return peers;
-  }
+		if (peers == null) {
+			return sb.toString();
+		}
+
+		for (Peer id : peers) {
+			sb.append(id.toBinaryString()).append("\n");
+		}
+
+		return sb.toString();
+	}
+
+
+	public void traverseTree(DoOnTree doOnTree) {
+
+		if (left != null) {
+			left.traverseTree(doOnTree);
+		}
+		if (right != null) {
+			right.traverseTree(doOnTree);
+		}
+
+		doOnTree.call(this);
+	}
+
+	//tree operations
+
+	public interface DoOnTree {
+
+		void call(Bucket bucket);
+	}
+
+
+	public static class SaveLeaf implements DoOnTree {
+
+		List<Bucket> leafs = new ArrayList<>();
+
+		@Override
+		public void call(Bucket bucket) {
+			if (bucket.peers != null) {
+				leafs.add(bucket);
+			}
+		}
+
+		public List<Bucket> getLeafs() {
+			return leafs;
+		}
+
+		public void setLeafs(List<Bucket> leafs) {
+			this.leafs = leafs;
+		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public List<Peer> getPeers() {
+		return peers;
+	}
 }

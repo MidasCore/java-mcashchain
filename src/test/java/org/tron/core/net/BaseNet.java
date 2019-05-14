@@ -1,11 +1,7 @@
 package org.tron.core.net;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.DefaultMessageSizeEstimator;
-import io.netty.channel.FixedRecvByteBufAllocator;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -13,13 +9,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +21,12 @@ import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.core.net.peer.PeerConnection;
 import org.tron.core.services.RpcApiService;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public abstract class BaseNet {
@@ -48,6 +43,34 @@ public abstract class BaseNet {
 	private TronNetDelegate tronNetDelegate;
 
 	private ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+	public static Channel connect(ByteToMessageDecoder decoder) throws InterruptedException {
+		NioEventLoopGroup group = new NioEventLoopGroup(1);
+		Bootstrap b = new Bootstrap();
+		b.group(group).channel(NioSocketChannel.class)
+				.handler(new ChannelInitializer<Channel>() {
+					@Override
+					protected void initChannel(Channel ch) throws Exception {
+						ch.config().setRecvByteBufAllocator(new FixedRecvByteBufAllocator(256 * 1024));
+						ch.config().setOption(ChannelOption.SO_RCVBUF, 256 * 1024);
+						ch.config().setOption(ChannelOption.SO_BACKLOG, 1024);
+						ch.pipeline()
+								.addLast("readTimeoutHandler",
+										new ReadTimeoutHandler(600, TimeUnit.SECONDS))
+								.addLast("writeTimeoutHandler",
+										new WriteTimeoutHandler(600, TimeUnit.SECONDS));
+						ch.pipeline().addLast("protoPender",
+								new ProtobufVarint32LengthFieldPrepender());
+						ch.pipeline().addLast("lengthDecode",
+								new ProtobufVarint32FrameDecoder());
+						ch.pipeline().addLast("handshakeHandler", decoder);
+						ch.closeFuture();
+					}
+				}).option(ChannelOption.SO_KEEPALIVE, true)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
+				.option(ChannelOption.MESSAGE_SIZE_ESTIMATOR, DefaultMessageSizeEstimator.DEFAULT);
+		return b.connect("127.0.0.1", port).sync().channel();
+	}
 
 	@Before
 	public void init() throws Exception {
@@ -82,34 +105,6 @@ public abstract class BaseNet {
 		while (++tryTimes < 100 && tronNetDelegate == null) {
 			Thread.sleep(3000);
 		}
-	}
-
-	public static Channel connect(ByteToMessageDecoder decoder) throws InterruptedException {
-		NioEventLoopGroup group = new NioEventLoopGroup(1);
-		Bootstrap b = new Bootstrap();
-		b.group(group).channel(NioSocketChannel.class)
-				.handler(new ChannelInitializer<Channel>() {
-					@Override
-					protected void initChannel(Channel ch) throws Exception {
-						ch.config().setRecvByteBufAllocator(new FixedRecvByteBufAllocator(256 * 1024));
-						ch.config().setOption(ChannelOption.SO_RCVBUF, 256 * 1024);
-						ch.config().setOption(ChannelOption.SO_BACKLOG, 1024);
-						ch.pipeline()
-								.addLast("readTimeoutHandler",
-										new ReadTimeoutHandler(600, TimeUnit.SECONDS))
-								.addLast("writeTimeoutHandler",
-										new WriteTimeoutHandler(600, TimeUnit.SECONDS));
-						ch.pipeline().addLast("protoPender",
-								new ProtobufVarint32LengthFieldPrepender());
-						ch.pipeline().addLast("lengthDecode",
-								new ProtobufVarint32FrameDecoder());
-						ch.pipeline().addLast("handshakeHandler", decoder);
-						ch.closeFuture();
-					}
-				}).option(ChannelOption.SO_KEEPALIVE, true)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
-				.option(ChannelOption.MESSAGE_SIZE_ESTIMATOR, DefaultMessageSizeEstimator.DEFAULT);
-		return b.connect("127.0.0.1", port).sync().channel();
 	}
 
 	@After

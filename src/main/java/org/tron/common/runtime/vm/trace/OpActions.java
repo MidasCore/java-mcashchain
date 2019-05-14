@@ -29,125 +29,125 @@ import static org.tron.common.utils.ByteUtil.toHexString;
 
 public class OpActions {
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public static class Action {
+	private List<Action> stack = new ArrayList<>();
+	private List<Action> memory = new ArrayList<>();
+	private List<Action> storage = new ArrayList<>();
 
-    public enum Name {
-      pop,
-      push,
-      swap,
-      extend,
-      write,
-      put,
-      remove,
-      clear;
-    }
+	private static Action addAction(List<Action> container, Action.Name name) {
+		Action action = new Action();
+		action.setName(name);
 
-    private Name name;
-    private Map<String, Object> params;
+		container.add(action);
 
-    public Name getName() {
-      return name;
-    }
+		return action;
+	}
 
-    public void setName(Name name) {
-      this.name = name;
-    }
+	public List<Action> getStack() {
+		return stack;
+	}
 
-    public Map<String, Object> getParams() {
-      return params;
-    }
+	public void setStack(List<Action> stack) {
+		this.stack = stack;
+	}
 
-    public void setParams(Map<String, Object> params) {
-      this.params = params;
-    }
+	public List<Action> getMemory() {
+		return memory;
+	}
 
-    Action addParam(String name, Object value) {
-      if (value != null) {
-        if (params == null) {
-          params = new HashMap<>();
-        }
-        params.put(name, value.toString());
-      }
-      return this;
-    }
-  }
+	public void setMemory(List<Action> memory) {
+		this.memory = memory;
+	}
 
-  private List<Action> stack = new ArrayList<>();
-  private List<Action> memory = new ArrayList<>();
-  private List<Action> storage = new ArrayList<>();
+	public List<Action> getStorage() {
+		return storage;
+	}
 
-  public List<Action> getStack() {
-    return stack;
-  }
+	public void setStorage(List<Action> storage) {
+		this.storage = storage;
+	}
 
-  public void setStack(List<Action> stack) {
-    this.stack = stack;
-  }
+	public Action addStackPop() {
+		return addAction(stack, Action.Name.pop);
+	}
 
-  public List<Action> getMemory() {
-    return memory;
-  }
+	public Action addStackPush(DataWord value) {
+		return addAction(stack, Action.Name.push)
+				.addParam("value", value);
+	}
 
-  public void setMemory(List<Action> memory) {
-    this.memory = memory;
-  }
+	public Action addStackSwap(int from, int to) {
+		return addAction(stack, Action.Name.swap)
+				.addParam("from", from)
+				.addParam("to", to);
+	}
 
-  public List<Action> getStorage() {
-    return storage;
-  }
+	public Action addMemoryExtend(long delta) {
+		return addAction(memory, Action.Name.extend)
+				.addParam("delta", delta);
+	}
 
-  public void setStorage(List<Action> storage) {
-    this.storage = storage;
-  }
+	public Action addMemoryWrite(int address, byte[] data, int size) {
+		return addAction(memory, Action.Name.write)
+				.addParam("address", address)
+				.addParam("data", toHexString(data).substring(0, size));
+	}
 
-  private static Action addAction(List<Action> container, Action.Name name) {
-    Action action = new Action();
-    action.setName(name);
+	public Action addStoragePut(DataWord key, DataWord value) {
+		return addAction(storage, Action.Name.put)
+				.addParam("key", key)
+				.addParam("value", value);
+	}
 
-    container.add(action);
+	public Action addStorageRemove(DataWord key) {
+		return addAction(storage, Action.Name.remove)
+				.addParam("key", key);
+	}
 
-    return action;
-  }
+	public Action addStorageClear() {
+		return addAction(storage, Action.Name.clear);
+	}
 
-  public Action addStackPop() {
-    return addAction(stack, Action.Name.pop);
-  }
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class Action {
 
-  public Action addStackPush(DataWord value) {
-    return addAction(stack, Action.Name.push)
-        .addParam("value", value);
-  }
+		private Name name;
+		private Map<String, Object> params;
 
-  public Action addStackSwap(int from, int to) {
-    return addAction(stack, Action.Name.swap)
-        .addParam("from", from)
-        .addParam("to", to);
-  }
+		public Name getName() {
+			return name;
+		}
 
-  public Action addMemoryExtend(long delta) {
-    return addAction(memory, Action.Name.extend)
-        .addParam("delta", delta);
-  }
+		public void setName(Name name) {
+			this.name = name;
+		}
 
-  public Action addMemoryWrite(int address, byte[] data, int size) {
-    return addAction(memory, Action.Name.write)
-        .addParam("address", address)
-        .addParam("data", toHexString(data).substring(0, size));
-  }
+		public Map<String, Object> getParams() {
+			return params;
+		}
 
-  public Action addStoragePut(DataWord key, DataWord value) {
-    return addAction(storage, Action.Name.put)
-        .addParam("key", key)
-        .addParam("value", value);
-  }
+		public void setParams(Map<String, Object> params) {
+			this.params = params;
+		}
 
-  public Action addStorageRemove(DataWord key) {
-    return addAction(storage, Action.Name.remove)
-        .addParam("key", key);
-  }
+		Action addParam(String name, Object value) {
+			if (value != null) {
+				if (params == null) {
+					params = new HashMap<>();
+				}
+				params.put(name, value.toString());
+			}
+			return this;
+		}
 
-  public Action addStorageClear() {
-    return addAction(storage, Action.Name.clear);
-  }
+		public enum Name {
+			pop,
+			push,
+			swap,
+			extend,
+			write,
+			put,
+			remove,
+			clear;
+		}
+	}
 }

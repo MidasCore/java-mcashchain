@@ -15,15 +15,14 @@
 
 package org.tron.core.config.args;
 
-import java.io.File;
-
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.tron.common.utils.FileUtil;
+
+import java.io.File;
 
 public class StorageTest {
 

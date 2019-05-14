@@ -17,143 +17,137 @@
  */
 package org.tron.common.runtime.vm;
 
-import static java.lang.String.format;
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+import lombok.extern.slf4j.Slf4j;
+import org.tron.common.runtime.config.VMConfig;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
-import lombok.extern.slf4j.Slf4j;
-import org.tron.common.runtime.config.VMConfig;
+
+import static java.lang.String.format;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 
 @Slf4j(topic = "VM")
 public final class VMUtils {
 
-  private VMUtils() {
-  }
+	private static final int BUF_SIZE = 4096;
 
-  public static void closeQuietly(Closeable closeable) {
-    try {
-      if (closeable != null) {
-        closeable.close();
-      }
-    } catch (IOException ioe) {
+	private VMUtils() {
+	}
+
+	public static void closeQuietly(Closeable closeable) {
+		try {
+			if (closeable != null) {
+				closeable.close();
+			}
+		} catch (IOException ioe) {
 // ignore
-    }
-  }
+		}
+	}
 
-  private static File createProgramTraceFile(VMConfig config, String txHash) {
-    File result = null;
+	private static File createProgramTraceFile(VMConfig config, String txHash) {
+		File result = null;
 
-    if (config.vmTrace()) {
+		if (config.vmTrace()) {
 
-      File file = new File(new File("./", "vm_trace"), txHash + ".json");
+			File file = new File(new File("./", "vm_trace"), txHash + ".json");
 
-      if (file.exists()) {
-        if (file.isFile() && file.canWrite()) {
-          result = file;
-        }
-      } else {
-        try {
-          file.getParentFile().mkdirs();
-          file.createNewFile();
-          result = file;
-        } catch (IOException e) {
-          // ignored
-        }
-      }
-    }
+			if (file.exists()) {
+				if (file.isFile() && file.canWrite()) {
+					result = file;
+				}
+			} else {
+				try {
+					file.getParentFile().mkdirs();
+					file.createNewFile();
+					result = file;
+				} catch (IOException e) {
+					// ignored
+				}
+			}
+		}
 
-    return result;
-  }
+		return result;
+	}
 
-  private static void writeStringToFile(File file, String data) {
-    OutputStream out = null;
-    try {
-      out = new FileOutputStream(file);
-      if (data != null) {
-        out.write(data.getBytes("UTF-8"));
-      }
-    } catch (Exception e) {
-      logger.error(format("Cannot write to file '%s': ", file.getAbsolutePath()), e);
-    } finally {
-      closeQuietly(out);
-    }
-  }
+	private static void writeStringToFile(File file, String data) {
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(file);
+			if (data != null) {
+				out.write(data.getBytes("UTF-8"));
+			}
+		} catch (Exception e) {
+			logger.error(format("Cannot write to file '%s': ", file.getAbsolutePath()), e);
+		} finally {
+			closeQuietly(out);
+		}
+	}
 
-  public static void saveProgramTraceFile(VMConfig config, String txHash, String content) {
-    File file = createProgramTraceFile(config, txHash);
-    if (file != null) {
-      writeStringToFile(file, content);
-    }
-  }
+	public static void saveProgramTraceFile(VMConfig config, String txHash, String content) {
+		File file = createProgramTraceFile(config, txHash);
+		if (file != null) {
+			writeStringToFile(file, content);
+		}
+	}
 
-  private static final int BUF_SIZE = 4096;
+	private static void write(InputStream in, OutputStream out, int bufSize) throws IOException {
+		try {
+			byte[] buf = new byte[bufSize];
+			for (int count = in.read(buf); count != -1; count = in.read(buf)) {
+				out.write(buf, 0, count);
+			}
+		} finally {
+			closeQuietly(in);
+			closeQuietly(out);
+		}
+	}
 
-  private static void write(InputStream in, OutputStream out, int bufSize) throws IOException {
-    try {
-      byte[] buf = new byte[bufSize];
-      for (int count = in.read(buf); count != -1; count = in.read(buf)) {
-        out.write(buf, 0, count);
-      }
-    } finally {
-      closeQuietly(in);
-      closeQuietly(out);
-    }
-  }
+	public static byte[] compress(byte[] bytes) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-  public static byte[] compress(byte[] bytes) throws IOException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+		DeflaterOutputStream out = new DeflaterOutputStream(baos, new Deflater(), BUF_SIZE);
 
-    ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-    DeflaterOutputStream out = new DeflaterOutputStream(baos, new Deflater(), BUF_SIZE);
+		write(in, out, BUF_SIZE);
 
-    write(in, out, BUF_SIZE);
+		return baos.toByteArray();
+	}
 
-    return baos.toByteArray();
-  }
+	public static byte[] compress(String content) throws IOException {
+		return compress(content.getBytes("UTF-8"));
+	}
 
-  public static byte[] compress(String content) throws IOException {
-    return compress(content.getBytes("UTF-8"));
-  }
+	public static byte[] decompress(byte[] data) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
 
-  public static byte[] decompress(byte[] data) throws IOException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		InflaterOutputStream out = new InflaterOutputStream(baos, new Inflater(), BUF_SIZE);
 
-    ByteArrayInputStream in = new ByteArrayInputStream(data);
-    InflaterOutputStream out = new InflaterOutputStream(baos, new Inflater(), BUF_SIZE);
+		write(in, out, BUF_SIZE);
 
-    write(in, out, BUF_SIZE);
+		return baos.toByteArray();
+	}
 
-    return baos.toByteArray();
-  }
+	public static String zipAndEncode(String content) {
+		try {
+			return encodeBase64String(compress(content));
+		} catch (Exception e) {
+			logger.error("Cannot zip or encode: ", e);
+			return content;
+		}
+	}
 
-  public static String zipAndEncode(String content) {
-    try {
-      return encodeBase64String(compress(content));
-    } catch (Exception e) {
-      logger.error("Cannot zip or encode: ", e);
-      return content;
-    }
-  }
-
-  public static String unzipAndDecode(String content) {
-    try {
-      byte[] decoded = decodeBase64(content);
-      return new String(decompress(decoded), "UTF-8");
-    } catch (Exception e) {
-      logger.error("Cannot unzip or decode: ", e);
-      return content;
-    }
-  }
+	public static String unzipAndDecode(String content) {
+		try {
+			byte[] decoded = decodeBase64(content);
+			return new String(decompress(decoded), "UTF-8");
+		} catch (Exception e) {
+			logger.error("Cannot unzip or decode: ", e);
+			return content;
+		}
+	}
 }

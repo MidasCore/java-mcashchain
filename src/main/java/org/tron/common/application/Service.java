@@ -18,11 +18,11 @@ import org.tron.core.config.args.Args;
 
 public interface Service {
 
-  void init();
+	void init();
 
-  void init(Args args);
+	void init(Args args);
 
-  void start();
+	void start();
 
-  void stop();
+	void stop();
 }

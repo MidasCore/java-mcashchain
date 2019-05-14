@@ -6,6 +6,6 @@ import org.tron.core.net.peer.PeerConnection;
 
 public interface TronMsgHandler {
 
-  void processMessage(PeerConnection peer, TronMessage msg) throws P2pException;
+	void processMessage(PeerConnection peer, TronMessage msg) throws P2pException;
 
 }

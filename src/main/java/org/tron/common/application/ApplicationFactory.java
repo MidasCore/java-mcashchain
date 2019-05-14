@@ -19,17 +19,17 @@ import org.springframework.context.ApplicationContext;
 
 public class ApplicationFactory {
 
-  /**
-   * Build a new application.
-   */
-  public Application build() {
-    return new ApplicationImpl();
-  }
+	/**
+	 * Build a new application.
+	 */
+	public Application build() {
+		return new ApplicationImpl();
+	}
 
-  /**
-   * Build a new cli application.
-   */
-  public static Application create(ApplicationContext ctx) {
-    return ctx.getBean(ApplicationImpl.class);
-  }
+	/**
+	 * Build a new cli application.
+	 */
+	public static Application create(ApplicationContext ctx) {
+		return ctx.getBean(ApplicationImpl.class);
+	}
 }

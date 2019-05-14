@@ -2,9 +2,7 @@ package org.tron.core.db;
 
 import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.tron.core.capsule.CodeCapsule;
@@ -13,31 +11,31 @@ import org.tron.core.capsule.CodeCapsule;
 @Component
 public class CodeStore extends TronStoreWithRevoking<CodeCapsule> {
 
-  @Autowired
-  private CodeStore(@Value("code") String dbName) {
-    super(dbName);
-  }
+	private static CodeStore instance;
 
-  @Override
-  public CodeCapsule get(byte[] key) {
-    return getUnchecked(key);
-  }
+	@Autowired
+	private CodeStore(@Value("code") String dbName) {
+		super(dbName);
+	}
 
-  public long getTotalCodes() {
-    return Streams.stream(revokingDB.iterator()).count();
-  }
+	public static void destory() {
+		instance = null;
+	}
 
-  private static CodeStore instance;
+	@Override
+	public CodeCapsule get(byte[] key) {
+		return getUnchecked(key);
+	}
 
-  public static void destory() {
-    instance = null;
-  }
+	public long getTotalCodes() {
+		return Streams.stream(revokingDB.iterator()).count();
+	}
 
-  void destroy() {
-    instance = null;
-  }
+	void destroy() {
+		instance = null;
+	}
 
-  public byte[] findCodeByHash(byte[] hash) {
-    return revokingDB.getUnchecked(hash);
-  }
+	public byte[] findCodeByHash(byte[] hash) {
+		return revokingDB.getUnchecked(hash);
+	}
 }

@@ -7,28 +7,28 @@ import org.tron.core.db.common.WrappedByteArray;
 
 public class Index {
 
-  public interface Iface<T> extends Iterable<T> {
+	public interface Iface<T> extends Iterable<T> {
 
-    ResultSet<T> retrieve(Query<WrappedByteArray> query);
+		ResultSet<T> retrieve(Query<WrappedByteArray> query);
 
-    ResultSet<T> retrieve(Query<WrappedByteArray> query, QueryOptions options);
+		ResultSet<T> retrieve(Query<WrappedByteArray> query, QueryOptions options);
 
-    boolean add(byte[] bytes);
+		boolean add(byte[] bytes);
 
-    boolean add(WrappedByteArray bytes);
+		boolean add(WrappedByteArray bytes);
 
-    boolean update(byte[] bytes);
+		boolean update(byte[] bytes);
 
-    boolean update(WrappedByteArray bytes);
+		boolean update(WrappedByteArray bytes);
 
-    boolean remove(byte[] bytes);
+		boolean remove(byte[] bytes);
 
-    boolean remove(WrappedByteArray bytes);
+		boolean remove(WrappedByteArray bytes);
 
-    long size();
+		long size();
 
-    String getName();
+		String getName();
 
-    void fill();
-  }
+		void fill();
+	}
 }

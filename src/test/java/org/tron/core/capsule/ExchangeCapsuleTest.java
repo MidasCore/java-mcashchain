@@ -1,15 +1,8 @@
 package org.tron.core.capsule;
 
 import com.google.protobuf.ByteString;
-
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.tron.common.application.TronApplicationContext;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
@@ -21,17 +14,19 @@ import org.tron.core.db.StorageMarket;
 import org.tron.core.exception.ItemNotFoundException;
 import org.tron.core.util.ConversionUtil;
 
+import java.io.File;
+
 @Slf4j
 public class ExchangeCapsuleTest {
 
-	private static Manager dbManager;
-	private static StorageMarket storageMarket;
 	private static final String dbPath = "output_exchange_capsule_test_test";
-	private static TronApplicationContext context;
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000_000_000L);
+	private static Manager dbManager;
+	private static StorageMarket storageMarket;
+	private static TronApplicationContext context;
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
