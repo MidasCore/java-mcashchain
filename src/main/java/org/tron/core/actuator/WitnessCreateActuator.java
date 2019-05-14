@@ -10,12 +10,15 @@ import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.WitnessCapsule;
 import org.tron.core.capsule.utils.TransactionUtil;
+import org.tron.core.config.Parameter;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract.WitnessCreateContract;
 import org.tron.protos.Protocol.Transaction.Result.code;
+
+import java.util.List;
 
 @Slf4j(topic = "actuator")
 public class WitnessCreateActuator extends AbstractActuator {
@@ -40,7 +43,7 @@ public class WitnessCreateActuator extends AbstractActuator {
 		return true;
 	}
 
-	// TODO: nghiand check stake amount
+	// TODO: nghiand check stake amount, add owner address
 	@Override
 	public boolean validate() throws ContractValidateException {
 		if (this.contract == null) {
@@ -51,8 +54,7 @@ public class WitnessCreateActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(WitnessCreateContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [WitnessCreateContract],real type[" + contract
-							.getClass() + "]");
+					"Contract type error, expected WitnessCreateContract, actual" + contract.getClass());
 		}
 		final WitnessCreateContract contract;
 		try {
@@ -65,30 +67,52 @@ public class WitnessCreateActuator extends AbstractActuator {
 		String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 
 		if (!Wallet.addressValid(ownerAddress)) {
-			throw new ContractValidateException("Invalid address");
+			throw new ContractValidateException("Invalid ownerAddress");
+		}
+
+		byte[] supernodeAddress = contract.getSupernodeAddress().toByteArray();
+		if (!Wallet.addressValid(supernodeAddress)) {
+			throw new ContractValidateException("Invalid supernodeAddress");
 		}
 
 		if (!TransactionUtil.validUrl(contract.getUrl().toByteArray())) {
 			throw new ContractValidateException("Invalid url");
 		}
 
-		AccountCapsule accountCapsule = this.dbManager.getAccountStore().get(ownerAddress);
+		AccountCapsule ownerAccountCapsule = this.dbManager.getAccountStore().get(ownerAddress);
 
-		if (accountCapsule == null) {
-			throw new ContractValidateException("account[" + readableOwnerAddress + "] not exists");
-		}
-    /* todo later
-    if (ArrayUtils.isEmpty(accountCapsule.getAccountName().toByteArray())) {
-      throw new ContractValidateException("account name not set");
-    } */
-
-		if (this.dbManager.getWitnessStore().has(ownerAddress)) {
-			throw new ContractValidateException("Witness[" + readableOwnerAddress + "] has existed");
+		if (ownerAccountCapsule == null) {
+			throw new ContractValidateException("Account " + readableOwnerAddress + " does not exist");
 		}
 
-		if (accountCapsule.getBalance() < dbManager.getDynamicPropertiesStore()
-				.getAccountUpgradeCost()) {
+		AccountCapsule nodeAccountCapsule = this.dbManager.getAccountStore().get(supernodeAddress);
+		if (nodeAccountCapsule == null) {
+			throw new ContractValidateException("Account " + StringUtil.createReadableString(supernodeAddress)
+					+ " does not exist");
+		}
+
+		if (this.dbManager.getWitnessStore().has(supernodeAddress)) {
+			throw new ContractValidateException("Witness " + StringUtil.createReadableString(supernodeAddress)
+					+ " has existed");
+		}
+
+		if (ownerAccountCapsule.getBalance() < dbManager.getDynamicPropertiesStore().getAccountUpgradeCost()) {
+			logger.info("" + ownerAccountCapsule.getBalance() + " " + dbManager.getDynamicPropertiesStore().getAccountUpgradeCost());
 			throw new ContractValidateException("balance < AccountUpgradeCost");
+		}
+
+		int witnessCount = 0;
+		List<WitnessCapsule> witnesses = dbManager.getWitnessStore().getAllWitnesses();
+		for (WitnessCapsule witness : witnesses) {
+			if (witness.getOwnerAddress().equals(contract.getOwnerAddress())) {
+				witnessCount++;
+			}
+		}
+
+		if (ownerAccountCapsule.getStakeAmount() < Parameter.NodeConstant.MASTER_NODE_STAKE_AMOUNT * (witnessCount + 1)) {
+			throw new ContractValidateException("Owner stake amount < required stake amount "
+					+ Parameter.NodeConstant.MASTER_NODE_STAKE_AMOUNT / Parameter.ChainConstant.TEN_POW_DECIMALS
+					+ " MCASH");
 		}
 
 		return true;
@@ -108,11 +132,14 @@ public class WitnessCreateActuator extends AbstractActuator {
 			throws BalanceInsufficientException {
 		//Create Witness by witnessCreateContract
 		final WitnessCapsule witnessCapsule = new WitnessCapsule(
+				witnessCreateContract.getSupernodeAddress(),
 				witnessCreateContract.getOwnerAddress(),
 				0,
 				witnessCreateContract.getUrl().toStringUtf8());
 
-		logger.debug("createWitness, address[{}]", witnessCapsule.createReadableString());
+		logger.debug("Create supernode, address {}, ownerAddress: {}",
+				StringUtil.createReadableString(witnessCapsule.getAddress()),
+				StringUtil.createReadableString(witnessCapsule.getOwnerAddress()));
 		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 		AccountCapsule accountCapsule = this.dbManager.getAccountStore()
 				.get(witnessCapsule.createDbKey());

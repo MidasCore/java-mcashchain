@@ -53,7 +53,7 @@ public class TransferAssetActuatorTest {
   private static Manager dbManager;
   private static Any contract;
   private static final String dbPath = "output_transferasset_test";
-  private static final String ASSET_NAME = "trx";
+  private static final String ASSET_NAME = "mcash";
   private static final String OWNER_ADDRESS;
   private static final String TO_ADDRESS;
   private static final String NOT_EXIT_ADDRESS;

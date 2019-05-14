@@ -920,6 +920,8 @@ public class Args {
 		final Witness witness = new Witness();
 		witness.setAddress(
 				Wallet.decodeFromBase58Check(witnessAccount.get("address").unwrapped().toString()));
+		witness.setOwnerAddress(
+				Wallet.decodeFromBase58Check(witnessAccount.get("ownerAddress").unwrapped().toString()));
 		witness.setUrl(witnessAccount.get("url").unwrapped().toString());
 		witness.setVoteCount(witnessAccount.toConfig().getLong("voteCount"));
 		return witness;

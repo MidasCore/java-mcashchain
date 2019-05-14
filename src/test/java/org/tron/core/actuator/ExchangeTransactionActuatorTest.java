@@ -39,7 +39,7 @@ public class ExchangeTransactionActuatorTest {
 
   private static TronApplicationContext context;
   private static Manager dbManager;
-  private static final String dbPath = "output_ExchangeTransaction_test";
+  private static final String dbPath = "output_exchange_transaction_test";
   private static final String ACCOUNT_NAME_FIRST = "ownerF";
   private static final String OWNER_ADDRESS_FIRST;
   private static final String ACCOUNT_NAME_SECOND = "ownerS";
@@ -90,13 +90,13 @@ public class ExchangeTransactionActuatorTest {
             ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
             ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS_FIRST)),
             AccountType.Normal,
-            10000_000_000L);
+            10_000_000_000L);
     AccountCapsule ownerAccountSecondCapsule =
         new AccountCapsule(
             ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
             ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS_SECOND)),
             AccountType.Normal,
-            20000_000_000L);
+            20_000_000_000L);
 
     dbManager.getAccountStore()
         .put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);

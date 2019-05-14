@@ -13,9 +13,8 @@ import org.tron.common.utils.StringUtil;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.*;
 import org.tron.core.capsule.VoteChangeCapsule;
+import org.tron.core.config.Parameter;
 import org.tron.core.db.Manager;
-import org.tron.core.db.StakeChangeStore;
-import org.tron.core.db.StakeAccountStore;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract.UnfreezeBalanceContract;
@@ -160,11 +159,11 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		switch (unfreezeBalanceContract.getResource()) {
 			case BANDWIDTH:
 				dbManager.getDynamicPropertiesStore()
-						.addTotalNetWeight(-unfreezeBalance / 1000_000L);
+						.addTotalNetWeight(-unfreezeBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 			case ENERGY:
 				dbManager.getDynamicPropertiesStore()
-						.addTotalEnergyWeight(-unfreezeBalance / 1000_000L);
+						.addTotalEnergyWeight(-unfreezeBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 			default:
 				//this should never happen
@@ -201,8 +200,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(UnfreezeBalanceContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [UnfreezeBalanceContract],real type[" + contract
-							.getClass() + "]");
+					"Contract type error, expected UnfreezeBalanceContract, actual " + contract.getClass());
 		}
 		final UnfreezeBalanceContract unfreezeBalanceContract;
 		try {
@@ -220,7 +218,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account[" + readableOwnerAddress + "] not exists");
+					"Account " + readableOwnerAddress + " does not exist");
 		}
 		long now = dbManager.getHeadBlockTimeStamp();
 		byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
@@ -240,7 +238,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 			if (receiverCapsule == null) {
 				String readableOwnerAddress = StringUtil.createReadableString(receiverAddress);
 				throw new ContractValidateException(
-						"Account[" + readableOwnerAddress + "] not exists");
+						"Account " + readableOwnerAddress + " does not exist");
 			}
 
 			byte[] key = DelegatedResourceCapsule
@@ -250,21 +248,21 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 					.get(key);
 			if (delegatedResourceCapsule == null) {
 				throw new ContractValidateException(
-						"delegated Resource not exists");
+						"Delegated resource doest not exist");
 			}
 
 			switch (unfreezeBalanceContract.getResource()) {
 				case BANDWIDTH:
 					if (delegatedResourceCapsule.getFrozenBalanceForBandwidth() <= 0) {
-						throw new ContractValidateException("no delegatedFrozenBalance(BANDWIDTH)");
+						throw new ContractValidateException("No delegatedFrozenBalance (Bandwidth)");
 					}
 					if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForBandwidth()
 							< delegatedResourceCapsule.getFrozenBalanceForBandwidth()) {
 						throw new ContractValidateException(
-								"AcquiredDelegatedFrozenBalanceForBandwidth[" + receiverCapsule
-										.getAcquiredDelegatedFrozenBalanceForBandwidth() + "] < delegatedBandwidth["
+								"AcquiredDelegatedFrozenBalanceForBandwidth " + receiverCapsule
+										.getAcquiredDelegatedFrozenBalanceForBandwidth() + " < delegatedBandwidth "
 										+ delegatedResourceCapsule.getFrozenBalanceForBandwidth()
-										+ "],this should never happen");
+										+ ", this should never happen");
 					}
 					if (delegatedResourceCapsule.getExpireTimeForBandwidth() > now) {
 						throw new ContractValidateException("It's not time to unfreeze.");
@@ -272,15 +270,15 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 					break;
 				case ENERGY:
 					if (delegatedResourceCapsule.getFrozenBalanceForEnergy() <= 0) {
-						throw new ContractValidateException("no delegateFrozenBalance(Energy)");
+						throw new ContractValidateException("No delegateFrozenBalance (Energy)");
 					}
 					if (receiverCapsule.getAcquiredDelegatedFrozenBalanceForEnergy()
 							< delegatedResourceCapsule.getFrozenBalanceForEnergy()) {
 						throw new ContractValidateException(
-								"AcquiredDelegatedFrozenBalanceForEnergy[" + receiverCapsule
-										.getAcquiredDelegatedFrozenBalanceForEnergy() + "] < delegatedEnergy["
+								"AcquiredDelegatedFrozenBalanceForEnergy " + receiverCapsule
+										.getAcquiredDelegatedFrozenBalanceForEnergy() + " < delegatedEnergy"
 										+ delegatedResourceCapsule.getFrozenBalanceForEnergy() +
-										"],this should never happen");
+										", this should never happen");
 					}
 					if (delegatedResourceCapsule.getExpireTimeForEnergy(dbManager) > now) {
 						throw new ContractValidateException("It's not time to unfreeze.");
@@ -288,36 +286,36 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 					break;
 				default:
 					throw new ContractValidateException(
-							"ResourceCode error.valid ResourceCode[BANDWIDTH、Energy]");
+							"ResourceCode error.valid ResourceCode (Bandwidth、Energy)");
 			}
 
 		} else {
 			switch (unfreezeBalanceContract.getResource()) {
 				case BANDWIDTH:
 					if (accountCapsule.getFrozenCount() <= 0) {
-						throw new ContractValidateException("no frozenBalance(BANDWIDTH)");
+						throw new ContractValidateException("No frozenBalance (Bandwidth)");
 					}
 
 					long allowedUnfreezeCount = accountCapsule.getFrozenList().stream()
 							.filter(frozen -> frozen.getExpireTime() <= now).count();
 					if (allowedUnfreezeCount <= 0) {
-						throw new ContractValidateException("It's not time to unfreeze(BANDWIDTH).");
+						throw new ContractValidateException("It's not time to unfreeze (Bandwidth).");
 					}
 					break;
 				case ENERGY:
 					Frozen frozenBalanceForEnergy = accountCapsule.getAccountResource()
 							.getFrozenBalanceForEnergy();
 					if (frozenBalanceForEnergy.getFrozenBalance() <= 0) {
-						throw new ContractValidateException("no frozenBalance(Energy)");
+						throw new ContractValidateException("No frozenBalance (Energy)");
 					}
 					if (frozenBalanceForEnergy.getExpireTime() > now) {
-						throw new ContractValidateException("It's not time to unfreeze(Energy).");
+						throw new ContractValidateException("It's not time to unfreeze (Energy).");
 					}
 
 					break;
 				default:
 					throw new ContractValidateException(
-							"ResourceCode error.valid ResourceCode[BANDWIDTH、Energy]");
+							"ResourceCode error.valid ResourceCode [Bandwidth、Energy]");
 			}
 
 		}

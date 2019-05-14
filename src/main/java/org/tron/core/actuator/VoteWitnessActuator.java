@@ -59,8 +59,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(VoteWitnessContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [VoteWitnessContract],real type[" + contract
-							.getClass() + "]");
+					"Contract type error, expected VoteWitnessContract, actual " + contract.getClass());
 		}
 		final VoteWitnessContract contract;
 		try {
@@ -75,10 +74,6 @@ public class VoteWitnessActuator extends AbstractActuator {
 		byte[] ownerAddress = contract.getOwnerAddress().toByteArray();
 		String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 
-		if (!dbManager.getStakeAccountStore().has(ownerAddress)) {
-			throw new ContractValidateException("Account is not in staking node");
-		}
-
 		AccountStore accountStore = dbManager.getAccountStore();
 		WitnessStore witnessStore = dbManager.getWitnessStore();
 
@@ -90,7 +85,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 			Vote vote = contract.getVote();
 			byte[] witnessCandidate = vote.getVoteAddress().toByteArray();
 			if (!Wallet.addressValid(witnessCandidate)) {
-				throw new ContractValidateException("Invalid vote address!");
+				throw new ContractValidateException("Invalid vote address");
 			}
 			long voteCount = vote.getVoteCount();
 			if (voteCount <= 0) {

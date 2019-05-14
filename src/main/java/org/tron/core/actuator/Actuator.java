@@ -8,12 +8,12 @@ import org.tron.core.exception.ContractValidateException;
 
 public interface Actuator {
 
-  boolean execute(TransactionResultCapsule result) throws ContractExeException;
+	boolean execute(TransactionResultCapsule result) throws ContractExeException;
 
-  boolean validate() throws ContractValidateException;
+	boolean validate() throws ContractValidateException;
 
-  ByteString getOwnerAddress() throws InvalidProtocolBufferException;
+	ByteString getOwnerAddress() throws InvalidProtocolBufferException;
 
-  long calcFee();
+	long calcFee();
 
 }

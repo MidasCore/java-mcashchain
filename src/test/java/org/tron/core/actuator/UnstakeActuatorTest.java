@@ -15,6 +15,7 @@ import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
@@ -30,8 +31,8 @@ public class UnstakeActuatorTest {
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
-	private static final long initBalance = 10_000_000_000_000L;
-	private static final long stakeAmount = 1_000_000_000_000L;
+	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000_000);
+	private static final long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -148,7 +149,7 @@ public class UnstakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Cannot run here.");
+			Assert.fail("Invalid address");
 
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Invalid address", e.getMessage());
@@ -165,7 +166,7 @@ public class UnstakeActuatorTest {
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(OWNER_ADDRESS));
-		accountCapsule.setStake(1_000_000_000L, now);
+		accountCapsule.setStake(ConversionUtil.McashToMatoshi(1_000), now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnstakeActuator actuator = new UnstakeActuator(
 				getContract(OWNER_ACCOUNT_INVALID), dbManager);
@@ -173,9 +174,9 @@ public class UnstakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Cannot run here.");
+			Assert.fail("Account " + OWNER_ACCOUNT_INVALID + " does not exist");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Account [" + OWNER_ACCOUNT_INVALID + "] does not exist",
+			Assert.assertEquals("Account " + OWNER_ACCOUNT_INVALID + " does not exist",
 					e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
@@ -189,9 +190,9 @@ public class UnstakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Cannot run here.");
+			Assert.fail("No stake amount");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("no stake amount", e.getMessage());
+			Assert.assertEquals("No stake amount", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -204,7 +205,7 @@ public class UnstakeActuatorTest {
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(OWNER_ADDRESS));
-		accountCapsule.setStake(1_000_000_000L, now + 60000);
+		accountCapsule.setStake(ConversionUtil.McashToMatoshi(1_000), now + 60000);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnstakeActuator actuator = new UnstakeActuator(
 				getContract(OWNER_ADDRESS), dbManager);
@@ -212,9 +213,9 @@ public class UnstakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Cannot run here.");
+			Assert.fail("It's not time to unstake");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("It's not time to unstake.", e.getMessage());
+			Assert.assertEquals("It's not time to unstake", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -251,7 +252,7 @@ public class UnstakeActuatorTest {
 		voteChangeCapsule.setNewVote(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 				100);
 		dbManager.getVoteChangeStore().put(ByteArray.fromHexString(OWNER_ADDRESS), voteChangeCapsule);
-		accountCapsule.setStake(1_000_000_000_000L, now);
+		accountCapsule.setStake(ConversionUtil.McashToMatoshi(1_000_000), now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		try {
 			actuator.validate();

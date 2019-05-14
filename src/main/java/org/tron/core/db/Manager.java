@@ -574,8 +574,17 @@ public class Manager {
 							accountCapsule.setIsWitness(true);
 							this.accountStore.put(keyAddress, accountCapsule);
 
+							byte[] keyOwnerAddress = key.getOwnerAddress();
+							ByteString ownerAddress = ByteString.copyFrom(keyOwnerAddress);
+
+							if (!this.accountStore.has(keyOwnerAddress)) {
+								AccountCapsule ownerAccountCapsule = new AccountCapsule(ByteString.EMPTY,
+										ownerAddress, AccountType.AssetIssue, 0L);
+								this.accountStore.put(keyOwnerAddress, ownerAccountCapsule);
+							}
+
 							final WitnessCapsule witnessCapsule =
-									new WitnessCapsule(address, key.getVoteCount(), key.getUrl());
+									new WitnessCapsule(address, ownerAddress, key.getVoteCount(), key.getUrl());
 							witnessCapsule.setIsJobs(true);
 							this.witnessStore.put(keyAddress, witnessCapsule);
 						});
@@ -589,16 +598,16 @@ public class Manager {
 				.getWitnesses()
 				.forEach(
 						key -> {
-							byte[] keyAddress = key.getAddress();
-							ByteString address = ByteString.copyFrom(keyAddress);
+							byte[] keyOwnerAddress = key.getOwnerAddress();
+							ByteString address = ByteString.copyFrom(keyOwnerAddress);
 							StakeAccountCapsule stakeAccountCapsule;
-							if (!this.stakeAccountStore.has(keyAddress)) {
+							if (!this.stakeAccountStore.has(keyOwnerAddress)) {
 								stakeAccountCapsule = new StakeAccountCapsule(address);
 							} else {
-								stakeAccountCapsule = this.stakeAccountStore.get(keyAddress);
+								stakeAccountCapsule = this.stakeAccountStore.get(keyOwnerAddress);
 							}
-							stakeAccountCapsule.setStake(stakeAmount);
-							this.stakeAccountStore.put(keyAddress, stakeAccountCapsule);
+							stakeAccountCapsule.setStake(stakeAccountCapsule.getStakeAmount() + stakeAmount);
+							this.stakeAccountStore.put(keyOwnerAddress, stakeAccountCapsule);
 						});
 	}
 
@@ -1664,7 +1673,7 @@ public class Manager {
 		this.getWitnessStore().put(witnessCapsule.getAddress().toByteArray(), witnessCapsule);
 
 		try {
-			adjustAllowance(witnessCapsule.getAddress().toByteArray(),
+			adjustAllowance(witnessCapsule.getOwnerAddress().toByteArray(),
 					getDynamicPropertiesStore().getWitnessPayPerBlock());
 		} catch (BalanceInsufficientException e) {
 			logger.warn(e.getMessage(), e);

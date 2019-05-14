@@ -21,24 +21,24 @@ import org.tron.core.db.Manager;
 
 public interface Application {
 
-  void setOptions(Args args);
+	void setOptions(Args args);
 
-  void init(Args args);
+	void init(Args args);
 
-  void initServices(Args args);
+	void initServices(Args args);
 
-  void startup();
+	void startup();
 
-  void shutdown();
+	void shutdown();
 
-  void startServices();
+	void startServices();
 
-  void shutdownServices();
+	void shutdownServices();
 
-  BlockStore getBlockStoreS();
+	BlockStore getBlockStoreS();
 
-  void addService(Service service);
+	void addService(Service service);
 
-  Manager getDbManager();
+	Manager getDbManager();
 
 }

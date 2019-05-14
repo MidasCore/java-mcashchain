@@ -124,27 +124,26 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		}
 	}
 
-  /*lll
-  public TransactionCapsule(byte[] key, long value) throws IllegalArgumentException {
-    if (!Wallet.addressValid(key)) {
-      throw new IllegalArgumentException("Invalid address");
-    }
-    TransferContract transferContract = TransferContract.newBuilder()
-        .setAmount(value)
-        .setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
-        .setToAddress(ByteString.copyFrom(key))
-        .build();
-    Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
-        Transaction.Contract.newBuilder().setType(ContractType.TransferContract).setParameter(
-            Any.pack(transferContract)).build());
-    logger.info("Transaction create succeeded！");
-    transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
-  }*/
+//	public TransactionCapsule(byte[] key, long value) throws IllegalArgumentException {
+//		if (!Wallet.addressValid(key)) {
+//			throw new IllegalArgumentException("Invalid address");
+//		}
+//		TransferContract transferContract = TransferContract.newBuilder()
+//				.setAmount(value)
+//				.setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
+//				.setToAddress(ByteString.copyFrom(key))
+//				.build();
+//		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+//				Transaction.Contract.newBuilder().setType(ContractType.TransferContract).setParameter(
+//						Any.pack(transferContract)).build());
+//		logger.info("Transaction create succeeded！");
+//		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
+//	}
 
 	public TransactionCapsule(AccountCreateContract contract, AccountStore accountStore) {
 		AccountCapsule account = accountStore.get(contract.getOwnerAddress().toByteArray());
 		if (account != null && account.getType() == contract.getType()) {
-			return; // Account isexit
+			return;
 		}
 
 		createTransaction(contract, ContractType.AccountCreateContract);

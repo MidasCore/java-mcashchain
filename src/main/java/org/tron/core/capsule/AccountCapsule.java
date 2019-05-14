@@ -735,7 +735,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 					.build());
 		} else {
 			setInstance(getInstance().toBuilder()
-					.addStakes(0, newStake)
+					.setStakes(0, newStake)
 					.build()
 			);
 		}

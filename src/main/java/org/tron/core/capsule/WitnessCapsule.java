@@ -12,7 +12,6 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 
 	private Witness witness;
 
-
 	@Override
 	public int compareTo(WitnessCapsule otherObject) {
 		return Long.compare(otherObject.getVoteCount(), this.getVoteCount());
@@ -43,10 +42,11 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 	/**
 	 * WitnessCapsule constructor with address and voteCount.
 	 */
-	public WitnessCapsule(final ByteString address, final long voteCount, final String url) {
+	public WitnessCapsule(final ByteString address, final ByteString ownerAddress, final long voteCount, final String url) {
 		final Witness.Builder witnessBuilder = Witness.newBuilder();
 		this.witness = witnessBuilder
 				.setAddress(address)
+				.setOwnerAddress(ownerAddress)
 				.setVoteCount(voteCount).setUrl(url).build();
 	}
 
@@ -138,5 +138,13 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 
 	public String getUrl() {
 		return this.witness.getUrl();
+	}
+
+	public ByteString getOwnerAddress() {
+		return this.witness.getOwnerAddress();
+	}
+
+	public void setOwnerAddress(ByteString ownerAddress) {
+		this.witness = this.witness.toBuilder().setOwnerAddress(ownerAddress).build();
 	}
 }

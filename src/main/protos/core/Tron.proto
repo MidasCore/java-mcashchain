@@ -205,6 +205,7 @@ message Witness {
     int64 latestSlotNum = 8;
     bool isJobs = 9;
     Status status = 10;
+    bytes ownerAddress = 11;
 }
 
 // Vote Change

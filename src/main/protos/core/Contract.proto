@@ -86,7 +86,8 @@ message UpdateEnergyLimitContract {
 
 message WitnessCreateContract {
     bytes owner_address = 1;
-    bytes url = 2;
+    bytes supernode_address = 2;
+    bytes url = 3;
 }
 
 message WitnessUpdateContract {

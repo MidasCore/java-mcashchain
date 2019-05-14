@@ -2,7 +2,7 @@ package org.tron.core.capsule;
 
 public interface ProtoCapsule<T> {
 
-  byte[] getData();
+	byte[] getData();
 
-  T getInstance();
+	T getInstance();
 }

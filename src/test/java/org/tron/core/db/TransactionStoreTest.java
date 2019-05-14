@@ -3,7 +3,6 @@ package org.tron.core.db;
 import com.google.protobuf.ByteString;
 
 import java.io.File;
-import java.util.List;
 import java.util.Random;
 
 import org.junit.AfterClass;
@@ -19,7 +18,6 @@ import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.FileUtil;
 import org.tron.common.utils.Sha256Hash;
 import org.tron.core.Constant;
-import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.BlockCapsule;
 import org.tron.core.capsule.TransactionCapsule;
@@ -27,6 +25,7 @@ import org.tron.core.config.DefaultConfig;
 import org.tron.core.config.args.Args;
 import org.tron.core.exception.BadItemException;
 import org.tron.core.exception.ItemNotFoundException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract.AccountCreateContract;
 import org.tron.protos.Contract.TransferContract;
 import org.tron.protos.Contract.VoteWitnessContract;
@@ -38,9 +37,9 @@ import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 @Ignore
 public class TransactionStoreTest {
 
-	private static String dbPath = "output_TransactionStore_test";
-	private static String dbDirectory = "db_TransactionStore_test";
-	private static String indexDirectory = "index_TransactionStore_test";
+	private static String dbPath = "output_transaction_store_test";
+	private static String dbDirectory = "db_transaction_store_test";
+	private static String indexDirectory = "index_transaction_store_test";
 	private static TransactionStore transactionStore;
 	private static TronApplicationContext context;
 	private static Application AppT;
@@ -49,7 +48,7 @@ public class TransactionStoreTest {
 	private static final byte[] key2 = TransactionStoreTest.randomBytes(21);
 
 
-	private static final String URL = "https://tron.network";
+	private static final String URL = "https://midasprotocol.io";
 
 	private static final String ACCOUNT_NAME = "ownerF";
 	private static final String OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
@@ -114,10 +113,8 @@ public class TransactionStoreTest {
 	/**
 	 * get VoteWitnessContract.
 	 */
-	private VoteWitnessContract getVoteWitnessContract(String address, String voteaddress,
-													   Long value) {
-		return
-				VoteWitnessContract.newBuilder()
+	private VoteWitnessContract getVoteWitnessContract(String address, String voteaddress, Long value) {
+		return VoteWitnessContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
 						.setVote(Vote.newBuilder()
 								.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
@@ -128,54 +125,52 @@ public class TransactionStoreTest {
 	@Test
 	public void GetTransactionTest() throws BadItemException, ItemNotFoundException {
 		final BlockStore blockStore = dbManager.getBlockStore();
-		final TransactionStore trxStore = dbManager.getTransactionStore();
+		final TransactionStore transactionStore = dbManager.getTransactionStore();
 		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
 
-		BlockCapsule blockCapsule =
-				new BlockCapsule(
-						1,
-						Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
-						1,
-						ByteString.copyFrom(
-								ECKey.fromPrivate(
-										ByteArray.fromHexString(key)).getAddress()));
+		BlockCapsule blockCapsule = new BlockCapsule(
+				1,
+				Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
+				1,
+				ByteString.copyFrom(
+						ECKey.fromPrivate(
+								ByteArray.fromHexString(key)).getAddress()));
 
 		// save in database with block number
-		TransferContract tc =
-				TransferContract.newBuilder()
-						.setAmount(10)
-						.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-						.setToAddress(ByteString.copyFromUtf8("bbb"))
-						.build();
-		TransactionCapsule trx = new TransactionCapsule(tc, ContractType.TransferContract);
-		blockCapsule.addTransaction(trx);
-		trx.setBlockNum(blockCapsule.getNum());
+		TransferContract tc = TransferContract.newBuilder()
+				.setAmount(10)
+				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+				.setToAddress(ByteString.copyFromUtf8("bbb"))
+				.build();
+		TransactionCapsule transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
+		blockCapsule.addTransaction(transactionCapsule);
+		transactionCapsule.setBlockNum(blockCapsule.getNum());
 		blockStore.put(blockCapsule.getBlockId().getBytes(), blockCapsule);
-		trxStore.put(trx.getTransactionId().getBytes(), trx);
+		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				trxStore.get(trx.getTransactionId().getBytes()).getInstance(), trx.getInstance());
+				transactionStore.get(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+				transactionCapsule.getInstance());
 
 		// no found in transaction store database
-		tc =
-				TransferContract.newBuilder()
-						.setAmount(1000)
-						.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-						.setToAddress(ByteString.copyFromUtf8("bbb"))
-						.build();
-		trx = new TransactionCapsule(tc, ContractType.TransferContract);
-		Assert.assertNull(trxStore.get(trx.getTransactionId().getBytes()));
+		tc = TransferContract.newBuilder()
+				.setAmount(1000)
+				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+				.setToAddress(ByteString.copyFromUtf8("bbb"))
+				.build();
+		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
+		Assert.assertNull(transactionStore.get(transactionCapsule.getTransactionId().getBytes()));
 
 		// no block number, directly save in database
-		tc =
-				TransferContract.newBuilder()
-						.setAmount(10000)
-						.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-						.setToAddress(ByteString.copyFromUtf8("bbb"))
-						.build();
-		trx = new TransactionCapsule(tc, ContractType.TransferContract);
-		trxStore.put(trx.getTransactionId().getBytes(), trx);
+		tc = TransferContract.newBuilder()
+				.setAmount(10000)
+				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+				.setToAddress(ByteString.copyFromUtf8("bbb"))
+				.build();
+		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
+		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				trxStore.get(trx.getTransactionId().getBytes()).getInstance(), trx.getInstance());
+				transactionStore.get(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+				transactionCapsule.getInstance());
 	}
 
 	/**
@@ -197,54 +192,52 @@ public class TransactionStoreTest {
 	@Test
 	public void GetUncheckedTransactionTest() {
 		final BlockStore blockStore = dbManager.getBlockStore();
-		final TransactionStore trxStore = dbManager.getTransactionStore();
+		final TransactionStore transactionStore = dbManager.getTransactionStore();
 		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
 
-		BlockCapsule blockCapsule =
-				new BlockCapsule(
-						1,
-						Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
-						1,
-						ByteString.copyFrom(
-								ECKey.fromPrivate(
-										ByteArray.fromHexString(key)).getAddress()));
+		BlockCapsule blockCapsule = new BlockCapsule(
+				1,
+				Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
+				1,
+				ByteString.copyFrom(
+						ECKey.fromPrivate(
+								ByteArray.fromHexString(key)).getAddress()));
 
 		// save in database with block number
-		TransferContract tc =
-				TransferContract.newBuilder()
-						.setAmount(10)
-						.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-						.setToAddress(ByteString.copyFromUtf8("bbb"))
-						.build();
-		TransactionCapsule trx = new TransactionCapsule(tc, ContractType.TransferContract);
-		blockCapsule.addTransaction(trx);
-		trx.setBlockNum(blockCapsule.getNum());
+		TransferContract tc = TransferContract.newBuilder()
+				.setAmount(10)
+				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+				.setToAddress(ByteString.copyFromUtf8("bbb"))
+				.build();
+		TransactionCapsule transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
+		blockCapsule.addTransaction(transactionCapsule);
+		transactionCapsule.setBlockNum(blockCapsule.getNum());
 		blockStore.put(blockCapsule.getBlockId().getBytes(), blockCapsule);
-		trxStore.put(trx.getTransactionId().getBytes(), trx);
+		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				trxStore.getUnchecked(trx.getTransactionId().getBytes()).getInstance(), trx.getInstance());
+				transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+				transactionCapsule.getInstance());
 
 		// no found in transaction store database
-		tc =
-				TransferContract.newBuilder()
-						.setAmount(1000)
-						.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-						.setToAddress(ByteString.copyFromUtf8("bbb"))
-						.build();
-		trx = new TransactionCapsule(tc, ContractType.TransferContract);
-		Assert.assertNull(trxStore.getUnchecked(trx.getTransactionId().getBytes()));
+		tc = TransferContract.newBuilder()
+				.setAmount(1000)
+				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+				.setToAddress(ByteString.copyFromUtf8("bbb"))
+				.build();
+		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
+		Assert.assertNull(transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()));
 
 		// no block number, directly save in database
-		tc =
-				TransferContract.newBuilder()
-						.setAmount(10000)
-						.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-						.setToAddress(ByteString.copyFromUtf8("bbb"))
-						.build();
-		trx = new TransactionCapsule(tc, ContractType.TransferContract);
-		trxStore.put(trx.getTransactionId().getBytes(), trx);
+		tc = TransferContract.newBuilder()
+				.setAmount(10000)
+				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+				.setToAddress(ByteString.copyFromUtf8("bbb"))
+				.build();
+		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
+		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				trxStore.getUnchecked(trx.getTransactionId().getBytes()).getInstance(), trx.getInstance());
+				transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+				transactionCapsule.getInstance());
 	}
 
 	/**
@@ -294,8 +287,8 @@ public class TransactionStoreTest {
 						ByteString.copyFromUtf8(ACCOUNT_NAME),
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						AccountType.Normal,
-						1_000_000_000_000L);
-		long frozenBalance = 1_000_000_000_000L;
+						ConversionUtil.McashToMatoshi(1_000_000));
+		long frozenBalance = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		ownerAccountFirstCapsule.setFrozen(frozenBalance, duration);
 		dbManager.getAccountStore()
@@ -346,8 +339,7 @@ public class TransactionStoreTest {
 		FileUtil.deleteDir(new File(dbPath));
 	}
 
-
-	public static byte[] randomBytes(int length) {
+	static byte[] randomBytes(int length) {
 		// generate the random number
 		byte[] result = new byte[length];
 		new Random().nextBytes(result);

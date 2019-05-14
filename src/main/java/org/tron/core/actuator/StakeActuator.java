@@ -14,6 +14,7 @@ import org.tron.core.db.StakeChangeStore;
 import org.tron.core.db.StakeAccountStore;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
@@ -102,7 +103,7 @@ public class StakeActuator extends AbstractActuator {
 		if (stakeAmount <= 0) {
 			throw new ContractValidateException("Stake amount must be positive");
 		}
-		if (stakeAmount < 1_000_000L) {
+		if (stakeAmount < ConversionUtil.McashToMatoshi(1)) {
 			throw new ContractValidateException("Stake amount must be more than 1 MCASH");
 		}
 

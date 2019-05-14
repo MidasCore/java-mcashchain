@@ -7,10 +7,10 @@ import org.tron.core.services.NodeInfoServiceTest;
 @Slf4j
 public class BaseNetTest extends BaseNet {
 
-  @Test
-  public void test() throws Exception {
-    new NodeInfoServiceTest(context).test();
-    new UdpTest(context).test();
-    new TcpTest(context).test();
-  }
+	@Test
+	public void test() throws Exception {
+		new NodeInfoServiceTest(context).test();
+		new UdpTest(context).test();
+		new TcpTest(context).test();
+	}
 }

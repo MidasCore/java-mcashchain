@@ -11,25 +11,25 @@ import org.tron.protos.Protocol.Inventory.InventoryType;
 
 public class AdvServiceTest {
 
-  AdvService service = new AdvService();
+	private AdvService service = new AdvService();
 
-  @Test
-  public void testAddInv() {
-    boolean flag;
-    Item item = new Item(Sha256Hash.ZERO_HASH, InventoryType.BLOCK);
-    flag = service.addInv(item);
-    Assert.assertTrue(flag);
-    flag = service.addInv(item);
-    Assert.assertTrue(!flag);
-  }
+	@Test
+	public void testAddInv() {
+		boolean flag;
+		Item item = new Item(Sha256Hash.ZERO_HASH, InventoryType.BLOCK);
+		flag = service.addInv(item);
+		Assert.assertTrue(flag);
+		flag = service.addInv(item);
+		Assert.assertFalse(flag);
+	}
 
-  @Test
-  public void testBroadcast() {
-    BlockCapsule blockCapsule = new BlockCapsule(1, Sha256Hash.ZERO_HASH,
-        System.currentTimeMillis(), Sha256Hash.ZERO_HASH.getByteString());
-    BlockMessage msg = new BlockMessage(blockCapsule);
-    service.broadcast(msg);
-    Item item = new Item(blockCapsule.getBlockId(), InventoryType.BLOCK);
-    Assert.assertTrue(service.getMessage(item) != null);
-  }
+	@Test
+	public void testBroadcast() {
+		BlockCapsule blockCapsule = new BlockCapsule(1, Sha256Hash.ZERO_HASH,
+				System.currentTimeMillis(), Sha256Hash.ZERO_HASH.getByteString());
+		BlockMessage msg = new BlockMessage(blockCapsule);
+		service.broadcast(msg);
+		Item item = new Item(blockCapsule.getBlockId(), InventoryType.BLOCK);
+		Assert.assertNotNull(service.getMessage(item));
+	}
 }

@@ -21,7 +21,7 @@ public class VoteChangeStoreTest {
 
 	private static final String dbPath = "output-voteChangeStore-test";
 	private static TronApplicationContext context;
-	VoteChangeStore voteChangeStore;
+	private VoteChangeStore voteChangeStore;
 
 	static {
 		Args.setParam(new String[]{"-d", dbPath}, Constant.TEST_CONF);
@@ -42,7 +42,8 @@ public class VoteChangeStoreTest {
 
 	@Test
 	public void putAndGetVotes() {
-		VoteChangeCapsule voteChangeCapsule = new VoteChangeCapsule(ByteString.copyFromUtf8("100000000x"), null);
+		VoteChangeCapsule voteChangeCapsule = new VoteChangeCapsule(ByteString.copyFromUtf8("100000000x"),
+				null);
 		this.voteChangeStore.put(voteChangeCapsule.createDbKey(), voteChangeCapsule);
 
 		Assert.assertTrue("voteChangeStore is empty", voteChangeStore.iterator().hasNext());

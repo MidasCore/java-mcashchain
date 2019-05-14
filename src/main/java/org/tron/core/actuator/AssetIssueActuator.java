@@ -27,6 +27,7 @@ import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.AssetIssueCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.utils.TransactionUtil;
+import org.tron.core.config.Parameter;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.exception.ContractExeException;
@@ -91,7 +92,7 @@ public class AssetIssueActuator extends AbstractActuator {
 
       while (iterator.hasNext()) {
         FrozenSupply next = iterator.next();
-        long expireTime = startTime + next.getFrozenDays() * 86_400_000;
+        long expireTime = startTime + next.getFrozenDays() * Parameter.TimeConstant.MS_PER_DAY;
         Frozen newFrozen = Frozen.newBuilder()
             .setFrozenBalance(next.getFrozenAmount())
             .setExpireTime(expireTime)
@@ -113,15 +114,7 @@ public class AssetIssueActuator extends AbstractActuator {
 
       ret.setAssetIssueID(Long.toString(tokenIdNum));
       ret.setStatus(fee, code.SUCCESS);
-    } catch (InvalidProtocolBufferException e) {
-      logger.debug(e.getMessage(), e);
-      ret.setStatus(fee, code.FAILED);
-      throw new ContractExeException(e.getMessage());
-    } catch (BalanceInsufficientException e) {
-      logger.debug(e.getMessage(), e);
-      ret.setStatus(fee, code.FAILED);
-      throw new ContractExeException(e.getMessage());
-    } catch (ArithmeticException e) {
+    } catch (InvalidProtocolBufferException | ArithmeticException | BalanceInsufficientException e) {
       logger.debug(e.getMessage(), e);
       ret.setStatus(fee, code.FAILED);
       throw new ContractExeException(e.getMessage());
@@ -140,8 +133,7 @@ public class AssetIssueActuator extends AbstractActuator {
     }
     if (!this.contract.is(AssetIssueContract.class)) {
       throw new ContractValidateException(
-          "contract type error,expected type [AssetIssueContract],real type[" + contract
-              .getClass() + "]");
+          "Contract type error, expected AssetIssueContract, actual " + contract.getClass());
     }
 
     final AssetIssueContract assetIssueContract;
@@ -163,15 +155,15 @@ public class AssetIssueActuator extends AbstractActuator {
 
     if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() != 0) {
       String name = assetIssueContract.getName().toStringUtf8().toLowerCase();
-      if (name.equals("trx")) {
-        throw new ContractValidateException("assetName can't be trx");
+      if (name.equals("mcash")) {
+        throw new ContractValidateException("Asset name can't be mcash");
       }
     }
 
     int precision = assetIssueContract.getPrecision();
     if (precision != 0 && dbManager.getDynamicPropertiesStore().getAllowSameTokenName() != 0) {
-      if (precision < 0 || precision > 6) {
-        throw new ContractValidateException("precision cannot exceed 6");
+      if (precision < 0 || precision > 8) {
+        throw new ContractValidateException("Precision cannot exceed 8");
       }
     }
 

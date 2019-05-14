@@ -16,7 +16,6 @@
 package org.tron.core.config.args;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +31,9 @@ public class Witness implements Serializable {
 	private byte[] address;
 
 	@Getter
+	private byte[] ownerAddress;
+
+	@Getter
 	private String url;
 
 	@Getter
@@ -44,9 +46,20 @@ public class Witness implements Serializable {
 	public void setAddress(final byte[] address) {
 		if (!Wallet.addressValid(address)) {
 			throw new IllegalArgumentException(
-					"The address(" + StringUtil.createReadableString(address) + ") must be a 20 bytes.");
+					"The address " + StringUtil.createReadableString(address) + " must be a 20 bytes.");
 		}
 		this.address = address;
+	}
+
+	/**
+	 * set ownerAddress
+	 */
+	public void setOwnerAddress(final byte[] ownerAddress) {
+		if (!Wallet.addressValid(ownerAddress)) {
+			throw new IllegalArgumentException(
+					"The address " + StringUtil.createReadableString(ownerAddress) + " must be a 20 bytes.");
+		}
+		this.ownerAddress = ownerAddress;
 	}
 
 	/**
@@ -55,7 +68,7 @@ public class Witness implements Serializable {
 	public void setUrl(final String url) {
 		if (StringUtils.isBlank(url)) {
 			throw new IllegalArgumentException(
-					"The url(" + url + ") format error.");
+					"The url " + url + " format error.");
 		}
 
 		this.url = url;

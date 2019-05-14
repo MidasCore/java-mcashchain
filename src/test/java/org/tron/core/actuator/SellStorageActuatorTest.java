@@ -2,7 +2,9 @@ package org.tron.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+
 import java.io.File;
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -22,6 +24,7 @@ import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
 import org.tron.protos.Protocol.Transaction.Result.code;
@@ -29,217 +32,212 @@ import org.tron.protos.Protocol.Transaction.Result.code;
 @Slf4j
 public class SellStorageActuatorTest {
 
-  private static Manager dbManager;
-  private static final String dbPath = "output_sell_storage_test";
-  private static TronApplicationContext context;
-  private static final String OWNER_ADDRESS;
-  private static final String OWNER_ADDRESS_INVALID = "aaaa";
-  private static final String OWNER_ACCOUNT_INVALID;
-  private static final long initBalance = 10_000_000_000_000_000L;
+	private static Manager dbManager;
+	private static final String dbPath = "output_sell_storage_test";
+	private static TronApplicationContext context;
+	private static final String OWNER_ADDRESS;
+	private static final String OWNER_ADDRESS_INVALID = "aaaa";
+	private static final String OWNER_ACCOUNT_INVALID;
+	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000_000_000L);
 
-  static {
-    Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
-    context = new TronApplicationContext(DefaultConfig.class);
-    OWNER_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
-    OWNER_ACCOUNT_INVALID = "548794500882809695a8a687866e76d4271a3456";
-  }
+	static {
+		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
+		context = new TronApplicationContext(DefaultConfig.class);
+		OWNER_ADDRESS = "548794500882809695a8a687866e76d4271a1abc";
+		OWNER_ACCOUNT_INVALID = "548794500882809695a8a687866e76d4271a3456";
+	}
 
-  /**
-   * Init data.
-   */
-  @BeforeClass
-  public static void init() {
-    dbManager = context.getBean(Manager.class);
-    //    Args.setParam(new String[]{"--output-directory", dbPath},
-    //        "config-junit.conf");
-    //    dbManager = new Manager();
-    //    dbManager.init();
-  }
+	/**
+	 * Init data.
+	 */
+	@BeforeClass
+	public static void init() {
+		dbManager = context.getBean(Manager.class);
+		//    Args.setParam(new String[]{"--output-directory", dbPath},
+		//        "config-junit.conf");
+		//    dbManager = new Manager();
+		//    dbManager.init();
+	}
 
-  /**
-   * Release resources.
-   */
-  @AfterClass
-  public static void destroy() {
-    Args.clearParam();
-    context.destroy();
-    if (FileUtil.deleteDir(new File(dbPath))) {
-      logger.info("Release resources successful.");
-    } else {
-      logger.info("Release resources failure.");
-    }
-  }
+	/**
+	 * Release resources.
+	 */
+	@AfterClass
+	public static void destroy() {
+		Args.clearParam();
+		context.destroy();
+		if (FileUtil.deleteDir(new File(dbPath))) {
+			logger.info("Release resources successful.");
+		} else {
+			logger.info("Release resources failure.");
+		}
+	}
 
-  /**
-   * create temp Capsule test need.
-   */
-  @Before
-  public void createAccountCapsule() {
-    AccountCapsule ownerCapsule =
-        new AccountCapsule(
-            ByteString.copyFromUtf8("owner"),
-            ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-            AccountType.Normal,
-            initBalance);
-    dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
+	/**
+	 * create temp Capsule test need.
+	 */
+	@Before
+	public void createAccountCapsule() {
+		AccountCapsule ownerCapsule =
+				new AccountCapsule(
+						ByteString.copyFromUtf8("owner"),
+						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+						AccountType.Normal,
+						initBalance);
+		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 
-    dbManager.getDynamicPropertiesStore().saveTotalStorageReserved(
-        128L * 1024 * 1024 * 1024);
-    dbManager.getDynamicPropertiesStore().saveTotalStoragePool(100_000_000_000000L);
-    dbManager.getDynamicPropertiesStore().saveTotalStorageTax(0);
+		dbManager.getDynamicPropertiesStore().saveTotalStorageReserved(
+				128L * 1024 * 1024 * 1024);
+		dbManager.getDynamicPropertiesStore().saveTotalStoragePool(
+				ConversionUtil.McashToMatoshi(100_000_000L));
+		dbManager.getDynamicPropertiesStore().saveTotalStorageTax(0);
 
-    dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
-  }
+		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
+	}
 
-  private Any getBuyContract(String ownerAddress, long quant) {
-    return Any.pack(
-        Contract.BuyStorageContract.newBuilder()
-            .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-            .setQuant(quant)
-            .build());
-  }
+	private Any getBuyContract(String ownerAddress, long quant) {
+		return Any.pack(
+				Contract.BuyStorageContract.newBuilder()
+						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+						.setQuant(quant)
+						.build());
+	}
 
-  private Any getContract(String ownerAddress, long bytes) {
-    return Any.pack(
-        Contract.SellStorageContract.newBuilder()
-            .setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-            .setStorageBytes(bytes)
-            .build());
-  }
+	private Any getContract(String ownerAddress, long bytes) {
+		return Any.pack(
+				Contract.SellStorageContract.newBuilder()
+						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+						.setStorageBytes(bytes)
+						.build());
+	}
 
-  @Test
-  public void testSellStorage() {
-    long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
-    long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
-    Assert.assertEquals(currentPool, 100_000_000_000000L);
-    Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
+	@Test
+	public void testSellStorage() {
+		long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
+		long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
+		Assert.assertEquals(currentPool, ConversionUtil.McashToMatoshi(100_000_000L));
+		Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
 
-    long quant = 2_000_000_000_000L; // 2 million trx
-    BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
-        getBuyContract(OWNER_ADDRESS, quant), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      buyStorageactuator.validate();
-      buyStorageactuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-      AccountCapsule owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+		long quant = ConversionUtil.McashToMatoshi(2_000_000L);
+		BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
+				getBuyContract(OWNER_ADDRESS, quant), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			buyStorageactuator.validate();
+			buyStorageactuator.execute(ret);
+			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			AccountCapsule owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
-      Assert.assertEquals(owner.getBalance(), initBalance - quant
-          - ChainConstant.TRANSFER_FEE);
-      Assert.assertEquals(2694881440L, owner.getStorageLimit());
-      Assert.assertEquals(currentReserved - 2694881440L,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(currentPool + quant,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
+			Assert.assertEquals(owner.getBalance(), initBalance - quant
+					- ChainConstant.TRANSFER_FEE);
+			Assert.assertEquals(2694881440L, owner.getStorageLimit());
+			Assert.assertEquals(currentReserved - 2694881440L,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(currentPool + quant,
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
 
-    long bytes = 2694881440L;
-    SellStorageActuator sellStorageActuator = new SellStorageActuator(
-        getContract(OWNER_ADDRESS, bytes), dbManager);
-    TransactionResultCapsule ret2 = new TransactionResultCapsule();
-    try {
-      sellStorageActuator.validate();
-      sellStorageActuator.execute(ret);
-      Assert.assertEquals(ret2.getInstance().getRet(), code.SUCCESS);
-      AccountCapsule owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+		long bytes = 2694881440L;
+		SellStorageActuator sellStorageActuator = new SellStorageActuator(
+				getContract(OWNER_ADDRESS, bytes), dbManager);
+		TransactionResultCapsule ret2 = new TransactionResultCapsule();
+		try {
+			sellStorageActuator.validate();
+			sellStorageActuator.execute(ret);
+			Assert.assertEquals(ret2.getInstance().getRet(), code.SUCCESS);
+			AccountCapsule owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
-      // TODO: more precise
-      Assert.assertEquals(owner.getBalance(), initBalance);
-      Assert.assertEquals(0, owner.getStorageLimit());
-      Assert.assertEquals(currentReserved,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(100000000000000L,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
-    } catch (ContractValidateException e) {
-      logger.info(e.getMessage());
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
+			Assert.assertEquals(owner.getBalance(), initBalance);
+			Assert.assertEquals(0, owner.getStorageLimit());
+			Assert.assertEquals(currentReserved,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(ConversionUtil.McashToMatoshi(100_000_000L),
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
 
-  @Test
-  public void testSellStorage2() {
-    long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
-    long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
-    Assert.assertEquals(currentPool, 100_000_000_000000L);
-    Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
+	@Test
+	public void testSellStorage2() {
+		long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
+		long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
+		Assert.assertEquals(currentPool, 100_000_000_000000L);
+		Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
 
-    long quant = 2_000_000_000_000L; // 2 million trx
-    BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
-        getBuyContract(OWNER_ADDRESS, quant), dbManager);
-    TransactionResultCapsule buyRet = new TransactionResultCapsule();
-    try {
-      buyStorageactuator.validate();
-      buyStorageactuator.execute(buyRet);
-      Assert.assertEquals(buyRet.getInstance().getRet(), code.SUCCESS);
-      AccountCapsule owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+		long quant = 2_000_000_000_000L; // 2 million trx
+		BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
+				getBuyContract(OWNER_ADDRESS, quant), dbManager);
+		TransactionResultCapsule buyRet = new TransactionResultCapsule();
+		try {
+			buyStorageactuator.validate();
+			buyStorageactuator.execute(buyRet);
+			Assert.assertEquals(buyRet.getInstance().getRet(), code.SUCCESS);
+			AccountCapsule owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
-      Assert.assertEquals(owner.getBalance(), initBalance - quant
-          - ChainConstant.TRANSFER_FEE);
-      Assert.assertEquals(2694881440L, owner.getStorageLimit());
-      Assert.assertEquals(currentReserved - 2694881440L,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(currentPool + quant,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
+			Assert.assertEquals(owner.getBalance(), initBalance - quant
+					- ChainConstant.TRANSFER_FEE);
+			Assert.assertEquals(2694881440L, owner.getStorageLimit());
+			Assert.assertEquals(currentReserved - 2694881440L,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(currentPool + quant,
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+		} catch (ContractValidateException e) {
+			Assert.assertFalse(e instanceof ContractValidateException);
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
 
-    long bytes1 = 2694881440L - 1360781717L; // 1 million trx
-    long bytes2 = 1360781717L; // 1 million trx
+		long bytes1 = 2694881440L - 1360781717L; // 1 million trx
+		long bytes2 = 1360781717L; // 1 million trx
 
-    SellStorageActuator sellStorageActuator1 = new SellStorageActuator(
-        getContract(OWNER_ADDRESS, bytes1), dbManager);
-    TransactionResultCapsule ret1 = new TransactionResultCapsule();
+		SellStorageActuator sellStorageActuator1 = new SellStorageActuator(
+				getContract(OWNER_ADDRESS, bytes1), dbManager);
+		TransactionResultCapsule ret1 = new TransactionResultCapsule();
 
-    SellStorageActuator sellStorageActuator2 = new SellStorageActuator(
-        getContract(OWNER_ADDRESS, bytes2), dbManager);
-    TransactionResultCapsule ret2 = new TransactionResultCapsule();
+		SellStorageActuator sellStorageActuator2 = new SellStorageActuator(
+				getContract(OWNER_ADDRESS, bytes2), dbManager);
+		TransactionResultCapsule ret2 = new TransactionResultCapsule();
 
-    try {
-      sellStorageActuator1.validate();
-      sellStorageActuator1.execute(ret1);
-      Assert.assertEquals(ret1.getInstance().getRet(), code.SUCCESS);
-      AccountCapsule owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-      Assert.assertEquals(owner.getBalance(), initBalance - 1_000_000_000_000L);
-      Assert.assertEquals(1360781717L, owner.getStorageLimit());
-      Assert.assertEquals(currentReserved - 1360781717L,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(101000000000000L,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+		try {
+			sellStorageActuator1.validate();
+			sellStorageActuator1.execute(ret1);
+			Assert.assertEquals(ret1.getInstance().getRet(), code.SUCCESS);
+			AccountCapsule owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			Assert.assertEquals(owner.getBalance(), initBalance - 1_000_000_000_000L);
+			Assert.assertEquals(1360781717L, owner.getStorageLimit());
+			Assert.assertEquals(currentReserved - 1360781717L,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(101000000000000L,
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
 
-      sellStorageActuator2.validate();
-      sellStorageActuator2.execute(ret2);
-      Assert.assertEquals(ret2.getInstance().getRet(), code.SUCCESS);
-      owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-      Assert.assertEquals(owner.getBalance(), initBalance);
-      Assert.assertEquals(0, owner.getStorageLimit());
-      long tax = 0L;
-      Assert.assertEquals(tax,
-          dbManager.getDynamicPropertiesStore().getTotalStorageTax());
-      Assert.assertEquals(currentReserved,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(100000000000000L,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+			sellStorageActuator2.validate();
+			sellStorageActuator2.execute(ret2);
+			Assert.assertEquals(ret2.getInstance().getRet(), code.SUCCESS);
+			owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			Assert.assertEquals(owner.getBalance(), initBalance);
+			Assert.assertEquals(0, owner.getStorageLimit());
+			long tax = 0L;
+			Assert.assertEquals(tax,
+					dbManager.getDynamicPropertiesStore().getTotalStorageTax());
+			Assert.assertEquals(currentReserved,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(100000000000000L,
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
 
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
+		} catch (ContractValidateException e) {
+			Assert.assertFalse(e instanceof ContractValidateException);
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
+	}
 
 //  @Test
 //  public void testSellStorageTax() {
@@ -302,160 +300,153 @@ public class SellStorageActuatorTest {
 //    }
 //  }
 
-  @Test
-  public void sellLessThanZero() {
-    long bytes = -1_000_000_000L;
-    SellStorageActuator actuator = new SellStorageActuator(
-        getContract(OWNER_ADDRESS, bytes), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.fail("cannot run here.");
+	@Test
+	public void sellLessThanZero() {
+		long bytes = -1_000_000_000L;
+		SellStorageActuator actuator = new SellStorageActuator(
+				getContract(OWNER_ADDRESS, bytes), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			Assert.fail("cannot run here.");
 
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("bytes must be positive", e.getMessage());
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
+		} catch (ContractValidateException e) {
+			Assert.assertTrue(e instanceof ContractValidateException);
+			Assert.assertEquals("bytes must be positive", e.getMessage());
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
+	}
 
-  @Test
-  public void sellLessThan1Trx() {
-    long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
-    long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
-    Assert.assertEquals(currentPool, 100_000_000_000000L);
-    Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
+	@Test
+	public void sellLessThan1Trx() {
+		long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
+		long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
+		Assert.assertEquals(currentPool, 100_000_000_000000L);
+		Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
 
-    long quant = 2_000_000_000_000L; // 2 million trx
-    BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
-        getBuyContract(OWNER_ADDRESS, quant), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      buyStorageactuator.validate();
-      buyStorageactuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-      AccountCapsule owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+		long quant = 2_000_000_000_000L; // 2 million trx
+		BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
+				getBuyContract(OWNER_ADDRESS, quant), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			buyStorageactuator.validate();
+			buyStorageactuator.execute(ret);
+			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			AccountCapsule owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
-      Assert.assertEquals(owner.getBalance(), initBalance - quant
-          - ChainConstant.TRANSFER_FEE);
-      Assert.assertEquals(2694881440L, owner.getStorageLimit());
-      Assert.assertEquals(currentReserved - 2694881440L,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(currentPool + quant,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
+			Assert.assertEquals(owner.getBalance(), initBalance - quant
+					- ChainConstant.TRANSFER_FEE);
+			Assert.assertEquals(2694881440L, owner.getStorageLimit());
+			Assert.assertEquals(currentReserved - 2694881440L,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(currentPool + quant,
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+		} catch (ContractValidateException e) {
+			Assert.assertFalse(e instanceof ContractValidateException);
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
 
-    long bytes = 1200L;
-    SellStorageActuator sellStorageActuator = new SellStorageActuator(
-        getContract(OWNER_ADDRESS, bytes), dbManager);
-    TransactionResultCapsule ret2 = new TransactionResultCapsule();
-    try {
-      sellStorageActuator.validate();
-      sellStorageActuator.execute(ret2);
-      Assert.fail("cannot run here.");
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("quantity must be larger than 1TRX,current quantity[900000]",
-          e.getMessage());
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
+		long bytes = 1200L;
+		SellStorageActuator sellStorageActuator = new SellStorageActuator(
+				getContract(OWNER_ADDRESS, bytes), dbManager);
+		TransactionResultCapsule ret2 = new TransactionResultCapsule();
+		try {
+			sellStorageActuator.validate();
+			sellStorageActuator.execute(ret2);
+			Assert.fail("cannot run here.");
+		} catch (ContractValidateException e) {
+			Assert.assertTrue(e instanceof ContractValidateException);
+			Assert.assertEquals("quantity must be larger than 1TRX,current quantity[900000]",
+					e.getMessage());
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
+	}
 
-  @Test
-  public void sellMoreThanLimit() {
-    long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
-    long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
-    Assert.assertEquals(currentPool, 100_000_000_000000L);
-    Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
+	@Test
+	public void sellMoreThanLimit() {
+		long currentPool = dbManager.getDynamicPropertiesStore().getTotalStoragePool();
+		long currentReserved = dbManager.getDynamicPropertiesStore().getTotalStorageReserved();
+		Assert.assertEquals(currentPool, 100_000_000_000000L);
+		Assert.assertEquals(currentReserved, 128L * 1024 * 1024 * 1024);
 
-    long quant = 2_000_000_000_000L; // 2 million trx
-    BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
-        getBuyContract(OWNER_ADDRESS, quant), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      buyStorageactuator.validate();
-      buyStorageactuator.execute(ret);
-      Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-      AccountCapsule owner =
-          dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+		long quant = 2_000_000_000_000L; // 2 million trx
+		BuyStorageActuator buyStorageactuator = new BuyStorageActuator(
+				getBuyContract(OWNER_ADDRESS, quant), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			buyStorageactuator.validate();
+			buyStorageactuator.execute(ret);
+			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			AccountCapsule owner =
+					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
-      Assert.assertEquals(owner.getBalance(), initBalance - quant
-          - ChainConstant.TRANSFER_FEE);
-      Assert.assertEquals(2694881440L, owner.getStorageLimit());
-      Assert.assertEquals(currentReserved - 2694881440L,
-          dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
-      Assert.assertEquals(currentPool + quant,
-          dbManager.getDynamicPropertiesStore().getTotalStoragePool());
-    } catch (ContractValidateException e) {
-      Assert.assertFalse(e instanceof ContractValidateException);
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
+			Assert.assertEquals(owner.getBalance(), initBalance - quant
+					- ChainConstant.TRANSFER_FEE);
+			Assert.assertEquals(2694881440L, owner.getStorageLimit());
+			Assert.assertEquals(currentReserved - 2694881440L,
+					dbManager.getDynamicPropertiesStore().getTotalStorageReserved());
+			Assert.assertEquals(currentPool + quant,
+					dbManager.getDynamicPropertiesStore().getTotalStoragePool());
+		} catch (ContractValidateException e) {
+			Assert.assertFalse(e instanceof ContractValidateException);
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
 
-    long bytes = 2694881441L;
-    SellStorageActuator sellStorageActuator = new SellStorageActuator(
-        getContract(OWNER_ADDRESS, bytes), dbManager);
-    TransactionResultCapsule ret2 = new TransactionResultCapsule();
-    try {
-      sellStorageActuator.validate();
-      sellStorageActuator.execute(ret2);
-      Assert.fail("cannot run here.");
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("bytes must be less than currentUnusedStorage[2694881440]",
-          e.getMessage());
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
+		long bytes = 2694881441L;
+		SellStorageActuator sellStorageActuator = new SellStorageActuator(
+				getContract(OWNER_ADDRESS, bytes), dbManager);
+		TransactionResultCapsule ret2 = new TransactionResultCapsule();
+		try {
+			sellStorageActuator.validate();
+			sellStorageActuator.execute(ret2);
+			Assert.fail("cannot run here.");
+		} catch (ContractValidateException e) {
+			Assert.assertTrue(e instanceof ContractValidateException);
+			Assert.assertEquals("bytes must be less than currentUnusedStorage[2694881440]",
+					e.getMessage());
+		} catch (ContractExeException e) {
+			Assert.assertFalse(e instanceof ContractExeException);
+		}
+	}
 
-  @Test
-  public void invalidOwnerAddress() {
-    long bytes = 2694881440L;
-    SellStorageActuator actuator = new SellStorageActuator(
-        getContract(OWNER_ADDRESS_INVALID, bytes), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.fail("cannot run here.");
+	@Test
+	public void invalidOwnerAddress() {
+		long bytes = 2694881440L;
+		SellStorageActuator actuator = new SellStorageActuator(getContract(OWNER_ADDRESS_INVALID, bytes), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			Assert.fail("Invalid address");
 
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
+		} catch (ContractValidateException e) {
+			Assert.assertEquals("Invalid address", e.getMessage());
+		} catch (ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
 
-      Assert.assertEquals("Invalid address", e.getMessage());
+	}
 
-    } catch (ContractExeException e) {
-      Assert.assertTrue(e instanceof ContractExeException);
-    }
-
-  }
-
-  @Test
-  public void invalidOwnerAccount() {
-    long bytes = 2694881440L;
-    SellStorageActuator actuator = new SellStorageActuator(
-        getContract(OWNER_ACCOUNT_INVALID, bytes), dbManager);
-    TransactionResultCapsule ret = new TransactionResultCapsule();
-    try {
-      actuator.validate();
-      actuator.execute(ret);
-      Assert.fail("cannot run here.");
-    } catch (ContractValidateException e) {
-      Assert.assertTrue(e instanceof ContractValidateException);
-      Assert.assertEquals("Account[" + OWNER_ACCOUNT_INVALID + "] not exists",
-          e.getMessage());
-    } catch (ContractExeException e) {
-      Assert.assertFalse(e instanceof ContractExeException);
-    }
-  }
+	@Test
+	public void invalidOwnerAccount() {
+		long bytes = 2694881440L;
+		SellStorageActuator actuator = new SellStorageActuator(getContract(OWNER_ACCOUNT_INVALID, bytes), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			Assert.fail("Account " + OWNER_ACCOUNT_INVALID + " does not exist");
+		} catch (ContractValidateException e) {
+			Assert.assertEquals("Account " + OWNER_ACCOUNT_INVALID + " does not exist", e.getMessage());
+		} catch (ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
 
 }

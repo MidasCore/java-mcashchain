@@ -12,10 +12,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.tron.common.utils.StringUtil;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.*;
+import org.tron.core.config.Parameter;
 import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract.FreezeBalanceContract;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
@@ -63,7 +65,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 					accountCapsule.setFrozenForBandwidth(newFrozenBalanceForBandwidth, expireTime);
 				}
 				dbManager.getDynamicPropertiesStore()
-						.addTotalNetWeight(frozenBalance / 1000_000L);
+						.addTotalNetWeight(frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 			case ENERGY:
 				if (!ArrayUtils.isEmpty(receiverAddress)
@@ -79,7 +81,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 					accountCapsule.setFrozenForEnergy(newFrozenBalanceForEnergy, expireTime);
 				}
 				dbManager.getDynamicPropertiesStore()
-						.addTotalEnergyWeight(frozenBalance / 1000_000L);
+						.addTotalEnergyWeight(frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 		}
 
@@ -102,8 +104,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 		}
 		if (!contract.is(FreezeBalanceContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [FreezeBalanceContract],real type[" + contract
-							.getClass() + "]");
+					"Contract type error, expected FreezeBalanceContract, actual" + contract.getClass());
 		}
 
 		final FreezeBalanceContract freezeBalanceContract;
@@ -122,15 +123,15 @@ public class FreezeBalanceActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account[" + readableOwnerAddress + "] not exists");
+					"Account " + readableOwnerAddress + " does not exist");
 		}
 
 		long frozenBalance = freezeBalanceContract.getFrozenBalance();
 		if (frozenBalance <= 0) {
 			throw new ContractValidateException("frozenBalance must be positive");
 		}
-		if (frozenBalance < 1_000_000L) {
-			throw new ContractValidateException("frozenBalance must be more than 1TRX");
+		if (frozenBalance < ConversionUtil.McashToMatoshi(1)) {
+			throw new ContractValidateException("frozenBalance must be more than 1 MCASH");
 		}
 
 		int frozenCount = accountCapsule.getFrozenCount();
@@ -160,12 +161,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
 		switch (freezeBalanceContract.getResource()) {
 			case BANDWIDTH:
-				break;
 			case ENERGY:
 				break;
 			default:
 				throw new ContractValidateException(
-						"ResourceCode error,valid ResourceCode[BANDWIDTH、ENERGY]");
+						"ResourceCode error, valid ResourceCode [BANDWIDTH、ENERGY]");
 		}
 
 		//todo：need version control and config for delegating resource
@@ -185,9 +185,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
 			if (receiverCapsule == null) {
 				String readableOwnerAddress = StringUtil.createReadableString(receiverAddress);
 				throw new ContractValidateException(
-						"Account[" + readableOwnerAddress + "] not exists");
+						"Account " + readableOwnerAddress + " does not exist");
 			}
-
 		}
 
 		return true;

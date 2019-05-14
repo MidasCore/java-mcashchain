@@ -98,8 +98,7 @@ public class UnstakeActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(Contract.UnstakeContract.class)) {
 			throw new ContractValidateException(
-					"contract type error, expected type [Contract.UnstakeContract], real type["
-							+ contract.getClass() + "]");
+					"Contract type error, expected Contract.UnstakeContract, actual " + contract.getClass());
 		}
 		final Contract.UnstakeContract unstakeContract;
 		try {
@@ -117,17 +116,17 @@ public class UnstakeActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account [" + readableOwnerAddress + "] does not exist");
+					"Account " + readableOwnerAddress + " does not exist");
 		}
 		long now = dbManager.getHeadBlockTimeStamp();
 		if (accountCapsule.getStakeAmount() <= 0) {
-			throw new ContractValidateException("no stake amount");
+			throw new ContractValidateException("No stake amount");
 		}
 
 		long allowedUnstakeCount = accountCapsule.getStakeList().stream()
 				.filter(stake -> stake.getExpireTime() <= now).count();
 		if (allowedUnstakeCount <= 0) {
-			throw new ContractValidateException("It's not time to unstake.");
+			throw new ContractValidateException("It's not time to unstake");
 		}
 
 		return true;

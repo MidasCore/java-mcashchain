@@ -2,7 +2,7 @@ package org.tron.core.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.config.Parameter.ChainConstant;
+import org.tron.core.config.Parameter;
 
 @Slf4j(topic = "DB")
 public class StorageMarket {
@@ -84,7 +84,7 @@ public class StorageMarket {
   public long calculateTax(long duration, long limit) {
     // todo: Support for change by the committee
     double ratePerYear = dbManager.getDynamicPropertiesStore().getStorageExchangeTaxRate() / 100.0;
-    double millisecondPerYear = (double) ChainConstant.MS_PER_YEAR;
+    double millisecondPerYear = (double) Parameter.TimeConstant.MS_PER_YEAR;
     double feeRate = duration / millisecondPerYear * ratePerYear;
     long storageTax = (long) (limit * feeRate);
     logger.info("storageTax: " + storageTax);

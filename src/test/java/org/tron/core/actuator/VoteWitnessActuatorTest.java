@@ -27,6 +27,7 @@ import org.tron.core.controller.StakeAccountController;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.core.witness.WitnessController;
 import org.tron.protos.Contract;
 import org.tron.protos.Contract.VoteWitnessContract;
@@ -47,6 +48,7 @@ public class VoteWitnessActuatorTest {
 	private static final String WITNESS_NAME = "witness";
 	private static final String WITNESS_ADDRESS;
 	private static final String WITNESS_ADDRESS_2;
+	private static final String WITNESS_OWNER_ADDRESS;
 	private static final String URL = "https://tron.network";
 	private static final String ADDRESS_INVALID = "aaaa";
 	private static final String WITNESS_ADDRESS_NOACCOUNT;
@@ -62,6 +64,7 @@ public class VoteWitnessActuatorTest {
 		WITNESS_ADDRESS_NOACCOUNT = "548794500882809695a8a687866e76d4271a1aed";
 		OWNER_ADDRESS_NOACCOUNT = "548794500882809695a8a687866e76d4271a1aae";
 		OWNER_ADDRESS_BALANCENOTSUFFICIENT = "548794500882809695a8a687866e06d4271a1ced";
+		WITNESS_OWNER_ADDRESS = "84ca19269c61f4778e51a8ed085620d7ac1fc2ea";
 	}
 
 	/**
@@ -82,6 +85,7 @@ public class VoteWitnessActuatorTest {
 		WitnessCapsule ownerCapsule =
 				new WitnessCapsule(
 						StringUtil.hexString2ByteString(WITNESS_ADDRESS),
+						StringUtil.hexString2ByteString(WITNESS_OWNER_ADDRESS),
 						10L,
 						URL);
 		AccountCapsule witnessAccountSecondCapsule =
@@ -95,7 +99,7 @@ public class VoteWitnessActuatorTest {
 						ByteString.copyFromUtf8(ACCOUNT_NAME),
 						StringUtil.hexString2ByteString(OWNER_ADDRESS),
 						AccountType.Normal,
-						10_000_000_000_000L);
+						ConversionUtil.McashToMatoshi(10_000_000));
 
 		dbManager.getAccountStore()
 				.put(witnessAccountSecondCapsule.getAddress().toByteArray(), witnessAccountSecondCapsule);
@@ -139,7 +143,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void voteWitness() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -197,7 +201,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void noAccount() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -211,10 +215,10 @@ public class VoteWitnessActuatorTest {
 			stakeAccountController.updateStakeAccount();
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Witness [" + WITNESS_ADDRESS_NOACCOUNT + "] does not exist");
+			Assert.fail("Witness " + WITNESS_ADDRESS_NOACCOUNT + " does not exist");
 		} catch (ContractValidateException e) {
 			Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote());
-			Assert.assertEquals("Witness [" + WITNESS_ADDRESS_NOACCOUNT + "] does not exist", e.getMessage());
+			Assert.assertEquals("Witness " + WITNESS_ADDRESS_NOACCOUNT + " does not exist", e.getMessage());
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 					.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -231,7 +235,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void noWitness() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -253,10 +257,10 @@ public class VoteWitnessActuatorTest {
 			stakeAccountController.updateStakeAccount();
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Witness [" + OWNER_ADDRESS_NOACCOUNT + "] does not exist");
+			Assert.fail("Witness " + OWNER_ADDRESS_NOACCOUNT + " does not exist");
 		} catch (ContractValidateException e) {
 			Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote());
-			Assert.assertEquals("Witness [" + WITNESS_ADDRESS_NOACCOUNT + "] does not exist", e.getMessage());
+			Assert.assertEquals("Witness " + WITNESS_ADDRESS_NOACCOUNT + " does not exist", e.getMessage());
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 					.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -271,7 +275,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void invalidVoteAddress() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -293,10 +297,10 @@ public class VoteWitnessActuatorTest {
 			stakeAccountController.updateStakeAccount();
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertTrue(false);
+			Assert.fail("Invalid vote address");
 		} catch (ContractValidateException e) {
 			Assert.assertNull(dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote());
-			Assert.assertEquals("Invalid vote address!", e.getMessage());
+			Assert.assertEquals("Invalid vote address", e.getMessage());
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 					.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -311,7 +315,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void voteCountTest() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -361,7 +365,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void vote1WitnessOneMoreTimes() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -398,9 +402,9 @@ public class VoteWitnessActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Account[" + OWNER_ADDRESS_NOACCOUNT + "] not exists");
+			Assert.fail("Account " + OWNER_ADDRESS_NOACCOUNT + " does not exist");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Account is not in staking node", e.getMessage());
+			Assert.assertEquals("Account " + OWNER_ADDRESS_NOACCOUNT + " does not exist", e.getMessage());
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 					.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -415,7 +419,7 @@ public class VoteWitnessActuatorTest {
 	 */
 	@Test
 	public void voteWitnessTwice() {
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -459,8 +463,7 @@ public class VoteWitnessActuatorTest {
 			logger.info("[Before] Witness 2 vote: {}", witnessCapsule2.getVoteCount());
 		}
 
-
-		long stakeAmount = 1_000_000_000_000L;
+		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator stakeActuator = new StakeActuator(
 				getStakeContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);

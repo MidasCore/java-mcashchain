@@ -26,6 +26,7 @@ import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
+import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract;
 import org.tron.protos.Contract.ResourceCode;
 import org.tron.protos.Protocol.AccountType;
@@ -41,7 +42,7 @@ public class FreezeBalanceActuatorTest {
 	private static final String RECEIVER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
-	private static final long initBalance = 1_000_000_000_000L;
+	private static final long initBalance = ConversionUtil.McashToMatoshi(1_000_000);
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
@@ -145,7 +146,7 @@ public class FreezeBalanceActuatorTest {
 
 	@Test
 	public void testFreezeBalanceForBandwidth() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -161,16 +162,14 @@ public class FreezeBalanceActuatorTest {
 					- ChainConstant.TRANSFER_FEE);
 			Assert.assertEquals(owner.getFrozenBalance(), frozenBalance);
 			Assert.assertEquals(0, owner.getVotingPower());
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testFreezeBalanceForEnergy() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForCpu(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -186,17 +185,15 @@ public class FreezeBalanceActuatorTest {
 					- ChainConstant.TRANSFER_FEE);
 			Assert.assertEquals(0L, owner.getFrozenBalance());
 			Assert.assertEquals(frozenBalance, owner.getEnergyFrozenBalance());
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testFreezeDelegatedBalanceForBandwidth() {
 		dbManager.getDynamicPropertiesStore().saveAllowDelegateResource(1);
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration),
@@ -229,41 +226,33 @@ public class FreezeBalanceActuatorTest {
 
 			Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForBandwidth());
 			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
-			Assert.assertEquals(totalNetWeightBefore + frozenBalance / 1000_000L, totalNetWeightAfter);
+			Assert.assertEquals(totalNetWeightBefore + frozenBalance / ChainConstant.TEN_POW_DECIMALS, totalNetWeightAfter);
 
 			//check DelegatedResourceAccountIndex
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndexCapsuleOwner = dbManager
 					.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-			Assert
-					.assertEquals(0, delegatedResourceAccountIndexCapsuleOwner.getFromAccountsList().size());
+			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleOwner.getFromAccountsList().size());
 			Assert.assertEquals(1, delegatedResourceAccountIndexCapsuleOwner.getToAccountsList().size());
-			Assert.assertEquals(true,
-					delegatedResourceAccountIndexCapsuleOwner.getToAccountsList()
-							.contains(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS))));
+			Assert.assertTrue(delegatedResourceAccountIndexCapsuleOwner.getToAccountsList()
+					.contains(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS))));
 
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndexCapsuleReceiver = dbManager
 					.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
-			Assert
-					.assertEquals(0, delegatedResourceAccountIndexCapsuleReceiver.getToAccountsList().size());
-			Assert
-					.assertEquals(1,
-							delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
-			Assert.assertEquals(true,
-					delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList()
-							.contains(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS))));
+			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleReceiver.getToAccountsList().size());
+			Assert.assertEquals(1,
+					delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
+			Assert.assertTrue(delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList()
+					.contains(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS))));
 
-
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testFreezeDelegatedBalanceForCpuSameNameTokenActive() {
 		dbManager.getDynamicPropertiesStore().saveAllowDelegateResource(1);
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getDelegatedContractForCpu(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration),
@@ -298,7 +287,7 @@ public class FreezeBalanceActuatorTest {
 			Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForEnergy());
 
 			long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
-			Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / 1000_000L,
+			Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / ChainConstant.TEN_POW_DECIMALS,
 					totalEnergyWeightAfter);
 
 			//check DelegatedResourceAccountIndex
@@ -307,32 +296,26 @@ public class FreezeBalanceActuatorTest {
 			Assert
 					.assertEquals(0, delegatedResourceAccountIndexCapsuleOwner.getFromAccountsList().size());
 			Assert.assertEquals(1, delegatedResourceAccountIndexCapsuleOwner.getToAccountsList().size());
-			Assert.assertEquals(true,
-					delegatedResourceAccountIndexCapsuleOwner.getToAccountsList()
-							.contains(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS))));
+			Assert.assertTrue(delegatedResourceAccountIndexCapsuleOwner.getToAccountsList()
+					.contains(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS))));
 
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndexCapsuleReceiver = dbManager
 					.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
-			Assert
-					.assertEquals(0, delegatedResourceAccountIndexCapsuleReceiver.getToAccountsList().size());
-			Assert
-					.assertEquals(1,
-							delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
-			Assert.assertEquals(true,
-					delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList()
-							.contains(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS))));
+			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleReceiver.getToAccountsList().size());
+			Assert.assertEquals(1,
+					delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
+			Assert.assertTrue(delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList()
+					.contains(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS))));
 
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testFreezeDelegatedBalanceForCpuSameNameTokenClose() {
 		dbManager.getDynamicPropertiesStore().saveAllowDelegateResource(0);
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getDelegatedContractForCpu(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration),
@@ -359,19 +342,17 @@ public class FreezeBalanceActuatorTest {
 			Assert.assertEquals(0L, receiver.getVotingPower());
 
 			long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
-			Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / 1000_000L,
+			Assert.assertEquals(totalEnergyWeightBefore + frozenBalance / ChainConstant.TEN_POW_DECIMALS,
 					totalEnergyWeightAfter);
 
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void freezeLessThanZero() {
-		long frozenBalance = -1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(-1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -379,19 +360,17 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
-
+			Assert.fail("Cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("frozenBalance must be positive", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void freezeMoreThanBalance() {
-		long frozenBalance = 11_000_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(11_000_000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -399,18 +378,17 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("cannot run here.");
+			Assert.fail("Cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("frozenBalance must be less than accountBalance", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void invalidOwnerAddress() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS_INVALID, frozenBalance, duration), dbManager);
@@ -418,22 +396,18 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
-
+			Assert.fail("cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-
 			Assert.assertEquals("Invalid address", e.getMessage());
-
 		} catch (ContractExeException e) {
-			Assert.assertTrue(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 
 	}
 
 	@Test
 	public void invalidOwnerAccount() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ACCOUNT_INVALID, frozenBalance, duration), dbManager);
@@ -441,19 +415,18 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
+			Assert.fail("Cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertEquals("Account[" + OWNER_ACCOUNT_INVALID + "] not exists",
+			Assert.assertEquals("Account " + OWNER_ACCOUNT_INVALID + " does not exist",
 					e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void durationLessThanMin() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 2;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -461,23 +434,22 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
+			Assert.fail("Cannot run here.");
 
 		} catch (ContractValidateException e) {
 			long minFrozenTime = dbManager.getDynamicPropertiesStore().getMinFrozenTime();
 			long maxFrozenTime = dbManager.getDynamicPropertiesStore().getMaxFrozenTime();
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("frozenDuration must be less than " + maxFrozenTime + " days "
 							+ "and more than " + minFrozenTime + " days"
 					, e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void durationMoreThanMax() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 4;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -489,12 +461,11 @@ public class FreezeBalanceActuatorTest {
 		} catch (ContractValidateException e) {
 			long minFrozenTime = dbManager.getDynamicPropertiesStore().getMinFrozenTime();
 			long maxFrozenTime = dbManager.getDynamicPropertiesStore().getMaxFrozenTime();
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("frozenDuration must be less than " + maxFrozenTime + " days "
 							+ "and more than " + minFrozenTime + " days"
 					, e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -508,12 +479,11 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
+			Assert.fail("Cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertEquals("frozenBalance must be more than 1TRX", e.getMessage());
+			Assert.assertEquals("frozenBalance must be more than 1 MCASH", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -522,10 +492,10 @@ public class FreezeBalanceActuatorTest {
 		AccountCapsule account = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		account.setFrozen(1_000L, 1_000_000_000L);
-		account.setFrozen(1_000_000L, 1_000_000_000L);
+		account.setFrozen(ConversionUtil.McashToMatoshi(1), 1_000_000_000L);
 		dbManager.getAccountStore().put(account.getAddress().toByteArray(), account);
 
-		long frozenBalance = 20_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(20);
 		long duration = 3L;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -533,18 +503,17 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
+			Assert.fail("Cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("frozenCount must be 0 or 1", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	//@Test
 	public void moreThanFrozenNumber() {
-		long frozenBalance = 1_000_000_000L;
+		long frozenBalance = ConversionUtil.McashToMatoshi(1000);
 		long duration = 3;
 		FreezeBalanceActuator actuator = new FreezeBalanceActuator(
 				getContractForBandwidth(OWNER_ADDRESS, frozenBalance, duration), dbManager);
@@ -552,22 +521,18 @@ public class FreezeBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("cannot run here.");
+			Assert.fail("cannot run here.");
 		} catch (ContractValidateException e) {
 			long maxFrozenNumber = ChainConstant.MAX_FROZEN_NUMBER;
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("max frozen number is: " + maxFrozenNumber, e.getMessage());
-
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 }

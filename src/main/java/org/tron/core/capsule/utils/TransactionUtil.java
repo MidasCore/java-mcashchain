@@ -27,146 +27,146 @@ import org.tron.protos.Protocol.Transaction.Contract;
 @Slf4j(topic = "capsule")
 public class TransactionUtil {
 
-  public static Transaction newGenesisTransaction(byte[] key, long value)
-      throws IllegalArgumentException {
+	public static Transaction newGenesisTransaction(byte[] key, long value)
+			throws IllegalArgumentException {
 
-    if (!Wallet.addressValid(key)) {
-      throw new IllegalArgumentException("Invalid address");
-    }
-    TransferContract transferContract = TransferContract.newBuilder()
-        .setAmount(value)
-        .setOwnerAddress(ByteString.copyFrom("0x000000000000000000000".getBytes()))
-        .setToAddress(ByteString.copyFrom(key))
-        .build();
+		if (!Wallet.addressValid(key)) {
+			throw new IllegalArgumentException("Invalid address");
+		}
+		TransferContract transferContract = TransferContract.newBuilder()
+				.setAmount(value)
+				.setOwnerAddress(ByteString.copyFrom("0x000000000000000000000".getBytes()))
+				.setToAddress(ByteString.copyFrom(key))
+				.build();
 
-    return new TransactionCapsule(transferContract,
-        Contract.ContractType.TransferContract).getInstance();
-  }
+		return new TransactionCapsule(transferContract,
+				Contract.ContractType.TransferContract).getInstance();
+	}
 
-  /**
-   * checkBalance.
-   */
-  private static boolean checkBalance(long totalBalance, long totalSpent) {
-    return totalBalance == totalSpent;
-  }
+	/**
+	 * checkBalance.
+	 */
+	private static boolean checkBalance(long totalBalance, long totalSpent) {
+		return totalBalance == totalSpent;
+	}
 
-  public static boolean validAccountName(byte[] accountName) {
-    if (ArrayUtils.isEmpty(accountName)) {
-      return true;   //accountname can empty
-    }
-    if (accountName.length > 200) {
-      return false;
-    }
-    // other rules.
-    return true;
-  }
+	public static boolean validAccountName(byte[] accountName) {
+		if (ArrayUtils.isEmpty(accountName)) {
+			return true;   //accountname can empty
+		}
+		if (accountName.length > 200) {
+			return false;
+		}
+		// other rules.
+		return true;
+	}
 
-  public static boolean validAccountId(byte[] accountId) {
-    if (ArrayUtils.isEmpty(accountId)) {
-      return false;
-    }
+	public static boolean validAccountId(byte[] accountId) {
+		if (ArrayUtils.isEmpty(accountId)) {
+			return false;
+		}
 
-    if (accountId.length < 8) {
-      return false;
-    }
+		if (accountId.length < 8) {
+			return false;
+		}
 
-    if (accountId.length > 32) {
-      return false;
-    }
-    // b must read able.
-    for (byte b : accountId) {
-      if (b < 0x21) {
-        return false; // 0x21 = '!'
-      }
-      if (b > 0x7E) {
-        return false; // 0x7E = '~'
-      }
-    }
-    return true;
-  }
+		if (accountId.length > 32) {
+			return false;
+		}
+		// b must read able.
+		for (byte b : accountId) {
+			if (b < 0x21) {
+				return false; // 0x21 = '!'
+			}
+			if (b > 0x7E) {
+				return false; // 0x7E = '~'
+			}
+		}
+		return true;
+	}
 
-  public static boolean validAssetName(byte[] assetName) {
-    if (ArrayUtils.isEmpty(assetName)) {
-      return false;
-    }
-    if (assetName.length > 32) {
-      return false;
-    }
-    // b must read able.
-    for (byte b : assetName) {
-      if (b < 0x21) {
-        return false; // 0x21 = '!'
-      }
-      if (b > 0x7E) {
-        return false; // 0x7E = '~'
-      }
-    }
-    return true;
-  }
+	public static boolean validAssetName(byte[] assetName) {
+		if (ArrayUtils.isEmpty(assetName)) {
+			return false;
+		}
+		if (assetName.length > 32) {
+			return false;
+		}
+		// b must read able.
+		for (byte b : assetName) {
+			if (b < 0x21) {
+				return false; // 0x21 = '!'
+			}
+			if (b > 0x7E) {
+				return false; // 0x7E = '~'
+			}
+		}
+		return true;
+	}
 
-  public static boolean validTokenAbbrName(byte[] abbrName) {
-    if (ArrayUtils.isEmpty(abbrName)) {
-      return false;
-    }
-    if (abbrName.length > 5) {
-      return false;
-    }
-    // b must read able.
-    for (byte b : abbrName) {
-      if (b < 0x21) {
-        return false; // 0x21 = '!'
-      }
-      if (b > 0x7E) {
-        return false; // 0x7E = '~'
-      }
-    }
-    return true;
-  }
+	public static boolean validTokenAbbrName(byte[] abbrName) {
+		if (ArrayUtils.isEmpty(abbrName)) {
+			return false;
+		}
+		if (abbrName.length > 5) {
+			return false;
+		}
+		// b must read able.
+		for (byte b : abbrName) {
+			if (b < 0x21) {
+				return false; // 0x21 = '!'
+			}
+			if (b > 0x7E) {
+				return false; // 0x7E = '~'
+			}
+		}
+		return true;
+	}
 
 
-  public static boolean validAssetDescription(byte[] description) {
-    if (ArrayUtils.isEmpty(description)) {
-      return true;   //description can empty
-    }
-    if (description.length > 200) {
-      return false;
-    }
-    // other rules.
-    return true;
-  }
+	public static boolean validAssetDescription(byte[] description) {
+		if (ArrayUtils.isEmpty(description)) {
+			return true;   //description can empty
+		}
+		if (description.length > 200) {
+			return false;
+		}
+		// other rules.
+		return true;
+	}
 
-  public static boolean validUrl(byte[] url) {
-    if (ArrayUtils.isEmpty(url)) {
-      return false;
-    }
-    if (url.length > 256) {
-      return false;
-    }
-    // other rules.
-    return true;
-  }
+	public static boolean validUrl(byte[] url) {
+		if (ArrayUtils.isEmpty(url)) {
+			return false;
+		}
+		if (url.length > 256) {
+			return false;
+		}
+		// other rules.
+		return true;
+	}
 
-  public static boolean isNumber(byte[] id) {
-    if (ArrayUtils.isEmpty(id)) {
-      return false;
-    }
-    for (byte b : id) {
-      if (b < '0' || b > '9') {
-        return false;
-      }
-    }
-    if (id.length > 1 && id[0] == '0') {
-      return false;
-    }
+	public static boolean isNumber(byte[] id) {
+		if (ArrayUtils.isEmpty(id)) {
+			return false;
+		}
+		for (byte b : id) {
+			if (b < '0' || b > '9') {
+				return false;
+			}
+		}
+		if (id.length > 1 && id[0] == '0') {
+			return false;
+		}
 
-    return true;
-  }
-  /**
-   * Get sender.
-   */
- /* public static byte[] getSender(Transaction tx) {
-    byte[] pubKey = tx.getRawData().getVin(0).getRawData().getPubKey().toByteArray();
-    return ECKey.computeAddress(pubKey);
-  } */
+		return true;
+	}
+//	/**
+//	 * Get sender.
+//	 */
+//	public static byte[] getSender(Transaction tx) {
+//		byte[] pubKey = tx.getRawData().getVin(0).getRawData().getPubKey().toByteArray();
+//		return ECKey.computeAddress(pubKey);
+//	}
 
 }
