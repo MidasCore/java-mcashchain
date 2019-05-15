@@ -293,6 +293,10 @@ public class Util {
 						Contract.UnstakeContract unstakeContract = contractParameter
 								.unpack(Contract.UnstakeContract.class);
 						contractJson = JSONObject.parseObject(JsonFormat.printToString(unstakeContract));
+					case WitnessResignContract:
+						Contract.WitnessResignContract witnessResignContract = contractParameter
+								.unpack(Contract.WitnessResignContract.class);
+						contractJson = JSONObject.parseObject(JsonFormat.printToString(witnessResignContract));
 						// todo add other contract
 					default:
 				}
@@ -547,6 +551,12 @@ public class Util {
 								unstakeContractBuilder);
 						any = Any.pack(unstakeContractBuilder.build());
 						break;
+					case "WitnessResignContract":
+						Contract.WitnessResignContract.Builder witnessResignContractBuilder =
+								Contract.WitnessResignContract.newBuilder();
+						JsonFormat.merge(parameter.getJSONObject("value").toJSONString(),
+								witnessResignContractBuilder);
+						any = Any.pack(witnessResignContractBuilder.build());
 					// todo add other contract
 					default:
 				}

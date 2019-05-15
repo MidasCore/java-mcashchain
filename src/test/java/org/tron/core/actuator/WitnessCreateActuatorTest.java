@@ -11,7 +11,9 @@ import org.tron.core.Constant;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.WitnessCapsule;
+import org.tron.core.capsule.utils.StakeUtil;
 import org.tron.core.config.DefaultConfig;
+import org.tron.core.config.Parameter;
 import org.tron.core.config.args.Args;
 import org.tron.core.db.Manager;
 import org.tron.core.exception.ContractExeException;
@@ -19,7 +21,6 @@ import org.tron.core.exception.ContractValidateException;
 import org.tron.core.util.ConversionUtil;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol.AccountType;
-import org.tron.protos.Protocol.Transaction.Result.code;
 
 import java.io.File;
 
@@ -29,7 +30,7 @@ import static junit.framework.TestCase.fail;
 
 public class WitnessCreateActuatorTest {
 
-	private static final String dbPath = "output_WitnessCreate_test";
+	private static final String dbPath = "output_witness_create_test";
 	private static final String ACCOUNT_NAME_FIRST = "ownerF";
 	private static final String SUPERNODE_ADDRESS_FIRST;
 	private static final String ACCOUNT_NAME_SECOND = "ownerS";
@@ -37,10 +38,11 @@ public class WitnessCreateActuatorTest {
 	private static final String ACCOUNT_NAME_THIRD = "ownerM";
 	private static final String SUPERNODE_ADDRESS_THIRD;
 	private static final String OWNER_ADDRESS;
-	private static final String URL = "https://tron.network";
+	private static final String URL = "https://midasprotocol.io";
 	private static final String SUPERNODE_ADDRESS_INVALID = "aaaa";
 	private static final String SUPERNODE_ADDRESS_NOACCOUNT;
 	private static final String OWNER_ADDRESS_BALANCENOTSUFFIENT;
+	private static final String NEW_OWNER_ADDRESS;
 	private static TronApplicationContext context;
 	private static Manager dbManager;
 
@@ -49,10 +51,11 @@ public class WitnessCreateActuatorTest {
 		context = new TronApplicationContext(DefaultConfig.class);
 		SUPERNODE_ADDRESS_FIRST = "abd4b9367799eaa3197fecb144eb71de1e049abc";
 		SUPERNODE_ADDRESS_SECOND = "548794500882809695a8a687866e76d4271a1abc";
-		SUPERNODE_ADDRESS_THIRD = "2b0c293ff59d17813b11161999b367e012173bd3";
+		SUPERNODE_ADDRESS_THIRD = "12e488654c2e7fc606c268ca19fbfa8d1c6a35da";
 		SUPERNODE_ADDRESS_NOACCOUNT = "548794500882809695a8a687866e76d4271a1aed";
-		OWNER_ADDRESS_BALANCENOTSUFFIENT = "548794500882809695a8a687866e06d4271a1ced";
+		OWNER_ADDRESS_BALANCENOTSUFFIENT = "78502ce569750cb26ae1e50f1fe708653cede06c";
 		OWNER_ADDRESS = "84ca19269c61f4778e51a8ed085620d7ac1fc2ea";
+		NEW_OWNER_ADDRESS = "4536f33f3e0a725484738017c533f877d5df3a82";
 	}
 
 	/**
@@ -85,7 +88,7 @@ public class WitnessCreateActuatorTest {
 	public void createCapsule() {
 		WitnessCapsule ownerCapsule =
 				new WitnessCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
+						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						10_000_000L,
 						URL);
@@ -95,18 +98,19 @@ public class WitnessCreateActuatorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						AccountType.Normal,
 						ConversionUtil.McashToMatoshi(200_000));
+		ownerAccountCapsule.setStakeSupernode(500000000000000L);
 		ownerAccountCapsule.setStake(1000000000000000L, 0);
 
 		AccountCapsule supernodeAccountSecondCapsule =
 				new AccountCapsule(
 						ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
+						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
 						AccountType.Normal,
 						0);
 		AccountCapsule supernodeAccountFirstCapsule =
 				new AccountCapsule(
 						ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
 						AccountType.Normal,
 						0);
 		AccountCapsule supernodeAccountThirdCapsule =
@@ -126,7 +130,7 @@ public class WitnessCreateActuatorTest {
 				.put(supernodeAccountThirdCapsule.getAddress().toByteArray(), supernodeAccountThirdCapsule);
 
 		dbManager.getWitnessStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
-		dbManager.getWitnessStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST));
+		dbManager.getWitnessStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND));
 		dbManager.getWitnessStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_THIRD));
 	}
 
@@ -159,66 +163,64 @@ public class WitnessCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-			WitnessCapsule witnessCapsule =
-					dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST));
-			Assert.assertNotNull(witnessCapsule);
-			Assert.assertEquals(
-					witnessCapsule.getInstance().getUrl(),
-					URL);
-		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail("Witness " + SUPERNODE_ADDRESS_SECOND + " has existed");
+		} catch (ContractValidateException e) {
+			Assert.assertEquals("Witness " + SUPERNODE_ADDRESS_FIRST + " has existed", e.getMessage());
+		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * second createWitness,result is failed,exception is "Witness has existed".
-	 */
 	@Test
-	public void secondCreateAccount() {
+	public void secondCreateWitness() {
 		WitnessCreateActuator actuator =
 				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_SECOND, OWNER_ADDRESS, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Witness " + SUPERNODE_ADDRESS_SECOND + " has existed");
+			Assert.fail("Account " + OWNER_ADDRESS + " owns other supernode");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Witness " + SUPERNODE_ADDRESS_SECOND + " has existed", e.getMessage());
+			Assert.assertEquals("Account " + OWNER_ADDRESS + " owns other supernode", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 *
-	 */
 	@Test
-	public void create2MoreWitnesses() {
+	public void createWitness() {
+		AccountCapsule ownerCapsule =
+				new AccountCapsule(
+						ByteString.copyFromUtf8(""),
+						ByteString.copyFrom(ByteArray.fromHexString(NEW_OWNER_ADDRESS)),
+						AccountType.Normal,
+						ConversionUtil.McashToMatoshi(200_000));
+		long startingStakeAmount = 10000000000000000L;
+		ownerCapsule.setStake(startingStakeAmount, 0);
+		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
+
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, URL), dbManager);
+				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_THIRD, NEW_OWNER_ADDRESS, URL),
+						dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+
+			ownerCapsule = dbManager.getAccountStore().get(ByteArray.fromHexString(NEW_OWNER_ADDRESS));
+			Assert.assertEquals(startingStakeAmount - Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT,
+					ownerCapsule.getNormalStakeAmount());
+			Assert.assertEquals(Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT,
+					ownerCapsule.getSupernodeStakeAmount());
+			Assert.assertEquals(startingStakeAmount, ownerCapsule.getTotalStakeAmount());
+
+			dbManager.getWitnessController().updateWitness();
 			WitnessCapsule witnessCapsule =
-					dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST));
+					dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_THIRD));
 			Assert.assertNotNull(witnessCapsule);
-			Assert.assertEquals(
-					witnessCapsule.getInstance().getUrl(),
-					URL);
+			long votingPower = StakeUtil.getVotingPowerFromStakeAmount(ownerCapsule.getTotalStakeAmount());
+			Assert.assertEquals(votingPower, witnessCapsule.getVoteCount());
 		} catch (ContractValidateException | ContractExeException e) {
-			Assert.fail(e.getMessage());
-		}
-		actuator = new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_THIRD, OWNER_ADDRESS, URL), dbManager);
-		try {
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.fail("Owner stake amount < required stake amount 5000000 MCASH");
-		} catch (ContractValidateException e) {
-			Assert.assertEquals("Owner stake amount < required stake amount 5000000 MCASH", e.getMessage());
-		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -275,39 +277,6 @@ public class WitnessCreateActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
-
-		// 1 byte url is ok.
-		try {
-			WitnessCreateActuator actuator = new WitnessCreateActuator(
-					getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, "0"), dbManager);
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-			WitnessCapsule witnessCapsule =
-					dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST));
-			Assert.assertNotNull(witnessCapsule);
-			Assert.assertEquals(witnessCapsule.getInstance().getUrl(), "0");
-			Assert.assertTrue(true);
-		} catch (ContractValidateException | ContractExeException e) {
-			Assert.fail(e.getMessage());
-		}
-
-		dbManager.getWitnessStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST));
-		// 256 bytes url is ok.
-		try {
-			WitnessCreateActuator actuator = new WitnessCreateActuator(
-					getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, url256Bytes), dbManager);
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-			WitnessCapsule witnessCapsule =
-					dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST));
-			Assert.assertNotNull(witnessCapsule);
-			Assert.assertEquals(witnessCapsule.getInstance().getUrl(), url256Bytes);
-			Assert.assertTrue(true);
-		} catch (ContractValidateException | ContractExeException e) {
-			Assert.fail(e.getMessage());
-		}
 	}
 
 	/**
@@ -342,17 +311,19 @@ public class WitnessCreateActuatorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS_BALANCENOTSUFFIENT)),
 						AccountType.Normal,
 						50L);
-
 		dbManager.getAccountStore()
 				.put(balanceNotSufficientCapsule.getAddress().toByteArray(), balanceNotSufficientCapsule);
+
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS_BALANCENOTSUFFIENT, URL), dbManager);
+				new WitnessCreateActuator(getContract(
+						SUPERNODE_ADDRESS_SECOND,
+						OWNER_ADDRESS_BALANCENOTSUFFIENT,
+						URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("witnessAccount  has balance " + balanceNotSufficientCapsule.getBalance()
-					+ " < MIN_BALANCE 100");
+			Assert.fail("balance < AccountUpgradeCost");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("balance < AccountUpgradeCost", e.getMessage());
 		} catch (ContractExeException e) {

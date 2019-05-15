@@ -8,17 +8,21 @@ import org.tron.common.utils.StringUtil;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.AccountCapsule;
 import org.tron.core.capsule.TransactionResultCapsule;
+import org.tron.core.capsule.VoteChangeCapsule;
 import org.tron.core.capsule.WitnessCapsule;
+import org.tron.core.capsule.utils.StakeUtil;
 import org.tron.core.capsule.utils.TransactionUtil;
 import org.tron.core.config.Parameter;
+import org.tron.core.db.AccountStore;
 import org.tron.core.db.Manager;
+import org.tron.core.db.VoteChangeStore;
 import org.tron.core.exception.BalanceInsufficientException;
 import org.tron.core.exception.ContractExeException;
 import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract.WitnessCreateContract;
 import org.tron.protos.Protocol.Transaction.Result.code;
 
-import java.util.List;
+import java.util.Objects;
 
 @Slf4j(topic = "actuator")
 public class WitnessCreateActuator extends AbstractActuator {
@@ -34,6 +38,7 @@ public class WitnessCreateActuator extends AbstractActuator {
 			final WitnessCreateContract witnessCreateContract = this.contract
 					.unpack(WitnessCreateContract.class);
 			this.createWitness(witnessCreateContract);
+			this.updateVote(witnessCreateContract);
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (InvalidProtocolBufferException | BalanceInsufficientException e) {
 			logger.debug(e.getMessage(), e);
@@ -43,7 +48,6 @@ public class WitnessCreateActuator extends AbstractActuator {
 		return true;
 	}
 
-	// TODO: nghiand check stake amount, add owner address
 	@Override
 	public boolean validate() throws ContractValidateException {
 		if (this.contract == null) {
@@ -96,23 +100,19 @@ public class WitnessCreateActuator extends AbstractActuator {
 					+ " has existed");
 		}
 
+		if (ownerAccountCapsule.hasStakeSupernode()) {
+			throw new ContractValidateException("Account " + StringUtil.createReadableString(ownerAddress)
+					+ " owns other supernode");
+		}
+
 		if (ownerAccountCapsule.getBalance() < dbManager.getDynamicPropertiesStore().getAccountUpgradeCost()) {
-			logger.info("" + ownerAccountCapsule.getBalance() + " " + dbManager.getDynamicPropertiesStore().getAccountUpgradeCost());
 			throw new ContractValidateException("balance < AccountUpgradeCost");
 		}
 
-		int witnessCount = 0;
-		List<WitnessCapsule> witnesses = dbManager.getWitnessStore().getAllWitnesses();
-		for (WitnessCapsule witness : witnesses) {
-			if (witness.getOwnerAddress().equals(contract.getOwnerAddress())) {
-				witnessCount++;
-			}
-		}
-
-		if (ownerAccountCapsule.getStakeAmount() < Parameter.NodeConstant.MASTER_NODE_STAKE_AMOUNT * (witnessCount + 1)) {
-			throw new ContractValidateException("Owner stake amount < required stake amount "
-					+ Parameter.NodeConstant.MASTER_NODE_STAKE_AMOUNT / Parameter.ChainConstant.TEN_POW_DECIMALS
-					+ " MCASH");
+		if (ownerAccountCapsule.getNormalStakeAmount() < Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT) {
+			throw new ContractValidateException(String.format("Owner stake amount %d < required stake amount %d",
+					ownerAccountCapsule.getNormalStakeAmount() / Parameter.ChainConstant.TEN_POW_DECIMALS,
+					Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT / Parameter.ChainConstant.TEN_POW_DECIMALS));
 		}
 
 		return true;
@@ -128,9 +128,9 @@ public class WitnessCreateActuator extends AbstractActuator {
 		return dbManager.getDynamicPropertiesStore().getAccountUpgradeCost();
 	}
 
+	// Create Witness by witnessCreateContract
 	private void createWitness(final WitnessCreateContract witnessCreateContract)
 			throws BalanceInsufficientException {
-		//Create Witness by witnessCreateContract
 		final WitnessCapsule witnessCapsule = new WitnessCapsule(
 				witnessCreateContract.getSupernodeAddress(),
 				witnessCreateContract.getOwnerAddress(),
@@ -141,18 +141,80 @@ public class WitnessCreateActuator extends AbstractActuator {
 				StringUtil.createReadableString(witnessCapsule.getAddress()),
 				StringUtil.createReadableString(witnessCapsule.getOwnerAddress()));
 		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
-		AccountCapsule accountCapsule = this.dbManager.getAccountStore()
+		AccountCapsule witnessAccountCapsule = this.dbManager.getAccountStore()
 				.get(witnessCapsule.createDbKey());
-		accountCapsule.setIsWitness(true);
+		witnessAccountCapsule.setIsWitness(true);
 		if (dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1) {
-			accountCapsule.setDefaultWitnessPermission(dbManager);
+			witnessAccountCapsule.setDefaultWitnessPermission(dbManager);
 		}
-		this.dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
-		long cost = dbManager.getDynamicPropertiesStore().getAccountUpgradeCost();
-		dbManager.adjustBalance(witnessCreateContract.getOwnerAddress().toByteArray(), -cost);
+		this.dbManager.getAccountStore().put(witnessAccountCapsule.createDbKey(), witnessAccountCapsule);
 
+		AccountCapsule ownerAccountCapsule = this.dbManager.getAccountStore()
+				.get(witnessCreateContract.getOwnerAddress().toByteArray());
+
+		long newStake = ownerAccountCapsule.getNormalStakeAmount() - Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT;
+		long now = dbManager.getHeadBlockTimeStamp();
+		long duration = Parameter.ChainConstant.STAKE_TIME_IN_DAY * Parameter.TimeConstant.MS_PER_DAY;
+
+		ownerAccountCapsule.setStake(newStake, now + duration);
+		ownerAccountCapsule.setStakeSupernode(Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT);
+
+		this.dbManager.getAccountStore().put(ownerAccountCapsule.createDbKey(), ownerAccountCapsule);
+		long cost = dbManager.getDynamicPropertiesStore().getAccountUpgradeCost();
+
+		dbManager.adjustBalance(witnessCreateContract.getOwnerAddress().toByteArray(), -cost);
 		dbManager.adjustBalance(this.dbManager.getAccountStore().getBlackhole().createDbKey(), +cost);
 
 		dbManager.getDynamicPropertiesStore().addTotalCreateWitnessCost(cost);
+	}
+
+	// clear old vote & vote for own supernode
+	private void updateVote(final WitnessCreateContract witnessCreateContract) {
+		byte[] ownerAddress = witnessCreateContract.getOwnerAddress().toByteArray();
+
+		VoteChangeCapsule voteChangeCapsule;
+		VoteChangeStore voteChangeStore = dbManager.getVoteChangeStore();
+		AccountStore accountStore = dbManager.getAccountStore();
+
+		AccountCapsule accountCapsule = (Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
+				: getDeposit().getAccount(ownerAddress);
+
+		if (!Objects.isNull(getDeposit())) {
+			VoteChangeCapsule vCapsule = getDeposit().getVoteChangeCapsule(ownerAddress);
+			if (Objects.isNull(vCapsule)) {
+				voteChangeCapsule = new VoteChangeCapsule(witnessCreateContract.getOwnerAddress(),
+						accountCapsule.getVote());
+			} else {
+				voteChangeCapsule = vCapsule;
+			}
+		} else if (!voteChangeStore.has(ownerAddress)) {
+			voteChangeCapsule = new VoteChangeCapsule(witnessCreateContract.getOwnerAddress(),
+					accountCapsule.getVote());
+		} else {
+			voteChangeCapsule = voteChangeStore.get(ownerAddress);
+		}
+
+		accountCapsule.clearVote();
+		voteChangeCapsule.clearNewVote();
+
+		ByteString supernodeAddress = witnessCreateContract.getSupernodeAddress();
+		long voteCount = StakeUtil.getVotingPowerFromStakeAmount(accountCapsule.getTotalStakeAmount());
+
+		logger.info("address: {}, supernode: {}, voteCount: {}",
+				StringUtil.createReadableString(ownerAddress),
+				StringUtil.createReadableString(supernodeAddress),
+				voteCount);
+
+		voteChangeCapsule.setNewVote(supernodeAddress, voteCount);
+		accountCapsule.setVote(supernodeAddress, voteCount);
+
+		if (Objects.isNull(deposit)) {
+			accountStore.put(accountCapsule.createDbKey(), accountCapsule);
+			voteChangeStore.put(ownerAddress, voteChangeCapsule);
+		} else {
+			// cache
+			deposit.putAccountValue(accountCapsule.createDbKey(), accountCapsule);
+			deposit.putVoteChangeValue(ownerAddress, voteChangeCapsule);
+		}
 	}
 }

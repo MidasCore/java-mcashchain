@@ -1282,7 +1282,7 @@ public class Manager {
 			TransactionCapsule trx;
 			if (iterator.hasNext()) {
 				fromPending = true;
-				trx = (TransactionCapsule) iterator.next();
+				trx = iterator.next();
 			} else {
 				trx = repushTransactions.poll();
 			}

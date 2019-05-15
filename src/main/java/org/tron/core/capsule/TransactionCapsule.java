@@ -320,6 +320,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 				case UnstakeContract:
 					owner = contractParameter.unpack(Contract.UnstakeContract.class).getOwnerAddress();
 					break;
+				case WitnessResignContract:
+					owner = contractParameter.unpack(Contract.WitnessResignContract.class).getOwnerAddress();
 				// todo add other contract
 				default:
 					return null;

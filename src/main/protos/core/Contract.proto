@@ -90,6 +90,11 @@ message WitnessCreateContract {
     bytes url = 3;
 }
 
+message WitnessResignContract {
+    bytes owner_address = 1;
+    bytes supernode_address = 2;
+}
+
 message WitnessUpdateContract {
     bytes owner_address = 1;
     bytes update_url = 12;

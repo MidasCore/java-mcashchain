@@ -45,7 +45,7 @@ public class StakeActuator extends AbstractActuator {
 				.get(stakeContract.getOwnerAddress().toByteArray());
 
 		long now = dbManager.getHeadBlockTimeStamp();
-		long duration = stakeContract.getStakeDuration() * 86_400_000;
+		long duration = stakeContract.getStakeDuration() * Parameter.TimeConstant.MS_PER_DAY;
 
 		long newBalance = accountCapsule.getBalance() - stakeContract.getStakeAmount();
 
@@ -53,7 +53,7 @@ public class StakeActuator extends AbstractActuator {
 		long expireTime = now + duration;
 		byte[] ownerAddress = stakeContract.getOwnerAddress().toByteArray();
 
-		long newStakeAmount = stakeAmount + accountCapsule.getStakeAmount();
+		long newStakeAmount = stakeAmount + accountCapsule.getNormalStakeAmount();
 		accountCapsule.setStake(newStakeAmount, expireTime);
 //		TODO: set total stake amount
 //		dbManager.getDynamicPropertiesStore()
@@ -110,10 +110,6 @@ public class StakeActuator extends AbstractActuator {
 			throw new ContractValidateException("Stake amount must be more than 1 MCASH");
 		}
 
-		int stakesCount = accountCapsule.getStakesCount();
-		if (!(stakesCount == 0 || stakesCount == 1)) {
-			throw new ContractValidateException("stakesCount must be 0 or 1");
-		}
 		if (stakeAmount > accountCapsule.getBalance()) {
 			throw new ContractValidateException("Stake amount must be less than accountBalance");
 		}
@@ -149,7 +145,7 @@ public class StakeActuator extends AbstractActuator {
 			return;
 		}
 
-		long stakeAmount = accountCapsule.getStakeAmount();
+		long stakeAmount = accountCapsule.getTotalStakeAmount();
 		if (stakeAmount <= 0) {
 			return;
 		}
@@ -161,7 +157,7 @@ public class StakeActuator extends AbstractActuator {
 			StakeChangeCapsule sCapsule = getDeposit().getStakeChangeCapsule(address);
 			if (Objects.isNull(sCapsule)) {
 				stakeChangeCapsule = new StakeChangeCapsule(ByteString.copyFrom(address),
-						accountCapsule.getStakeAmount());
+						accountCapsule.getNormalStakeAmount());
 			} else {
 				stakeChangeCapsule = sCapsule;
 			}

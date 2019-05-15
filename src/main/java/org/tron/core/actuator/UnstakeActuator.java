@@ -1,6 +1,5 @@
 package org.tron.core.actuator;
 
-import com.google.common.collect.Lists;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -16,9 +15,6 @@ import org.tron.core.exception.ContractValidateException;
 import org.tron.protos.Contract;
 import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Transaction.Result.code;
-
-import java.util.Iterator;
-import java.util.List;
 
 @Slf4j(topic = "actuator")
 public class UnstakeActuator extends AbstractActuator {
@@ -45,42 +41,35 @@ public class UnstakeActuator extends AbstractActuator {
 
 		long unstakeAmount = 0L;
 
-
-		List<Protocol.Stake> stakesList = Lists.newArrayList();
-		stakesList.addAll(accountCapsule.getStakeList());
-
-		Iterator<Protocol.Stake> iterator = stakesList.iterator();
 		long now = dbManager.getHeadBlockTimeStamp();
-		while (iterator.hasNext()) {
-			Protocol.Stake next = iterator.next();
-			if (next.getExpireTime() <= now) {
-				unstakeAmount += next.getStakeAmount();
-				iterator.remove();
+		Protocol.Stake stake = accountCapsule.getStake();
+		if (stake.getExpireTime() <= now) {
+			unstakeAmount += stake.getStakeAmount();
+		}
+
+		if (unstakeAmount > 0) {
+			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
+					.setBalance(oldBalance + unstakeAmount)
+					.clearStake().build());
+//			dbManager.getDynamicPropertiesStore()
+//					.addTotalNetWeight(-unstakeAmount / 1_000_000L);
+
+			VoteChangeCapsule voteChangeCapsule;
+			if (!dbManager.getVoteChangeStore().has(ownerAddress)) {
+				voteChangeCapsule = new VoteChangeCapsule(unstakeContract.getOwnerAddress(),
+						accountCapsule.getVote());
+			} else {
+				voteChangeCapsule = dbManager.getVoteChangeStore().get(ownerAddress);
 			}
+			accountCapsule.clearVote();
+			voteChangeCapsule.clearNewVote();
+
+			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
+
+			dbManager.getVoteChangeStore().put(ownerAddress, voteChangeCapsule);
+
+			this.recalculateStake(ownerAddress);
 		}
-
-		accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-				.setBalance(oldBalance + unstakeAmount)
-				.clearStakes().addAllStakes(stakesList).build());
-
-//		dbManager.getDynamicPropertiesStore()
-//				.addTotalNetWeight(-unstakeAmount / 1_000_000L);
-
-		VoteChangeCapsule voteChangeCapsule;
-		if (!dbManager.getVoteChangeStore().has(ownerAddress)) {
-			voteChangeCapsule = new VoteChangeCapsule(unstakeContract.getOwnerAddress(),
-					accountCapsule.getVote());
-		} else {
-			voteChangeCapsule = dbManager.getVoteChangeStore().get(ownerAddress);
-		}
-		accountCapsule.clearVote();
-		voteChangeCapsule.clearNewVote();
-
-		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
-
-		dbManager.getVoteChangeStore().put(ownerAddress, voteChangeCapsule);
-
-		this.recalculateStake(ownerAddress);
 
 		ret.setUnstakeAmount(unstakeAmount);
 		ret.setStatus(fee, code.SUCCESS);
@@ -98,7 +87,7 @@ public class UnstakeActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(Contract.UnstakeContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected Contract.UnstakeContract, actual " + contract.getClass());
+					"Contract type error, expected UnstakeContract, actual " + contract.getClass());
 		}
 		final Contract.UnstakeContract unstakeContract;
 		try {
@@ -119,13 +108,11 @@ public class UnstakeActuator extends AbstractActuator {
 					"Account " + readableOwnerAddress + " does not exist");
 		}
 		long now = dbManager.getHeadBlockTimeStamp();
-		if (accountCapsule.getStakeAmount() <= 0) {
+		if (accountCapsule.getNormalStakeAmount() <= 0) {
 			throw new ContractValidateException("No stake amount");
 		}
 
-		long allowedUnstakeCount = accountCapsule.getStakeList().stream()
-				.filter(stake -> stake.getExpireTime() <= now).count();
-		if (allowedUnstakeCount <= 0) {
+		if (accountCapsule.getStake().getExpireTime() > now) {
 			throw new ContractValidateException("It's not time to unstake");
 		}
 
@@ -151,7 +138,7 @@ public class UnstakeActuator extends AbstractActuator {
 			return;
 		}
 
-		long stakeAmount = accountCapsule.getStakeAmount();
+		long stakeAmount = accountCapsule.getNormalStakeAmount();
 
 		StakeAccountCapsule stakeAccountCapsule = stakeAccountStore.get(address);
 		if (stakeAccountCapsule == null) {

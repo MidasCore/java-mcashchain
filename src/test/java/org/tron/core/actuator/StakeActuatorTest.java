@@ -118,7 +118,7 @@ public class StakeActuatorTest {
 			long expectedBalanceAfterStaking = initBalance - stakeAmount - ChainConstant.TRANSFER_FEE;
 
 			Assert.assertEquals(owner.getBalance(), expectedBalanceAfterStaking);
-			Assert.assertEquals(owner.getStakeAmount(), stakeAmount);
+			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount);
 
 			List<StakeAccountCapsule> stakeAccounts = dbManager.getStakeAccountStore().getAllStakeAccounts();
 			for (StakeAccountCapsule sac : stakeAccounts) {
@@ -173,7 +173,7 @@ public class StakeActuatorTest {
 			long expectedBalanceAfterStaking = initBalance - stakeAmount - ChainConstant.TRANSFER_FEE;
 
 			Assert.assertEquals(owner.getBalance(), expectedBalanceAfterStaking);
-			Assert.assertEquals(owner.getStakeAmount(), stakeAmount);
+			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount);
 
 			Assert.assertEquals(beforeStakeSize,
 					dbManager.getStakeAccountStore().size());
@@ -197,7 +197,7 @@ public class StakeActuatorTest {
 			expectedBalanceAfterStaking = initBalance - stakeAmount - secondStakeAmount
 					- 2 * ChainConstant.TRANSFER_FEE;
 			Assert.assertEquals(expectedBalanceAfterStaking, owner.getBalance());
-			Assert.assertEquals(owner.getStakeAmount(), stakeAmount + secondStakeAmount);
+			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount + secondStakeAmount);
 			stakeAccountController.updateStakeAccount();
 			Assert.assertEquals(beforeStakeSize + 1,
 					dbManager.getStakeAccountStore().size());
@@ -240,7 +240,7 @@ public class StakeActuatorTest {
 			long expectedBalanceAfterStaking = initBalance - stakeAmount - ChainConstant.TRANSFER_FEE;
 
 			Assert.assertEquals(owner.getBalance(), expectedBalanceAfterStaking);
-			Assert.assertEquals(owner.getStakeAmount(), stakeAmount);
+			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount);
 
 			Assert.assertEquals(beforeStakeSize, dbManager.getStakeAccountStore().size());
 

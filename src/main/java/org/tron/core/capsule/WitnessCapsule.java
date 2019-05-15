@@ -42,7 +42,10 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 		this.witness = witnessBuilder
 				.setAddress(address)
 				.setOwnerAddress(ownerAddress)
-				.setVoteCount(voteCount).setUrl(url).build();
+				.setVoteCount(voteCount)
+				.setUrl(url)
+				.setStatus(Witness.Status.ACTIVE)
+				.build();
 	}
 
 	public WitnessCapsule(final byte[] data) {
@@ -146,5 +149,13 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 
 	public void setOwnerAddress(ByteString ownerAddress) {
 		this.witness = this.witness.toBuilder().setOwnerAddress(ownerAddress).build();
+	}
+
+	public Witness.Status getStatus() {
+		return this.witness.getStatus();
+	}
+
+	public void setStatus(Witness.Status status) {
+		this.witness = this.witness.toBuilder().setStatus(status).build();
 	}
 }

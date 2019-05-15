@@ -45,7 +45,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 				.get(freezeBalanceContract.getOwnerAddress().toByteArray());
 
 		long now = dbManager.getHeadBlockTimeStamp();
-		long duration = freezeBalanceContract.getFrozenDuration() * 86_400_000;
+		long duration = freezeBalanceContract.getFrozenDuration() * Parameter.TimeConstant.MS_PER_DAY;
 
 		long newBalance = accountCapsule.getBalance() - freezeBalanceContract.getFrozenBalance();
 

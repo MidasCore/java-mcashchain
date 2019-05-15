@@ -438,7 +438,7 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public long getVotingPower() {
-		long stakeAmount = getStakeAmount();
+		long stakeAmount = getTotalStakeAmount();
 		long votingPower = 0;
 
 		for (NodeTier tier : NODE_TIERS) {
@@ -697,17 +697,18 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		return frozenSupplyBalance[0];
 	}
 
-	public List<Protocol.Stake> getStakeList() {
-		return getInstance().getStakesList();
+	public Protocol.Stake getStake() {
+		return getInstance().getStake();
 	}
 
-	public long getStakeAmount() {
-		List<Protocol.Stake> stakes = getStakeList();
-		long stakeAmount = 0;
-		for (Protocol.Stake stake : stakes) {
-			stakeAmount = Long.sum(stakeAmount, stake.getStakeAmount());
-		}
-		return stakeAmount;
+	public long getNormalStakeAmount() {
+		if (this.account.hasStake())
+			return this.account.getStake().getStakeAmount();
+		return 0;
+	}
+
+	public long getTotalStakeAmount() {
+		return getNormalStakeAmount() + (hasStakeSupernode() ? getSupernodeStake().getStakeAmount() : 0);
 	}
 
 	public void setStake(long stakeAmount, long expireTime) {
@@ -715,18 +716,37 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 				.setStakeAmount(stakeAmount)
 				.setExpireTime(expireTime)
 				.build();
+		this.account = this.account.toBuilder().setStake(newStake).build();
+	}
 
-		long stakeCount = getStakesCount();
-		if (stakeCount == 0) {
-			setInstance(getInstance().toBuilder()
-					.addStakes(newStake)
-					.build());
+	public boolean hasStakeSupernode() {
+		return this.account.hasStakeSn();
+	}
+
+	public Protocol.Stake getSupernodeStake() {
+		if (this.account.hasStakeSn()) {
+			return this.account.getStakeSn();
 		} else {
-			setInstance(getInstance().toBuilder()
-					.setStakes(0, newStake)
-					.build()
-			);
+			return null;
 		}
+	}
+
+	public long getSupernodeStakeAmount() {
+		if (hasStakeSupernode())
+			return getSupernodeStake().getStakeAmount();
+		return 0;
+	}
+
+	public void setStakeSupernode(long stakeAmount) {
+		Protocol.Stake newStake = Protocol.Stake.newBuilder()
+				.setStakeAmount(stakeAmount)
+				.setExpireTime(-1)
+				.build();
+		this.account = this.account.toBuilder().setStakeSn(newStake).build();
+	}
+
+	public void clearStakeSupernode() {
+		this.account = this.account.toBuilder().clearStakeSn().build();
 	}
 
 	public ByteString getAssetIssuedName() {
@@ -878,10 +898,6 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	public void setFreeNetUsage(long freeNetUsage) {
 		this.account = this.account.toBuilder()
 				.setFreeNetUsage(freeNetUsage).build();
-	}
-
-	public int getStakesCount() {
-		return getInstance().getStakesCount();
 	}
 
 	public boolean addAllFreeAssetNetUsageV2(Map<String, Long> map) {

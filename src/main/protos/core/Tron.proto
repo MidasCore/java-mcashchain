@@ -150,7 +150,8 @@ message Account {
     repeated Permission active_permission = 33;
 
     // stakes
-    repeated Stake stakes = 60;
+    Stake stake = 60;
+    Stake stake_sn = 61;
 }
 
 
@@ -191,9 +192,9 @@ message Permission {
 // Witness
 message Witness {
     enum Status {
-        Active = 0;
-        Slashed = 1;
-        Resigned = 2;
+        ACTIVE = 0;
+        SLASHED = 1;
+        RESIGNED = 2;
     }
     bytes address = 1;
     int64 voteCount = 2;
@@ -302,6 +303,7 @@ message Transaction {
             AccountPermissionUpdateContract = 46;
             StakeContract = 47;
             UnstakeContract = 48;
+            WitnessResignContract = 49;
         }
         ContractType type = 1;
         google.protobuf.Any parameter = 2;

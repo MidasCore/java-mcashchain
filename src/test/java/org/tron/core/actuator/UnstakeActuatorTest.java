@@ -102,7 +102,7 @@ public class UnstakeActuatorTest {
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setStake(stakeAmount, now);
-		Assert.assertEquals(accountCapsule.getStakeAmount(), stakeAmount);
+		Assert.assertEquals(accountCapsule.getNormalStakeAmount(), stakeAmount);
 		Assert.assertEquals(accountCapsule.getVotingPower(), StakeUtil.getVotingPowerFromStakeAmount(stakeAmount));
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 

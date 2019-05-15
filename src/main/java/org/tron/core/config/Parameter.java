@@ -77,6 +77,7 @@ public interface Parameter {
 		long WINDOW_SIZE_MS = 24 * 3600 * 1000L;
 
 		long STAKE_TIME_IN_DAY = 3;
+		long RESIGN_STAKE_TIME_IN_DAY = 30;
 
 		long MAINTENANCE_SKIP_SLOTS = 2;
 		int SINGLE_REPEAT = 1;
@@ -107,7 +108,7 @@ public interface Parameter {
 				new NodeTier("Warrior Node", 10000L * ChainConstant.TEN_POW_DECIMALS, 25, 5),
 				new NodeTier("Apprentice Node", 5000L * ChainConstant.TEN_POW_DECIMALS, 10, 0)
 		));
-		long MASTER_NODE_STAKE_AMOUNT = 5000000L * ChainConstant.TEN_POW_DECIMALS;
+		long SUPER_NODE_STAKE_AMOUNT = 5000000L * ChainConstant.TEN_POW_DECIMALS;
 	}
 
 	interface NetConstants {
