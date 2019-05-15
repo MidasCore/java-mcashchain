@@ -151,7 +151,7 @@ message Account {
 
     // stakes
     Stake stake = 60;
-    Stake stake_sn = 61;
+    Stake supernode_stake = 61;
 }
 
 

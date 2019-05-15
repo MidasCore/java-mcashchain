@@ -72,11 +72,10 @@ public class StakeAccountController {
 		long totalPay = manager.getDynamicPropertiesStore().getStakingRewardPerEpoch();
 		for (Map.Entry<ByteString, Long> entry : stakes.entrySet()) {
 			long pay = (long) (entry.getValue() * ((double) totalPay / stakeSum));
-			AccountCapsule accountCapsule = manager.getAccountStore().get(entry.getKey().toByteArray());
 			String readableAddress = StringUtil.createReadableString(entry.getKey());
 			logger.info("Paying {} MCASH to {}", pay, readableAddress);
 			try {
-				manager.adjustBalance(accountCapsule, pay);
+				manager.adjustAllowance(entry.getKey().toByteArray(), pay);
 			} catch (BalanceInsufficientException e) {
 				logger.error("{}", e.toString());
 			}

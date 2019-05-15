@@ -101,9 +101,9 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 		}
 
 		String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
-		if (!dbManager.getWitnessStore().has(ownerAddress)) {
+		if (!dbManager.getStakeAccountStore().has(ownerAddress)) {
 			throw new ContractValidateException(
-					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " is not a witnessAccount");
+					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " is not a stakeAccount");
 		}
 
 		boolean isGP = Args.getInstance().getGenesisBlock().getWitnesses().stream().anyMatch(witness ->

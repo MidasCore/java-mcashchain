@@ -720,12 +720,12 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public boolean hasStakeSupernode() {
-		return this.account.hasStakeSn();
+		return this.account.hasSupernodeStake();
 	}
 
 	public Protocol.Stake getSupernodeStake() {
-		if (this.account.hasStakeSn()) {
-			return this.account.getStakeSn();
+		if (this.account.hasSupernodeStake()) {
+			return this.account.getSupernodeStake();
 		} else {
 			return null;
 		}
@@ -742,11 +742,11 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 				.setStakeAmount(stakeAmount)
 				.setExpireTime(-1)
 				.build();
-		this.account = this.account.toBuilder().setStakeSn(newStake).build();
+		this.account = this.account.toBuilder().setSupernodeStake(newStake).build();
 	}
 
 	public void clearStakeSupernode() {
-		this.account = this.account.toBuilder().clearStakeSn().build();
+		this.account = this.account.toBuilder().clearSupernodeStake().build();
 	}
 
 	public ByteString getAssetIssuedName() {
