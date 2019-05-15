@@ -179,7 +179,9 @@ public class WitnessUpdateActuatorTest {
 		}
 
 		//256 bytes
-		String url256Bytes = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+		String url256Bytes = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" +
+				"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" +
+				"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 		//Url length can not greater than 256
 		try {
 			WitnessUpdateActuator actuator = new WitnessUpdateActuator(

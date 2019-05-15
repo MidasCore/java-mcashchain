@@ -161,6 +161,8 @@ public class FullNodeHttpApiService implements Service {
 	private StakeServlet stakeServlet;
 	@Autowired
 	private UnstakeServlet unstakeServlet;
+	@Autowired
+	private ResignWitnessServlet resignWitnessServlet;
 
 	@Override
 	public void init() {
@@ -189,6 +191,7 @@ public class FullNodeHttpApiService implements Service {
 			context.addServlet(new ServletHolder(updateWitnessServlet), "/updatewitness");
 			context.addServlet(new ServletHolder(createAccountServlet), "/createaccount");
 			context.addServlet(new ServletHolder(createWitnessServlet), "/createwitness");
+			context.addServlet(new ServletHolder(resignWitnessServlet), "/resignwitness");
 			context.addServlet(new ServletHolder(transferAssetServlet), "/transferasset");
 			context.addServlet(new ServletHolder(participateAssetIssueServlet), "/participateassetissue");
 			context.addServlet(new ServletHolder(freezeBalanceServlet), "/freezebalance");
