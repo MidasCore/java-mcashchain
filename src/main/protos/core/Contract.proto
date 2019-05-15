@@ -97,6 +97,7 @@ message WitnessResignContract {
 
 message WitnessUpdateContract {
     bytes owner_address = 1;
+    bytes supernode_address = 2;
     bytes update_url = 12;
 }
 

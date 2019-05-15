@@ -22,8 +22,6 @@ import org.tron.protos.Protocol.Transaction.Result.code;
 
 import java.io.File;
 
-import static junit.framework.TestCase.fail;
-
 @Slf4j
 public class WitnessUpdateActuatorTest {
 
@@ -103,18 +101,20 @@ public class WitnessUpdateActuatorTest {
 		dbManager.getAccountStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOTEXIST));
 	}
 
-	private Any getContract(String address, String url) {
+	private Any getContract(String address, String supernodeAddress, String url) {
 		return Any.pack(
 				Contract.WitnessUpdateContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+						.setSupernodeAddress(ByteString.copyFrom(ByteArray.fromHexString(supernodeAddress)))
 						.setUpdateUrl(ByteString.copyFrom(ByteArray.fromString(url)))
 						.build());
 	}
 
-	private Any getContract(String address, ByteString url) {
+	private Any getContract(String address, String supernodeAddress, ByteString url) {
 		return Any.pack(
 				Contract.WitnessUpdateContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+						.setSupernodeAddress(ByteString.copyFrom(ByteArray.fromHexString(supernodeAddress)))
 						.setUpdateUrl(url)
 						.build());
 	}
@@ -124,7 +124,7 @@ public class WitnessUpdateActuatorTest {
 	 */
 	@Test
 	public void rightUpdateWitness() {
-		WitnessUpdateActuator actuator = new WitnessUpdateActuator(getContract(SUPERNODE_ADDRESS, NewURL),
+		WitnessUpdateActuator actuator = new WitnessUpdateActuator(getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS, NewURL),
 				dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -135,10 +135,8 @@ public class WitnessUpdateActuatorTest {
 					.get(ByteArray.fromHexString(SUPERNODE_ADDRESS));
 			Assert.assertNotNull(witnessCapsule);
 			Assert.assertEquals(witnessCapsule.getUrl(), NewURL);
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -148,17 +146,16 @@ public class WitnessUpdateActuatorTest {
 	@Test
 	public void InvalidAddress() {
 		WitnessUpdateActuator actuator = new WitnessUpdateActuator(
-				getContract(OWNER_ADDRESS_INVALID, NewURL), dbManager);
+				getContract(OWNER_ADDRESS_INVALID, SUPERNODE_ADDRESS, NewURL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Invalid address");
+			Assert.fail("Invalid ownerAddress");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertEquals("Invalid address", e.getMessage());
+			Assert.assertEquals("Invalid ownerAddress", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -171,15 +168,14 @@ public class WitnessUpdateActuatorTest {
 		//Url cannot empty
 		try {
 			WitnessUpdateActuator actuator = new WitnessUpdateActuator(
-					getContract(SUPERNODE_ADDRESS, ByteString.EMPTY), dbManager);
+					getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS, ByteString.EMPTY), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Invalid url");
+			Assert.fail("Invalid url");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Invalid url", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 
 		//256 bytes
@@ -187,20 +183,20 @@ public class WitnessUpdateActuatorTest {
 		//Url length can not greater than 256
 		try {
 			WitnessUpdateActuator actuator = new WitnessUpdateActuator(
-					getContract(SUPERNODE_ADDRESS, ByteString.copyFromUtf8(url256Bytes + "0")), dbManager);
+					getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS, ByteString.copyFromUtf8(url256Bytes + "0")), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Invalid url");
+			Assert.fail("Invalid url");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Invalid url", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 
 		// 1 byte url is ok.
 		try {
-			WitnessUpdateActuator actuator = new WitnessUpdateActuator(getContract(SUPERNODE_ADDRESS, "0"),
+			WitnessUpdateActuator actuator = new WitnessUpdateActuator(
+					getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS, "0"),
 					dbManager);
 			actuator.validate();
 			actuator.execute(ret);
@@ -209,16 +205,14 @@ public class WitnessUpdateActuatorTest {
 					.get(ByteArray.fromHexString(SUPERNODE_ADDRESS));
 			Assert.assertNotNull(witnessCapsule);
 			Assert.assertEquals(witnessCapsule.getUrl(), "0");
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 
 		// 256 bytes url is ok.
 		try {
 			WitnessUpdateActuator actuator = new WitnessUpdateActuator(
-					getContract(SUPERNODE_ADDRESS, url256Bytes), dbManager);
+					getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS, url256Bytes), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
@@ -226,10 +220,8 @@ public class WitnessUpdateActuatorTest {
 					.get(ByteArray.fromHexString(SUPERNODE_ADDRESS));
 			Assert.assertNotNull(witnessCapsule);
 			Assert.assertEquals(witnessCapsule.getUrl(), url256Bytes);
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -240,17 +232,16 @@ public class WitnessUpdateActuatorTest {
 	@Test
 	public void notExistWitness() {
 		WitnessUpdateActuator actuator = new WitnessUpdateActuator(
-				getContract(SUPERNODE_ADDRESS_NOT_WITNESS, URL), dbManager);
+				getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS_NOT_WITNESS, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("witness [+OWNER_ADDRESS_NOACCOUNT+] not exists");
+			Assert.fail("Witness does not exist");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Witness does not exist", e.getMessage());
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -260,14 +251,14 @@ public class WitnessUpdateActuatorTest {
 	@Test
 	public void notExistAccount() {
 		WitnessUpdateActuator actuator = new WitnessUpdateActuator(
-				getContract(SUPERNODE_ADDRESS_NOTEXIST, URL), dbManager);
+				getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS_NOTEXIST, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("account does not exist");
+			Assert.fail("Witness does not exist");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Account does not exist", e.getMessage());
+			Assert.assertEquals("Witness does not exist", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

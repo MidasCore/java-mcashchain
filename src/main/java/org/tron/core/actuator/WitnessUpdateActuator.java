@@ -4,6 +4,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
+import org.tron.common.utils.StringUtil;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.TransactionResultCapsule;
 import org.tron.core.capsule.WitnessCapsule;
@@ -23,7 +24,7 @@ public class WitnessUpdateActuator extends AbstractActuator {
 
 	private void updateWitness(final WitnessUpdateContract contract) {
 		WitnessCapsule witnessCapsule = this.dbManager.getWitnessStore()
-				.get(contract.getOwnerAddress().toByteArray());
+				.get(contract.getSupernodeAddress().toByteArray());
 		witnessCapsule.setUrl(contract.getUpdateUrl().toStringUtf8());
 		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 	}
@@ -66,19 +67,29 @@ public class WitnessUpdateActuator extends AbstractActuator {
 
 		byte[] ownerAddress = contract.getOwnerAddress().toByteArray();
 		if (!Wallet.addressValid(ownerAddress)) {
-			throw new ContractValidateException("Invalid address");
+			throw new ContractValidateException("Invalid ownerAddress");
 		}
 
 		if (!this.dbManager.getAccountStore().has(ownerAddress)) {
-			throw new ContractValidateException("Account does not exist");
+			throw new ContractValidateException("Owner account does not exist");
 		}
 
 		if (!TransactionUtil.validUrl(contract.getUpdateUrl().toByteArray())) {
 			throw new ContractValidateException("Invalid url");
 		}
 
-		if (!this.dbManager.getWitnessStore().has(ownerAddress)) {
+		byte[] supernodeAddress = contract.getSupernodeAddress().toByteArray();
+		if (!Wallet.addressValid(supernodeAddress)) {
+			throw new ContractValidateException("Invalid supernodeAddress");
+		}
+
+		if (!this.dbManager.getWitnessStore().has(supernodeAddress)) {
 			throw new ContractValidateException("Witness does not exist");
+		}
+
+		WitnessCapsule witnessCapsule = this.dbManager.getWitnessStore().get(supernodeAddress);
+		if (!ByteString.copyFrom(ownerAddress).equals(witnessCapsule.getOwnerAddress())) {
+			throw new ContractValidateException("Account does not own supernode");
 		}
 
 		return true;
