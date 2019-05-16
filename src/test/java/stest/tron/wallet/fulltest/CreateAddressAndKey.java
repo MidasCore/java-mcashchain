@@ -9,10 +9,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.tron.common.crypto.ECKey;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.utils.Utils;
-import org.tron.core.Wallet;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.core.Wallet;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
 import java.io.*;

@@ -21,7 +21,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-import org.tron.common.utils.ByteArray;
+import io.midasprotocol.common.utils.ByteArray;
 
 import java.io.File;
 import java.io.FileInputStream;

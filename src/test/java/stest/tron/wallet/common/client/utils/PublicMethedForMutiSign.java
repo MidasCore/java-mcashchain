@@ -12,27 +12,27 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
-import org.tron.api.GrpcAPI;
-import org.tron.api.GrpcAPI.*;
-import org.tron.api.WalletGrpc;
-import org.tron.api.WalletSolidityGrpc;
-import org.tron.common.crypto.ECKey;
-import org.tron.common.crypto.ECKey.ECDSASignature;
-import org.tron.common.crypto.Hash;
-import org.tron.common.utils.Base58;
-import org.tron.common.utils.ByteArray;
-import org.tron.core.Wallet;
-import org.tron.core.exception.CancelException;
-import org.tron.protos.Contract;
-import org.tron.protos.Contract.CreateSmartContract;
-import org.tron.protos.Contract.CreateSmartContract.Builder;
-import org.tron.protos.Contract.UpdateEnergyLimitContract;
-import org.tron.protos.Contract.UpdateSettingContract;
-import org.tron.protos.Protocol;
-import org.tron.protos.Protocol.*;
-import org.tron.protos.Protocol.Transaction.Contract.ContractType;
-import org.tron.protos.Protocol.Transaction.Result;
-import org.tron.protos.Protocol.Transaction.raw;
+import io.midasprotocol.api.GrpcAPI;
+import io.midasprotocol.api.GrpcAPI.*;
+import io.midasprotocol.api.WalletGrpc;
+import io.midasprotocol.api.WalletSolidityGrpc;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
+import io.midasprotocol.common.crypto.Hash;
+import io.midasprotocol.common.utils.Base58;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.exception.CancelException;
+import io.midasprotocol.protos.Contract;
+import io.midasprotocol.protos.Contract.CreateSmartContract;
+import io.midasprotocol.protos.Contract.CreateSmartContract.Builder;
+import io.midasprotocol.protos.Contract.UpdateEnergyLimitContract;
+import io.midasprotocol.protos.Contract.UpdateSettingContract;
+import io.midasprotocol.protos.Protocol;
+import io.midasprotocol.protos.Protocol.*;
+import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import io.midasprotocol.protos.Protocol.Transaction.Result;
+import io.midasprotocol.protos.Protocol.Transaction.raw;
 import stest.tron.wallet.common.client.WalletClient;
 
 import java.math.BigInteger;
@@ -279,7 +279,7 @@ public class PublicMethedForMutiSign {
 
 		long currentTime = System.currentTimeMillis();//*1000000 + System.nanoTime()%1000000;
 		Transaction.Builder builder = transaction.toBuilder();
-		org.tron.protos.Protocol.Transaction.raw.Builder rowBuilder = transaction.getRawData()
+		io.midasprotocol.protos.Protocol.Transaction.raw.Builder rowBuilder = transaction.getRawData()
 				.toBuilder();
 		rowBuilder.setTimestamp(currentTime);
 		builder.setRawData(rowBuilder.build());

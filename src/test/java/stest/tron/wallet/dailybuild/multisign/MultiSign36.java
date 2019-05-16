@@ -9,18 +9,18 @@ import org.junit.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.tron.api.GrpcAPI.TransactionApprovedList;
-import org.tron.api.GrpcAPI.TransactionExtention;
-import org.tron.api.WalletGrpc;
-import org.tron.common.crypto.ECKey;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.utils.Utils;
-import org.tron.protos.Contract;
-import org.tron.protos.Protocol;
-import org.tron.protos.Protocol.Account;
-import org.tron.protos.Protocol.Permission;
-import org.tron.protos.Protocol.Transaction;
-import org.tron.protos.Protocol.Transaction.Contract.ContractType;
+import io.midasprotocol.api.GrpcAPI.TransactionApprovedList;
+import io.midasprotocol.api.GrpcAPI.TransactionExtention;
+import io.midasprotocol.api.WalletGrpc;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.protos.Contract;
+import io.midasprotocol.protos.Protocol;
+import io.midasprotocol.protos.Protocol.Account;
+import io.midasprotocol.protos.Protocol.Permission;
+import io.midasprotocol.protos.Protocol.Transaction;
+import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -700,8 +700,8 @@ public class MultiSign36 {
 				.getTransactionApprovedList(transaction1, blockingStubFull);
 
 		logger.info("transactionSignWeight:" + transactionApprovedList);
-		logger.info("Base58.encodeBase58(test001Address):" + Base58.encodeBase58(test002Address));
-		logger.info("Base58.encodeBase58(test001Address)1:" + Base58
+		logger.info("Base58.encodeBase58Check(test001Address):" + Base58.encodeBase58(test002Address));
+		logger.info("Base58.encodeBase58Check(test001Address)1:" + Base58
 				.encodeBase58(transactionApprovedList.getApprovedList(0).toByteArray()));
 		Assert.assertEquals(1, transactionApprovedList.getApprovedListCount());
 		Assert.assertEquals(Base58.encodeBase58(test002Address), Base58

@@ -8,13 +8,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.tron.api.GrpcAPI;
-import org.tron.api.WalletGrpc;
-import org.tron.common.crypto.ECKey;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.utils.Utils;
-import org.tron.core.Wallet;
-import org.tron.protos.Protocol.Transaction.Contract.ContractType;
+import io.midasprotocol.api.GrpcAPI;
+import io.midasprotocol.api.WalletGrpc;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 import stest.tron.wallet.common.client.utils.PublicMethedForMutiSign;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.tron.api.GrpcAPI.Return.response_code.SIGERROR;
+import static io.midasprotocol.api.GrpcAPI.Return.response_code.SIGERROR;
 
 @Slf4j
 public class MultiSign22 {

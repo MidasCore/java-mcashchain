@@ -17,11 +17,10 @@ syntax = "proto3";
 
 package protocol;
 
-option java_package = "org.tron.protos"; //Specify the name of the package that generated the Java file
+option java_package = "io.midasprotocol.protos"; //Specify the name of the package that generated the Java file
 option java_outer_classname = "Contract"; //Specify the class name of the generated Java file
-option go_package = "github.com/tronprotocol/grpc-gateway/core";
 
-import "core/Tron.proto";
+import "core/Object.proto";
 
 message AccountCreateContract {
     bytes owner_address = 1;
@@ -86,18 +85,18 @@ message UpdateEnergyLimitContract {
 
 message WitnessCreateContract {
     bytes owner_address = 1;
-    bytes supernode_address = 2;
+    bytes witness_address = 2;
     bytes url = 3;
 }
 
 message WitnessResignContract {
     bytes owner_address = 1;
-    bytes supernode_address = 2;
+    bytes witness_address = 2;
 }
 
 message WitnessUpdateContract {
     bytes owner_address = 1;
-    bytes supernode_address = 2;
+    bytes witness_address = 2;
     bytes update_url = 12;
 }
 

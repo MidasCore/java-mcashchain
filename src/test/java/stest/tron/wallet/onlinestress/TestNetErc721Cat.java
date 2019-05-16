@@ -8,15 +8,15 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.tron.api.GrpcAPI.AccountResourceMessage;
-import org.tron.api.WalletGrpc;
-import org.tron.common.crypto.ECKey;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.utils.Utils;
-import org.tron.core.Wallet;
-import org.tron.protos.Protocol.Account;
-import org.tron.protos.Protocol.SmartContract;
-import org.tron.protos.Protocol.TransactionInfo;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
+import io.midasprotocol.api.WalletGrpc;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.protos.Protocol.Account;
+import io.midasprotocol.protos.Protocol.SmartContract;
+import io.midasprotocol.protos.Protocol.TransactionInfo;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -359,7 +359,7 @@ public class TestNetErc721Cat {
 			infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 			//Assert.assertTrue(infoById.get().getResultValue() == 0);
       /*      String promoKitty = "\"" + times.toString() + "\",\""
-          +  Base58.encodeBase58(kittyCoreContractAddress) + "\"";
+          +  Base58.encodeBase58Check(kittyCoreContractAddress) + "\"";
       logger.info(promoKitty);
       txid = PublicMethed.triggerContract(kittyCoreContractAddress,
           "createPromoKitty(uint256,address)", promoKitty,false,

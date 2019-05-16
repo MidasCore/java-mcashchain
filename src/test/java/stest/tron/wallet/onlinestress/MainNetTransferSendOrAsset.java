@@ -7,9 +7,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.tron.api.WalletGrpc;
-import org.tron.core.Wallet;
-import org.tron.protos.Protocol.Account;
+import io.midasprotocol.api.WalletGrpc;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.protos.Protocol.Account;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 

@@ -8,11 +8,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.tron.api.GrpcAPI.EmptyMessage;
-import org.tron.api.GrpcAPI.ProposalList;
-import org.tron.api.WalletGrpc;
-import org.tron.api.WalletSolidityGrpc;
-import org.tron.core.Wallet;
+import io.midasprotocol.api.GrpcAPI.EmptyMessage;
+import io.midasprotocol.api.GrpcAPI.ProposalList;
+import io.midasprotocol.api.WalletGrpc;
+import io.midasprotocol.api.WalletSolidityGrpc;
+import io.midasprotocol.core.Wallet;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -108,8 +108,8 @@ public class WalletTestCommittee003 {
 		listProposals = Optional.ofNullable(proposalList);
 		logger.info(Integer.toString(listProposals.get().getProposals(0).getApprovalsCount()));
 		Assert.assertTrue(listProposals.get().getProposals(0).getApprovalsCount() == 1);
-		//logger.info(Base58.encodeBase58(witness002Address));
-		//logger.info(Base58.encodeBase58(listProposals.get().getProposals(0).
+		//logger.info(Base58.encodeBase58Check(witness002Address));
+		//logger.info(Base58.encodeBase58Check(listProposals.get().getProposals(0).
 		// getApprovalsList().get(0).toByteArray()));
 		Assert.assertTrue(Base58.encodeBase58(witness002Address).equals(Base58.encodeBase58(
 				listProposals.get().getProposals(0).getApprovalsList().get(0).toByteArray())));

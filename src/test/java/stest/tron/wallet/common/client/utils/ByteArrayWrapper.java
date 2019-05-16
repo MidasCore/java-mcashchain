@@ -18,7 +18,7 @@ package stest.tron.wallet.common.client.utils;
  */
 
 import org.spongycastle.util.encoders.Hex;
-import org.tron.common.utils.FastByteComparisons;
+import io.midasprotocol.common.utils.FastByteComparisons;
 
 import java.io.Serializable;
 import java.util.Arrays;
