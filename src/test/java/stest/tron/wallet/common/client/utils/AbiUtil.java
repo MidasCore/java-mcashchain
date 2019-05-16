@@ -2,8 +2,8 @@ package stest.tron.wallet.common.client.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.spongycastle.util.encoders.Hex;
-import org.tron.common.crypto.Hash;
-import org.tron.core.Wallet;
+import io.midasprotocol.common.crypto.Hash;
+import io.midasprotocol.core.Wallet;
 
 import java.io.IOException;
 import java.util.ArrayList;

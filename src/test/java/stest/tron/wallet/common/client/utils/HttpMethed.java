@@ -15,7 +15,7 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
-import org.tron.common.utils.ByteArray;
+import io.midasprotocol.common.utils.ByteArray;
 import stest.tron.wallet.common.client.Configuration;
 
 import java.nio.charset.Charset;

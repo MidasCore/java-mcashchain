@@ -8,21 +8,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
-import org.tron.api.GrpcAPI.*;
-import org.tron.common.crypto.ECKey;
-import org.tron.common.crypto.SymmEncoder;
-import org.tron.common.utils.ByteArray;
-import org.tron.common.utils.FileUtil;
-import org.tron.common.utils.Sha256Hash;
-import org.tron.common.utils.Utils;
-import org.tron.core.exception.CancelException;
-import org.tron.keystore.CipherException;
-import org.tron.protos.Contract;
-import org.tron.protos.Contract.AssetIssueContract;
-import org.tron.protos.Contract.FreezeBalanceContract;
-import org.tron.protos.Contract.UnfreezeBalanceContract;
-import org.tron.protos.Contract.WithdrawBalanceContract;
-import org.tron.protos.Protocol.*;
+import io.midasprotocol.api.GrpcAPI.*;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.crypto.SymmEncoder;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.FileUtil;
+import io.midasprotocol.common.utils.Sha256Hash;
+import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.core.exception.CancelException;
+import io.midasprotocol.keystore.CipherException;
+import io.midasprotocol.protos.Contract;
+import io.midasprotocol.protos.Contract.AssetIssueContract;
+import io.midasprotocol.protos.Contract.FreezeBalanceContract;
+import io.midasprotocol.protos.Contract.UnfreezeBalanceContract;
+import io.midasprotocol.protos.Contract.WithdrawBalanceContract;
+import io.midasprotocol.protos.Protocol.*;
 import stest.tron.wallet.common.client.Parameter.CommonConstant;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.TransactionUtils;
@@ -141,7 +141,7 @@ public class WalletClient {
 	 */
 
 	public static GrpcClient init() {
-		//Config config = org.tron.core.config.Configuration.getByPath("config.conf");
+		//Config config = io.midasprotocol.core.config.Configuration.getByPath("config.conf");
 		Config config = Configuration.getByPath("testng.conf");
 		dbPath = config.getString("CityDb.DbPath");
 		txtPath = System.getProperty("user.dir") + "/" + config.getString("CityDb.TxtPath");

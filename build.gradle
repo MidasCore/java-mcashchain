@@ -12,7 +12,7 @@ plugins {
     id "org.sonarqube" version "2.6"
 }
 
-group 'org.tron'
+group 'io.midasprotocol'
 version '1.0.0'
 
 apply plugin: 'java'
@@ -28,7 +28,7 @@ shadowJar.enabled = false
 
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-mainClassName = 'org.tron.program.FullNode'
+mainClassName = 'io.midasprotocol.program.FullNode'
 
 publishing {
     publications {
@@ -266,7 +266,7 @@ run {
 }
 
 shadowJar {
-    baseName = 'java-tron'
+    baseName = 'java-mcash'
     classifier = null
     version = null
 }
@@ -342,8 +342,8 @@ def binaryRelease(taskName, jarName, mainClass) {
 }
 
 artifacts {
-    archives(binaryRelease('buildSolidityNodeJar', 'SolidityNode', 'org.tron.program.SolidityNode'),
-            binaryRelease('buildFullNodeJar', 'FullNode', 'org.tron.program.FullNode'),
-            binaryRelease('buildKeystoreFactoryJar', 'KeystoreFactory', 'org.tron.program.KeystoreFactory'),
-            binaryRelease('buildDBConvertJar', 'DBConvert', 'org.tron.program.DBConvert'))
+    archives(binaryRelease('buildSolidityNodeJar', 'SolidityNode', 'io.midasprotocol.program.SolidityNode'),
+            binaryRelease('buildFullNodeJar', 'FullNode', 'io.midasprotocol.program.FullNode'),
+            binaryRelease('buildKeystoreFactoryJar', 'KeystoreFactory', 'io.midasprotocol.program.KeystoreFactory'),
+            binaryRelease('buildDBConvertJar', 'DBConvert', 'io.midasprotocol.program.DBConvert'))
 }

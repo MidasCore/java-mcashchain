@@ -22,8 +22,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.spongycastle.util.Arrays;
 import org.spongycastle.util.encoders.Hex;
-import org.tron.common.utils.ByteUtil;
-import org.tron.common.utils.FastByteComparisons;
+import io.midasprotocol.common.utils.ByteUtil;
+import io.midasprotocol.common.utils.FastByteComparisons;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
