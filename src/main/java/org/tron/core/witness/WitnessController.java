@@ -10,17 +10,13 @@ import org.joda.time.DateTime;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.StringUtil;
 import org.tron.common.utils.Time;
-import org.tron.core.capsule.AccountCapsule;
-import org.tron.core.capsule.BlockCapsule;
-import org.tron.core.capsule.VoteChangeCapsule;
-import org.tron.core.capsule.WitnessCapsule;
+import org.tron.core.capsule.*;
+import org.tron.core.config.Parameter;
 import org.tron.core.config.Parameter.ChainConstant;
 import org.tron.core.config.args.Args;
-import org.tron.core.db.AccountStore;
-import org.tron.core.db.Manager;
-import org.tron.core.db.VoteChangeStore;
-import org.tron.core.db.WitnessStore;
+import org.tron.core.db.*;
 import org.tron.core.exception.HeaderNotFound;
+import org.tron.protos.Protocol;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -95,8 +91,7 @@ public class WitnessController {
 		if (when < firstSlotTime) {
 			return 0;
 		}
-		logger
-				.debug("nextFirstSlotTime:[{}],when[{}]", new DateTime(firstSlotTime), new DateTime(when));
+		logger.debug("nextFirstSlotTime:[{}],when[{}]", new DateTime(firstSlotTime), new DateTime(when));
 		return (when - firstSlotTime) / ChainConstant.BLOCK_PRODUCED_INTERVAL + 1;
 	}
 
@@ -307,36 +302,46 @@ public class WitnessController {
 		WitnessStore witnessStore = manager.getWitnessStore();
 		VoteChangeStore voteChangeStore = manager.getVoteChangeStore();
 		AccountStore accountStore = manager.getAccountStore();
+		BannedSupernodeStore bannedSupernodeStore = manager.getBannedSupernodeStore();
 
 		tryRemoveThePowerOfTheGr();
 
 		Map<ByteString, Long> countWitness = countVote(voteChangeStore);
 
 		//Only possible during the initialization phase
-		if (countWitness.isEmpty()) {
-			logger.info("No vote, no change to witness.");
-		} else {
-			List<ByteString> currentWits = getActiveWitnesses();
+//		if (countWitness.isEmpty()) {
+//			logger.info("No vote, no change to witness.");
+//		} else {
+		long now = manager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp();
+
+		List<ByteString> currentWits = getActiveWitnesses();
 
 			List<ByteString> newWitnessAddressList = new ArrayList<>();
 			witnessStore.getAllWitnesses().forEach(witnessCapsule -> {
-				newWitnessAddressList.add(witnessCapsule.getAddress());
+				boolean ok = witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE;
+				if (witnessCapsule.getStatus() == Protocol.Witness.Status.SLASHED) {
+					BannedSupernodeCapsule bannedSupernodeCapsule =
+							bannedSupernodeStore.get(witnessCapsule.getAddress().toByteArray());
+					if (bannedSupernodeCapsule.getExpiration() < now) {
+						ok = true;
+						bannedSupernodeStore.delete(witnessCapsule.getAddress().toByteArray());
+					}
+				}
+				if (ok)
+					newWitnessAddressList.add(witnessCapsule.getAddress());
 			});
 
 			countWitness.forEach((address, voteCount) -> {
-				final WitnessCapsule witnessCapsule = witnessStore
-						.get(StringUtil.createDbKey(address));
+				final WitnessCapsule witnessCapsule = witnessStore.get(StringUtil.createDbKey(address));
 				if (null == witnessCapsule) {
-					logger.warn("witnessCapsule is null.address is {}",
-							StringUtil.createReadableString(address));
+					logger.warn("witnessCapsule is null. address is {}", StringUtil.createReadableString(address));
 					return;
 				}
 
 				AccountCapsule witnessAccountCapsule = accountStore
 						.get(StringUtil.createDbKey(address));
 				if (witnessAccountCapsule == null) {
-					logger.warn(
-							"witnessAccount[" + StringUtil.createReadableString(address) + "] not exists");
+					logger.warn("witnessAccount " + StringUtil.createReadableString(address) + " does not exist");
 				} else {
 					witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
 					witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
@@ -344,12 +349,50 @@ public class WitnessController {
 							witnessCapsule.getVoteCount());
 				}
 			});
+			List<ByteString> newActiveWitnessAddressList = new ArrayList<>();
 
-			sortWitness(newWitnessAddressList);
-			if (newWitnessAddressList.size() > ChainConstant.MAX_ACTIVE_WITNESS_NUM) {
-				setActiveWitnesses(newWitnessAddressList.subList(0, ChainConstant.MAX_ACTIVE_WITNESS_NUM));
+			for (ByteString witnessAddress : newWitnessAddressList) {
+				WitnessCapsule witnessCapsule = witnessStore.get(witnessAddress.toByteArray());
+				long epochBlock = witnessCapsule.getEpochMissed() + witnessCapsule.getEpochProduced();
+				if (epochBlock > 0) {
+					double pc = 1d * witnessCapsule.getEpochMissed() / epochBlock;
+					if (pc > Parameter.NodeConstant.PENALTY_RATE) {
+						long expiration ;
+						if (witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE) {
+							// minor penalty
+							expiration = now + Parameter.NodeConstant.MINOR_PENALTY_EPOCH
+									* manager.getDynamicPropertiesStore().getMaintenanceTimeInterval();
+						} else {
+							// major penalty
+							expiration = now + Parameter.NodeConstant.MAJOR_PENALTY_EPOCH
+									* manager.getDynamicPropertiesStore().getMaintenanceTimeInterval();
+						}
+						logger.info("Super node {} performed badly, {} produced, {} missed, will be banned until {}",
+								StringUtil.createReadableString(witnessAddress),
+								witnessCapsule.getEpochProduced(),
+								witnessCapsule.getEpochMissed(),
+								expiration);
+						BannedSupernodeCapsule bannedSupernodeCapsule =
+								new BannedSupernodeCapsule(witnessAddress, expiration);
+						bannedSupernodeStore.put(witnessAddress.toByteArray(), bannedSupernodeCapsule);
+						witnessCapsule.setStatus(Protocol.Witness.Status.SLASHED);
+					} else {
+						witnessCapsule.setStatus(Protocol.Witness.Status.ACTIVE);
+						newActiveWitnessAddressList.add(witnessAddress);
+					}
+					witnessCapsule.setEpochMissed(0);
+					witnessCapsule.setEpochProduced(0);
+					witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+				} else {
+					newActiveWitnessAddressList.add(witnessAddress);
+				}
+			}
+
+			sortWitness(newActiveWitnessAddressList);
+			if (newActiveWitnessAddressList.size() > ChainConstant.MAX_ACTIVE_WITNESS_NUM) {
+				setActiveWitnesses(newActiveWitnessAddressList.subList(0, ChainConstant.MAX_ACTIVE_WITNESS_NUM));
 			} else {
-				setActiveWitnesses(newWitnessAddressList);
+				setActiveWitnesses(newActiveWitnessAddressList);
 			}
 
 			List<ByteString> newWits = getActiveWitnesses();
@@ -370,7 +413,7 @@ public class WitnessController {
 			logger.info(
 					"updateWitness,before:{} ", StringUtil.getAddressStringList(currentWits)
 							+ ",\nafter:{} " + StringUtil.getAddressStringList(newWits));
-		}
+//		}
 	}
 
 	public void tryRemoveThePowerOfTheGr() {

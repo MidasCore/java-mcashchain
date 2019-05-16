@@ -158,4 +158,20 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 	public void setStatus(Witness.Status status) {
 		this.witness = this.witness.toBuilder().setStatus(status).build();
 	}
+
+	public long getEpochMissed() {
+		return this.witness.getEpochMissed();
+	}
+
+	public void setEpochMissed(final long epochMissed) {
+		this.witness = this.witness.toBuilder().setEpochMissed(epochMissed).build();
+	}
+
+	public long getEpochProduced() {
+		return this.witness.getEpochProduced();
+	}
+
+	public void setEpochProduced(final long epochProduced) {
+		this.witness = this.witness.toBuilder().setEpochProduced(epochProduced).build();
+	}
 }

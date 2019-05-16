@@ -100,6 +100,8 @@ public interface Parameter {
 		int MAX_TRANSACTION_PENDING = 2000;
 
 		float PENALTY_RATE = 0.5f;
+		long MINOR_PENALTY_EPOCH = 6;
+		long MAJOR_PENALTY_EPOCH = 24;
 
 		List<NodeTier> NODE_TIERS = new ArrayList<>(Arrays.asList(
 				new NodeTier("Master Node", 5000000L * ChainConstant.TEN_POW_DECIMALS, 20000, 20),

@@ -207,6 +207,13 @@ message Witness {
     bool isJobs = 9;
     Status status = 10;
     bytes ownerAddress = 11;
+    int64 epochProduced = 12;
+    int64 epochMissed = 13;
+}
+
+message BannedSupernode {
+    bytes supernode_address = 1;
+    int64 expiration = 2;
 }
 
 // Vote Change

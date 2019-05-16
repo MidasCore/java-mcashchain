@@ -30,7 +30,7 @@ public class WitnessResignActuator extends AbstractActuator {
 				.get(contract.getSupernodeAddress().toByteArray());
 		witnessCapsule.setStatus(Protocol.Witness.Status.RESIGNED);
 
-		this.dbManager.getWitnessStore().delete(witnessCapsule.createDbKey());
+		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 //		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 
 		ByteString ownerAddress = contract.getOwnerAddress();

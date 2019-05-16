@@ -121,6 +121,8 @@ public class Manager {
 	private StakeChangeStore stakeChangeStore;
 	@Autowired
 	private StakeAccountStore stakeAccountStore;
+	@Autowired
+	private BannedSupernodeStore bannedSupernodeStore;
 	// for network
 	@Autowired
 	private PeersStore peersStore;
@@ -1038,6 +1040,7 @@ public class Manager {
 						this.witnessStore
 								.getUnchecked(StringUtil.createDbKey(witnessController.getScheduledWitness(i)));
 				w.setTotalMissed(w.getTotalMissed() + 1);
+				w.setEpochMissed(w.getEpochMissed() + 1);
 				this.witnessStore.put(w.createDbKey(), w);
 				logger.info(
 						"{} miss a block. totalMissed = {}", w.createReadableString(), w.getTotalMissed());
@@ -1586,6 +1589,7 @@ public class Manager {
 				witnessStore.getUnchecked(
 						block.getInstance().getBlockHeader().getRawData().getWitnessAddress().toByteArray());
 		witnessCapsule.setTotalProduced(witnessCapsule.getTotalProduced() + 1);
+		witnessCapsule.setEpochProduced(witnessCapsule.getEpochProduced() + 1);
 		witnessCapsule.setLatestBlockNum(block.getNum());
 		witnessCapsule.setLatestSlotNum(witnessController.getAbSlotAtTime(block.getTimeStamp()));
 
@@ -1593,6 +1597,7 @@ public class Manager {
 		WitnessCapsule wit = witnessController.getWitnessByAddress(block.getWitnessAddress());
 		if (wit != null) {
 			wit.setTotalProduced(witnessCapsule.getTotalProduced() + 1);
+			wit.setEpochProduced(witnessCapsule.getEpochProduced() + 1);
 			wit.setLatestBlockNum(block.getNum());
 			wit.setLatestSlotNum(witnessController.getAbSlotAtTime(block.getTimeStamp()));
 		}
@@ -1678,6 +1683,10 @@ public class Manager {
 		return this.stakeAccountStore;
 	}
 
+	public BannedSupernodeStore getBannedSupernodeStore() {
+		return this.bannedSupernodeStore;
+	}
+
 	public void closeAllStore() {
 		logger.info("******** begin to close db ********");
 		closeOneStore(accountStore);
@@ -1705,6 +1714,7 @@ public class Manager {
 		closeOneStore(exchangeV2Store);
 		closeOneStore(stakeChangeStore);
 		closeOneStore(stakeAccountStore);
+		closeOneStore(bannedSupernodeStore);
 		logger.info("******** end to close db ********");
 	}
 
