@@ -153,12 +153,12 @@ public class TransactionTrace {
 				originAccount = callerAccount;
 				break;
 			case TRX_CONTRACT_CALL_TYPE:
-				// todo: nghiand check
-				if (trx.getInstance().getRawData().getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
-					return;
-				}
+				// todo: check
 				TriggerSmartContract callContract = ContractCapsule
 						.getTriggerContractFromTransaction(trx.getInstance());
+				if (callContract.getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
+					receipt.setEnergyUsageTotal(0);
+				}
 				ContractCapsule contractCapsule =
 						dbManager.getContractStore().get(callContract.getContractAddress().toByteArray());
 
