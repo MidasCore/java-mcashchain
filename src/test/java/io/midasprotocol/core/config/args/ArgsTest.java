@@ -55,7 +55,7 @@ public class ArgsTest {
 				genesisBlock.getParentHash());
 
 		Assert.assertEquals(
-				Lists.newArrayList("f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"),
+				Lists.newArrayList("cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de"),
 				args.getLocalWitnesses().getPrivateKeys());
 
 		Assert.assertTrue(args.isNodeDiscoveryEnable());
@@ -80,9 +80,9 @@ public class ArgsTest {
 		Assert.assertEquals(GrpcUtil.DEFAULT_MAX_HEADER_LIST_SIZE, args.getMaxHeaderListSize());
 		Assert.assertEquals(1L, args.getAllowCreationOfContracts());
 
-		Assert.assertEquals("f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62",
+		Assert.assertEquals("cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de",
 				args.getLocalWitnesses().getPrivateKey());
-		Assert.assertEquals(Wallet.getAddressPreFixString() + "299f3db80a24b20a254b89ce639d59132f157f13",
+		Assert.assertEquals(Wallet.getAddressPreFixString() + "2b0c293ff59d17813b11161999b367e012173bd3",
 				ByteArray.toHexString(args.getLocalWitnesses().getWitnessAccountAddress()));
 
 

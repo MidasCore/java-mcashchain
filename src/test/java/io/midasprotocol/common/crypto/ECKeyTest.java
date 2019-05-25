@@ -27,7 +27,7 @@ public class ECKeyTest {
 	private String compressedPubString = "030947751e3022ecf3016be03ec77ab0ce3c2662b4843898cb068d74f698ccc8ad";
 	private byte[] pubKey = Hex.decode(pubString);
 	private byte[] compressedPubKey = Hex.decode(compressedPubString);
-	private String address = "cd2a3d9f938e13cd947ec05abc7fe734df8dd826";
+	private String address = "32cd2a3d9f938e13cd947ec05abc7fe734df8dd826";
 
 	@Test
 	public void testHashCode() {

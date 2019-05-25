@@ -1,6 +1,7 @@
 package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.ByteString;
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -56,8 +57,8 @@ public class TransferTokenTest {
 		Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		appT = ApplicationFactory.create(context);
-		OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
-		TRANSFER_TO = "548794500882809695a8a687866e76d4271a1abc";
+		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		TRANSFER_TO = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
 		dbManager = context.getBean(Manager.class);
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(Hex.decode(TRANSFER_TO), AccountType.Normal);
@@ -69,7 +70,7 @@ public class TransferTokenTest {
 						ByteString.copyFromUtf8("owner"),
 						AccountType.AssetIssue);
 
-		ownerCapsule.setBalance(1000_1000_1000L);
+		ownerCapsule.setBalance(100_000_1000_1000L);
 	}
 
 	/**
@@ -145,8 +146,8 @@ public class TransferTokenTest {
 		byte[] triggerData = TVMTestUtils.parseABI(selectorStr, params);
 
 		/*  2. Test trigger with tokenValue and tokenId, also test internal transaction transferToken function */
-		long triggerCallValue = 100;
-		long feeLimit = 100000000;
+		long triggerCallValue = 10000;
+		long feeLimit = 10000000000L;
 		long tokenValue = 8;
 		Transaction transaction = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), contractAddress,
@@ -202,7 +203,7 @@ public class TransferTokenTest {
 						+ "5add5e57b59db51d6f6ab609564554aed5e9c958621f9c5e085a510b0029";
 
 		long value = 1000;
-		long feeLimit = 100000000;
+		long feeLimit = 10000000000L;
 		long consumeUserResourcePercent = 0;
 		long tokenValue = 100;
 		long tokenId = id;
@@ -224,8 +225,8 @@ public class TransferTokenTest {
 			throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
 		long id = createAsset("testPerformanceToken");
 		byte[] contractAddress = deployTransferTokenPerformanceContract(id);
-		long triggerCallValue = 100;
-		long feeLimit = 1000_000_000;
+		long triggerCallValue = 100000;
+		long feeLimit = 100_000_000_000L;
 		long tokenValue = 0;
 		String selectorStr = "trans(address,trcToken,uint256)";
 		String params = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc" +
@@ -259,8 +260,8 @@ public class TransferTokenTest {
 						+ "5050505015801560b6573d6000803e3d6000fd5b50600101606d565b505050505600a165627a7a7230582047d"
 						+ "6ab00891da9d46ef58e3d5709bac950887f450e3493518219f47829b474350029";
 
-		long value = 1000;
-		long feeLimit = 100000000;
+		long value = 100000;
+		long feeLimit = 10000000000L;
 		long consumeUserResourcePercent = 0;
 		long tokenValue = 1000_000;
 		long tokenId = id;

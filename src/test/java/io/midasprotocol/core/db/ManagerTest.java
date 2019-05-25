@@ -2,6 +2,7 @@ package io.midasprotocol.core.db;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Assert;
@@ -211,7 +212,7 @@ public class ManagerTest {
 		Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
 		long size = dbManager.getBlockStore().size();
 		System.out.print("block store size:" + size + "\n");
-		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
+		String key = "cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de";
 		byte[] privateKey = ByteArray.fromHexString(key);
 		final ECKey ecKey = ECKey.fromPrivate(privateKey);
 		byte[] address = ecKey.getAddress();
@@ -280,7 +281,7 @@ public class ManagerTest {
 		Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
 		long size = dbManager.getBlockStore().size();
 		System.out.print("block store size:" + size + "\n");
-		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
+		String key = "cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de";
 		byte[] privateKey = ByteArray.fromHexString(key);
 		final ECKey ecKey = ECKey.fromPrivate(privateKey);
 		byte[] address = ecKey.getAddress();
@@ -376,7 +377,7 @@ public class ManagerTest {
 		Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
 		long size = dbManager.getBlockStore().size();
 		System.out.print("block store size:" + size + "\n");
-		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
+		String key = "cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de";
 		byte[] privateKey = ByteArray.fromHexString(key);
 		final ECKey ecKey = ECKey.fromPrivate(privateKey);
 		byte[] address = ecKey.getAddress();
@@ -403,7 +404,7 @@ public class ManagerTest {
 		Args.setParam(new String[]{"--witness"}, Constant.TEST_CONF);
 		long size = dbManager.getBlockStore().size();
 		System.out.print("block store size:" + size + "\n");
-		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
+		String key = "cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de";
 		byte[] privateKey = ByteArray.fromHexString(key);
 		final ECKey ecKey = ECKey.fromPrivate(privateKey);
 		byte[] address = ecKey.getAddress();

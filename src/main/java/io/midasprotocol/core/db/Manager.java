@@ -625,6 +625,7 @@ public class Manager {
 	public void adjustAllowance(byte[] accountAddress, long amount)
 			throws BalanceInsufficientException {
 		AccountCapsule account = getAccountStore().getUnchecked(accountAddress);
+		if (account == null) return;
 		long allowance = account.getAllowance();
 		if (amount == 0) {
 			return;

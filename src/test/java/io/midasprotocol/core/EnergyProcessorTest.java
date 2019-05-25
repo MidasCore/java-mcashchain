@@ -100,7 +100,7 @@ public class EnergyProcessorTest {
 	@Test
 	public void testUseContractCreatorEnergy() throws Exception {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
+		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(1_000_000_000L);
 
 		AccountCapsule ownerCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS));
@@ -113,7 +113,7 @@ public class EnergyProcessorTest {
 		boolean result = processor.useEnergy(ownerCapsule, energy, now);
 		Assert.assertFalse(result);
 
-		ownerCapsule.setFrozenForEnergy(10_000_000L, 0L);
+		ownerCapsule.setFrozenForEnergy(1_000_000_000L, 0L);
 		result = processor.useEnergy(ownerCapsule, energy, now);
 		Assert.assertTrue(result);
 

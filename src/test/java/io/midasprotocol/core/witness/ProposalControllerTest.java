@@ -1,6 +1,7 @@
 package io.midasprotocol.core.witness;
 
 import com.google.protobuf.ByteString;
+import io.midasprotocol.core.Wallet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -105,7 +106,7 @@ public class ProposalControllerTest {
 		Assert.assertEquals(State.DISAPPROVED, proposalCapsule.getState());
 
 		List<ByteString> activeWitnesses = Lists.newArrayList();
-		String prefix = "548794500882809695a8a687866e76d4271a1a";
+		String prefix = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1a";
 		for (int i = 0; i < 27; i++) {
 			activeWitnesses
 					.add(ByteString.copyFrom(ByteArray.fromHexString(prefix + (i >= 10 ? i : "0" + i))));
