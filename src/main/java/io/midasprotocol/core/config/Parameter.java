@@ -133,6 +133,7 @@ public interface Parameter {
 		int ASSET_ISSUE_COUNT_LIMIT_MAX = 1000;
 		int PROPOSAL_COUNT_LIMIT_MAX = 1000;
 		int EXCHANGE_COUNT_LIMIT_MAX = 1000;
+		int STAKE_COUNT_LIMIT_MAX = 100;
 	}
 
 	interface AdaptiveResourceLimitConstants {

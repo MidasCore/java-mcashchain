@@ -1602,5 +1602,26 @@ public class RpcApiService implements Service {
 					responseObserver);
 		}
 
+		@Override
+		public void getPaginatedBlockRewardList(BlockRewardPaginatedMessage request,
+												StreamObserver<BlockRewardList> responseObserver) {
+			responseObserver.onNext(wallet.getPaginatedBlockRewardList(
+					request.getAddress(),
+					request.getOffset(),
+					request.getLimit()));
+			responseObserver.onCompleted();
+		}
+
+		@Override
+		public void stake(Contract.StakeContract request,
+						  StreamObserver<TransactionExtention> responseObserver) {
+			createTransactionExtention(request, ContractType.StakeContract, responseObserver);
+		}
+
+		@Override
+		public void unstake(Contract.UnstakeContract request,
+						  StreamObserver<TransactionExtention> responseObserver) {
+			createTransactionExtention(request, ContractType.UnstakeContract, responseObserver);
+		}
 	}
 }

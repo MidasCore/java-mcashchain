@@ -81,8 +81,8 @@ public class AssetIssueActuator extends AbstractActuator {
 			}
 
 			dbManager.adjustBalance(ownerAddress, -fee);
-			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().getAddress().toByteArray(),
-					fee);//send to blackhole
+			//send to blackhole
+			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().getAddress().toByteArray(), fee);
 
 			AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 			List<FrozenSupply> frozenSupplyList = assetIssueContract.getFrozenSupplyList();

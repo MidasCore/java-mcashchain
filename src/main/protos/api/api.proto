@@ -448,6 +448,16 @@ service Wallet {
       };
     };
 
+    rpc GetPaginatedBlockRewardList (BlockRewardPaginatedMessage) returns (BlockRewardList) {
+        option (google.api.http) = {
+          post: "/wallet/getreward"
+          body: "*"
+          additional_bindings {
+            get: "/wallet/getreward"
+          }
+        };
+    }
+
     rpc ListExchanges (EmptyMessage) returns (ExchangeList) {
         option (google.api.http) = {
       post: "/wallet/listexchanges"
@@ -622,6 +632,37 @@ service Wallet {
 
     rpc GetNodeInfo (EmptyMessage) returns (NodeInfo) {
     };
+
+    rpc Stake (StakeContract) returns (TransactionExtention) {
+        option (google.api.http) = {
+      post: "/wallet/stake"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/stake"
+      }
+    };
+    }
+
+    rpc Unstake (UnstakeContract) returns (TransactionExtention) {
+        option (google.api.http) = {
+      post: "/wallet/unstake"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/unstake"
+      }
+    };
+    }
+
+    rpc ResignWitness (WitnessResignContract) returns (Transaction) {
+        option (google.api.http) = {
+      post: "/wallet/resignwitness"
+      body: "*"
+      additional_bindings {
+        get: "/wallet/resignwitness"
+      }
+    };
+    };
+
 };
 
 
@@ -974,6 +1015,12 @@ message EasyTransferResponse {
 message AddressPrKeyPairMessage {
     string address = 1;
     string privateKey = 2;
+}
+
+message BlockRewardPaginatedMessage {
+    bytes address = 1;
+    int64 offset = 2;
+    int64 limit = 3;
 }
 
 message TransactionExtention {
