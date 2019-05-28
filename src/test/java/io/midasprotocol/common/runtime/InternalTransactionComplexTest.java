@@ -1,5 +1,6 @@
 package io.midasprotocol.common.runtime;
 
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,7 +41,7 @@ public class InternalTransactionComplexTest {
 				Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		appT = ApplicationFactory.create(context);
-		OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class InternalTransactionComplexTest {
 		dbManager = context.getBean(Manager.class);
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(Hex.decode(OWNER_ADDRESS), AccountType.Normal);
-		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 100000000);
+		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 10000000000L);
 	}
 
 	/**
@@ -101,14 +102,14 @@ public class InternalTransactionComplexTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						callerContractAddress, triggerData1,
-						0, 100000000, deposit, null);
+						0, 10000000000L, deposit, null);
 
 		/* =================================== CALL testCallbackReturns_ to check data =================================== */
 		byte[] triggerData2 = TVMTestUtils.parseABI("testCallbackReturns_()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						callerContractAddress, triggerData2,
-						0, 100000000, deposit, null);
+						0, 10000000000L, deposit, null);
 
 		// bool true => 0000000000000000000000000000000000000000000000000000000000000001,
 		// uint256 314159 =>000000000000000000000000000000000000000000000000000000000004cb2f,
@@ -137,7 +138,7 @@ public class InternalTransactionComplexTest {
 						+ "935050505060405180910390f35b600080600060016204cb2f621234568191508060010290509250925092509091925600a165627a"
 						+ "7a72305820040808e22827b01e497bf99a0ddd72084c95a3fa9bc8737fb022594c7656f00a0029";
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils
@@ -171,7 +172,7 @@ public class InternalTransactionComplexTest {
 						+ "5188a2329cea5d678a10b01436ab68941b47259fc16ae84985c1abce0029" + Hex
 						.toHexString(new DataWord(calledContractAddress).getData());
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils

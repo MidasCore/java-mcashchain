@@ -2,6 +2,7 @@ package io.midasprotocol.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
@@ -37,6 +38,7 @@ public class StakeActuatorTest {
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(1_000_000);
 	private static Manager dbManager;
+	private static Wallet wallet;
 	private static ApplicationContext context;
 	private static StakeAccountController stakeAccountController;
 
@@ -53,6 +55,7 @@ public class StakeActuatorTest {
 	@BeforeClass
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
+		wallet = context.getBean(Wallet.class);
 		stakeAccountController = dbManager.getStakeAccountController();
 	}
 
@@ -140,6 +143,11 @@ public class StakeActuatorTest {
 			accountCapsule = dbManager.getAccountStore().get(
 					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertNotEquals(0, accountCapsule.getAllowance());
+
+			Assert.assertTrue(dbManager.getBlockRewardStore().has(ByteArray.fromHexString(OWNER_ADDRESS)));
+
+			GrpcAPI.BlockRewardList rewardList = wallet.getPaginatedBlockRewardList(accountCapsule.getAddress(), 0, 10);
+			Assert.assertEquals(1, rewardList.getRewardsCount());
 			logger.info("[After] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());

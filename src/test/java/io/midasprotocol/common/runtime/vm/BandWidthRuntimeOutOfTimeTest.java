@@ -17,10 +17,7 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
@@ -74,8 +71,8 @@ public class BandWidthRuntimeOutOfTimeTest {
 	private static AnnotationConfigApplicationContext context;
 	private static Manager dbManager;
 
-	private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
-	private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
+	private static String OwnerAddress = "MSCYyKrJ5rQjcbXRNhQnijZudbBEngP6jC";
+	private static String TriggerOwnerAddress = "MWXz8Wyib9yTptiMXvsfEk9ohUPqqnqVdW";
 
 	static {
 		Args.setParam(
@@ -86,12 +83,13 @@ public class BandWidthRuntimeOutOfTimeTest {
 						"-w",
 						"--debug"
 				},
-				"config-test-mainnet.conf"
+//				"config-test-mainnet.conf"
+				Constant.TEST_CONF
 		);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
 
-	private String trx2ContractAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
+	private String trx2ContractAddress = "MRMnDQKREu7JAg8s5qNaVzh2Gkg1MTiYqE";
 
 	/**
 	 * Init data.
@@ -187,10 +185,10 @@ public class BandWidthRuntimeOutOfTimeTest {
 		String code = "608060405234801561001057600080fd5b506101ba806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680633c7fdc701461005157806361047ff414610092575b600080fd5b34801561005d57600080fd5b5061007c600480360381019080803590602001909291905050506100d3565b6040518082815260200191505060405180910390f35b34801561009e57600080fd5b506100bd60048036038101908080359060200190929190505050610124565b6040518082815260200191505060405180910390f35b60006100de82610124565b90507f71e71a8458267085d5ab16980fd5f114d2d37f232479c245d523ce8d23ca40ed8282604051808381526020018281526020019250505060405180910390a1919050565b60008060008060008086141561013d5760009450610185565b600186141561014f5760019450610185565b600093506001925060009150600290505b85811115156101815782840191508293508192508080600101915050610160565b8194505b505050509190505600a165627a7a7230582071f3cf655137ce9dc32d3307fb879e65f3960769282e6e452a5f0023ea046ed20029";
 		String abi = "[{\"constant\":false,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacciNotify\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacci\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"input\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"result\",\"type\":\"uint256\"}],\"name\":\"Notify\",\"type\":\"event\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
-				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100);
+				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
 		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
-						.setType(ContractType.CreateSmartContract)).setFeeLimit(1000000000)).build();
+						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)).build();
 		TransactionCapsule trxCap = new TransactionCapsule(transaction);
 		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
 		dbManager.consumeBandwidth(trxCap, trace);
@@ -205,9 +203,9 @@ public class BandWidthRuntimeOutOfTimeTest {
 		energy = owner.getEnergyUsage() - energy;
 		balance = balance - owner.getBalance();
 		Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(50000, energy);
-		Assert.assertEquals(3852900, balance);
-		Assert.assertEquals(88529 * 100, balance + energy * 100);
+		Assert.assertEquals(0, energy);
+		Assert.assertEquals(885290000, balance);
+		Assert.assertEquals(88529 * Constant.SUN_PER_ENERGY, balance + energy * Constant.SUN_PER_ENERGY);
 		if (runtime.getRuntimeError() != null) {
 			return runtime.getResult().getContractAddress();
 		}

@@ -79,8 +79,7 @@ import io.midasprotocol.protos.Protocol.Transaction.Result.code;
 import java.security.SignatureException;
 import java.util.*;
 
-import static io.midasprotocol.core.config.Parameter.DatabaseConstants.EXCHANGE_COUNT_LIMIT_MAX;
-import static io.midasprotocol.core.config.Parameter.DatabaseConstants.PROPOSAL_COUNT_LIMIT_MAX;
+import static io.midasprotocol.core.config.Parameter.DatabaseConstants.*;
 
 @Slf4j
 @Component
@@ -290,8 +289,7 @@ public class Wallet {
 			byte[] funcSelector = new byte[4];
 			System.arraycopy(Hash.sha3(sb.toString().getBytes()), 0, funcSelector, 0, 4);
 			if (Arrays.equals(funcSelector, selector)) {
-				if (entry.getConstant() == true || entry.getStateMutability()
-						.equals(StateMutabilityType.View)) {
+				if (entry.getConstant() || entry.getStateMutability().equals(StateMutabilityType.View)) {
 					return true;
 				} else {
 					return false;
@@ -1397,27 +1395,29 @@ public class Wallet {
 
 	}
 
-	public BlockRewardList getPaginatedBlockRewardList(ByteString address, int offset, int limit) {
+	public BlockRewardList getPaginatedBlockRewardList(ByteString address, long offset, long limit) {
 		if (limit < 0 || offset < 0) {
 			return null;
 		}
-
-		List<BlockReward.Reward> rewards = dbManager.getBlockRewardStore().get(address.toByteArray()).getRewardsList();
+		BlockRewardStore blockRewardStore = dbManager.getBlockRewardStore();
+		if (!blockRewardStore.has(address.toByteArray())) {
+			return null;
+		}
+		List<BlockReward.Reward> rewards = new ArrayList<>(blockRewardStore.get(address.toByteArray()).getRewardsList());
 		rewards.sort(Comparator.comparingLong(BlockReward.Reward::getTimestamp).reversed());
 
 		if (rewards.size() <= offset) {
 			return null;
 		}
 
-		limit = limit > EXCHANGE_COUNT_LIMIT_MAX ? EXCHANGE_COUNT_LIMIT_MAX : limit;
-		int end = offset + limit;
+		limit = limit > STAKE_COUNT_LIMIT_MAX ? STAKE_COUNT_LIMIT_MAX : limit;
+		long end = offset + limit;
 		end = end > rewards.size() ? rewards.size() : end;
 
 		BlockRewardList.Builder builder = BlockRewardList.newBuilder();
-		for (int i = offset; i < end; i++) {
-			builder.addRewards(rewards.get(i));
+		for (long i = offset; i < end; i++) {
+			builder.addRewards(rewards.get((int) i));
 		}
 		return builder.build();
-
 	}
 }

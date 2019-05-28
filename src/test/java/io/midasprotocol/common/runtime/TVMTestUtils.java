@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.core.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.Hash;
@@ -84,7 +85,7 @@ public class TVMTestUtils {
 																		   String libraryAddressPair) {
 		return generateDeploySmartContractAndGetTransaction(contractName, callerAddress, ABI, code,
 				value, feeLimit, consumeUserResourcePercent,
-				libraryAddressPair, 0);
+				libraryAddressPair, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
 	}
 
 	public static Transaction generateDeploySmartContractAndGetTransaction(String contractName,
@@ -93,7 +94,7 @@ public class TVMTestUtils {
 																		   long tokenValue, long tokenId, String libraryAddressPair) {
 		return generateDeploySmartContractAndGetTransaction(contractName, callerAddress, ABI, code,
 				value, feeLimit, consumeUserResourcePercent,
-				libraryAddressPair, 0, tokenValue, tokenId);
+				libraryAddressPair, Constant.CREATOR_DEFAULT_ENERGY_LIMIT, tokenValue, tokenId);
 	}
 
 	/**
@@ -606,7 +607,8 @@ public class TVMTestUtils {
 	}
 
 	public static CreateSmartContract createSmartContract(byte[] owner, String contractName,
-														  String abiString, String code, long value, long consumeUserResourcePercent) {
+														  String abiString, String code, long value, long consumeUserResourcePercent,
+														  long originEnergyLimit) {
 
 		SmartContract.ABI abi = jsonStr2Abi(abiString);
 		if (abi == null) {
@@ -622,6 +624,7 @@ public class TVMTestUtils {
 		if (value != 0) {
 			builder.setCallValue(value);
 		}
+		builder.setOriginEnergyLimit(originEnergyLimit);
 		CreateSmartContract contractDeployContract = CreateSmartContract.newBuilder()
 				.setOwnerAddress(ByteString.copyFrom(owner)).setNewContract(builder.build()).build();
 		return contractDeployContract;

@@ -70,9 +70,9 @@ public class BandWidthRuntimeTest {
 	private static AnnotationConfigApplicationContext context;
 	private static Manager dbManager;
 
-	private static String OwnerAddress = "TCWHANtDDdkZCTo2T2peyEq3Eg9c2XB7ut";
-	private static String TriggerOwnerAddress = "TCSgeWapPJhCqgWRxXCKb6jJ5AgNWSGjPA";
-	private static String TriggerOwnerTwoAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
+	private static String OwnerAddress = "MJsKN8eHy6rH19B688QfKNfnhTDJUc1mX8";
+	private static String TriggerOwnerAddress = "MRBGoSSnzSfrqvFJkaP11B3WockyiDknoU";
+	private static String TriggerOwnerTwoAddress = "MN12GTFGMTbqyhRiYpDRyoVFd1Mxbtsn9N";
 
 	static {
 		Args.setParam(
@@ -82,7 +82,8 @@ public class BandWidthRuntimeTest {
 						"--storage-index-directory", indexDirectory,
 						"-w"
 				},
-				"config-test-mainnet.conf"
+//				"config-test-mainnet.conf"
+				Constant.TEST_CONF
 		);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
@@ -206,7 +207,7 @@ public class BandWidthRuntimeTest {
 
 			Assert.assertEquals(bandWidth, receipt.getNetUsage());
 			Assert.assertEquals(522850, receipt.getEnergyUsageTotal());
-			Assert.assertEquals(50000, receipt.getEnergyUsage());
+			Assert.assertEquals(0, receipt.getEnergyUsage());
 			Assert.assertEquals(47285000, receipt.getEnergyFee());
 			Assert.assertEquals(totalBalance - receipt.getEnergyFee(),
 					balance);
@@ -226,7 +227,7 @@ public class BandWidthRuntimeTest {
 		String code = "608060405234801561001057600080fd5b50610105806100206000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680637bb98a6814604e578063866edb47146076575b600080fd5b348015605957600080fd5b50606060a0565b6040518082815260200191505060405180910390f35b348015608157600080fd5b50609e6004803603810190808035906020019092919050505060a6565b005b60005481565b60008090505b8181101560d55760008081548092919060010191905055600081905550808060010191505060ac565b50505600a165627a7a72305820f4020a69fb8504d7db776726b19e5101c3216413d7ab8e91a11c4f55f772caed0029";
 		String abi = "[{\"constant\":true,\"inputs\":[],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
-				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100);
+				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
 		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
 						.setType(ContractType.CreateSmartContract)).setFeeLimit(1000000000)).build();
@@ -245,10 +246,9 @@ public class BandWidthRuntimeTest {
 		balance = balance - owner.getBalance();
 		Assert.assertNull(runtime.getRuntimeError());
 		Assert.assertEquals(52299, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(50000, energy);
-		Assert.assertEquals(229900, balance);
-		Assert
-				.assertEquals(52299 * Constant.SUN_PER_ENERGY, balance + energy * Constant.SUN_PER_ENERGY);
+		Assert.assertEquals(0, energy);
+		Assert.assertEquals(522990000, balance);
+		Assert.assertEquals(52299 * Constant.SUN_PER_ENERGY, balance + energy * Constant.SUN_PER_ENERGY);
 		Assert.assertNull(runtime.getRuntimeError());
 		return runtime.getResult().getContractAddress();
 	}

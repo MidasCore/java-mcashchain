@@ -1,5 +1,6 @@
 package io.midasprotocol.common.runtime;
 
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -26,7 +27,7 @@ import java.io.File;
 @Slf4j
 public class InheritanceTest {
 
-	private static final String dbPath = "output_InheritanceTest";
+	private static final String dbPath = "output_inheritance_test";
 	private static final String OWNER_ADDRESS;
 	private static Runtime runtime;
 	private static Manager dbManager;
@@ -38,7 +39,7 @@ public class InheritanceTest {
 		Args.setParam(new String[]{"--output-directory", dbPath, "--debug"}, Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		appT = ApplicationFactory.create(context);
-		OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
 	}
 
 	/**
@@ -49,7 +50,7 @@ public class InheritanceTest {
 		dbManager = context.getBean(Manager.class);
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(Hex.decode(OWNER_ADDRESS), AccountType.Normal);
-		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 100000000);
+		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 10000000000L);
 	}
 
 	/**
@@ -100,7 +101,7 @@ public class InheritanceTest {
 						+ "5190810160405280600381526020017f6261720000000000000000000000000000000000000000000000000000000000815250905090565b60008054905"
 						+ "090565b60005481565b600060649050905600a165627a7a72305820dfe79cf7f4a8a342b754cad8895b13f85de7daa11803925cf392263397653e7f0029";
 		long value = 0;
-		long fee = 100000000;
+		long fee = 10000000000L;
 		long consumeUserResourcePercent = 0;
 
 		byte[] contractAddress = TVMTestUtils.deployContractWholeProcessReturnContractAddress(
@@ -113,7 +114,7 @@ public class InheritanceTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(callerAddress, contractAddress,
 						triggerData1,
-						0, 1000000, deposit, null);
+						0, 100000000L, deposit, null);
 
 		//0x20 => pointer position, 0x3 => size,  626172 => "bar"
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
@@ -126,7 +127,7 @@ public class InheritanceTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(callerAddress, contractAddress,
 						triggerData2,
-						0, 1000000, deposit, null);
+						0, 100000000L, deposit, null);
 
 		//0x64 =>100
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
@@ -137,7 +138,7 @@ public class InheritanceTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(callerAddress, contractAddress,
 						triggerData3,
-						0, 1000000, deposit, null);
+						0, 100000000, deposit, null);
 
 		//0x64 =>100
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),

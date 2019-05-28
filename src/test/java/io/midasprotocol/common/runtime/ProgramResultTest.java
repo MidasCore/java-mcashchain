@@ -53,8 +53,8 @@ public class ProgramResultTest {
 				Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		appT = ApplicationFactory.create(context);
-		OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
-		TRANSFER_TO = "548794500882809695a8a687866e76d4271a1abc";
+		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		TRANSFER_TO = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class ProgramResultTest {
 		dbManager = context.getBean(Manager.class);
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(Hex.decode(OWNER_ADDRESS), AccountType.Normal);
-		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 100000000);
+		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 10000000000L);
 		deposit.createAccount(Hex.decode(TRANSFER_TO), AccountType.Normal);
 		deposit.addBalance(Hex.decode(TRANSFER_TO), 0);
 		deposit.commit();
@@ -115,7 +115,7 @@ public class ProgramResultTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData1,
-						0, 100000000, deposit, null);
+						0, 10000000000L, deposit, null);
 		List<InternalTransaction> internalTransactionsList = runtime.getResult()
 				.getInternalTransactions();
 		// 15 internalTransactions in total
@@ -144,7 +144,7 @@ public class ProgramResultTest {
 						+ "4e57600080fd5b5060556067565b60408051918252519081900360200190f35b6000905600a165627a7a72305820fa4124f68cd4c9"
 						+ "2df5362cb343d4831acd8ed666b72eb497974cdf511ae642a90029";
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils
@@ -219,7 +219,7 @@ public class ProgramResultTest {
 						+ "f57396d360cb7593e830ec0a0d4e684e118556c0029a165627a7a7230582026b1b0e7b18b3f6f69efb41b5a0461c8c389aeadf1f75ddd2c15a403"
 						+ "6eae08b30029" + Hex.toHexString(calledContractAddress);
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils
@@ -256,7 +256,7 @@ public class ProgramResultTest {
 				params);
 		Transaction trx1 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), aContract,
-						triggerData1, 0, 100000000);
+						triggerData1, 0, 10000000000L);
 		TransactionTrace traceSuccess = TVMTestUtils
 				.processTransactionAndReturnTrace(trx1, deposit, null);
 		runtime = traceSuccess.getRuntime();
@@ -300,7 +300,7 @@ public class ProgramResultTest {
 				params);
 		Transaction trx2 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), aContract,
-						triggerData2, 0, 100000000);
+						triggerData2, 0, 10000000000L);
 		TransactionTrace traceFailed = TVMTestUtils
 				.processTransactionAndReturnTrace(trx2, deposit, null);
 		runtime = traceFailed.getRuntime();
@@ -348,7 +348,7 @@ public class ProgramResultTest {
 						+ ":\"payable\",\"type\":\"fallback\"}]";
 		String code = "608060405260328060116000396000f30060806040520000a165627a7a72305820193b446e66e78aa74e45a3201095c5af56be9ee839ab815fe492202803cb71a30029";
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils
@@ -389,7 +389,7 @@ public class ProgramResultTest {
 						+ "7230582044968955c360128fedfc823b2c8ab2a92ab470f3085e67c816bc507926e626e90029";
 
 		long value = 100000;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils
@@ -417,7 +417,7 @@ public class ProgramResultTest {
 				params);
 		Transaction trx = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), suicideContract,
-						triggerData1, 0, 100000000);
+						triggerData1, 0, 10000000000L);
 		TransactionTrace trace = TVMTestUtils.processTransactionAndReturnTrace(trx, deposit, null);
 		runtime = trace.getRuntime();
 		List<InternalTransaction> internalTransactionsList = runtime.getResult()
@@ -450,7 +450,7 @@ public class ProgramResultTest {
 						+ "ffffffffffffffffffffffffffffff1680ff00a165627a7a72305820e382f1dabb1c53705abe0c3e99497025ffbf78b73"
 						+ "c079471d8984a745b3218720029";
 		long value = 1000;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 
 		return TVMTestUtils

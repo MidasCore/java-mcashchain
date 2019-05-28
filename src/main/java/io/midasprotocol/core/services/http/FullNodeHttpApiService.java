@@ -269,7 +269,7 @@ public class FullNodeHttpApiService implements Service {
 					"/getdelegatedresourceaccountindex");
 			context.addServlet(new ServletHolder(stakeServlet), "/stake");
 			context.addServlet(new ServletHolder(unstakeServlet), "/unstake");
-			context.addServlet(new ServletHolder(blockRewardServlet), "/reward");
+			context.addServlet(new ServletHolder(blockRewardServlet), "/getreward");
 			server.start();
 		} catch (Exception e) {
 			logger.debug("IOException: {}", e.getMessage());

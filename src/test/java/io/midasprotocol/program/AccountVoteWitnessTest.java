@@ -86,13 +86,13 @@ public class AccountVoteWitnessTest {
 								.getWitnessStore()
 								.put(witnessCapsule.getAddress().toByteArray(), witnessCapsule));
 		dbManager.getWitnessController().updateWitness();
-		this.printWitness(ByteString.copyFrom("00000000001".getBytes()));
-		this.printWitness(ByteString.copyFrom("00000000002".getBytes()));
-		this.printWitness(ByteString.copyFrom("00000000003".getBytes()));
-		this.printWitness(ByteString.copyFrom("00000000004".getBytes()));
-		this.printWitness(ByteString.copyFrom("00000000005".getBytes()));
-		this.printWitness(ByteString.copyFrom("00000000006".getBytes()));
-		this.printWitness(ByteString.copyFrom("00000000007".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000001".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000002".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000003".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000004".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000005".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000006".getBytes()));
+		this.printWitness(ByteString.copyFrom("000000000000000000007".getBytes()));
 	}
 
 	private void printAccount(final ByteString address) {
@@ -125,27 +125,27 @@ public class AccountVoteWitnessTest {
 		final List<AccountCapsule> accountCapsuleList = Lists.newArrayList();
 		final AccountCapsule accountTron =
 				new AccountCapsule(
-						ByteString.copyFrom("00000000001".getBytes()),
+						ByteString.copyFrom("000000000000000000001".getBytes()),
 						ByteString.copyFromUtf8("Tron"),
 						AccountType.Normal);
 		final AccountCapsule accountMarcus =
 				new AccountCapsule(
-						ByteString.copyFrom("00000000002".getBytes()),
+						ByteString.copyFrom("000000000000000000002".getBytes()),
 						ByteString.copyFromUtf8("Marcus"),
 						AccountType.Normal);
 		final AccountCapsule accountOlivier =
 				new AccountCapsule(
-						ByteString.copyFrom("00000000003".getBytes()),
+						ByteString.copyFrom("000000000000000000003".getBytes()),
 						ByteString.copyFromUtf8("Olivier"),
 						AccountType.Normal);
 		final AccountCapsule accountSasaXie =
 				new AccountCapsule(
-						ByteString.copyFrom("00000000004".getBytes()),
+						ByteString.copyFrom("000000000000000000004".getBytes()),
 						ByteString.copyFromUtf8("SasaXie"),
 						AccountType.Normal);
 		final AccountCapsule accountVivider =
 				new AccountCapsule(
-						ByteString.copyFrom("00000000005".getBytes()),
+						ByteString.copyFrom("000000000000000000005".getBytes()),
 						ByteString.copyFromUtf8("Vivider"),
 						AccountType.Normal);
 		// accountTron setVote
@@ -158,8 +158,8 @@ public class AccountVoteWitnessTest {
 		accountMarcus.setVote(accountTron.getAddress(), 100);
 		accountMarcus.setVote(accountOlivier.getAddress(), 100);
 		accountMarcus.setVote(accountSasaXie.getAddress(), 100);
-		accountMarcus.setVote(ByteString.copyFrom("00000000006".getBytes()), 100);
-		accountMarcus.setVote(ByteString.copyFrom("00000000007".getBytes()), 100);
+		accountMarcus.setVote(ByteString.copyFrom("000000000000000000006".getBytes()), 100);
+		accountMarcus.setVote(ByteString.copyFrom("000000000000000000007".getBytes()), 100);
 		// accountOlivier setVote
 		accountOlivier.setVote(accountTron.getAddress(), 100);
 		accountOlivier.setVote(accountMarcus.getAddress(), 100);
@@ -179,24 +179,26 @@ public class AccountVoteWitnessTest {
 		final List<WitnessCapsule> witnessCapsuleList = Lists.newArrayList();
 		final WitnessCapsule witnessTron =
 				new WitnessCapsule(
-						ByteString.copyFrom("00000000001".getBytes()),
-						ByteString.copyFrom("00000000001".getBytes()),
+						ByteString.copyFrom("000000000000000000001".getBytes()),
+						ByteString.copyFrom("000000000000000000001".getBytes()),
 						0, "");
 		final WitnessCapsule witnessOlivier =
 				new WitnessCapsule(
-						ByteString.copyFrom("00000000003".getBytes()),
-						ByteString.copyFrom("00000000003".getBytes()),
+						ByteString.copyFrom("000000000000000000003".getBytes()),
+						ByteString.copyFrom("000000000000000000003".getBytes()),
 						100, "");
 		final WitnessCapsule witnessVivider =
 				new WitnessCapsule(
-						ByteString.copyFrom("00000000005".getBytes()),
-						ByteString.copyFrom("00000000005".getBytes()),
+						ByteString.copyFrom("000000000000000000005".getBytes()),
+						ByteString.copyFrom("000000000000000000005".getBytes()),
 						200, "");
 		final WitnessCapsule witnessSenaLiu =
 				new WitnessCapsule(
-						ByteString.copyFrom("00000000006".getBytes()),
-						ByteString.copyFrom("00000000006".getBytes()),
+						ByteString.copyFrom("000000000000000000006".getBytes()),
+						ByteString.copyFrom("000000000000000000006".getBytes()),
 						300, "");
+
+		logger.info(witnessTron.createReadableString());
 		witnessCapsuleList.add(witnessTron);
 		witnessCapsuleList.add(witnessOlivier);
 		witnessCapsuleList.add(witnessVivider);

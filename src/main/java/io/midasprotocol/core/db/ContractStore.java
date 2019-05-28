@@ -20,10 +20,6 @@ public class ContractStore extends TronStoreWithRevoking<ContractCapsule> {
 		super(dbName);
 	}
 
-	public static void destory() {
-		instance = null;
-	}
-
 	@Override
 	public ContractCapsule get(byte[] key) {
 		return getUnchecked(key);

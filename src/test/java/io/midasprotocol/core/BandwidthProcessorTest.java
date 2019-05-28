@@ -2,6 +2,7 @@ package io.midasprotocol.core;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.junit.*;
@@ -58,7 +59,7 @@ public class BandwidthProcessorTest {
 		ASSET_NAME = "test_token";
 		ASSET_NAME_V2 = "2";
 		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
-		TO_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		TO_ADDRESS = Wallet.getAddressPreFixString() + "9aad9b98a2e435707fa39539ea0b12cb4d80468d";
 		ASSET_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a3456";
 		ASSET_ADDRESS_V2 = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a7890";
 		START_TIME = DateTime.now().minusDays(1).getMillis();
@@ -96,21 +97,15 @@ public class BandwidthProcessorTest {
 		assetIssueCapsule.setId("1");
 		dbManager
 				.getAssetIssueStore()
-				.put(
-						ByteArray.fromString(ASSET_NAME),
-						assetIssueCapsule);
+				.put(ByteArray.fromString(ASSET_NAME), assetIssueCapsule);
 		dbManager
 				.getAssetIssueV2Store()
-				.put(
-						ByteArray.fromString("1"),
-						assetIssueCapsule);
+				.put(ByteArray.fromString("1"), assetIssueCapsule);
 
 		AssetIssueCapsule assetIssueCapsuleV2 = new AssetIssueCapsule(getAssetIssueV2Contract());
 		dbManager
 				.getAssetIssueV2Store()
-				.put(
-						ByteArray.fromString(ASSET_NAME_V2),
-						assetIssueCapsuleV2);
+				.put(ByteArray.fromString(ASSET_NAME_V2), assetIssueCapsuleV2);
 
 		AccountCapsule ownerCapsule =
 				new AccountCapsule(
@@ -142,12 +137,15 @@ public class BandwidthProcessorTest {
 						AccountType.AssetIssue,
 						dbManager.getDynamicPropertiesStore().getAssetIssueFee());
 
-		dbManager.getAccountStore().reset();
+//		dbManager.getAccountStore().reset();
 		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 		dbManager.getAccountStore().put(toAccountCapsule.getAddress().toByteArray(), toAccountCapsule);
 		dbManager.getAccountStore().put(assetCapsule.getAddress().toByteArray(), assetCapsule);
 		dbManager.getAccountStore().put(assetCapsule2.getAddress().toByteArray(), assetCapsule2);
 
+
+		AccountCapsule temp = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+		logger.info(StringUtil.createReadableString(temp.getAddress()));
 	}
 
 	private TransferAssetContract getTransferAssetContract() {
@@ -226,7 +224,7 @@ public class BandwidthProcessorTest {
 		TransferAssetContract transferAssetContract = getTransferAssetContract();
 		TransactionCapsule trx = new TransactionCapsule(transferAssetContract);
 
-		String NOT_EXISTS_ADDRESS = "008794500882809695a8a687866e76d4271a1abc";
+		String NOT_EXISTS_ADDRESS = Wallet.getAddressPreFixString() + "008794500882809695a8a687866e76d4271a1abc";
 		transferAssetContract = transferAssetContract.toBuilder()
 				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(NOT_EXISTS_ADDRESS))).build();
 
@@ -237,11 +235,11 @@ public class BandwidthProcessorTest {
 
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
 		dbManager.getDynamicPropertiesStore()
-				.saveTotalNetWeight(10_000_000L);//only owner has frozen balance
+				.saveTotalNetWeight(1_000_000_000L);//only owner has frozen balance
 
 		AccountCapsule ownerCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(OWNER_ADDRESS));
-		ownerCapsule.setFrozen(10_000_000L, 0L);
+		ownerCapsule.setFrozen(1_000_000_000L, 0L);
 
 		Assert.assertEquals(true, processor.contractCreateNewAccount(contract));
 		long bytes = trx.getSerializedSize();
@@ -310,14 +308,14 @@ public class BandwidthProcessorTest {
 		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
 		dbManager.getDynamicPropertiesStore()
-				.saveTotalNetWeight(10_000_000L);//only assetAccount has frozen balance
+				.saveTotalNetWeight(1_000_000_000L);//only assetAccount has frozen balance
 
 		TransferAssetContract contract = getTransferAssetContract();
 		TransactionCapsule trx = new TransactionCapsule(contract);
 
 		AccountCapsule assetCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(ASSET_ADDRESS));
-		assetCapsule.setFrozen(10_000_000L, 0L);
+		assetCapsule.setFrozen(1_000_000_000L, 0L);
 		dbManager.getAccountStore().put(assetCapsule.getAddress().toByteArray(), assetCapsule);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
@@ -377,7 +375,7 @@ public class BandwidthProcessorTest {
 		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
 		dbManager.getDynamicPropertiesStore()
-				.saveTotalNetWeight(10_000_000L);//only assetAccount has frozen balance
+				.saveTotalNetWeight(1_000_000_000L);//only assetAccount has frozen balance
 
 		TransferAssetContract contract = getTransferAssetV2Contract();
 		TransactionCapsule trx = new TransactionCapsule(contract);
@@ -397,9 +395,9 @@ public class BandwidthProcessorTest {
 		AccountCapsule issuerCapsuleNew = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(ASSET_ADDRESS_V2));
 
-		Assert.assertEquals(508882612L, issuerCapsuleNew.getLatestConsumeTime());
+		Assert.assertEquals(508882612, issuerCapsuleNew.getLatestConsumeTime());
 		Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
-		Assert.assertEquals(508882612L,
+		Assert.assertEquals(508882612,
 				ownerCapsuleNew.getLatestAssetOperationTimeV2(ASSET_NAME_V2));
 		Assert.assertEquals(
 				113L + (dbManager.getDynamicPropertiesStore().supportVM()
@@ -440,7 +438,7 @@ public class BandwidthProcessorTest {
 	public void testConsumeOwner() throws Exception {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
 		dbManager.getDynamicPropertiesStore()
-				.saveTotalNetWeight(10_000_000L);//only owner has frozen balance
+				.saveTotalNetWeight(1_000_000_000L);//only owner has frozen balance
 
 		TransferAssetContract contract = getTransferAssetContract();
 		TransactionCapsule trx = new TransactionCapsule(contract);
@@ -495,7 +493,7 @@ public class BandwidthProcessorTest {
 							ByteString.copyFromUtf8(""),
 							ByteString.copyFrom(account.getAddress()),
 							AccountType.AssetIssue,
-							100L);
+							10000L);
 			dbManager.getAccountStore().put(account.getAddress(), capsule);
 		});
 

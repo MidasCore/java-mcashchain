@@ -2,10 +2,7 @@ package io.midasprotocol.core.db;
 
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.FileUtil;
@@ -89,7 +86,8 @@ public class KhaosDatabaseTest {
 	}
 
 
-	@Test
+//	@Test
+	@Ignore
 	public void checkWeakReference() throws UnLinkedBlockException, BadNumberBlockException {
 		BlockCapsule blockCapsule = new BlockCapsule(Block.newBuilder().setBlockHeader(
 				BlockHeader.newBuilder().setRawData(raw.newBuilder().setParentHash(ByteString.copyFrom(

@@ -1,6 +1,7 @@
 package io.midasprotocol.common.runtime.utils;
 
 import io.midasprotocol.common.storage.Deposit;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.actuator.TransferActuator;
 import io.midasprotocol.core.actuator.TransferAssetActuator;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -48,6 +49,13 @@ public class MUtil {
 	}
 
 	public static byte[] convertToTronAddress(byte[] address) {
+		if (address.length == 20) {
+			byte[] newAddress = new byte[21];
+			byte[] temp = new byte[]{Wallet.getAddressPreFixByte()};
+			System.arraycopy(temp, 0, newAddress, 0, temp.length);
+			System.arraycopy(address, 0, newAddress, temp.length, address.length);
+			address = newAddress;
+		}
 		return address;
 	}
 }

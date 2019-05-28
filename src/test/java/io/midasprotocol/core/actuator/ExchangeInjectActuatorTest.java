@@ -847,7 +847,7 @@ public class ExchangeInjectActuatorTest {
 			fail();
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertEquals("account[6e548794500882809695a8a687866e76d4271a1abc]"
+			Assert.assertEquals("account[32548794500882809695a8a687866e76d4271a1abc]"
 							+ " is not creator",
 					e.getMessage());
 		} catch (ContractExeException e) {
@@ -891,7 +891,7 @@ public class ExchangeInjectActuatorTest {
 			fail();
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertEquals("account[6e548794500882809695a8a687866e76d4271a1abc]"
+			Assert.assertEquals("account[32548794500882809695a8a687866e76d4271a1abc]"
 							+ " is not creator",
 					e.getMessage());
 		} catch (ContractExeException e) {

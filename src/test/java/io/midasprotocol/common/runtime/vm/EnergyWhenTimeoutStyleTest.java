@@ -1,5 +1,6 @@
 package io.midasprotocol.common.runtime.vm;
 
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +37,7 @@ public class EnergyWhenTimeoutStyleTest {
 	private String dbPath = "output_CPUTimeTest";
 	private String OWNER_ADDRESS;
 	private Application AppT;
-	private long totalBalance = 30_000_000_000_000L;
+	private long totalBalance = 3_000_000_000_000_000L;
 
 
 	/**
@@ -48,7 +49,7 @@ public class EnergyWhenTimeoutStyleTest {
 				Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		AppT = ApplicationFactory.create(context);
-		OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
 		dbManager = context.getBean(Manager.class);
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(Hex.decode(OWNER_ADDRESS), AccountType.Normal);
@@ -84,23 +85,23 @@ public class EnergyWhenTimeoutStyleTest {
 			throws ContractExeException, ContractValidateException, ReceiptCheckErrException, VMIllegalException {
 
 		long value = 0;
-		long feeLimit = 1000_000_000L;
+		long feeLimit = 100_000_000_000L;
 		byte[] address = Hex.decode(OWNER_ADDRESS);
 		long consumeUserResourcePercent = 0;
 		TVMTestResult result = deployEndlessLoopContract(value, feeLimit,
 				consumeUserResourcePercent);
 
 		if (null != result.getRuntime().getResult().getException()) {
-			long expectEnergyUsageTotal = feeLimit / 100;
+			long expectEnergyUsageTotal = feeLimit / Constant.SUN_PER_ENERGY;
 			Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 			Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-					totalBalance - expectEnergyUsageTotal * 100);
+					totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
 			return;
 		}
 		long expectEnergyUsageTotal = 55107;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * 100);
+				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
 
 		byte[] contractAddress = result.getContractAddress();
 
@@ -112,13 +113,13 @@ public class EnergyWhenTimeoutStyleTest {
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
 						triggerData, value, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = feeLimit / 100;
+		long expectEnergyUsageTotal2 = feeLimit / Constant.SUN_PER_ENERGY;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Exception exception = result.getRuntime().getResult().getException();
 		Assert.assertTrue((exception instanceof OutOfTimeException)
 				|| (exception instanceof OutOfEnergyException));
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
 	}
 
 	public TVMTestResult deployEndlessLoopContract(long value, long feeLimit,

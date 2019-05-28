@@ -18,10 +18,6 @@ public class CodeStore extends TronStoreWithRevoking<CodeCapsule> {
 		super(dbName);
 	}
 
-	public static void destory() {
-		instance = null;
-	}
-
 	@Override
 	public CodeCapsule get(byte[] key) {
 		return getUnchecked(key);

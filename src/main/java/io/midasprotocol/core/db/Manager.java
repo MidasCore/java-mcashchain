@@ -541,6 +541,16 @@ public class Manager {
 							}
 							stakeAccountCapsule.setStake(stakeAccountCapsule.getStakeAmount() + stakeAmount);
 							this.stakeAccountStore.put(keyOwnerAddress, stakeAccountCapsule);
+
+							AccountCapsule accountCapsule;
+							if (!this.accountStore.has(keyOwnerAddress)) {
+								accountCapsule = new AccountCapsule(ByteString.EMPTY,
+										ByteString.copyFrom(keyOwnerAddress), AccountType.AssetIssue, 0L);
+							} else {
+								accountCapsule = this.accountStore.get(keyOwnerAddress);
+							}
+							accountCapsule.setStake(accountCapsule.getWitnessStakeAmount() + stakeAmount, -1);
+							this.accountStore.put(keyOwnerAddress, accountCapsule);
 						});
 	}
 
@@ -625,6 +635,7 @@ public class Manager {
 	public void adjustAllowance(byte[] accountAddress, long amount)
 			throws BalanceInsufficientException {
 		AccountCapsule account = getAccountStore().getUnchecked(accountAddress);
+		if (account == null) return;
 		long allowance = account.getAllowance();
 		if (amount == 0) {
 			return;

@@ -2,21 +2,17 @@ package io.midasprotocol.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import io.midasprotocol.core.Wallet;
-import io.midasprotocol.core.capsule.StakeAccountCapsule;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.FileUtil;
-import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
+import io.midasprotocol.core.capsule.StakeAccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
 import io.midasprotocol.core.capsule.WitnessCapsule;
 import io.midasprotocol.core.config.DefaultConfig;
 import io.midasprotocol.core.config.args.Args;
-import io.midasprotocol.core.config.args.Witness;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
 import io.midasprotocol.core.exception.ContractExeException;
@@ -24,6 +20,8 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.*;
 
 import java.io.File;
 
@@ -79,6 +77,7 @@ public class WithdrawBalanceActuatorTest {
 	 */
 	@Before
 	public void createAccountCapsule() {
+		dbManager.getAccountStore().delete(ByteArray.fromHexString(WITNESS_ADDRESS));
 		AccountCapsule ownerCapsule =
 				new AccountCapsule(
 						ByteString.copyFromUtf8("owner"),
@@ -177,7 +176,9 @@ public class WithdrawBalanceActuatorTest {
 
 	@Test
 	public void notHaveAllowance() {
-//    long now = System.currentTimeMillis();
+		long now = System.currentTimeMillis();
+		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
+
 //    AccountCapsule accountCapsule = dbManager.getAccountStore()
 //        .get(ByteArray.fromHexString(WITNESS_ADDRESS));
 //    accountCapsule.setFrozen(1_000_000_000L, now);
@@ -192,8 +193,7 @@ public class WithdrawBalanceActuatorTest {
 			Assert.fail("witnessAccount does not have any allowance");
 
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("witnessAccount does not have any allowance",
-					e.getMessage());
+			Assert.assertEquals("witnessAccount does not have any allowance", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

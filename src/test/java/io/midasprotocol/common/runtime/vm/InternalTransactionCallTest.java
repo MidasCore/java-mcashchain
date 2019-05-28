@@ -1,5 +1,6 @@
 package io.midasprotocol.common.runtime.vm;
 
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -47,11 +48,11 @@ public class InternalTransactionCallTest {
 
 		context = new ApplicationContext(DefaultConfig.class);
 		AppT = ApplicationFactory.create(context);
-		OWNER_ADDRESS = "abd4b9367799eaa3197fecb144eb71de1e049abc";
+		OWNER_ADDRESS = Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abc";
 		dbManager = context.getBean(Manager.class);
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(Hex.decode(OWNER_ADDRESS), AccountType.Normal);
-		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 100000000);
+		deposit.addBalance(Hex.decode(OWNER_ADDRESS), 10000000000L);
 	}
 
 
@@ -92,14 +93,14 @@ public class InternalTransactionCallTest {
 		byte[] triggerData = TVMTestUtils.parseABI("callTest(address,uint256)", params);
 		TVMTestUtils.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 				contractAAddress, triggerData,
-				0, 1000000000, deposit, null);
+				0, 100000000000L, deposit, null);
 
 		/* =================================== CALL numberForB() to check A's numberForB =================================== */
 		byte[] triggerData2 = TVMTestUtils.parseABI("numberForB()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData2,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// A should not be changed
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000000");
@@ -109,7 +110,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData3,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// A should be changed
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000000");
@@ -119,7 +120,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractBAddress, triggerData4,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// B's numberForB should be changed to 3
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000003");
@@ -129,7 +130,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractBAddress, triggerData5,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// B 's senderForB should be A
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				Hex.toHexString(new DataWord(new DataWord(contractAAddress).getLast20Bytes()).getData()));
@@ -152,14 +153,14 @@ public class InternalTransactionCallTest {
 		byte[] triggerData = TVMTestUtils.parseABI("delegatecallTest(address,uint256)", params);
 		TVMTestUtils.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 				contractAAddress, triggerData,
-				0, 1000000000, deposit, null);
+				0, 100000000000L, deposit, null);
 
 		/* =================================== CALL numberForB() to check A's numberForB =================================== */
 		byte[] triggerData2 = TVMTestUtils.parseABI("numberForB()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData2,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// A should be changed to 3
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000003");
@@ -169,7 +170,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData3,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// A's senderForB should be changed to caller's contract Address (OWNER_ADDRESS)
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				Hex.toHexString(new DataWord(new DataWord(OWNER_ADDRESS).getLast20Bytes()).getData()));
@@ -179,7 +180,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractBAddress, triggerData4,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// B's numberForB should not be changed
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000000");
@@ -189,7 +190,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractBAddress, triggerData5,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// B 's senderForB should not be changed
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000000");
@@ -213,14 +214,14 @@ public class InternalTransactionCallTest {
 		byte[] triggerData = TVMTestUtils.parseABI("callcodeTest(address,uint256)", params);
 		TVMTestUtils.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 				contractAAddress, triggerData,
-				0, 1000000000, deposit, null);
+				0, 100000000000L, deposit, null);
 
 		/* =================================== CALL numberForB() to check A's numberForB =================================== */
 		byte[] triggerData2 = TVMTestUtils.parseABI("numberForB()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData2,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// A should be changed to 3
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000003");
@@ -230,7 +231,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData3,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// A's senderForB should be changed to A's contract Address
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				Hex.toHexString(new DataWord(new DataWord(contractAAddress).getLast20Bytes()).getData()));
@@ -240,7 +241,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractBAddress, triggerData4,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// B's numberForB should not be changed
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000000");
@@ -250,7 +251,7 @@ public class InternalTransactionCallTest {
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractBAddress, triggerData5,
-						0, 1000000000, deposit, null);
+						0, 100000000000L, deposit, null);
 		// B 's senderForB should not be changed
 		Assert.assertEquals(Hex.toHexString(runtime.getResult().getHReturn()),
 				"0000000000000000000000000000000000000000000000000000000000000000");
@@ -292,7 +293,7 @@ public class InternalTransactionCallTest {
 						+ "00604051808303816000875af2505050505050565b600054815600a165627a7a723058206d36ef7c6f6d387ad915f299e715c9b360f3719843a1113badb28b"
 						+ "6595e66c1e0029";
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 		String libraryAddressPair = null;
 
@@ -324,7 +325,7 @@ public class InternalTransactionCallTest {
 						+ "ffffffffffffffffff191633179055565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b600054815600a165627a7"
 						+ "a72305820e2c513cf46bb32018879ec48f8fe264c985b6d2c7a853a578f4f56583fe1ffb80029";
 		long value = 0;
-		long feeLimit = 1000000000;
+		long feeLimit = 100000000000L;
 		long consumeUserResourcePercent = 0;
 		String libraryAddressPair = null;
 
