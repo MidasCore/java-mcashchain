@@ -64,7 +64,6 @@ fi
 
 echo "process    : java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/${CONFIG_FILE} -p ${PRIVATE_KEY} -d ${OUTPUT_DIRECTORY} ${OPT}"
 echo "application: $APP"
-#echo "tron net   : $NET"
 echo "db path    : $OUTPUT_DIRECTORY"
 echo "pk         : $PRIVATE_KEY"
 echo "config     : $CONFIG_FILE"
