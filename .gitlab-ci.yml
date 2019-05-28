@@ -1,0 +1,93 @@
+variables:
+
+  DOCKER_REGISTRY_URL: asia.gcr.io/midas-protocol/$CI_PROJECT_NAME
+  PROJECT_CHART_NAME: $CI_PROJECT_NAME
+
+  GKE_DEV_CLUSTER_NAME: midas-chain
+  GKE_PROD_CLUSTER_NAME: midas-chain
+
+  NAMESPACE_DEV: mcash-dev
+  NAMESPACE_PROD: mcash-chain
+
+  DEV_PREFIX: dev-
+  DEPLOY_IMAGE: asia.gcr.io/midas-protocol/midas-deploy:206
+
+stages:
+  - build
+  - ship
+  - deploy
+
+####################################################
+# CI for development
+####################################################
+build_dev:
+  stage: build
+  script:
+    - docker build -t $DOCKER_REGISTRY_URL:$IMAGE_TAG --file=Dockerfile .
+  only:
+    - /^(develop|dev-.*)$/
+  variables:
+    IMAGE_TAG: b$CI_PIPELINE_ID
+
+push_dev:
+  stage: ship
+  script:
+    - echo Pushed $DOCKER_REGISTRY_URL:$IMAGE_TAG
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $DEPLOY_IMAGE docker push $DOCKER_REGISTRY_URL:$IMAGE_TAG
+  only:
+    - develop
+  variables:
+    IMAGE_TAG: b$CI_PIPELINE_ID
+
+#deploy_dev:
+#  stage: deploy
+#  script:
+#    - echo "Deploy Image='$DOCKER_REGISTRY_URL:$IMAGE_TAG' Namespace='$NAMESPACE' SET_EXTRA_VALUE=$SET_EXTRA_VALUE"
+#    - docker run --rm
+#      -e GKE_CLUSTER_NAME=$DEPLOY_CLUSTER_NAME
+#      -v ${PWD}/helm:/helm
+#      -v /var/run/docker.sock:/var/run/docker.sock
+#      $DEPLOY_IMAGE
+#      helm upgrade -i $PREFIX$PROJECT_CHART_NAME $CHART_PATH
+#      -f $CHART_VALUE_FILES
+#      --namespace=$NAMESPACE
+#      --set modules.$DEPLOY_MODULE.imageTag=$IMAGE_TAG,image.repository=$DOCKER_REGISTRY_URL
+#  only:
+#    - develop
+#  variables:
+#    CHART_PATH: /helm
+#    CHART_VALUE_FILES: /helm/values_dev.yaml
+#    DEPLOY_MODULE: service
+#    DEPLOY_CLUSTER_NAME: $GKE_DEV_CLUSTER_NAME
+#    IMAGE_TAG: b$CI_PIPELINE_ID
+#    NAMESPACE: $NAMESPACE_DEV
+#    PREFIX: $DEV_PREFIX
+
+####################################################
+# CI for production
+####################################################
+build_prod:
+  extends: build_dev
+  only:
+    - master
+  variables:
+    IMAGE_TAG: r$CI_PIPELINE_ID
+
+push_prod:
+  extends: push_dev
+  only:
+    - master
+  variables:
+    IMAGE_TAG: r$CI_PIPELINE_ID
+
+#deploy_prod:
+#  extends: deploy_dev
+#  only:
+#    - master
+#  when: manual
+#  variables:
+#    CHART_VALUE_FILES: /helm/values_prod.yaml
+#    DEPLOY_CLUSTER_NAME: $GKE_PROD_CLUSTER_NAME
+#    IMAGE_TAG: r$CI_PIPELINE_ID
+#    NAMESPACE: $NAMESPACE_PROD
+#    PREFIX: ''

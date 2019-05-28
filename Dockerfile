@@ -6,9 +6,9 @@ RUN apt-get update \
     && apt-get -y install wget openjdk-8-jdk openjfx unzip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY cache/.gradle /root/.gradle
+#COPY cache/.gradle /root/.gradle
 
-RUN ls /root/.gradle
+#RUN ls /root/.gradle
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ENV PATH $JAVA_HOME/bin:$PATH

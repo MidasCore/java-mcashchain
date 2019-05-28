@@ -1,0 +1,22 @@
+{{- $module := .Values.modules.service -}}
+{{- $fullName := printf "%s-%s" (include "baseName.fullname" .) ($module.name | default "") | trunc 63 | trimSuffix "-" -}}
+{{- $name := printf "%s-%s" (include "baseName.name" .) ($module.name | default "") | trunc 63 | trimSuffix "-" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    helm.sh/chart: {{ include "baseName.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ $module.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
