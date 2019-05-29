@@ -38,35 +38,31 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
 					.get(exchangeWithdrawContract.getOwnerAddress().toByteArray());
 
-			ExchangeCapsule exchangeCapsule = dbManager.getExchangeStoreFinal().
+			ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().
 					get(ByteArray.fromLong(exchangeWithdrawContract.getExchangeId()));
 
-			byte[] firstTokenID = exchangeCapsule.getFirstTokenId();
-			byte[] secondTokenID = exchangeCapsule.getSecondTokenId();
+			long firstTokenID = exchangeCapsule.getFirstTokenId();
+			long secondTokenID = exchangeCapsule.getSecondTokenId();
 			long firstTokenBalance = exchangeCapsule.getFirstTokenBalance();
 			long secondTokenBalance = exchangeCapsule.getSecondTokenBalance();
 
-			byte[] tokenID = exchangeWithdrawContract.getTokenId().toByteArray();
+			long tokenID = exchangeWithdrawContract.getTokenId();
 			long tokenQuant = exchangeWithdrawContract.getQuant();
 
-			byte[] anotherTokenID;
+			long anotherTokenID;
 			long anotherTokenQuant;
 
 			BigInteger bigFirstTokenBalance = new BigInteger(String.valueOf(firstTokenBalance));
 			BigInteger bigSecondTokenBalance = new BigInteger(String.valueOf(secondTokenBalance));
 			BigInteger bigTokenQuant = new BigInteger(String.valueOf(tokenQuant));
-			if (Arrays.equals(tokenID, firstTokenID)) {
+			if (tokenID == firstTokenID) {
 				anotherTokenID = secondTokenID;
-//        anotherTokenQuant = Math
-//            .floorDiv(Math.multiplyExact(secondTokenBalance, tokenQuant), firstTokenBalance);
 				anotherTokenQuant = bigSecondTokenBalance.multiply(bigTokenQuant)
 						.divide(bigFirstTokenBalance).longValueExact();
 				exchangeCapsule.setBalance(firstTokenBalance - tokenQuant,
 						secondTokenBalance - anotherTokenQuant);
 			} else {
 				anotherTokenID = firstTokenID;
-//        anotherTokenQuant = Math
-//            .floorDiv(Math.multiplyExact(firstTokenBalance, tokenQuant), secondTokenBalance);
 				anotherTokenQuant = bigFirstTokenBalance.multiply(bigTokenQuant)
 						.divide(bigSecondTokenBalance).longValueExact();
 				exchangeCapsule.setBalance(firstTokenBalance - anotherTokenQuant,
@@ -75,16 +71,16 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 
 			long newBalance = accountCapsule.getBalance() - calcFee();
 
-			if (Arrays.equals(tokenID, "_".getBytes())) {
+			if (tokenID == 0) {
 				accountCapsule.setBalance(newBalance + tokenQuant);
 			} else {
-				accountCapsule.addAssetAmountV2(tokenID, tokenQuant, dbManager);
+				accountCapsule.addAssetAmountV2(tokenID, tokenQuant);
 			}
 
-			if (Arrays.equals(anotherTokenID, "_".getBytes())) {
+			if (anotherTokenID == 0) {
 				accountCapsule.setBalance(newBalance + anotherTokenQuant);
 			} else {
-				accountCapsule.addAssetAmountV2(anotherTokenID, anotherTokenQuant, dbManager);
+				accountCapsule.addAssetAmountV2(anotherTokenID, anotherTokenQuant);
 			}
 
 			dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
@@ -93,11 +89,7 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 
 			ret.setExchangeWithdrawAnotherAmount(anotherTokenQuant);
 			ret.setStatus(fee, code.SUCCESS);
-		} catch (ItemNotFoundException e) {
-			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
-			throw new ContractExeException(e.getMessage());
-		} catch (InvalidProtocolBufferException e) {
+		} catch (ItemNotFoundException | InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
 			ret.setStatus(fee, code.FAILED);
 			throw new ContractExeException(e.getMessage());
@@ -145,7 +137,7 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 
 		ExchangeCapsule exchangeCapsule;
 		try {
-			exchangeCapsule = dbManager.getExchangeStoreFinal().
+			exchangeCapsule = dbManager.getExchangeStore().
 					get(ByteArray.fromLong(contract.getExchangeId()));
 		} catch (ItemNotFoundException ex) {
 			throw new ContractValidateException("Exchange[" + contract.getExchangeId() + "] not exists");
@@ -155,23 +147,17 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 			throw new ContractValidateException("account[" + readableOwnerAddress + "] is not creator");
 		}
 
-		byte[] firstTokenID = exchangeCapsule.getFirstTokenId();
-		byte[] secondTokenID = exchangeCapsule.getSecondTokenId();
+		long firstTokenID = exchangeCapsule.getFirstTokenId();
+		long secondTokenID = exchangeCapsule.getSecondTokenId();
 		long firstTokenBalance = exchangeCapsule.getFirstTokenBalance();
 		long secondTokenBalance = exchangeCapsule.getSecondTokenBalance();
 
-		byte[] tokenID = contract.getTokenId().toByteArray();
+		long tokenID = contract.getTokenId();
 		long tokenQuant = contract.getQuant();
 
 		long anotherTokenQuant;
 
-		if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() == 1) {
-			if (!Arrays.equals(tokenID, "_".getBytes()) && !TransactionUtil.isNumber(tokenID)) {
-				throw new ContractValidateException("token id is not a valid number");
-			}
-		}
-
-		if (!Arrays.equals(tokenID, firstTokenID) && !Arrays.equals(tokenID, secondTokenID)) {
+		if (tokenID != firstTokenID && tokenID != secondTokenID) {
 			throw new ContractValidateException("token is not in exchange");
 		}
 
@@ -187,7 +173,7 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 		BigDecimal bigFirstTokenBalance = new BigDecimal(String.valueOf(firstTokenBalance));
 		BigDecimal bigSecondTokenBalance = new BigDecimal(String.valueOf(secondTokenBalance));
 		BigDecimal bigTokenQuant = new BigDecimal(String.valueOf(tokenQuant));
-		if (Arrays.equals(tokenID, firstTokenID)) {
+		if (tokenID == firstTokenID) {
 //      anotherTokenQuant = Math
 //          .floorDiv(Math.multiplyExact(secondTokenBalance, tokenQuant), firstTokenBalance);
 			anotherTokenQuant = bigSecondTokenBalance.multiply(bigTokenQuant)

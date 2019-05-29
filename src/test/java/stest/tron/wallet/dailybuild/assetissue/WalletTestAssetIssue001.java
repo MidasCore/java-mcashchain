@@ -1,5 +1,6 @@
 package stest.tron.wallet.dailybuild.assetissue;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -98,28 +99,28 @@ public class WalletTestAssetIssue001 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(noBandwitch, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
-		Assert.assertTrue(transferAsset(toAddress, assetAccountId.toByteArray(), 100L,
+		Assert.assertTrue(transferAsset(toAddress, assetAccountId, 100L,
 				noBandwitchAddress, noBandwitch));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		//Transfer Asset failed when transfer to yourself
-		Assert.assertFalse(transferAsset(toAddress, assetAccountId.toByteArray(), 100L,
+		Assert.assertFalse(transferAsset(toAddress, assetAccountId, 100L,
 				toAddress, testKey003));
 		//Transfer Asset failed when the transfer amount is large than the asset balance you have.
 		Assert.assertFalse(
-				transferAsset(fromAddress, assetAccountId.toByteArray(), 9100000000000000000L,
+				transferAsset(fromAddress, assetAccountId, 9100000000000000000L,
 						toAddress, testKey003));
 		//Transfer Asset failed when the transfer amount is 0
-		Assert.assertFalse(transferAsset(fromAddress, assetAccountId.toByteArray(), 0L,
+		Assert.assertFalse(transferAsset(fromAddress, assetAccountId, 0L,
 				toAddress, testKey003));
 		//Transfer Asset failed when the transfer amount is -1
-		Assert.assertFalse(transferAsset(fromAddress, assetAccountId.toByteArray(), -1L,
+		Assert.assertFalse(transferAsset(fromAddress, assetAccountId, -1L,
 				toAddress, testKey003));
 
 		//Transfer success.
-		Assert.assertTrue(transferAsset(fromAddress, assetAccountId.toByteArray(), 1L,
+		Assert.assertTrue(transferAsset(fromAddress, assetAccountId, 1L,
 				toAddress, testKey003));
 
 		//No freeze asset, try to unfreeze asset failed.
@@ -249,7 +250,7 @@ public class WalletTestAssetIssue001 {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -262,10 +263,9 @@ public class WalletTestAssetIssue001 {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 

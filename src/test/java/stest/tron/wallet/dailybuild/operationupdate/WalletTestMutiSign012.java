@@ -41,7 +41,7 @@ public class WalletTestMutiSign012 {
 			.getString("defaultParameter.assetDescription");
 	String url = Configuration.getByPath("testng.conf")
 			.getString("defaultParameter.assetUrl");
-	ByteString assetAccountId1;
+	long assetAccountId1;
 	String[] permissionKeyString = new String[2];
 	String[] ownerKeyString = new String[2];
 	String accountPermissionJson = "";
@@ -189,12 +189,12 @@ public class WalletTestMutiSign012 {
 		PublicMethed.printAddress(manager1Key);
 		Account getAssetIdFromOwnerAccount;
 		getAssetIdFromOwnerAccount = PublicMethed.queryAccount(ownerAddress, blockingStubFull);
-		assetAccountId1 = getAssetIdFromOwnerAccount.getAssetIssuedID();
+		assetAccountId1 = getAssetIdFromOwnerAccount.getAssetIssuedId();
 		Long balanceBefore = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		logger.info("balanceBefore: " + balanceBefore);
 
 		String txid = PublicMethedForMutiSign.transferAssetForTransactionId1(manager1Address,
-				assetAccountId1.toByteArray(), 10, ownerAddress, ownerKey, blockingStubFull,
+				assetAccountId1, 10, ownerAddress, ownerKey, blockingStubFull,
 				0, ownerKeyString);
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -278,7 +278,7 @@ public class WalletTestMutiSign012 {
 		balanceBefore = balanceAfter;
 
 		txid = PublicMethedForMutiSign.participateAssetIssueForTransactionId(ownerAddress,
-				assetAccountId1.toByteArray(), 10, participateAddress, participateKey, 0,
+				assetAccountId1, 10, participateAddress, participateKey, 0,
 				blockingStubFull, ownerKeyString);
 
 		Assert.assertNotNull(txid);

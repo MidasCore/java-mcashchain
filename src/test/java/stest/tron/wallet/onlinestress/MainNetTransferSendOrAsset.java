@@ -76,8 +76,7 @@ public class MainNetTransferSendOrAsset {
 		Account fromAccount = PublicMethed.queryAccount(testKey001, blockingStubFull);
 		Account toAccount = PublicMethed.queryAccount(testKey002, blockingStubFull);
 		if (fromAccount.getBalance() < 10000000000L) {
-			PublicMethed
-					.sendcoin(fromAddress, 10000000000L, defaultAddress, defaultKey, blockingStubFull);
+			PublicMethed.sendcoin(fromAddress, 10000000000L, defaultAddress, defaultKey, blockingStubFull);
 		}
 		if (fromAccount.getAssetCount() == 0) {
 			start = System.currentTimeMillis() + 2000;
@@ -113,17 +112,16 @@ public class MainNetTransferSendOrAsset {
 		}
 
 		Integer i = 0;
+		long assetIssueId = PublicMethed.queryAccount(fromAddress, blockingStubFull).getAssetIssuedId();
 		while (i < 60) {
-			PublicMethed
-					.transferAsset(toAddress, "testNetAsset".getBytes(), transferAmount, fromAddress,
+			PublicMethed.transferAsset(toAddress, assetIssueId, transferAmount, fromAddress,
 							testKey001, blockingStubFull);
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			PublicMethed.sendcoin(toSendAddress, sendAmount, fromSendAddress, testKey003,
-					blockingStubFull);
+			PublicMethed.sendcoin(toSendAddress, sendAmount, fromSendAddress, testKey003, blockingStubFull);
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {

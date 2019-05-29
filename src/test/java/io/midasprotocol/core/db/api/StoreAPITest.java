@@ -163,9 +163,7 @@ public class StoreAPITest {
 
 	private static void addAssetIssueToStoreV2(AssetIssueContract assetIssueContract, byte[] id) {
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
-		dbManager
-				.getAssetIssueV2Store()
-				.put(id, assetIssueCapsule);
+		dbManager.getAssetIssueStore().put(id, assetIssueCapsule);
 	}
 
 	private static AssetIssueContract getBuildAssetIssueContract(
@@ -333,7 +331,7 @@ public class StoreAPITest {
 	public void addAssetIssueToStoreV2() {
 		byte[] id = ByteArray.fromString("100000");
 		addAssetIssueToStoreV2(assetIssue1, id);
-		AssetIssueCapsule assetIssueCapsule = dbManager.getAssetIssueV2Store().get(id);
+		AssetIssueCapsule assetIssueCapsule = dbManager.getAssetIssueStore().get(id);
 		Assert.assertEquals(true, assetIssueCapsule.getName().equals(assetIssue1.getName()));
 	}
 
@@ -342,11 +340,11 @@ public class StoreAPITest {
 		long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 
 		for (AssetIssueCapsule assetIssueCapsule : dbManager.getAssetIssueStore().getAllAssetIssues()) {
-			dbManager.getAssetIssueV2Store().put(ByteArray.fromLong(tokenIdNum), assetIssueCapsule);
-			assetIssueCapsule.setId(String.valueOf(tokenIdNum));
+			dbManager.getAssetIssueStore().put(ByteArray.fromLong(tokenIdNum), assetIssueCapsule);
+			assetIssueCapsule.setId(tokenIdNum);
 			tokenIdNum++;
 		}
-		Assert.assertEquals(2, dbManager.getAssetIssueV2Store().getAllAssetIssues().size());
+		Assert.assertEquals(2, dbManager.getAssetIssueStore().getAllAssetIssues().size());
 
 	}
 

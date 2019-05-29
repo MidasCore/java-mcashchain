@@ -93,8 +93,7 @@ public class UpdateAssetActuatorTest {
 		dbManager.getAccountStore().delete(ByteArray.fromHexString(OWNER_ADDRESS_NOTEXIST));
 	}
 
-	private Any getContract(
-			String accountAddress, String description, String url, long newLimit, long newPublicLimit) {
+	private Any getContract(String accountAddress, String description, String url, long newLimit, long newPublicLimit) {
 		return Any.pack(
 				Contract.UpdateAssetContract.newBuilder()
 						.setOwnerAddress(StringUtil.hexString2ByteString(accountAddress))
@@ -114,7 +113,7 @@ public class UpdateAssetActuatorTest {
 				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
 				.setName(ByteString.copyFromUtf8(NAME))
 				.setTotalSupply(TOTAL_SUPPLY)
-				.setId(String.valueOf(tokenId))
+				.setId(tokenId)
 				.setTrxNum(100)
 				.setNum(10)
 				.setStartTime(nowTime)
@@ -125,9 +124,7 @@ public class UpdateAssetActuatorTest {
 				.build();
 	}
 
-	private void createAssertBeforSameTokenNameActive() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-
+	private void createAssetSameTokenNameActive() {
 		// address in accountStore and the owner of contract
 		AccountCapsule accountCapsule =
 				new AccountCapsule(
@@ -138,124 +135,16 @@ public class UpdateAssetActuatorTest {
 		// add asset issue
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(getAssetIssueContract());
 		dbManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
-		dbManager.getAssetIssueV2Store().put(assetIssueCapsule.createDbV2Key(), assetIssueCapsule);
 
-		accountCapsule.setAssetIssuedName(assetIssueCapsule.createDbKey());
-		accountCapsule.setAssetIssuedID(assetIssueCapsule.getId().getBytes());
-
-		accountCapsule.addAsset(assetIssueCapsule.createDbKey(), TOTAL_SUPPLY);
-		accountCapsule.addAssetV2(assetIssueCapsule.createDbV2Key(), TOTAL_SUPPLY);
+		accountCapsule.setAssetIssuedId(assetIssueCapsule.getId());
+		accountCapsule.addAssetV2(assetIssueCapsule.getId(), TOTAL_SUPPLY);
 
 		dbManager.getAccountStore().put(ByteArray.fromHexString(OWNER_ADDRESS), accountCapsule);
-	}
-
-	private void createAssertSameTokenNameActive() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-
-		// address in accountStore and the owner of contract
-		AccountCapsule accountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						ByteString.copyFromUtf8(OWNER_ADDRESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
-
-		// add asset issue
-		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(getAssetIssueContract());
-		dbManager.getAssetIssueV2Store().put(assetIssueCapsule.createDbV2Key(), assetIssueCapsule);
-
-		accountCapsule.setAssetIssuedName(assetIssueCapsule.createDbKey());
-		accountCapsule.setAssetIssuedID(assetIssueCapsule.getId().getBytes());
-		accountCapsule.addAssetV2(assetIssueCapsule.createDbV2Key(), TOTAL_SUPPLY);
-
-		dbManager.getAccountStore().put(ByteArray.fromHexString(OWNER_ADDRESS), accountCapsule);
-	}
-
-	@Test
-	public void successUpdateAssetBeforeSameTokenNameActive() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-		TransactionResultCapsule ret = new TransactionResultCapsule();
-		UpdateAssetActuator actuator;
-		actuator =
-				new UpdateAssetActuator(
-						getContract(OWNER_ADDRESS, DESCRIPTION, URL, 500L, 8000L), dbManager);
-		try {
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
-			//V1
-			AssetIssueCapsule assetIssueCapsule =
-					dbManager.getAssetIssueStore().get(ByteString.copyFromUtf8(NAME).toByteArray());
-			Assert.assertNotNull(assetIssueCapsule);
-			Assert.assertEquals(
-					DESCRIPTION, assetIssueCapsule.getInstance().getDescription().toStringUtf8());
-			Assert.assertEquals(URL, assetIssueCapsule.getInstance().getUrl().toStringUtf8());
-			Assert.assertEquals(assetIssueCapsule.getFreeAssetNetLimit(), 500L);
-			Assert.assertEquals(assetIssueCapsule.getPublicFreeAssetNetLimit(), 8000L);
-			//V2
-			AssetIssueCapsule assetIssueCapsuleV2 =
-					dbManager.getAssetIssueV2Store().get(ByteArray.fromString(String.valueOf(tokenId)));
-			Assert.assertNotNull(assetIssueCapsuleV2);
-			Assert.assertEquals(
-					DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
-			Assert.assertEquals(URL, assetIssueCapsuleV2.getInstance().getUrl().toStringUtf8());
-			Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetNetLimit(), 500L);
-			Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetLimit(), 8000L);
-
-		} catch (ContractValidateException | ContractExeException e) {
-			Assert.fail(e.getMessage());
-		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
-			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
-		}
-	}
-
-	/**
-	 * Init close SameTokenName,after init data,open SameTokenName
-	 */
-	@Test
-	public void oldNotUpdataSuccessUpdateAsset() {
-		createAssertBeforSameTokenNameActive();
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-		TransactionResultCapsule ret = new TransactionResultCapsule();
-		UpdateAssetActuator actuator;
-		actuator = new UpdateAssetActuator(
-				getContract(OWNER_ADDRESS, DESCRIPTION, URL, 500L, 8000L), dbManager);
-		try {
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
-			//V1 old version exist but  not updata
-			AssetIssueCapsule assetIssueCapsule =
-					dbManager.getAssetIssueStore().get(ByteString.copyFromUtf8(NAME).toByteArray());
-			Assert.assertNotNull(assetIssueCapsule);
-			Assert.assertNotEquals(
-					DESCRIPTION, assetIssueCapsule.getInstance().getDescription().toStringUtf8());
-			Assert.assertNotEquals(URL, assetIssueCapsule.getInstance().getUrl().toStringUtf8());
-			Assert.assertNotEquals(assetIssueCapsule.getFreeAssetNetLimit(), 500L);
-			Assert.assertNotEquals(assetIssueCapsule.getPublicFreeAssetNetLimit(), 8000L);
-			//V2
-			AssetIssueCapsule assetIssueCapsuleV2 =
-					dbManager.getAssetIssueV2Store().get(ByteArray.fromString(String.valueOf(tokenId)));
-			Assert.assertNotNull(assetIssueCapsuleV2);
-			Assert.assertEquals(
-					DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
-			Assert.assertEquals(URL, assetIssueCapsuleV2.getInstance().getUrl().toStringUtf8());
-			Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetNetLimit(), 500L);
-			Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetLimit(), 8000L);
-
-		} catch (ContractValidateException | ContractExeException e) {
-			Assert.fail(e.getMessage());
-		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
-			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
-		}
 	}
 
 	@Test
 	public void successUpdateAssetAfterSameTokenNameActive() {
-		createAssertSameTokenNameActive();
+		createAssetSameTokenNameActive();
 		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		UpdateAssetActuator actuator;
@@ -265,13 +154,8 @@ public class UpdateAssetActuatorTest {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
-			//V1，Data is no longer update
-			AssetIssueCapsule assetIssueCapsule =
-					dbManager.getAssetIssueStore().get(ByteString.copyFromUtf8(NAME).toByteArray());
-			Assert.assertNull(assetIssueCapsule);
-			//V2
 			AssetIssueCapsule assetIssueCapsuleV2 =
-					dbManager.getAssetIssueV2Store().get(ByteArray.fromString(String.valueOf(tokenId)));
+					dbManager.getAssetIssueStore().get(tokenId);
 			Assert.assertNotNull(assetIssueCapsuleV2);
 			Assert.assertEquals(
 					DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
@@ -282,15 +166,13 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
 
 	@Test
 	public void invalidAddress() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		UpdateAssetActuator actuator =
 				new UpdateAssetActuator(
 						getContract(OWNER_ADDRESS_INVALID, DESCRIPTION, URL, 500L, 8000L),
@@ -307,15 +189,13 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
 
 	@Test
 	public void noExistAccount() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		UpdateAssetActuator actuator =
 				new UpdateAssetActuator(
 						getContract(OWNER_ADDRESS_NOTEXIST, DESCRIPTION, URL, 500L, 8000L),
@@ -332,15 +212,13 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
 
 	@Test
 	public void noAsset() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		UpdateAssetActuator actuator =
 				new UpdateAssetActuator(
 						getContract(SECOND_ACCOUNT_ADDRESS, DESCRIPTION, URL, 500L, 8000L),
@@ -357,7 +235,6 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
@@ -367,8 +244,7 @@ public class UpdateAssetActuatorTest {
 	 */
 	@Test
 	public void invalidAssetUrl() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		String localUrl = "";
 		UpdateAssetActuator actuator =
 				new UpdateAssetActuator(
@@ -386,7 +262,6 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
@@ -396,8 +271,7 @@ public class UpdateAssetActuatorTest {
 	 */
 	@Test
 	public void invalidAssetDescription() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		String localDescription =
 				"abchefghijklmnopqrstuvwxyzabchefghijklmnopqrstuvwxyzabchefghijklmnopqrstuv"
 						+ "wxyzabchefghijklmnopqrstuvwxyzabchefghijklmnopqrstuvwxyzabchefghijklmnopqrstuvwxyzabchefghij"
@@ -418,7 +292,6 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
@@ -428,8 +301,7 @@ public class UpdateAssetActuatorTest {
 	 */
 	@Test
 	public void invalidNewLimit() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		long localNewLimit = 57_600_000_001L;
 		UpdateAssetActuator actuator =
 				new UpdateAssetActuator(
@@ -446,15 +318,13 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}
 
 	@Test
 	public void invalidNewPublicLimit() {
-		createAssertBeforSameTokenNameActive();
-		long tokenId = dbManager.getDynamicPropertiesStore().getTokenIdNum();
+		createAssetSameTokenNameActive();
 		long localNewPublicLimit = -1L;
 		UpdateAssetActuator actuator =
 				new UpdateAssetActuator(
@@ -471,7 +341,6 @@ public class UpdateAssetActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		} finally {
-			dbManager.getAssetIssueV2Store().delete(ByteArray.fromString(String.valueOf(tokenId)));
 			dbManager.getAssetIssueStore().delete(ByteString.copyFromUtf8(NAME).toByteArray());
 		}
 	}

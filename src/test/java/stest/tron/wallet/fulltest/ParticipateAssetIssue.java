@@ -1,5 +1,6 @@
 package stest.tron.wallet.fulltest;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -33,7 +34,7 @@ public class ParticipateAssetIssue {
 
 	private static final long now = System.currentTimeMillis();
 	private static final long sendAmount = 10250000000L;
-	private static String name = "PartAssetIssue_" + Long.toString(now);
+	private static String name = "PartAssetIssue_" + now;
 	private static long beforeCreateAssetIssueBalance;
 	private static long afterCreateAssetIssueBalance;
 	private static long afterParticipateAssetIssueBalance;
@@ -67,7 +68,7 @@ public class ParticipateAssetIssue {
 	 * constructor.
 	 */
 
-	public static boolean participateAssetIssue(byte[] to, byte[] assertName, long amount,
+	public static boolean participateAssetIssue(byte[] to, long assetId, long amount,
 												byte[] from, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -81,10 +82,9 @@ public class ParticipateAssetIssue {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -116,7 +116,7 @@ public class ParticipateAssetIssue {
 	 * constructor.
 	 */
 
-	public static boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public static boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 										String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -129,10 +129,9 @@ public class ParticipateAssetIssue {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -148,7 +147,7 @@ public class ParticipateAssetIssue {
 		}
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
-		if (response.getResult() == false) {
+		if (!response.getResult()) {
 			//logger.info(ByteArray.toStr(response.getMessage().toByteArray()));
 			return false;
 		} else {
@@ -197,16 +196,16 @@ public class ParticipateAssetIssue {
 		final Account participateInfo = PublicMethed.queryAccount(testKeyForParticipate,
 				blockingStubFull);
 
-		Map<String, Long> assetIssueMap = new HashMap<String, Long>();
+		Map<Long, Long> assetIssueMap;
 
 		Long temp = 0L;
 		assetIssueMap = createInfo.getAssetMap();
-		for (String key : assetIssueMap.keySet()) {
+		for (long key : assetIssueMap.keySet()) {
 
-			logger.info("Name is " + key);
+			logger.info("Key is " + key);
 		}
 		for (Long key : assetIssueMap.values()) {
-			logger.info("Balance are " + Long.toString(key));
+			logger.info("Balance are " + key);
 			temp = key;
 		}
 		beforeCreateAssetIssueBalance = temp;
@@ -219,6 +218,9 @@ public class ParticipateAssetIssue {
 		Integer i = 0;
 		Integer randNum;
 
+		final Account createInfo = PublicMethed.queryAccount(createAddress, blockingStubFull);
+		final long assetId = createInfo.getAssetIssuedId();
+
 		while (i < 20) {
 			randNum = i % 4;
 			i++;
@@ -229,7 +231,7 @@ public class ParticipateAssetIssue {
 					.build();
 			blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
 
-			participateAssetIssue(createAddress, name.getBytes(),
+			participateAssetIssue(createAddress, assetId,
 					1, participateAssetAddress, testKeyForParticipate, blockingStubFull);
 		}
 	}
@@ -242,42 +244,37 @@ public class ParticipateAssetIssue {
 	public void shutdown() throws InterruptedException {
 		//Print the duration.
 		end1 = System.currentTimeMillis();
-		logger.info("The time is " + Long.toString(end1 - start1));
+		logger.info("The time is " + (end1 - start1));
 
 		Account createInfo = PublicMethed.queryAccount(testKeyForCreate, blockingStubFull);
 
-		Map<String, Long> createAssetIssueMap = new HashMap<String, Long>();
+		Map<Long, Long> createAssetIssueMap;
 
 		Long temp = 0L;
 		createAssetIssueMap = createInfo.getAssetMap();
-		for (String key : createAssetIssueMap.keySet()) {
+		for (Long key : createAssetIssueMap.keySet()) {
 
 			logger.info("Name is " + key);
 		}
 		for (Long key : createAssetIssueMap.values()) {
-			logger.info("Balance are " + Long.toString(key));
+			logger.info("Balance are " + key);
 			temp = key;
 		}
 		afterCreateAssetIssueBalance = temp;
 
 		temp = 0L;
 		Account participateInfo = PublicMethed.queryAccount(testKeyForParticipate, blockingStubFull);
-		Map<String, Long> participateAssetIssueMap = new HashMap<String, Long>();
-		participateAssetIssueMap = participateInfo.getAssetMap();
+		Map<Long, Long> participateAssetIssueMap = participateInfo.getAssetMap();
 		for (Long key : participateAssetIssueMap.values()) {
-			logger.info("Balance are " + Long.toString(key));
+			logger.info("Balance are " + key);
 			temp = key;
 		}
 		afterParticipateAssetIssueBalance = temp;
 
-		logger.info("Create account has balance " + Long.toString(beforeCreateAssetIssueBalance)
-				+ " at the beginning");
-		logger.info("Create account has balance " + Long.toString(afterCreateAssetIssueBalance)
-				+ " at the end");
-		logger.info("Create account reduce balance " + Long.toString(beforeCreateAssetIssueBalance
-				- afterCreateAssetIssueBalance));
-		logger.info("Participate account total success transaction is "
-				+ Long.toString(afterParticipateAssetIssueBalance));
+		logger.info("Create account has balance " + beforeCreateAssetIssueBalance + " at the beginning");
+		logger.info("Create account has balance " + afterCreateAssetIssueBalance + " at the end");
+		logger.info("Create account reduce balance " + (beforeCreateAssetIssueBalance - afterCreateAssetIssueBalance));
+		logger.info("Participate account total success transaction is " + afterParticipateAssetIssueBalance);
 
 		Integer blockTimes = 0;
 		Integer blockTransParticipateNum = 0;
@@ -287,8 +284,8 @@ public class ParticipateAssetIssue {
 			//Print the current block transaction num.
 			Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			Long currentNum = currentBlock.getBlockHeader().getRawData().getNumber();
-			logger.info("The block num " + Long.toString(currentNum)
-					+ " total transaction is " + Long.toString(currentBlock.getTransactionsCount()));
+			logger.info("The block num " + currentNum
+					+ " total transaction is " + currentBlock.getTransactionsCount());
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
@@ -298,17 +295,17 @@ public class ParticipateAssetIssue {
 
 		createInfo = PublicMethed.queryAccount(testKeyForCreate, blockingStubFull);
 		participateInfo = PublicMethed.queryAccount(testKeyForParticipate, blockingStubFull);
-		createAssetIssueMap = new HashMap<String, Long>();
-		participateAssetIssueMap = new HashMap<String, Long>();
+		createAssetIssueMap = new HashMap<>();
+		participateAssetIssueMap = new HashMap<>();
 
 		temp = 0L;
 		createAssetIssueMap = createInfo.getAssetMap();
-		for (String key : createAssetIssueMap.keySet()) {
+		for (Long key : createAssetIssueMap.keySet()) {
 
 			logger.info("Name is " + key);
 		}
 		for (Long key : createAssetIssueMap.values()) {
-			logger.info("Balance are " + Long.toString(key));
+			logger.info("Balance are " + key);
 			temp = key;
 		}
 		afterCreateAssetIssueBalance = temp;
@@ -316,17 +313,14 @@ public class ParticipateAssetIssue {
 		temp = 0L;
 		participateAssetIssueMap = participateInfo.getAssetMap();
 		for (Long key : participateAssetIssueMap.values()) {
-			logger.info("Balance are " + Long.toString(key));
+			logger.info("Balance are " + key);
 			temp = key;
 		}
 		afterParticipateAssetIssueBalance = temp;
 
-		logger.info("Create account has balance " + Long.toString(beforeCreateAssetIssueBalance)
-				+ "at the beginning");
-		logger.info("Create account has balance " + Long.toString(afterCreateAssetIssueBalance)
-				+ "at the end");
-		logger.info("Participate account total success transaction is "
-				+ Long.toString(afterParticipateAssetIssueBalance));
+		logger.info("Create account has balance " + beforeCreateAssetIssueBalance + "at the beginning");
+		logger.info("Create account has balance " + afterCreateAssetIssueBalance + "at the end");
+		logger.info("Participate account total success transaction is " + afterParticipateAssetIssueBalance);
 
 		if (channelFull != null) {
 			channelFull.shutdown().awaitTermination(5, TimeUnit.SECONDS);

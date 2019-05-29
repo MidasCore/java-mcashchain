@@ -101,7 +101,7 @@ public class WalletTestAssetIssue002 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(participateAccountKey, blockingStubFull);
-		final ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		final long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		//Participate AssetIssue success
 		logger.info(name);
@@ -112,25 +112,25 @@ public class WalletTestAssetIssue002 {
 				blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Assert.assertTrue(PublicMethed.participateAssetIssue(participateAccountAddress,
-				assetAccountId.toByteArray(),
+				assetAccountId,
 				100L, toAddress, testKey003, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		//The amount is large than the total supply, participate failed.
 		Assert.assertFalse(PublicMethed.participateAssetIssue(participateAccountAddress,
-				assetAccountId.toByteArray(), 9100000000000000000L, toAddress, testKey003,
+				assetAccountId, 9100000000000000000L, toAddress, testKey003,
 				blockingStubFull));
 
 		//The amount is 0, participate asset issue failed.
 		Assert.assertFalse(PublicMethed.participateAssetIssue(participateAccountAddress,
-				assetAccountId.toByteArray(), 0L, toAddress, testKey003, blockingStubFull));
+				assetAccountId, 0L, toAddress, testKey003, blockingStubFull));
 
 		//The amount is -1, participate asset issue failed.
 		Assert.assertFalse(PublicMethed.participateAssetIssue(participateAccountAddress,
-				assetAccountId.toByteArray(), -1L, toAddress, testKey003, blockingStubFull));
+				assetAccountId, -1L, toAddress, testKey003, blockingStubFull));
 
 		//The asset issue owner address is not correct, participate asset issue failed.
 		Assert.assertFalse(PublicMethed.participateAssetIssue(fromAddress,
-				assetAccountId.toByteArray(), 100L,
+				assetAccountId, 100L,
 				toAddress, testKey003, blockingStubFull));
 	}
 
@@ -149,7 +149,7 @@ public class WalletTestAssetIssue002 {
 	 * constructor.
 	 */
 
-	public boolean participateAssetIssue(byte[] to, byte[] assertName, long amount, byte[] from,
+	public boolean participateAssetIssue(byte[] to, long assetId, long amount, byte[] from,
 										 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -163,10 +163,9 @@ public class WalletTestAssetIssue002 {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -303,7 +302,7 @@ public class WalletTestAssetIssue002 {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -316,10 +315,9 @@ public class WalletTestAssetIssue002 {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 

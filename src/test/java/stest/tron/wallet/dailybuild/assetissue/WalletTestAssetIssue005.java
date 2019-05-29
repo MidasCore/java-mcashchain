@@ -106,11 +106,12 @@ public class WalletTestAssetIssue005 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(testKey002, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		//Get asset issue by name success.
 
-		GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder().setValue(assetAccountId)
+		GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
+				.setValue(ByteString.copyFrom(ByteArray.fromLong(assetAccountId)))
 				.build();
 		Contract.AssetIssueContract assetIssueByName =
 				blockingStubFull.getAssetIssueByName(request);
@@ -260,7 +261,7 @@ public class WalletTestAssetIssue005 {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -273,10 +274,9 @@ public class WalletTestAssetIssue005 {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 

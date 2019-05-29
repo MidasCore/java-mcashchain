@@ -31,9 +31,9 @@ public class ContractTrcToken014 {
 
 	private static final long now = System.currentTimeMillis();
 	private static final long TotalSupply = 1000L;
-	private static String tokenName = "testAssetIssue_" + Long.toString(now);
-	private static ByteString assetAccountId = null;
-	private static ByteString assetAccountUser = null;
+	private static String tokenName = "testAssetIssue_" + now;
+	private static long assetAccountId = 0;
+	private static long assetAccountUser = 0;
 	private final String testKey002 = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key2");
 	private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
@@ -105,9 +105,9 @@ public class ContractTrcToken014 {
 				100000L, 1L, 1L, dev001Key, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetAccountId = PublicMethed.queryAccount(
-				dev001Address, blockingStubFull).getAssetIssuedID();
+				dev001Address, blockingStubFull).getAssetIssuedId();
 		logger.info("The assetAccountId token name: " + tokenName);
-		logger.info("The assetAccountId token ID: " + assetAccountId.toStringUtf8());
+		logger.info("The assetAccountId token ID: " + assetAccountId);
 
 		start = System.currentTimeMillis() + 2000;
 		end = System.currentTimeMillis() + 1000000000;
@@ -117,9 +117,9 @@ public class ContractTrcToken014 {
 				100000L, 1L, 1L, user001Key, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetAccountUser = PublicMethed.queryAccount(
-				user001Address, blockingStubFull).getAssetIssuedID();
+				user001Address, blockingStubFull).getAssetIssuedId();
 		logger.info("The assetAccountUser token name: " + tokenName);
-		logger.info("The assetAccountUser token ID: " + assetAccountUser.toStringUtf8());
+		logger.info("The assetAccountUser token ID: " + assetAccountUser);
 
 		//before deploy, check account resource
 		AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
@@ -130,11 +130,10 @@ public class ContractTrcToken014 {
 		Long devAssetCountBefore = PublicMethed.getAssetIssueValue(
 				dev001Address, assetAccountId, blockingStubFull);
 
-		logger.info("before energyLimit is " + Long.toString(energyLimit));
-		logger.info("before energyUsage is " + Long.toString(energyUsage));
-		logger.info("before balanceBefore is " + Long.toString(balanceBefore));
-		logger.info("before AssetId: " + assetAccountId.toStringUtf8()
-				+ ", devAssetCountBefore: " + devAssetCountBefore);
+		logger.info("before energyLimit is " + energyLimit);
+		logger.info("before energyUsage is " + energyUsage);
+		logger.info("before balanceBefore is " + balanceBefore);
+		logger.info("before AssetId: " + assetAccountId + ", devAssetCountBefore: " + devAssetCountBefore);
 
 		String contractName = "transferTokenContract";
 		String code = Configuration.getByPath("testng.conf")
@@ -144,7 +143,7 @@ public class ContractTrcToken014 {
 		String transferTokenTxid = PublicMethed
 				.deployContractAndGetTransactionInfoById(contractName, abi, code, "",
 						maxFeeLimit, 0L, 0, 10000,
-						assetAccountId.toStringUtf8(), 100, null, dev001Key,
+						assetAccountId, 100, null, dev001Key,
 						dev001Address, blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -169,16 +168,14 @@ public class ContractTrcToken014 {
 		Long devAssetCountAfter = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-		logger.info("after energyLimit is " + Long.toString(energyLimit));
-		logger.info("after energyUsage is " + Long.toString(energyUsage));
-		logger.info("after balanceAfter is " + Long.toString(balanceAfter));
-		logger.info("after AssetId: " + assetAccountId.toStringUtf8()
-				+ ", devAssetCountAfter: " + devAssetCountAfter);
+		logger.info("after energyLimit is " + energyLimit);
+		logger.info("after energyUsage is " + energyUsage);
+		logger.info("after balanceAfter is " + balanceAfter);
+		logger.info("after AssetId: " + assetAccountId + ", devAssetCountAfter: " + devAssetCountAfter);
 
 		Long contractAssetCount = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
 				assetAccountId, blockingStubFull);
-		logger.info("Contract has AssetId: " + assetAccountId.toStringUtf8() + ", Count: "
-				+ contractAssetCount);
+		logger.info("Contract has AssetId: " + assetAccountId + ", Count: "	+ contractAssetCount);
 
 		Assert.assertEquals(Long.valueOf(100), Long.valueOf(devAssetCountBefore - devAssetCountAfter));
 		Assert.assertEquals(Long.valueOf(100), contractAssetCount);
@@ -202,28 +199,27 @@ public class ContractTrcToken014 {
 		Long devAssetCountBefore = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-		logger.info("before energyLimit is " + Long.toString(energyLimit));
-		logger.info("before energyUsage is " + Long.toString(energyUsage));
-		logger.info("before balance is " + Long.toString(balanceBefore));
-		logger.info("before AssetId: " + assetAccountId.toStringUtf8()
-				+ ", devAssetCountBefore: " + devAssetCountBefore);
+		logger.info("before energyLimit is " + energyLimit);
+		logger.info("before energyUsage is " + energyUsage);
+		logger.info("before balance is " + balanceBefore);
+		logger.info("before AssetId: " + assetAccountId	+ ", devAssetCountBefore: " + devAssetCountBefore);
 
 		String contractName = "resultContract";
 		String code = Configuration.getByPath("testng.conf")
 				.getString("code.code_ContractTrcToken014_resultContract");
 		String abi = Configuration.getByPath("testng.conf")
 				.getString("abi.abi_ContractTrcToken014_resultContract");
-		String recieveTokenTxid = PublicMethed
+		String receiveTokenTxid = PublicMethed
 				.deployContractAndGetTransactionInfoById(contractName, abi, code, "", maxFeeLimit,
-						0L, 100, 1000, assetAccountId.toStringUtf8(),
+						0L, 100, 1000, assetAccountId,
 						100, null, dev001Key, dev001Address, blockingStubFull);
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		Optional<TransactionInfo> infoById = PublicMethed
-				.getTransactionInfoById(recieveTokenTxid, blockingStubFull);
+				.getTransactionInfoById(receiveTokenTxid, blockingStubFull);
 
-		if (recieveTokenTxid == null || infoById.get().getResultValue() != 0) {
+		if (receiveTokenTxid == null || infoById.get().getResultValue() != 0) {
 			Assert.fail("deploy receive failed with message: " + infoById.get().getResMessage());
 		}
 
@@ -235,8 +231,7 @@ public class ContractTrcToken014 {
 
 		Long contractAssetCount = PublicMethed.getAssetIssueValue(resultContractAddress,
 				assetAccountId, blockingStubFull);
-		logger.info("Contract has AssetId: " + assetAccountId.toStringUtf8() + ", Count: "
-				+ contractAssetCount);
+		logger.info("Contract has AssetId: " + assetAccountId + ", Count: " + contractAssetCount);
 
 		// after deploy, check account resource
 		accountResource = PublicMethed.getAccountResource(dev001Address, blockingStubFull);
@@ -246,11 +241,10 @@ public class ContractTrcToken014 {
 		Long devAssetCountAfter = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 
-		logger.info("after energyLimit is " + Long.toString(energyLimit));
-		logger.info("after energyUsage is " + Long.toString(energyUsage));
-		logger.info("after balanceAfter is " + Long.toString(balanceAfter));
-		logger.info("after AssetId: " + assetAccountId.toStringUtf8()
-				+ ", devAssetCountAfter: " + devAssetCountAfter);
+		logger.info("after energyLimit is " + energyLimit);
+		logger.info("after energyUsage is " + energyUsage);
+		logger.info("after balanceAfter is " + balanceAfter);
+		logger.info("after AssetId: " + assetAccountId + ", devAssetCountAfter: " + devAssetCountAfter);
 
 		Assert.assertEquals(Long.valueOf(100), Long.valueOf(devAssetCountBefore - devAssetCountAfter));
 		Assert.assertEquals(Long.valueOf(100), contractAssetCount);
@@ -260,7 +254,7 @@ public class ContractTrcToken014 {
 			+ " transfer to contract")
 	public void test03TriggerContract() {
 		Assert.assertTrue(PublicMethed.transferAsset(user001Address,
-				assetAccountId.toByteArray(), 10L, dev001Address, dev001Key, blockingStubFull));
+				assetAccountId, 10L, dev001Address, dev001Key, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
@@ -269,9 +263,9 @@ public class ContractTrcToken014 {
 		long devEnergyUsageBefore = accountResource.getEnergyUsed();
 		long devBalanceBefore = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-		logger.info("before trigger, devEnergyLimitBefore is " + Long.toString(devEnergyLimitBefore));
-		logger.info("before trigger, devEnergyUsageBefore is " + Long.toString(devEnergyUsageBefore));
-		logger.info("before trigger, devBalanceBefore is " + Long.toString(devBalanceBefore));
+		logger.info("before trigger, devEnergyLimitBefore is " + devEnergyLimitBefore);
+		logger.info("before trigger, devEnergyUsageBefore is " + devEnergyUsageBefore);
+		logger.info("before trigger, devBalanceBefore is " + devBalanceBefore);
 
 		accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
 		long userEnergyLimitBefore = accountResource.getEnergyLimit();
@@ -279,24 +273,24 @@ public class ContractTrcToken014 {
 		long userBalanceBefore = PublicMethed.queryAccount(user001Address, blockingStubFull)
 				.getBalance();
 
-		logger.info("before trigger, userEnergyLimitBefore is " + Long.toString(userEnergyLimitBefore));
-		logger.info("before trigger, userEnergyUsageBefore is " + Long.toString(userEnergyUsageBefore));
-		logger.info("before trigger, userBalanceBefore is " + Long.toString(userBalanceBefore));
+		logger.info("before trigger, userEnergyLimitBefore is " + userEnergyLimitBefore);
+		logger.info("before trigger, userEnergyUsageBefore is " + userEnergyUsageBefore);
+		logger.info("before trigger, userBalanceBefore is " + userBalanceBefore);
 
 		Long transferAssetBefore = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
 				assetAccountId, blockingStubFull);
 		logger.info("before trigger, transferTokenContractAddress has AssetId "
-				+ assetAccountId.toStringUtf8() + ", Count is " + transferAssetBefore);
+				+ assetAccountId + ", Count is " + transferAssetBefore);
 
 		Long receiveAssetBefore = PublicMethed.getAssetIssueValue(resultContractAddress,
 				assetAccountId, blockingStubFull);
 		logger.info("before trigger, resultContractAddress has AssetId "
-				+ assetAccountId.toStringUtf8() + ", Count is " + receiveAssetBefore);
+				+ assetAccountId + ", Count is " + receiveAssetBefore);
 
 		Long devAssetBefore = PublicMethed.getAssetIssueValue(dev001Address,
 				assetAccountId, blockingStubFull);
 		logger.info("before trigger, dev001Address has AssetId "
-				+ assetAccountId.toStringUtf8() + ", Count is " + devAssetBefore);
+				+ assetAccountId + ", Count is " + devAssetBefore);
 
 		// transfer to smart contract
 		Assert.assertTrue(PublicMethed.freezeBalanceForReceiver(fromAddress,
@@ -306,16 +300,16 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// transfer a not exist TokenId, to a contract
-		String tokenId = assetAccountUser.toStringUtf8();
-		Long tokenValue = Long.valueOf(1);
-		Long callValue = Long.valueOf(0);
+		long tokenId = assetAccountUser;
+		long tokenValue = 1L;
+		long callValue = 0L;
 
 		String param = "\"" + Base58.encodeBase58(resultContractAddress)
 				+ "\",\"" + tokenValue + "\"," + tokenId;
 
 		String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, callValue,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -333,16 +327,15 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// transfer a not exist TokenId, to a normal account
-		tokenId = assetAccountUser.toStringUtf8();
-		tokenValue = Long.valueOf(1);
-		callValue = Long.valueOf(0);
+		tokenId = assetAccountUser;
+		tokenValue = 1L;
+		callValue = 0L;
 
-		param = "\"" + Base58.encodeBase58(dev001Address)
-				+ "\",\"" + tokenValue + "\"," + tokenId;
+		param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenValue + "\"," + tokenId;
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, callValue,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -359,16 +352,16 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// tokenValue is not enough
-		tokenId = assetAccountId.toStringUtf8();
+		tokenId = assetAccountId;
 		tokenValue = transferAssetBefore + 100;
-		callValue = Long.valueOf(0);
+		callValue = 0L;
 
 		param = "\"" + Base58.encodeBase58(resultContractAddress)
 				+ "\",\"" + tokenValue + "\"," + tokenId;
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, callValue,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -384,16 +377,15 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// tokenValue is not enough, transfer to a normal account
-		tokenId = assetAccountId.toStringUtf8();
+		tokenId = assetAccountId;
 		tokenValue = transferAssetBefore + 100;
-		callValue = Long.valueOf(0);
+		callValue = 0L;
 
-		param = "\"" + Base58.encodeBase58(dev001Address)
-				+ "\",\"" + tokenValue + "\"," + tokenId;
+		param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenValue + "\"," + tokenId;
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, callValue,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed.getTransactionInfoById(triggerTxid, blockingStubFull);
@@ -408,15 +400,15 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// TokenId is long.max, to a contract
-		String fackTokenId = Long.toString(Long.MAX_VALUE);
-		Long fakeValue = 1L;
+		long fackTokenId = Long.MAX_VALUE;
+		long fakeValue = 1L;
 
 		param = "\"" + Base58.encodeBase58(resultContractAddress)
 				+ "\"," + fakeValue + ",\"" + fackTokenId + "\"";
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, 0,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -433,15 +425,14 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// TokenId is not exist, to a contract
-		fackTokenId = Long.toString(Long.valueOf(assetAccountId.toStringUtf8()) + 10000);
+		fackTokenId = assetAccountId + 10000;
 		fakeValue = 1L;
 
-		param = "\"" + Base58.encodeBase58(resultContractAddress)
-				+ "\"," + fakeValue + ",\"" + fackTokenId + "\"";
+		param = "\"" + Base58.encodeBase58(resultContractAddress) + "\"," + fakeValue + ",\"" + fackTokenId + "\"";
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, 0,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -457,7 +448,7 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// TokenId is long.max, to a normal account
-		fackTokenId = Long.toString(Long.MAX_VALUE);
+		fackTokenId = Long.MAX_VALUE;
 		fakeValue = 1L;
 
 		param = "\"" + Base58.encodeBase58(dev001Address)
@@ -465,7 +456,7 @@ public class ContractTrcToken014 {
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, 0,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -481,15 +472,14 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// TokenId is not exist, to a normal account
-		fackTokenId = Long.toString(Long.valueOf(assetAccountId.toStringUtf8()) + 10000);
+		fackTokenId = assetAccountId + 10000;
 		fakeValue = 1L;
 
-		param = "\"" + Base58.encodeBase58(dev001Address)
-				+ "\"," + fakeValue + ",\"" + fackTokenId + "\"";
+		param = "\"" + Base58.encodeBase58(dev001Address) + "\"," + fakeValue + ",\"" + fackTokenId + "\"";
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, 0,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -505,16 +495,15 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// tokenValue is long.min, transfer to a contract
-		tokenId = assetAccountId.toStringUtf8();
+		tokenId = assetAccountId;
 		tokenValue = Long.MIN_VALUE;
-		callValue = Long.valueOf(0);
+		callValue = 0L;
 
-		param = "\"" + Base58.encodeBase58(resultContractAddress)
-				+ "\",\"" + tokenValue + "\"," + tokenId;
+		param = "\"" + Base58.encodeBase58(resultContractAddress) + "\",\"" + tokenValue + "\"," + tokenId;
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, callValue,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -531,12 +520,11 @@ public class ContractTrcToken014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// tokenValue is long.min, transfer to a normal account
-		param = "\"" + Base58.encodeBase58(dev001Address)
-				+ "\",\"" + tokenValue + "\"," + tokenId;
+		param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenValue + "\"," + tokenId;
 
 		triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"transferTokenTest(address,uint256,trcToken)", param, false, callValue,
-				1000000000L, assetAccountId.toStringUtf8(), 2, user001Address, user001Key,
+				1000000000L, assetAccountId, 2, user001Address, user001Key,
 				blockingStubFull);
 
 		infoById = PublicMethed
@@ -551,9 +539,9 @@ public class ContractTrcToken014 {
 		long devEnergyUsageAfter = accountResource.getEnergyUsed();
 		long devBalanceAfter = PublicMethed.queryAccount(dev001Address, blockingStubFull).getBalance();
 
-		logger.info("after trigger, devEnergyLimitAfter is " + Long.toString(devEnergyLimitAfter));
-		logger.info("after trigger, devEnergyUsageAfter is " + Long.toString(devEnergyUsageAfter));
-		logger.info("after trigger, devBalanceAfter is " + Long.toString(devBalanceAfter));
+		logger.info("after trigger, devEnergyLimitAfter is " + devEnergyLimitAfter);
+		logger.info("after trigger, devEnergyUsageAfter is " + devEnergyUsageAfter);
+		logger.info("after trigger, devBalanceAfter is " + devBalanceAfter);
 
 		accountResource = PublicMethed.getAccountResource(user001Address, blockingStubFull);
 		long userEnergyLimitAfter = accountResource.getEnergyLimit();
@@ -561,9 +549,9 @@ public class ContractTrcToken014 {
 		long userBalanceAfter = PublicMethed.queryAccount(user001Address, blockingStubFull)
 				.getBalance();
 
-		logger.info("after trigger, userEnergyLimitAfter is " + Long.toString(userEnergyLimitAfter));
-		logger.info("after trigger, userEnergyUsageAfter is " + Long.toString(userEnergyUsageAfter));
-		logger.info("after trigger, userBalanceAfter is " + Long.toString(userBalanceAfter));
+		logger.info("after trigger, userEnergyLimitAfter is " + userEnergyLimitAfter);
+		logger.info("after trigger, userEnergyUsageAfter is " + userEnergyUsageAfter);
+		logger.info("after trigger, userBalanceAfter is " + userBalanceAfter);
 
 		SmartContract smartContract = PublicMethed.getContract(infoById.get().getContractAddress()
 				.toByteArray(), blockingStubFull);
@@ -571,17 +559,17 @@ public class ContractTrcToken014 {
 		Long transferAssetAfter = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
 				assetAccountId, blockingStubFull);
 		logger.info("after trigger, transferTokenContractAddress has AssetId "
-				+ assetAccountId.toStringUtf8() + ", transferAssetAfter is " + transferAssetAfter);
+				+ assetAccountId + ", transferAssetAfter is " + transferAssetAfter);
 
 		Long receiveAssetAfter = PublicMethed.getAssetIssueValue(resultContractAddress,
 				assetAccountId, blockingStubFull);
 		logger.info("after trigger, resultContractAddress has AssetId "
-				+ assetAccountId.toStringUtf8() + ", receiveAssetAfter is " + receiveAssetAfter);
+				+ assetAccountId + ", receiveAssetAfter is " + receiveAssetAfter);
 
 		Long devAssetAfter = PublicMethed.getAssetIssueValue(dev001Address,
 				assetAccountId, blockingStubFull);
 		logger.info("after trigger, dev001Address has AssetId "
-				+ assetAccountId.toStringUtf8() + ", Count is " + devAssetAfter);
+				+ assetAccountId + ", Count is " + devAssetAfter);
 
 		long consumeUserPercent = smartContract.getConsumeUserResourcePercent();
 		logger.info("ConsumeURPercent: " + consumeUserPercent);

@@ -52,36 +52,15 @@ public class AssetIssueActuator extends AbstractActuator {
 			AssetIssueContract assetIssueContract = contract.unpack(AssetIssueContract.class);
 			byte[] ownerAddress = assetIssueContract.getOwnerAddress().toByteArray();
 			AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
-			AssetIssueCapsule assetIssueCapsuleV2 = new AssetIssueCapsule(assetIssueContract);
-//      String name = new String(assetIssueCapsule.getName().toByteArray(),
-//          Charset.forName("UTF-8")); // getName().toStringUtf8()
-//      long order = 0;
-//      byte[] key = name.getBytes();
-//      while (this.dbManager.getAssetIssueStore().get(key) != null) {
-//        order++;
-//        String nameKey = AssetIssueCapsule.createDbKeyString(name, order);
-//        key = nameKey.getBytes();
-//      }
-//      assetIssueCapsule.setOrder(order);
+
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 			tokenIdNum++;
-			assetIssueCapsule.setId(Long.toString(tokenIdNum));
-			assetIssueCapsuleV2.setId(Long.toString(tokenIdNum));
+			assetIssueCapsule.setId(tokenIdNum);
 			dbManager.getDynamicPropertiesStore().saveTokenIdNum(tokenIdNum);
-
-			if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-				assetIssueCapsuleV2.setPrecision(0);
-				dbManager.getAssetIssueStore()
-						.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
-				dbManager.getAssetIssueV2Store()
-						.put(assetIssueCapsuleV2.createDbV2Key(), assetIssueCapsuleV2);
-			} else {
-				dbManager.getAssetIssueV2Store()
-						.put(assetIssueCapsuleV2.createDbV2Key(), assetIssueCapsuleV2);
-			}
-
+			dbManager.getAssetIssueStore()
+					.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 			dbManager.adjustBalance(ownerAddress, -fee);
-			//send to blackhole
+			//send fee to blackhole
 			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().getAddress().toByteArray(), fee);
 
 			AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
@@ -102,18 +81,13 @@ public class AssetIssueActuator extends AbstractActuator {
 				remainSupply -= next.getFrozenAmount();
 			}
 
-			if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-				accountCapsule.addAsset(assetIssueCapsule.createDbKey(), remainSupply);
-			}
-			accountCapsule.setAssetIssuedName(assetIssueCapsule.createDbKey());
-			accountCapsule.setAssetIssuedID(assetIssueCapsule.createDbV2Key());
-			accountCapsule.addAssetV2(assetIssueCapsuleV2.createDbV2Key(), remainSupply);
-			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-					.addAllFrozenSupply(frozenList).build());
+			accountCapsule.addAssetV2(assetIssueCapsule.getId(), remainSupply);
+			accountCapsule.setAssetIssuedId(assetIssueCapsule.getId());
+			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder().addAllFrozenSupply(frozenList).build());
 
 			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
-			ret.setAssetIssueID(Long.toString(tokenIdNum));
+			ret.setAssetIssueID(tokenIdNum);
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (InvalidProtocolBufferException | ArithmeticException | BalanceInsufficientException e) {
 			logger.debug(e.getMessage(), e);
@@ -154,18 +128,14 @@ public class AssetIssueActuator extends AbstractActuator {
 			throw new ContractValidateException("Invalid assetName");
 		}
 
-		if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() != 0) {
-			String name = assetIssueContract.getName().toStringUtf8().toLowerCase();
-			if (name.equals("mcash")) {
-				throw new ContractValidateException("Asset name can't be mcash");
-			}
+		String name = assetIssueContract.getName().toStringUtf8().toLowerCase();
+		if (name.equals("mcash")) {
+			throw new ContractValidateException("Asset name can't be mcash");
 		}
 
 		int precision = assetIssueContract.getPrecision();
-		if (precision != 0 && dbManager.getDynamicPropertiesStore().getAllowSameTokenName() != 0) {
-			if (precision < 0 || precision > 8) {
-				throw new ContractValidateException("Precision cannot exceed 8");
-			}
+		if (precision < 0 || precision > 8) {
+			throw new ContractValidateException("Precision cannot exceed 8");
 		}
 
 		if ((!assetIssueContract.getAbbr().isEmpty()) && !TransactionUtil
@@ -193,12 +163,6 @@ public class AssetIssueActuator extends AbstractActuator {
 		}
 		if (assetIssueContract.getStartTime() <= dbManager.getHeadBlockTimeStamp()) {
 			throw new ContractValidateException("Start time should be greater than HeadBlockTime");
-		}
-
-		if (this.dbManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0
-				&& this.dbManager.getAssetIssueStore().get(assetIssueContract.getName().toByteArray())
-				!= null) {
-			throw new ContractValidateException("Token exists");
 		}
 
 		if (assetIssueContract.getTotalSupply() <= 0) {
@@ -262,7 +226,7 @@ public class AssetIssueActuator extends AbstractActuator {
 			throw new ContractValidateException("Account not exists");
 		}
 
-		if (!accountCapsule.getAssetIssuedName().isEmpty()) {
+		if (accountCapsule.getAssetIssuedId() > 0) {
 			throw new ContractValidateException("An account can only issue one asset");
 		}
 

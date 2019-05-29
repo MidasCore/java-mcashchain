@@ -261,7 +261,7 @@ public class WalletTestAssetIssue004 {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -274,10 +274,9 @@ public class WalletTestAssetIssue004 {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 

@@ -1,12 +1,11 @@
 package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
-import io.midasprotocol.core.Wallet;
-import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.config.DefaultConfig;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
@@ -15,6 +14,7 @@ import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Key;
 import io.midasprotocol.protos.Protocol.Permission;
 import io.midasprotocol.protos.Protocol.Vote;
+import org.junit.*;
 
 import java.io.File;
 import java.util.Map;
@@ -100,45 +100,42 @@ public class AccountCapsuleTest {
 	public void AssetAmountTest() {
 		//test AssetAmount ,addAsset and reduceAssetAmount function
 
-		String nameAdd = "TokenX";
+		long assetId = 1L;
 		long amountAdd = 222L;
-		boolean addBoolean = accountCapsuleTest
-				.addAssetAmount(nameAdd.getBytes(), amountAdd);
+		boolean addBoolean = accountCapsuleTest.addAssetAmountV2(assetId, amountAdd);
 
 		Assert.assertTrue(addBoolean);
 
-		Map<String, Long> assetMap = accountCapsuleTest.getAssetMap();
-		for (Map.Entry<String, Long> entry : assetMap.entrySet()) {
-			Assert.assertEquals(nameAdd, entry.getKey());
+		Map<Long, Long> assetMap = accountCapsuleTest.getAssetMapV2();
+		for (Map.Entry<Long, Long> entry : assetMap.entrySet()) {
+			Assert.assertEquals(assetId, entry.getKey().longValue());
 			Assert.assertEquals(amountAdd, entry.getValue().longValue());
 		}
 		long amountReduce = 22L;
 
-		boolean reduceBoolean = accountCapsuleTest
-				.reduceAssetAmount(ByteArray.fromString("TokenX"), amountReduce);
+		boolean reduceBoolean = accountCapsuleTest.reduceAssetAmountV2(assetId, amountReduce);
 		Assert.assertTrue(reduceBoolean);
 
-		Map<String, Long> assetMapAfter = accountCapsuleTest.getAssetMap();
-		for (Map.Entry<String, Long> entry : assetMapAfter.entrySet()) {
-			Assert.assertEquals(nameAdd, entry.getKey());
+		Map<Long, Long> assetMapAfter = accountCapsuleTest.getAssetMapV2();
+		for (Map.Entry<Long, Long> entry : assetMapAfter.entrySet()) {
+			Assert.assertEquals(assetId, entry.getKey().longValue());
 			Assert.assertEquals(amountAdd - amountReduce, entry.getValue().longValue());
 		}
 		long value = 11L;
-		boolean addAsssetBoolean = accountCapsuleTest.addAsset(nameAdd.getBytes(), value);
+		boolean addAsssetBoolean = accountCapsuleTest.addAssetV2(assetId, value);
 		Assert.assertFalse(addAsssetBoolean);
 
-		String keyName = "TokenTest";
+		long assetId2 = 2L;
 		long amountValue = 33L;
-		boolean addAsssetTrue = accountCapsuleTest.addAsset(keyName.getBytes(), amountValue);
-		Assert.assertTrue(addAsssetTrue);
+		boolean addAssetTrue = accountCapsuleTest.addAssetV2(assetId2, amountValue);
+		Assert.assertTrue(addAssetTrue);
 	}
 
 	/**
-	 * SameTokenName close, test assert amountV2 function
+	 * SameTokenName open, test assert amountV2 function
 	 */
 	@Test
-	public void sameTokenNameCloseAssertAmountV2test() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
+	public void sameTokenNameOpenAssertAmountV2test() {
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
 
@@ -146,7 +143,7 @@ public class AccountCapsuleTest {
 				Contract.AssetIssueContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
 						.setName(ByteString.copyFrom(ByteArray.fromString(ASSET_NAME)))
-						.setId(Long.toString(id))
+						.setId(id)
 						.setTotalSupply(TOTAL_SUPPLY)
 						.setTrxNum(TRX_NUM)
 						.setNum(NUM)
@@ -163,7 +160,7 @@ public class AccountCapsuleTest {
 				Contract.AssetIssueContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
 						.setName(ByteString.copyFrom(ByteArray.fromString("abc")))
-						.setId(Long.toString(id + 1))
+						.setId(id + 1)
 						.setTotalSupply(TOTAL_SUPPLY)
 						.setTrxNum(TRX_NUM)
 						.setNum(NUM)
@@ -182,122 +179,30 @@ public class AccountCapsuleTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						AccountType.Normal,
 						10000);
-		accountCapsule.addAsset(ByteArray.fromString(ASSET_NAME), 1000L);
+		accountCapsule.addAssetV2(id, 1000L);
 		dbManager.getAccountStore().put(accountCapsule.getAddress().toByteArray(), accountCapsule);
-
-		accountCapsule.addAssetV2(ByteArray.fromString(String.valueOf(id)), 1000L);
-		Assert.assertEquals(accountCapsule.getAssetMap().get(ASSET_NAME).longValue(), 1000L);
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(String.valueOf(id)).longValue(),
-				1000L);
+		Assert.assertEquals(accountCapsule.getAssetMapV2().get(id).longValue(), 1000L);
 
 		//assetBalanceEnoughV2
-		Assert.assertTrue(accountCapsule.assetBalanceEnoughV2(ByteArray.fromString(ASSET_NAME),
-				999, dbManager));
-		Assert.assertFalse(accountCapsule.assetBalanceEnoughV2(ByteArray.fromString(ASSET_NAME),
-				1001, dbManager));
+		Assert.assertTrue(accountCapsule.assetBalanceEnoughV2(id, 999));
+
+		Assert.assertFalse(accountCapsule.assetBalanceEnoughV2(id, 1001));
 
 		//reduceAssetAmountV2
-		Assert.assertTrue(accountCapsule.reduceAssetAmountV2(ByteArray.fromString(ASSET_NAME),
-				999, dbManager));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(ByteArray.fromString(ASSET_NAME),
-				0, dbManager));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(ByteArray.fromString(ASSET_NAME),
-				1001, dbManager));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(ByteArray.fromString("abc"),
-				1001, dbManager));
-
-		//addAssetAmountV2
-		Assert.assertTrue(accountCapsule.addAssetAmountV2(ByteArray.fromString(ASSET_NAME),
-				500, dbManager));
-		// 1000-999 +500
-		Assert.assertEquals(accountCapsule.getAssetMap().get(ASSET_NAME).longValue(), 501L);
-		Assert.assertTrue(accountCapsule.addAssetAmountV2(ByteArray.fromString("abc"),
-				500, dbManager));
-		Assert.assertEquals(accountCapsule.getAssetMap().get("abc").longValue(), 500L);
-	}
-
-	/**
-	 * SameTokenName open, test assert amountV2 function
-	 */
-	@Test
-	public void sameTokenNameOpenAssertAmountV2test() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
-		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
-
-		Contract.AssetIssueContract assetIssueContract =
-				Contract.AssetIssueContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
-						.setName(ByteString.copyFrom(ByteArray.fromString(ASSET_NAME)))
-						.setId(Long.toString(id))
-						.setTotalSupply(TOTAL_SUPPLY)
-						.setTrxNum(TRX_NUM)
-						.setNum(NUM)
-						.setStartTime(START_TIME)
-						.setEndTime(END_TIME)
-						.setVoteScore(VOTE_SCORE)
-						.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
-						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-						.build();
-		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
-		dbManager.getAssetIssueV2Store().put(assetIssueCapsule.createDbV2Key(), assetIssueCapsule);
-
-		Contract.AssetIssueContract assetIssueContract2 =
-				Contract.AssetIssueContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
-						.setName(ByteString.copyFrom(ByteArray.fromString("abc")))
-						.setId(Long.toString(id + 1))
-						.setTotalSupply(TOTAL_SUPPLY)
-						.setTrxNum(TRX_NUM)
-						.setNum(NUM)
-						.setStartTime(START_TIME)
-						.setEndTime(END_TIME)
-						.setVoteScore(VOTE_SCORE)
-						.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
-						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-						.build();
-		AssetIssueCapsule assetIssueCapsule2 = new AssetIssueCapsule(assetIssueContract2);
-		dbManager.getAssetIssueV2Store().put(assetIssueCapsule2.createDbV2Key(), assetIssueCapsule2);
-
-		AccountCapsule accountCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("owner"),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.Normal,
-						10000);
-		accountCapsule.addAssetV2(ByteArray.fromString(String.valueOf(id)), 1000L);
-		dbManager.getAccountStore().put(accountCapsule.getAddress().toByteArray(), accountCapsule);
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(String.valueOf(id)).longValue(),
-				1000L);
-
-		//assetBalanceEnoughV2
-		Assert.assertTrue(accountCapsule.assetBalanceEnoughV2(ByteArray.fromString(String.valueOf(id)),
-				999, dbManager));
-
-		Assert.assertFalse(accountCapsule.assetBalanceEnoughV2(ByteArray.fromString(String.valueOf(id)),
-				1001, dbManager));
-
-		//reduceAssetAmountV2
-		Assert.assertTrue(accountCapsule.reduceAssetAmountV2(ByteArray.fromString(String.valueOf(id)),
-				999, dbManager));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(ByteArray.fromString(String.valueOf(id)),
-				0, dbManager));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(ByteArray.fromString(String.valueOf(id)),
-				1001, dbManager));
+		Assert.assertTrue(accountCapsule.reduceAssetAmountV2(id, 999));
+		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(id, 0));
+		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(id, 1001));
 		// abc
 		Assert.assertFalse(
-				accountCapsule.reduceAssetAmountV2(ByteArray.fromString(String.valueOf(id + 1)),
-						1001, dbManager));
+				accountCapsule.reduceAssetAmountV2(id + 1, 1001));
 
 		//addAssetAmountV2
-		Assert.assertTrue(accountCapsule.addAssetAmountV2(ByteArray.fromString(String.valueOf(id)),
-				500, dbManager));
+		Assert.assertTrue(accountCapsule.addAssetAmountV2(id, 500));
 		// 1000-999 +500
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(String.valueOf(id)).longValue(), 501L);
+		Assert.assertEquals(accountCapsule.getAssetMapV2().get(id).longValue(), 501L);
 		//abc
-		Assert.assertTrue(accountCapsule.addAssetAmountV2(ByteArray.fromString(String.valueOf(id + 1)),
-				500, dbManager));
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(String.valueOf(id + 1)).longValue(), 500L);
+		Assert.assertTrue(accountCapsule.addAssetAmountV2(id + 1, 500));
+		Assert.assertEquals(accountCapsule.getAssetMapV2().get(id + 1).longValue(), 500L);
 	}
 
 	@Test

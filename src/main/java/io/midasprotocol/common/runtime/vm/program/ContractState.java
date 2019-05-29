@@ -285,17 +285,17 @@ public class ContractState implements Deposit, ProgramListenerAware {
 	}
 
 	@Override
-	public long addTokenBalance(byte[] address, byte[] tokenId, long value) {
+	public long addTokenBalance(byte[] address, long tokenId, long value) {
 		return deposit.addTokenBalance(address, tokenId, value);
 	}
 
 	@Override
-	public long getTokenBalance(byte[] address, byte[] tokenId) {
+	public long getTokenBalance(byte[] address, long tokenId) {
 		return deposit.getTokenBalance(address, tokenId);
 	}
 
 	@Override
-	public AssetIssueCapsule getAssetIssue(byte[] tokenId) {
+	public AssetIssueCapsule getAssetIssue(long tokenId) {
 		return deposit.getAssetIssue(tokenId);
 	}
 

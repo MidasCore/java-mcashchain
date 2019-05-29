@@ -24,7 +24,7 @@ public class GetAccountByIdServlet extends HttpServlet {
 
 	private String convertOutput(Account account) {
 		// convert asset id
-		if (account.getAssetIssuedID().isEmpty()) {
+		if (account.getAssetIssuedId() == 0) {
 			return JsonFormat.printToString(account);
 		} else {
 			JSONObject accountJson = JSONObject.parseObject(JsonFormat.printToString(account));

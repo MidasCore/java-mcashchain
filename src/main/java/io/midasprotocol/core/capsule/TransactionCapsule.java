@@ -657,7 +657,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 					try {
 						transferAssetContract = contract.getParameter()
 								.unpack(TransferAssetContract.class);
-						toStringBuff.append("transfer asset=").append(transferAssetContract.getAssetName())
+						toStringBuff.append("transfer asset=").append(transferAssetContract.getAssetId())
 								.append("\n");
 						toStringBuff.append("transfer amount=").append(transferAssetContract.getAmount())
 								.append("\n");

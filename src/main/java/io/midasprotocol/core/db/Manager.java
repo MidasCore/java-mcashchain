@@ -40,7 +40,6 @@ import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.config.args.GenesisBlock;
 import io.midasprotocol.core.controller.StakeAccountController;
 import io.midasprotocol.core.db.KhaosDatabase.KhaosBlock;
-import io.midasprotocol.core.db.api.AssetUpdateHelper;
 import io.midasprotocol.core.db2.core.ISession;
 import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.core.db2.core.SnapshotManager;
@@ -83,8 +82,6 @@ public class Manager {
 	private WitnessStore witnessStore;
 	@Autowired
 	private AssetIssueStore assetIssueStore;
-	@Autowired
-	private AssetIssueV2Store assetIssueV2Store;
 	@Autowired
 	private DynamicPropertiesStore dynamicPropertiesStore;
 	@Autowired
@@ -278,27 +275,8 @@ public class Manager {
 		return this.exchangeStore;
 	}
 
-	public ExchangeV2Store getExchangeV2Store() {
-		return this.exchangeV2Store;
-	}
-
-	public ExchangeStore getExchangeStoreFinal() {
-		if (getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-			return getExchangeStore();
-		} else {
-			return getExchangeV2Store();
-		}
-	}
-
 	public void putExchangeCapsule(ExchangeCapsule exchangeCapsule) {
-		if (getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-			getExchangeStore().put(exchangeCapsule.createDbKey(), exchangeCapsule);
-			ExchangeCapsule exchangeCapsuleV2 = new ExchangeCapsule(exchangeCapsule.getData());
-			exchangeCapsuleV2.resetTokenWithID(this);
-			getExchangeV2Store().put(exchangeCapsuleV2.createDbKey(), exchangeCapsuleV2);
-		} else {
-			getExchangeV2Store().put(exchangeCapsule.createDbKey(), exchangeCapsule);
-		}
+		getExchangeStore().put(exchangeCapsule.createDbKey(), exchangeCapsule);
 	}
 
 	public List<TransactionCapsule> getPendingTransactions() {
@@ -398,9 +376,6 @@ public class Manager {
 		}
 		forkController.init(this);
 
-		if (Args.getInstance().isNeedToUpdateAsset() && needToUpdateAsset()) {
-			new AssetUpdateHelper(this).doWork();
-		}
 		initCacheTxs();
 		revokingStore.enable();
 		validateSignService = Executors
@@ -1658,24 +1633,12 @@ public class Manager {
 		return getDynamicPropertiesStore().getMaintenanceSkipSlots();
 	}
 
-	public AssetIssueStore getAssetIssueStore() {
-		return assetIssueStore;
-	}
-
 	public void setAssetIssueStore(AssetIssueStore assetIssueStore) {
 		this.assetIssueStore = assetIssueStore;
 	}
 
-	public AssetIssueV2Store getAssetIssueV2Store() {
-		return assetIssueV2Store;
-	}
-
-	public AssetIssueStore getAssetIssueStoreFinal() {
-		if (getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-			return getAssetIssueStore();
-		} else {
-			return getAssetIssueV2Store();
-		}
+	public AssetIssueStore getAssetIssueStore() {
+		return assetIssueStore;
 	}
 
 	public void setBlockIndexStore(BlockIndexStore indexStore) {
@@ -1737,7 +1700,6 @@ public class Manager {
 		closeOneStore(voteChangeStore);
 		closeOneStore(delegatedResourceStore);
 		closeOneStore(delegatedResourceAccountIndexStore);
-		closeOneStore(assetIssueV2Store);
 		closeOneStore(exchangeV2Store);
 		closeOneStore(stakeChangeStore);
 		closeOneStore(stakeAccountStore);

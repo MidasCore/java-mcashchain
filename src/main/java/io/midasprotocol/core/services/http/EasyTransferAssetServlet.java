@@ -48,7 +48,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 			TransferAssetContract.Builder builder = TransferAssetContract.newBuilder();
 			builder.setOwnerAddress(ByteString.copyFrom(owner));
 			builder.setToAddress(build.getToAddress());
-			builder.setAssetName(ByteString.copyFrom(build.getAssetId().getBytes()));
+			builder.setAssetId(build.getAssetId());
 			builder.setAmount(build.getAmount());
 
 			TransactionCapsule transactionCapsule;

@@ -23,7 +23,8 @@ public class GetAssetIssueByIdServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input = request.getParameter("value");
-			AssetIssueContract reply = wallet.getAssetIssueById(input);
+			long id = Long.parseLong(input);
+			AssetIssueContract reply = wallet.getAssetIssueById(id);
 			if (reply != null) {
 				response.getWriter().println(JsonFormat.printToString(reply));
 			} else {
@@ -45,7 +46,7 @@ public class GetAssetIssueByIdServlet extends HttpServlet {
 					.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			JSONObject jsonObject = JSONObject.parseObject(input);
-			String id = jsonObject.getString("value");
+			long id = jsonObject.getLong("value");
 
 			AssetIssueContract reply = wallet.getAssetIssueById(id);
 			if (reply != null) {

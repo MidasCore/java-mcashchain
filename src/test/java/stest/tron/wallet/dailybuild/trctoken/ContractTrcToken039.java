@@ -1,14 +1,7 @@
 package stest.tron.wallet.dailybuild.trctoken;
 
-import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
@@ -17,6 +10,12 @@ import io.midasprotocol.common.utils.Utils;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Protocol.Account;
 import io.midasprotocol.protos.Protocol.TransactionInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -29,7 +28,7 @@ public class ContractTrcToken039 {
 
 	private static final long TotalSupply = 10000000L;
 	private static final long now = System.currentTimeMillis();
-	private static ByteString assetAccountId = null;
+	private static long assetAccountId = 0;
 	private static String tokenName = "testAssetIssue_" + Long.toString(now);
 	private final String testKey002 = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key2");
@@ -76,17 +75,13 @@ public class ContractTrcToken039 {
 
 	@Test(enabled = true, description = "Deploy Proxy contract")
 	public void deploy01TransferTokenContract() {
-		Assert
-				.assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
-						testKey002, blockingStubFull));
-		logger.info(
-				"dev001Address:" + Base58.encodeBase58(dev001Address));
+		Assert.assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
+				testKey002, blockingStubFull));
+		logger.info("dev001Address:" + Base58.encodeBase58(dev001Address));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
-		Assert
-				.assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
-						testKey002, blockingStubFull));
-		logger.info(
-				"user001Address:" + Base58.encodeBase58(user001Address));
+		Assert.assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
+				testKey002, blockingStubFull));
+		logger.info("user001Address:" + Base58.encodeBase58(user001Address));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// freeze balance
@@ -104,7 +99,7 @@ public class ContractTrcToken039 {
 		Assert.assertTrue(PublicMethed.createAssetIssue(dev001Address, tokenName, TotalSupply, 1,
 				100, start, end, 1, description, url, 10000L,
 				10000L, 1L, 1L, dev001Key, blockingStubFull));
-		assetAccountId = PublicMethed.queryAccount(dev001Address, blockingStubFull).getAssetIssuedID();
+		assetAccountId = PublicMethed.queryAccount(dev001Address, blockingStubFull).getAssetIssuedId();
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// deploy transferTokenContract
@@ -117,7 +112,7 @@ public class ContractTrcToken039 {
 				.getString("abi.abi_ContractTrcToken039_ProxyTest");
 		proxyTestAddress = PublicMethed
 				.deployContract(contractName, abi, code, "", maxFeeLimit,
-						1000L, 0, originEnergyLimit, assetAccountId.toStringUtf8(),
+						1000L, 0, originEnergyLimit, assetAccountId,
 						1000, null, dev001Key, dev001Address,
 						blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -130,7 +125,7 @@ public class ContractTrcToken039 {
 				.getString("abi.abi_ContractTrcToken039_ATest");
 		atestAddress = PublicMethed
 				.deployContract(contractName1, abi1, code1, "", maxFeeLimit,
-						0L, 0, originEnergyLimit, "0",
+						0L, 0, originEnergyLimit, 0,
 						0, null, dev001Key, dev001Address,
 						blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -143,7 +138,7 @@ public class ContractTrcToken039 {
 				.getString("abi.abi_ContractTrcToken039_BTest");
 		btestAddress = PublicMethed
 				.deployContract(contractName2, abi2, code2, "", maxFeeLimit,
-						0L, 0, originEnergyLimit, "0",
+						0L, 0, originEnergyLimit, 0,
 						0, null, dev001Key, dev001Address,
 						blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -193,16 +188,12 @@ public class ContractTrcToken039 {
 		logger.info("beforeAssetIssueUserAddress:" + beforeAssetIssueUserAddress);
 		logger.info("beforeBalanceContractAddress:" + beforeBalanceContractAddress);
 		logger.info("beforeUserBalance:" + beforeUserBalance);
-		String param =
-				"\"" + Base58.encodeBase58(atestAddress) + "\"";
-		String param1 =
-				"\"" + "1" + "\",\"" + Base58.encodeBase58(user001Address) + "\",\"" + assetAccountId
-						.toStringUtf8()
-						+ "\"";
+		String param = "\"" + Base58.encodeBase58(atestAddress) + "\"";
+		String param1 = "\"" + "1" + "\",\"" + Base58.encodeBase58(user001Address) + "\",\"" + assetAccountId + "\"";
 
 		String triggerTxid = PublicMethed.triggerContract(proxyTestAddress,
 				"upgradeTo(address)",
-				param, false, 0, 1000000000L, "0",
+				param, false, 0, 1000000000L, 0,
 				0, dev001Address, dev001Key,
 				blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -210,8 +201,7 @@ public class ContractTrcToken039 {
 
 		final String triggerTxid1 = PublicMethed.triggerContract(proxyTestAddress,
 				"trans(uint256,address,trcToken)",
-				param1, false, 0, 1000000000L, assetAccountId
-						.toStringUtf8(),
+				param1, false, 0, 1000000000L, assetAccountId,
 				1, dev001Address, dev001Key,
 				blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -302,23 +292,17 @@ public class ContractTrcToken039 {
 		logger.info("beforeAssetIssueUserAddress1:" + beforeAssetIssueUserAddress1);
 		logger.info("beforeBalanceContractAddress1:" + beforeBalanceContractAddress1);
 		logger.info("beforeUserBalance1:" + beforeUserBalance1);
-		String param3 =
-				"\"" + Base58.encodeBase58(btestAddress) + "\"";
-		String param2 =
-				"\"" + "1" + "\",\"" + Base58.encodeBase58(user001Address) + "\",\"" + assetAccountId
-						.toStringUtf8()
-						+ "\"";
+		String param3 = "\"" + Base58.encodeBase58(btestAddress) + "\"";
+		String param2 = "\"" + "1" + "\",\"" + Base58.encodeBase58(user001Address) + "\",\"" + assetAccountId + "\"";
 
 		String triggerTxid2 = PublicMethed.triggerContract(proxyTestAddress,
 				"upgradeTo(address)",
-				param3, false, 0, 1000000000L, assetAccountId
-						.toStringUtf8(),
+				param3, false, 0, 1000000000L, assetAccountId,
 				1, dev001Address, dev001Key,
 				blockingStubFull);
 		String triggerTxid3 = PublicMethed.triggerContract(proxyTestAddress,
 				"trans(uint256,address,trcToken)",
-				param2, false, 0, 1000000000L, assetAccountId
-						.toStringUtf8(),
+				param2, false, 0, 1000000000L, assetAccountId,
 				1, dev001Address, dev001Key,
 				blockingStubFull);
 		Account infoafter1 = PublicMethed.queryAccount(dev001Address, blockingStubFull);

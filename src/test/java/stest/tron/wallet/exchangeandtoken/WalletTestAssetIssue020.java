@@ -37,7 +37,7 @@ public class WalletTestAssetIssue020 {
 	String description = "just-test";
 	String url = "https://github.com/tronprotocol/wallet-cli/";
 	Account assetIssue020Account;
-	ByteString assetAccountId;
+	long assetAccountId;
 	//get account
 	ECKey ecKey1 = new ECKey(Utils.getRandom());
 	byte[] asset020Address = ecKey1.getAddress();
@@ -108,15 +108,14 @@ public class WalletTestAssetIssue020 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset020Address, blockingStubFull);
-		assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		Contract.AssetIssueContract assetIssueInfo = PublicMethed
 				.getAssetIssueByName(name, blockingStubFull);
 		final Integer preCisionByName = assetIssueInfo.getPrecision();
 		final Long TotalSupplyByName = assetIssueInfo.getTotalSupply();
 
-		assetIssueInfo = PublicMethed.getAssetIssueById(ByteArray.toStr(assetAccountId
-				.toByteArray()), blockingStubFull);
+		assetIssueInfo = PublicMethed.getAssetIssueById(assetAccountId, blockingStubFull);
 		final Integer preCisionById = assetIssueInfo.getPrecision();
 		final Long TotalSupplyById = assetIssueInfo.getTotalSupply();
 

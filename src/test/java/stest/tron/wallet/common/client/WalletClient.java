@@ -240,9 +240,9 @@ public class WalletClient {
 	 * constructor.
 	 */
 
-	public static Transaction createTransferAssetTransaction(byte[] to, byte[] assertName,
+	public static Transaction createTransferAssetTransaction(byte[] to, long assetId,
 															 byte[] owner, long amount) {
-		Contract.TransferAssetContract contract = createTransferAssetContract(to, assertName, owner,
+		Contract.TransferAssetContract contract = createTransferAssetContract(to, assetId, owner,
 				amount);
 		return rpcCli.createTransferAssetTransaction(contract);
 	}
@@ -251,9 +251,9 @@ public class WalletClient {
 	 * constructor.
 	 */
 
-	public static Transaction participateAssetIssueTransaction(byte[] to, byte[] assertName,
+	public static Transaction participateAssetIssueTransaction(byte[] to, long assetId,
 															   byte[] owner, long amount) {
-		Contract.ParticipateAssetIssueContract contract = participateAssetIssueContract(to, assertName,
+		Contract.ParticipateAssetIssueContract contract = participateAssetIssueContract(to, assetId,
 				owner, amount);
 		return rpcCli.createParticipateAssetIssueTransaction(contract);
 	}
@@ -324,13 +324,12 @@ public class WalletClient {
 	 */
 
 	public static Contract.TransferAssetContract createTransferAssetContract(
-			byte[] to, byte[] assertName, byte[] owner, long amount) {
+			byte[] to, long assetId, byte[] owner, long amount) {
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(owner);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -342,14 +341,13 @@ public class WalletClient {
 	 */
 
 	public static Contract.ParticipateAssetIssueContract participateAssetIssueContract(
-			byte[] to, byte[] assertName, byte[] owner, long amount) {
+			byte[] to, long assetId, byte[] owner, long amount) {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(owner);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -856,9 +854,9 @@ public class WalletClient {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount) {
+	public boolean transferAsset(byte[] to, long assetId, long amount) {
 		byte[] owner = getAddress();
-		Transaction transaction = createTransferAssetTransaction(to, assertName, owner, amount);
+		Transaction transaction = createTransferAssetTransaction(to, assetId, owner, amount);
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -870,9 +868,9 @@ public class WalletClient {
 	 * constructor.
 	 */
 
-	public boolean participateAssetIssue(byte[] to, byte[] assertName, long amount) {
+	public boolean participateAssetIssue(byte[] to, long assetId, long amount) {
 		byte[] owner = getAddress();
-		Transaction transaction = participateAssetIssueTransaction(to, assertName, owner, amount);
+		Transaction transaction = participateAssetIssueTransaction(to, assetId, owner, amount);
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}

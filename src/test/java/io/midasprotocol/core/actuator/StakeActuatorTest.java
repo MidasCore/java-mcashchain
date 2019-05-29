@@ -4,6 +4,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.core.Wallet;
+import io.midasprotocol.protos.Protocol;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
@@ -147,10 +148,17 @@ public class StakeActuatorTest {
 			Assert.assertTrue(dbManager.getBlockRewardStore().has(ByteArray.fromHexString(OWNER_ADDRESS)));
 
 			GrpcAPI.BlockRewardList rewardList = wallet.getPaginatedBlockRewardList(accountCapsule.getAddress(), 0, 10);
+
+			for (Protocol.BlockReward.Reward reward : rewardList.getRewardsList()) {
+				logger.info(String.valueOf(reward.getAmount()));
+			}
+
 			Assert.assertEquals(1, rewardList.getRewardsCount());
 			logger.info("[After] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
+		} finally {
+			dbManager.getBlockRewardStore().reset();
 		}
 	}
 
@@ -223,6 +231,8 @@ public class StakeActuatorTest {
 			logger.info("[After] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
+		} finally {
+			dbManager.getBlockRewardStore().reset();
 		}
 	}
 
@@ -267,6 +277,8 @@ public class StakeActuatorTest {
 			logger.info("[After] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
+		} finally {
+			dbManager.getBlockRewardStore().reset();
 		}
 	}
 

@@ -98,16 +98,16 @@ public class WalletTestAssetIssue011 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset011Address, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		//Transfer asset to create an account.
 		Assert.assertTrue(PublicMethed
-				.transferAsset(transferAssetCreateAddress, assetAccountId.toByteArray(), 1L,
+				.transferAsset(transferAssetCreateAddress, assetAccountId, 1L,
 						asset011Address, testKeyForAssetIssue011, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Account queryTransferAssetAccount = PublicMethed
 				.queryAccount(transferAssetCreateKey, blockingStubFull);
-		Assert.assertTrue(queryTransferAssetAccount.getAssetV2Count() == 1);
+		Assert.assertTrue(queryTransferAssetAccount.getAssetCount() == 1);
 		Assert.assertTrue(PublicMethed.updateAccount(asset011Address, Long.toString(now)
 				.getBytes(), testKeyForAssetIssue011, blockingStubFull));
 		Assert.assertTrue(PublicMethed.updateAccount(transferAssetCreateAddress, updateMostLongName

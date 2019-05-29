@@ -28,13 +28,13 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 	}
 
 	public ExchangeCapsule(ByteString address, final long id, long createTime,
-						   byte[] firstTokenID, byte[] secondTokenID) {
+						   long firstTokenID, long secondTokenID) {
 		this.exchange = Exchange.newBuilder()
 				.setExchangeId(id)
 				.setCreatorAddress(address)
 				.setCreateTime(createTime)
-				.setFirstTokenId(ByteString.copyFrom(firstTokenID))
-				.setSecondTokenId(ByteString.copyFrom(secondTokenID))
+				.setFirstTokenId(firstTokenID)
+				.setSecondTokenId(secondTokenID)
 				.build();
 	}
 
@@ -79,23 +79,23 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 				.build();
 	}
 
-	public byte[] getFirstTokenId() {
-		return this.exchange.getFirstTokenId().toByteArray();
+	public long getFirstTokenId() {
+		return this.exchange.getFirstTokenId();
 	}
 
-	public void setFirstTokenId(byte[] id) {
+	public void setFirstTokenId(long id) {
 		this.exchange = this.exchange.toBuilder()
-				.setFirstTokenId(ByteString.copyFrom(id))
+				.setFirstTokenId(id)
 				.build();
 	}
 
-	public byte[] getSecondTokenId() {
-		return this.exchange.getSecondTokenId().toByteArray();
+	public long getSecondTokenId() {
+		return this.exchange.getSecondTokenId();
 	}
 
-	public void setSecondTokenId(byte[] id) {
+	public void setSecondTokenId(long id) {
 		this.exchange = this.exchange.toBuilder()
-				.setSecondTokenId(ByteString.copyFrom(id))
+				.setSecondTokenId(id)
 				.build();
 	}
 
@@ -111,7 +111,7 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 		return calculateDbKey(getID());
 	}
 
-	public long transaction(byte[] sellTokenID, long sellTokenQuant) {
+	public long transaction(long sellTokenID, long sellTokenQuant) {
 		long supply = 1_000_000_000_000_000_000L;
 		ExchangeProcessor processor = new ExchangeProcessor(supply);
 
@@ -119,7 +119,7 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 		long firstTokenBalance = this.exchange.getFirstTokenBalance();
 		long secondTokenBalance = this.exchange.getSecondTokenBalance();
 
-		if (this.exchange.getFirstTokenId().equals(ByteString.copyFrom(sellTokenID))) {
+		if (this.exchange.getFirstTokenId() == sellTokenID) {
 			buyTokenQuant = processor.exchange(firstTokenBalance,
 					secondTokenBalance,
 					sellTokenQuant);
@@ -138,26 +138,6 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 		}
 
 		return buyTokenQuant;
-	}
-
-	//be carefully, this function should be used only before AllowSameTokenName proposal is not active
-	public void resetTokenWithID(Manager manager) {
-		if (manager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-			byte[] firstTokenName = this.exchange.getFirstTokenId().toByteArray();
-			byte[] secondTokenName = this.exchange.getSecondTokenId().toByteArray();
-			byte[] firstTokenID = firstTokenName;
-			byte[] secondTokenID = secondTokenName;
-			if (!Arrays.equals(firstTokenName, "_".getBytes())) {
-				firstTokenID = manager.getAssetIssueStore().get(firstTokenName).getId().getBytes();
-			}
-			if (!Arrays.equals(secondTokenName, "_".getBytes())) {
-				secondTokenID = manager.getAssetIssueStore().get(secondTokenName).getId().getBytes();
-			}
-			this.exchange = this.exchange.toBuilder()
-					.setFirstTokenId(ByteString.copyFrom(firstTokenID))
-					.setSecondTokenId(ByteString.copyFrom(secondTokenID))
-					.build();
-		}
 	}
 
 	@Override

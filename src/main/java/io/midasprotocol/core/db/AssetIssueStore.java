@@ -1,6 +1,8 @@
 package io.midasprotocol.core.db;
 
 import com.google.common.collect.Streams;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.ByteUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,25 @@ public class AssetIssueStore extends TronStoreWithRevoking<AssetIssueCapsule> {
 	@Override
 	public AssetIssueCapsule get(byte[] key) {
 		return super.getUnchecked(key);
+	}
+
+	public byte[] createDbKey(long id) {
+		return ByteArray.fromLong(id);
+	}
+
+	public AssetIssueCapsule get(long id) {
+		byte[] key = createDbKey(id);
+		return get(key);
+	}
+
+	public void delete(long id) {
+		byte[] key = createDbKey(id);
+		delete(key);
+	}
+
+	public boolean has(long id) {
+		byte[] key = createDbKey(id);
+		return has(key);
 	}
 
 

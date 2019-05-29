@@ -29,7 +29,6 @@ import java.io.File;
 import java.util.Map;
 
 @Slf4j
-
 public class ExchangeCreateActuatorTest {
 
 	private static final String dbPath = "output_ExchangeCreate_test";
@@ -105,14 +104,14 @@ public class ExchangeCreateActuatorTest {
 
 	}
 
-	private Any getContract(String address, String firstTokenId, long firstTokenBalance,
-							String secondTokenId, long secondTokenBalance) {
+	private Any getContract(String address, long firstTokenId, long firstTokenBalance,
+							long secondTokenId, long secondTokenBalance) {
 		return Any.pack(
 				Contract.ExchangeCreateContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setFirstTokenId(ByteString.copyFrom(firstTokenId.getBytes()))
+						.setFirstTokenId(firstTokenId)
 						.setFirstTokenBalance(firstTokenBalance)
-						.setSecondTokenId(ByteString.copyFrom(secondTokenId.getBytes()))
+						.setSecondTokenId(secondTokenId)
 						.setSecondTokenBalance(secondTokenBalance)
 						.build());
 	}
@@ -122,31 +121,32 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseSuccessExchangeCreate() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		String firstTokenName = "abc";
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "def";
+		long firstTokenId = 1L;
+		String secondTokenName = "def";
 		long secondTokenBalance = 100000000L;
+		long secondTokenId = 2L;
 
 		AssetIssueCapsule assetIssueCapsule1 =
 				new AssetIssueCapsule(AssetIssueContract.newBuilder()
-						.setName(ByteString.copyFrom(firstTokenId.getBytes()))
+						.setName(ByteString.copyFrom(firstTokenName.getBytes()))
+						.setId(firstTokenId)
 						.build());
-		assetIssueCapsule1.setId(String.valueOf(1L));
 
 		AssetIssueCapsule assetIssueCapsule2 =
 				new AssetIssueCapsule(AssetIssueContract.newBuilder()
-						.setName(ByteString.copyFrom(secondTokenId.getBytes()))
+						.setName(ByteString.copyFrom(secondTokenName.getBytes()))
+						.setId(secondTokenId)
 						.build());
-		assetIssueCapsule2.setId(String.valueOf(2L));
 
 		dbManager.getAssetIssueStore().put(assetIssueCapsule1.getName().toByteArray(), assetIssueCapsule1);
 		dbManager.getAssetIssueStore().put(assetIssueCapsule2.getName().toByteArray(), assetIssueCapsule2);
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10_000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -163,44 +163,19 @@ public class ExchangeCreateActuatorTest {
 			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
-			// check old(V1) version
-			ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
-			Assert.assertNotNull(exchangeCapsule);
-			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsule.getCreatorAddress());
-			Assert.assertEquals(id, exchangeCapsule.getID());
-			Assert.assertEquals(1000000, exchangeCapsule.getCreateTime());
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsule.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsule.getFirstTokenId()));
-			Assert.assertEquals(firstTokenBalance, exchangeCapsule.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsule.getSecondTokenId()));
-			Assert.assertEquals(secondTokenBalance, exchangeCapsule.getSecondTokenBalance());
-
-			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> assetMap = accountCapsule.getAssetMap();
-			Assert.assertEquals(ConversionUtil.McashToMatoshi(10_000)
-							- dbManager.getDynamicPropertiesStore().getAssetIssueFee(),
-					accountCapsule.getBalance());
-			Assert.assertEquals(0L, assetMap.get(firstTokenId).longValue());
-			Assert.assertEquals(0L, assetMap.get(secondTokenId).longValue());
-
-			// check V2 version
-			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeV2Store()
+			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore()
 					.get(ByteArray.fromLong(id));
 			Assert.assertNotNull(exchangeCapsuleV2);
 			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
 			Assert.assertEquals(id, exchangeCapsuleV2.getID());
 			Assert.assertEquals(1000000, exchangeCapsuleV2.getCreateTime());
-			// convert
-			firstTokenId = dbManager.getAssetIssueStore().get(firstTokenId.getBytes()).getId();
-			secondTokenId = dbManager.getAssetIssueStore().get(secondTokenId.getBytes()).getId();
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsuleV2.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsuleV2.getFirstTokenId()));
+			Assert.assertEquals(firstTokenId, exchangeCapsuleV2.getFirstTokenId());
 			Assert.assertEquals(firstTokenBalance, exchangeCapsuleV2.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsuleV2.getSecondTokenId()));
+			Assert.assertEquals(secondTokenId, exchangeCapsuleV2.getSecondTokenId());
 			Assert.assertEquals(secondTokenBalance, exchangeCapsuleV2.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
+			Map<Long, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
 			Assert.assertEquals(ConversionUtil.McashToMatoshi(10_000)
 							- dbManager.getDynamicPropertiesStore().getAssetIssueFee(),
 					accountCapsule.getBalance());
@@ -212,143 +187,56 @@ public class ExchangeCreateActuatorTest {
 	}
 
 	/**
-	 * SameTokenName close,second create Exchange, result is success.
-	 */
-	@Test
-	public void sameTokenNameCloseSuccessExchangeCreate2() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "_";
-		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "abc";
-		long secondTokenBalance = 100_000_000L;
-
-		AssetIssueCapsule assetIssueCapsule =
-				new AssetIssueCapsule(
-						AssetIssueContract.newBuilder()
-								.setName(ByteString.copyFrom(secondTokenId.getBytes()))
-								.build());
-		assetIssueCapsule.setId(String.valueOf(1L));
-		dbManager.getAssetIssueStore()
-				.put(assetIssueCapsule.getName().toByteArray(), assetIssueCapsule);
-
-		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
-		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(200_000_000));
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 200_000_000L);
-		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
-
-		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
-				OWNER_ADDRESS_FIRST, firstTokenId, firstTokenBalance, secondTokenId, secondTokenBalance),
-				dbManager);
-		TransactionResultCapsule ret = new TransactionResultCapsule();
-		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), 0);
-		try {
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-			long id = 1;
-			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
-			// check old version
-			ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
-			Assert.assertNotNull(exchangeCapsule);
-			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsule.getCreatorAddress());
-			Assert.assertEquals(id, exchangeCapsule.getID());
-			Assert.assertEquals(1000000, exchangeCapsule.getCreateTime());
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsule.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsule.getFirstTokenId()));
-			Assert.assertEquals(firstTokenBalance, exchangeCapsule.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsule.getSecondTokenId()));
-			Assert.assertEquals(secondTokenBalance, exchangeCapsule.getSecondTokenBalance());
-
-			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> assetMap = accountCapsule.getAssetMap();
-			Assert.assertEquals(ConversionUtil.McashToMatoshi(200_000_000)
-							- ConversionUtil.McashToMatoshi(1024)
-							- firstTokenBalance,
-					accountCapsule.getBalance());
-			Assert.assertEquals(100_000_000L, assetMap.get(secondTokenId).longValue());
-
-			// check V2 version
-			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeV2Store()
-					.get(ByteArray.fromLong(id));
-			Assert.assertNotNull(exchangeCapsuleV2);
-			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
-			Assert.assertEquals(id, exchangeCapsuleV2.getID());
-			Assert.assertEquals(1000000, exchangeCapsuleV2.getCreateTime());
-			secondTokenId = dbManager.getAssetIssueStore().get(secondTokenId.getBytes()).getId();
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsuleV2.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsuleV2.getFirstTokenId()));
-			Assert.assertEquals(firstTokenBalance, exchangeCapsuleV2.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsuleV2.getSecondTokenId()));
-			Assert.assertEquals(secondTokenBalance, exchangeCapsuleV2.getSecondTokenBalance());
-
-			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
-			Assert.assertEquals(ConversionUtil.McashToMatoshi(200_000_000)
-							- dbManager.getDynamicPropertiesStore().getAssetIssueFee() - firstTokenBalance,
-					accountCapsule.getBalance());
-			Assert.assertEquals(100_000_000L, getAssetV2Map.get(secondTokenId).longValue());
-
-		} catch (ContractValidateException | ContractExeException | ItemNotFoundException e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-	/**
 	 * Init close SameTokenName, after init data,open SameTokenName
 	 */
 	@Test
 	public void oldNotUpdateSuccessExchangeCreate2() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "abc";
+		long secondTokenId = 1L;
+		String secondTokenName = "abc";
 		long secondTokenBalance = 100_000_000L;
 
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(
 				AssetIssueContract.newBuilder()
-						.setName(ByteString.copyFrom(secondTokenId.getBytes()))
+						.setName(ByteString.copyFrom(secondTokenName.getBytes()))
+						.setId(secondTokenId)
 						.build());
-		assetIssueCapsule.setId(String.valueOf(1L));
 		dbManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(200_000_000));
-		accountCapsule.addAsset(secondTokenId.getBytes(), 200_000_000L);
-		accountCapsule.addAssetV2(String.valueOf(1L).getBytes(), 200_000_000L);
+		accountCapsule.addAssetV2(secondTokenId, 200_000_000L);
+		accountCapsule.addAssetV2(1L, 200_000_000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
-				OWNER_ADDRESS_FIRST, firstTokenId, firstTokenBalance, String.valueOf(1L),
+				OWNER_ADDRESS_FIRST, firstTokenId, firstTokenBalance, secondTokenId,
 				secondTokenBalance),
 				dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), 0);
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
 		try {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
-			// V1,Data is no longer update
-			Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(id)));
 			// check V2 version
-			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeV2Store().get(ByteArray.fromLong(id));
-			Assert.assertNotNull(exchangeCapsuleV2);
-			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
-			Assert.assertEquals(id, exchangeCapsuleV2.getID());
-			Assert.assertEquals(1000000, exchangeCapsuleV2.getCreateTime());
-			secondTokenId = dbManager.getAssetIssueStore().get(secondTokenId.getBytes()).getId();
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsuleV2.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsuleV2.getFirstTokenId()));
-			Assert.assertEquals(firstTokenBalance, exchangeCapsuleV2.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsuleV2.getSecondTokenId()));
-			Assert.assertEquals(secondTokenBalance, exchangeCapsuleV2.getSecondTokenBalance());
+			ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
+			Assert.assertNotNull(exchangeCapsule);
+			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsule.getCreatorAddress());
+			Assert.assertEquals(id, exchangeCapsule.getID());
+			Assert.assertEquals(1000000, exchangeCapsule.getCreateTime());
+			secondTokenId = dbManager.getAssetIssueStore().get(secondTokenId).getId();
+			Assert.assertEquals(firstTokenId, exchangeCapsule.getFirstTokenId());
+			Assert.assertEquals(firstTokenBalance, exchangeCapsule.getFirstTokenBalance());
+			Assert.assertEquals(secondTokenId, exchangeCapsule.getSecondTokenId());
+			Assert.assertEquals(secondTokenBalance, exchangeCapsule.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
+			Map<Long, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
 			Assert.assertEquals(ConversionUtil.McashToMatoshi(200_000_000)
 							- dbManager.getDynamicPropertiesStore().getAssetIssueFee() - firstTokenBalance,
 					accountCapsule.getBalance());
@@ -364,23 +252,24 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenSuccessExchangeCreate() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
+		String firstTokenName = "123";
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
+		String secondTokenName = "456";
 		long secondTokenBalance = 100000000L;
 
 		AssetIssueCapsule assetIssueCapsule1 = new AssetIssueCapsule(
 				AssetIssueContract.newBuilder()
-						.setName(ByteString.copyFrom(firstTokenId.getBytes()))
+						.setName(ByteString.copyFrom(firstTokenName.getBytes()))
+						.setId(firstTokenId)
 						.build());
-		assetIssueCapsule1.setId(String.valueOf(1L));
 
 		AssetIssueCapsule assetIssueCapsule2 = new AssetIssueCapsule(
 				AssetIssueContract.newBuilder()
-						.setName(ByteString.copyFrom(secondTokenId.getBytes()))
+						.setName(ByteString.copyFrom(secondTokenName.getBytes()))
+						.setId(secondTokenId)
 						.build());
-		assetIssueCapsule2.setId(String.valueOf(2L));
 
 		dbManager.getAssetIssueStore()
 				.put(assetIssueCapsule1.getName().toByteArray(), assetIssueCapsule1);
@@ -389,8 +278,8 @@ public class ExchangeCreateActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId.getBytes(), firstTokenBalance, dbManager);
-		accountCapsule.addAssetAmountV2(secondTokenId.getBytes(), secondTokenBalance, dbManager);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10_000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -406,25 +295,20 @@ public class ExchangeCreateActuatorTest {
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
 
-			// V1,Data is no longer update
-			Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(id)));
-
 			// check V2 version
-			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeV2Store()
-					.get(ByteArray.fromLong(id));
+			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
 			Assert.assertNotNull(exchangeCapsuleV2);
 			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
 			Assert.assertEquals(id, exchangeCapsuleV2.getID());
 			Assert.assertEquals(1000000, exchangeCapsuleV2.getCreateTime());
 
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsuleV2.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsuleV2.getFirstTokenId()));
+			Assert.assertEquals(firstTokenId, exchangeCapsuleV2.getFirstTokenId());
 			Assert.assertEquals(firstTokenBalance, exchangeCapsuleV2.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsuleV2.getSecondTokenId()));
+			Assert.assertEquals(secondTokenId, exchangeCapsuleV2.getSecondTokenId());
 			Assert.assertEquals(secondTokenBalance, exchangeCapsuleV2.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
+			Map<Long, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
 			Assert.assertEquals(ConversionUtil.McashToMatoshi(10_000)
 					- dbManager.getDynamicPropertiesStore().getAssetIssueFee(), accountCapsule.getBalance());
 			Assert.assertEquals(0L, getAssetV2Map.get(firstTokenId).longValue());
@@ -439,25 +323,25 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenSuccessExchangeCreate2() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "123";
+		long secondTokenId = 1L;
+		String secondTokenName = "123";
 		long secondTokenBalance = 100_000_000L;
 
 		AssetIssueCapsule assetIssueCapsule =
 				new AssetIssueCapsule(
 						AssetIssueContract.newBuilder()
-								.setName(ByteString.copyFrom(secondTokenId.getBytes()))
+								.setId(secondTokenId)
+								.setName(ByteString.copyFrom(secondTokenName.getBytes()))
 								.build());
-		assetIssueCapsule.setId(String.valueOf(1L));
 		dbManager.getAssetIssueStore()
 				.put(assetIssueCapsule.getName().toByteArray(), assetIssueCapsule);
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(200_000_000));
-		accountCapsule.addAssetAmountV2(secondTokenId.getBytes(), 200_000_000L, dbManager);
+		accountCapsule.addAssetAmountV2(secondTokenId, 200_000_000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -471,23 +355,20 @@ public class ExchangeCreateActuatorTest {
 			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
-			// V1,Data is no longer update
-			Assert.assertFalse(dbManager.getExchangeStore().has(ByteArray.fromLong(id)));
 			// check V2 version
-			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeV2Store()
+			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore()
 					.get(ByteArray.fromLong(id));
 			Assert.assertNotNull(exchangeCapsuleV2);
 			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
 			Assert.assertEquals(id, exchangeCapsuleV2.getID());
 			Assert.assertEquals(1000000, exchangeCapsuleV2.getCreateTime());
-			Assert.assertArrayEquals(firstTokenId.getBytes(), exchangeCapsuleV2.getFirstTokenId());
-			Assert.assertEquals(firstTokenId, ByteArray.toStr(exchangeCapsuleV2.getFirstTokenId()));
+			Assert.assertEquals(firstTokenId, exchangeCapsuleV2.getFirstTokenId());
 			Assert.assertEquals(firstTokenBalance, exchangeCapsuleV2.getFirstTokenBalance());
-			Assert.assertEquals(secondTokenId, ByteArray.toStr(exchangeCapsuleV2.getSecondTokenId()));
+			Assert.assertEquals(secondTokenId, exchangeCapsuleV2.getSecondTokenId());
 			Assert.assertEquals(secondTokenBalance, exchangeCapsuleV2.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<String, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
+			Map<Long, Long> getAssetV2Map = accountCapsule.getAssetMapV2();
 			Assert.assertEquals(ConversionUtil.McashToMatoshi(200_000_000)
 							- dbManager.getDynamicPropertiesStore().getAssetIssueFee() - firstTokenBalance,
 					accountCapsule.getBalance());
@@ -504,10 +385,9 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenExchangeCreateFailure() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
@@ -523,9 +403,9 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("First token id is not a valid number");
+			Assert.fail("First token balance is not enough");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("First token id is not a valid number", e.getMessage());
+			Assert.assertEquals("First token balance is not enough", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -536,10 +416,9 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenExchangeCreateFailure2() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "abc";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
@@ -555,9 +434,9 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Second token id is not a valid number");
+			Assert.fail("Second token balance is not enough");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Second token id is not a valid number", e.getMessage());
+			Assert.assertEquals("Second token balance is not enough", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -569,10 +448,9 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseInvalidAddress() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "abc";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -598,10 +476,9 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenInvalidAddress() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "123";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -627,10 +504,9 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseNoAccount() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "abc";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -658,10 +534,9 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenNoAccount() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "123";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -687,16 +562,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseNoEnoughBalance() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(1000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -722,16 +596,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenNoEnoughBalance() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "123";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "345";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(1000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -756,16 +629,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseSameTokens() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "abc";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -790,16 +662,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenSameTokens() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100000000L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -811,10 +682,7 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("First token balance is not enough");
-		} catch (ContractValidateException e) {
-			Assert.assertEquals("First token balance is not enough", e.getMessage());
-		} catch (ContractExeException e) {
+		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -824,16 +692,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseLessToken() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 0L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 0L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), 1000);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 1000);
+		accountCapsule.addAssetAmountV2(firstTokenId, 1000);
+		accountCapsule.addAssetAmountV2(secondTokenId, 1000);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -858,16 +725,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenLessToken() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 0L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 0L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), 1000);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 1000);
+		accountCapsule.addAssetAmountV2(firstTokenId, 1000);
+		accountCapsule.addAssetAmountV2(secondTokenId, 1000);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -892,16 +758,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseMoreThanBalanceLimit() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000_000_001L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -927,16 +792,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenMoreThanBalanceLimit() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000_000_001L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), secondTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(100000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -961,16 +825,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseBalanceNotEnough() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "abc";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 		accountCapsule.setBalance(firstTokenBalance + 1000L);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 200_000_000L);
+		accountCapsule.addAssetAmountV2(secondTokenId, 200_000_000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -995,16 +858,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenBalanceNotEnough() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "_";
+		long firstTokenId = 0L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "123";
+		long secondTokenId = 1L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 		accountCapsule.setBalance(firstTokenBalance + 1000L);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 200_000_000L);
+		accountCapsule.addAssetAmountV2(secondTokenId, 200_000_000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -1028,16 +890,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseFirstTokenBalanceNotEnough() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance - 1000L);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 200_000_000L);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance - 1000L);
+		accountCapsule.addAssetAmountV2(secondTokenId, 200_000_000L);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -1063,16 +924,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenFirstTokenBalanceNotEnough() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance - 1000L);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 200_000_000L);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance - 1000L);
+		accountCapsule.addAssetAmountV2(secondTokenId, 200_000_000L);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -1097,16 +957,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseBalanceNotEnough2() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000L;
-		String secondTokenId = "_";
+		long secondTokenId = 0L;
 		long secondTokenBalance = ConversionUtil.McashToMatoshi(100_000_000);
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 		accountCapsule.setBalance(secondTokenBalance + 1000L);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), 200_000_000L);
+		accountCapsule.addAssetAmountV2(firstTokenId, 200_000_000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -1131,16 +990,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenBalanceNotEnough2() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000L;
-		String secondTokenId = "_";
+		long secondTokenId = 0L;
 		long secondTokenBalance = 100_000_000_000000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
 		accountCapsule.setBalance(secondTokenBalance + 1000L);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), 200_000_000L);
+		accountCapsule.addAssetAmountV2(firstTokenId, 200_000_000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
 		ExchangeCreateActuator actuator = new ExchangeCreateActuator(getContract(
@@ -1151,9 +1009,9 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("First token balance is not enough");
+			Assert.fail("Balance is not enough");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("First token balance is not enough", e.getMessage());
+			Assert.assertEquals("Balance is not enough", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -1164,16 +1022,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseSecondTokenBalanceNotEnough() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 90_000_000L);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, 90_000_000L);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -1199,16 +1056,15 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenSecondTokenBalanceNotEnough() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
-		accountCapsule.addAssetAmount(secondTokenId.getBytes(), 90_000_000L);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
+		accountCapsule.addAssetAmountV2(secondTokenId, 90_000_000L);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -1220,9 +1076,9 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("First token balance is not enough");
+			Assert.fail("Second token balance is not enough");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("First token balance is not enough", e.getMessage());
+			Assert.assertEquals("Second token balance is not enough", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -1233,15 +1089,14 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseSecondTokenNotExist() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(0);
-		String firstTokenId = "abc";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "def";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -1267,15 +1122,14 @@ public class ExchangeCreateActuatorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenSecondTokenNotExist() {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
-		String firstTokenId = "123";
+		long firstTokenId = 1L;
 		long firstTokenBalance = 100_000_000_000000L;
-		String secondTokenId = "456";
+		long secondTokenId = 2L;
 		long secondTokenBalance = 100_000_000L;
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmount(firstTokenId.getBytes(), firstTokenBalance);
+		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenBalance);
 		accountCapsule.setBalance(ConversionUtil.McashToMatoshi(10000));
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -1287,9 +1141,9 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("First token balance is not enough");
+			Assert.fail("Second token balance is not enough");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("First token balance is not enough",
+			Assert.assertEquals("Second token balance is not enough",
 					e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());

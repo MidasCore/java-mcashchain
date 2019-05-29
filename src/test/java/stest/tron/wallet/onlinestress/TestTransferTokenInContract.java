@@ -82,9 +82,9 @@ public class TestTransferTokenInContract {
 	 * constructor.
 	 */
 
-	public ByteString createAssetissue(byte[] devAddress, String devKey, String tokenName) {
+	public long createAssetissue(byte[] devAddress, String devKey, String tokenName) {
 
-		ByteString assetAccountId = null;
+		long assetAccountId = 0;
 		ByteString addressBS1 = ByteString.copyFrom(devAddress);
 		Account request1 = Account.newBuilder().setAddress(addressBS1).build();
 		GrpcAPI.AssetIssueList assetIssueList1 = blockingStubFull
@@ -102,10 +102,10 @@ public class TestTransferTokenInContract {
 					1L, 1L, devKey, blockingStubFull));
 
 			Account getAssetIdFromThisAccount = PublicMethed.queryAccount(devAddress, blockingStubFull);
-			assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+			assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 		} else {
 			logger.info("This account already create an assetisue");
-			Optional<GrpcAPI.AssetIssueList> queryAssetByAccount1 = Optional.ofNullable(assetIssueList1);
+			Optional<GrpcAPI.AssetIssueList> queryAssetByAccount1 = Optional.of(assetIssueList1);
 			tokenName = ByteArray.toStr(queryAssetByAccount1.get().getAssetIssue(0)
 					.getName().toByteArray());
 		}
@@ -138,10 +138,10 @@ public class TestTransferTokenInContract {
 				0, 1, user001Key, blockingStubFull));
 
 		String tokenName = "testAI_" + randomInt(10000, 90000);
-		ByteString tokenId = createAssetissue(user001Address, user001Key, tokenName);
+		long tokenId = createAssetissue(user001Address, user001Key, tokenName);
 
 		// devAddress transfer token to A
-		PublicMethed.transferAsset(dev001Address, tokenId.toByteArray(), 101, user001Address,
+		PublicMethed.transferAsset(dev001Address, tokenId, 101, user001Address,
 				user001Key, blockingStubFull);
 
 		// deploy transferTokenContract
@@ -159,7 +159,7 @@ public class TestTransferTokenInContract {
 				+ ":\"payable\",\"type\":\"constructor\"}]";
 		byte[] transferTokenContractAddress = PublicMethed
 				.deployContract(contractName, abi, code, "", maxFeeLimit,
-						0L, 100, 10000, tokenId.toStringUtf8(),
+						0L, 100, 10000, tokenId,
 						100, null, dev001Key, dev001Address,
 						blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -203,7 +203,7 @@ public class TestTransferTokenInContract {
 						0L, 100, null, dev001Key, dev001Address, blockingStubFull);
 
 		// devAddress transfer token to userAddress
-		PublicMethed.transferAsset(user001Address, tokenId.toByteArray(), 100, dev001Address, dev001Key,
+		PublicMethed.transferAsset(user001Address, tokenId, 100, dev001Address, dev001Key,
 				blockingStubFull);
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -229,14 +229,11 @@ public class TestTransferTokenInContract {
 				e.printStackTrace();
 			}
 			// user trigger A to transfer token to B
-			String param =
-					"\"" + Base58.encodeBase58(receiveTokenContractAddress) + "\",\"" + tokenId
-							.toStringUtf8()
-							+ "\",\"5\"";
+			String param = "\"" + Base58.encodeBase58(receiveTokenContractAddress) + "\",\"" + tokenId + "\",\"5\"";
 
 			String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 					"TransferTokenTo(address,trcToken,uint256)",
-					param, false, 0, 100000000L, tokenId.toStringUtf8(),
+					param, false, 0, 100000000L, tokenId,
 					10, user001Address, user001Key,
 					blockingStubFull);
 
@@ -248,9 +245,7 @@ public class TestTransferTokenInContract {
 			}
 
 			// user trigger A to transfer token to devAddress
-			param =
-					"\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId.toStringUtf8()
-							+ "\",\"5\"";
+			param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId + "\",\"5\"";
 
 			triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 					"TransferTokenTo(address,trcToken,uint256)",
@@ -265,10 +260,7 @@ public class TestTransferTokenInContract {
 			}
 
 			// user trigger C to get B's token balance
-			param =
-					"\"" + Base58.encodeBase58(receiveTokenContractAddress) + "\",\"" + tokenId
-							.toStringUtf8()
-							+ "\"";
+			param = "\"" + Base58.encodeBase58(receiveTokenContractAddress) + "\",\"" + tokenId + "\"";
 
 			triggerTxid = PublicMethed
 					.triggerContract(tokenBalanceContractAddress, "getTokenBalnce(address,trcToken)",
@@ -287,7 +279,7 @@ public class TestTransferTokenInContract {
 					user001Key, blockingStubFull);
 
 			// user trigger C to get devAddress's token balance
-			param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId.toStringUtf8() + "\"";
+			param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId + "\"";
 
 			triggerTxid = PublicMethed
 					.triggerContract(tokenBalanceContractAddress, "getTokenBalnce(address,trcToken)",

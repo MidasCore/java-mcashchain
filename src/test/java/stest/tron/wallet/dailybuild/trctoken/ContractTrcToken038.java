@@ -1,14 +1,7 @@
 package stest.tron.wallet.dailybuild.trctoken;
 
-import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
@@ -17,6 +10,12 @@ import io.midasprotocol.common.utils.Utils;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Protocol.Account;
 import io.midasprotocol.protos.Protocol.TransactionInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.Base58;
 import stest.tron.wallet.common.client.utils.PublicMethed;
@@ -30,8 +29,8 @@ public class ContractTrcToken038 {
 
 	private static final long TotalSupply = 10000000L;
 	private static final long now = System.currentTimeMillis();
-	private static ByteString assetAccountId = null;
-	private static String tokenName = "testAssetIssue_" + Long.toString(now);
+	private static long assetAccountId = 0;
+	private static String tokenName = "testAssetIssue_" + now;
 	private final String testKey002 = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key1");
 	private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
@@ -75,16 +74,12 @@ public class ContractTrcToken038 {
 	@Test(enabled = true, description = "Multi-level call transferToken assert tokenBalance ")
 	public void deployTransferTokenContract() {
 
-		Assert
-				.assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
-						testKey002, blockingStubFull));
-		logger.info(
-				"dev001Address:" + Base58.encodeBase58(dev001Address));
-		Assert
-				.assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
-						testKey002, blockingStubFull));
-		logger.info(
-				"user001Address:" + Base58.encodeBase58(user001Address));
+		Assert.assertTrue(PublicMethed.sendcoin(dev001Address, 4048000000L, fromAddress,
+				testKey002, blockingStubFull));
+		logger.info("dev001Address:" + Base58.encodeBase58(dev001Address));
+		Assert.assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
+				testKey002, blockingStubFull));
+		logger.info("user001Address:" + Base58.encodeBase58(user001Address));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// freeze balance
@@ -102,7 +97,7 @@ public class ContractTrcToken038 {
 		Assert.assertTrue(PublicMethed.createAssetIssue(dev001Address, tokenName, TotalSupply, 1,
 				100, start, end, 1, description, url, 10000L,
 				10000L, 1L, 1L, dev001Key, blockingStubFull));
-		assetAccountId = PublicMethed.queryAccount(dev001Address, blockingStubFull).getAssetIssuedID();
+		assetAccountId = PublicMethed.queryAccount(dev001Address, blockingStubFull).getAssetIssuedId();
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// deploy transferTokenContract
@@ -115,7 +110,7 @@ public class ContractTrcToken038 {
 				.getString("abi.abi_ContractTrcToken038_tokenTest");
 		final byte[] transferTokenContractAddress = PublicMethed
 				.deployContract(contractName2, abi2, code2, "", maxFeeLimit,
-						0L, 0, originEnergyLimit, "0",
+						0L, 0, originEnergyLimit, 0,
 						0, null, dev001Key, dev001Address,
 						blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -128,7 +123,7 @@ public class ContractTrcToken038 {
 				.getString("abi.abi_ContractTrcToken038_BTest");
 		byte[] btestAddress = PublicMethed
 				.deployContract(contractName, abi, code, "", maxFeeLimit,
-						0L, 0, originEnergyLimit, "0",
+						0L, 0, originEnergyLimit, 0,
 						0, null, dev001Key, dev001Address,
 						blockingStubFull);
 
@@ -141,7 +136,7 @@ public class ContractTrcToken038 {
 						testKey002, blockingStubFull));
 		// devAddress transfer token to userAddress
 		PublicMethed
-				.transferAsset(transferTokenContractAddress, assetAccountId.toByteArray(), 100,
+				.transferAsset(transferTokenContractAddress, assetAccountId, 100,
 						dev001Address,
 						dev001Key,
 						blockingStubFull);
@@ -189,8 +184,7 @@ public class ContractTrcToken038 {
 
 		final String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"receive(address)",
-				param, false, 0, 1000000000L, assetAccountId
-						.toStringUtf8(),
+				param, false, 0, 1000000000L, assetAccountId,
 				1, dev001Address, dev001Key,
 				blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);

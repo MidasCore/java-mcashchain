@@ -30,7 +30,7 @@ public class WalletTestAssetIssue007 {
 	private static final long netCostMeasure = 200L;
 	private static final Integer trxNum = 1;
 	private static final Integer icoNum = 1;
-	private static String name = "AssetIssue007_" + Long.toString(now);
+	private static String name = "AssetIssue007_" + now;
 	private final String testKey002 = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key1");
 	private final String testKey003 = Configuration.getByPath("testng.conf")
@@ -77,8 +77,7 @@ public class WalletTestAssetIssue007 {
 
 	@Test(enabled = true, description = "Participate asset issue use participate bandwidth")
 	public void testParticipateAssetIssueUseParticipateBandwidth() {
-		Assert.assertTrue(PublicMethed
-				.sendcoin(asset007Address, sendAmount, fromAddress, testKey002, blockingStubFull));
+		Assert.assertTrue(PublicMethed.sendcoin(asset007Address, sendAmount, fromAddress, testKey002, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Long start = System.currentTimeMillis() + 5000;
 		Long end = System.currentTimeMillis() + 1000000000;
@@ -86,12 +85,18 @@ public class WalletTestAssetIssue007 {
 				.createAssetIssue(asset007Address, name, totalSupply, trxNum, icoNum, start, end, 1,
 						description, url, freeAssetNetLimit, publicFreeAssetNetLimit, 1L, 1L,
 						testKeyForAssetIssue007, blockingStubFull));
-
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		logger.info(name);
 		//Assert.assertTrue(PublicMethed.waitProduceNextBlock(blockingStubFull));
 		//When no balance, participate an asset issue
-		Assert.assertFalse(PublicMethed.participateAssetIssue(asset007Address, name.getBytes(),
+
+		Account getAssetIdFromThisAccount;
+		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset007Address, blockingStubFull);
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
+		logger.info(String.valueOf(assetAccountId));
+
+
+		Assert.assertFalse(PublicMethed.participateAssetIssue(asset007Address, assetAccountId,
 				1L, participateAssetAddress, participateAssetCreateKey, blockingStubFull));
 
 		ByteString addressBs = ByteString.copyFrom(asset007Address);
@@ -107,16 +112,11 @@ public class WalletTestAssetIssue007 {
 		request = Account.newBuilder().setAddress(addressBs).build();
 		AccountNetMessage participateAccountNetMessage = blockingStubFull.getAccountNet(request);
 		final Long participateAccountBeforeNetUsed = participateAccountNetMessage.getFreeNetUsed();
-		Assert.assertTrue(participateAccountBeforeNetUsed == 0);
-
-		Account getAssetIdFromThisAccount;
-		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset007Address, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
-		logger.info(assetAccountId.toString());
+		Assert.assertEquals(participateAccountBeforeNetUsed.longValue(), 0);
 
 		//Participate an assetIssue, then query the net information.
 		Assert.assertTrue(PublicMethed.participateAssetIssue(
-				asset007Address, assetAccountId.toByteArray(),
+				asset007Address, assetAccountId,
 				1L, participateAssetAddress, participateAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		addressBs = ByteString.copyFrom(asset007Address);
@@ -137,18 +137,18 @@ public class WalletTestAssetIssue007 {
 		Assert.assertTrue(participateAccountAfterNetUsed - participateAccountBeforeNetUsed > 150);
 
 		Assert.assertTrue(PublicMethed.participateAssetIssue(
-				asset007Address, assetAccountId.toByteArray(),
+				asset007Address, assetAccountId,
 				1L, participateAssetAddress, participateAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Assert.assertTrue(PublicMethed.participateAssetIssue(
-				asset007Address, assetAccountId.toByteArray(),
+				asset007Address, assetAccountId,
 				1L, participateAssetAddress, participateAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Account participateInfo = PublicMethed
 				.queryAccount(participateAssetCreateKey, blockingStubFull);
 		final Long beforeBalance = participateInfo.getBalance();
 		Assert.assertTrue(PublicMethed.participateAssetIssue(
-				asset007Address, assetAccountId.toByteArray(),
+				asset007Address, assetAccountId,
 				1L, participateAssetAddress, participateAssetCreateKey, blockingStubFull));
 		participateInfo = PublicMethed.queryAccount(participateAssetCreateKey, blockingStubFull);
 		final Long afterBalance = participateInfo.getBalance();

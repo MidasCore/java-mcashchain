@@ -25,6 +25,7 @@ import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.SmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import org.testng.Assert;
 import stest.tron.wallet.common.client.WalletClient;
 import stest.tron.wallet.common.client.utils.AbiUtil;
 

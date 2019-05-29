@@ -329,10 +329,10 @@ public class WalletTestAccount013 {
 		Protocol.Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(
 				accountForAssetIssueAddress, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 		//Account5 Participate AssetIssue
 		Assert.assertTrue(PublicMethed.participateAssetIssue(
-				accountForAssetIssueAddress, assetAccountId.toByteArray(), 1000000,
+				accountForAssetIssueAddress, assetAccountId, 1000000,
 				account5DelegatedResourceAddress, account5DelegatedResourceKey, blockingStubFull));
 		//get account013，accountForAssetIssue，Account5 account resources before transferAssets
 		final long account013CurrentBandwidth = PublicMethed.getAccountResource(
@@ -343,7 +343,7 @@ public class WalletTestAccount013 {
 				account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
 		//Account5 transfer Assets receiver
 		Assert.assertTrue(PublicMethed.transferAsset(receiverDelegateAddress,
-				assetAccountId.toByteArray(), 100000, account5DelegatedResourceAddress,
+				assetAccountId, 100000, account5DelegatedResourceAddress,
 				account5DelegatedResourceKey, blockingStubFull));
 
 		PublicMethed.printAddress(accountForAssetIssueKey);
@@ -359,24 +359,23 @@ public class WalletTestAccount013 {
 		AccountResourceMessage account5ResourceAfterTrans = PublicMethed.getAccountResource(
 				account5DelegatedResourceAddress, blockingStubFull);
 
-		String result = "";
+		long result = 0;
 		if (account5ResourceAfterTrans.getAssetNetLimitCount() > 0) {
 			logger.info("getAssetNetLimitCount > 0 ");
-			for (String name1 : account5ResourceAfterTrans.getAssetNetLimitMap().keySet()) {
-				logger.info(name1);
-				result += account5ResourceAfterTrans.getAssetNetUsedMap().get(name1);
+			for (long id : account5ResourceAfterTrans.getAssetNetLimitMap().keySet()) {
+				logger.info(String.valueOf(id));
+				result += account5ResourceAfterTrans.getAssetNetUsedMap().get(id);
 
 			}
 		}
-		logger.info(result);
+		logger.info(String.valueOf(result));
 		PublicMethed.printAddress(receiverDelegateKey);
 		PublicMethed.printAddress(account5DelegatedResourceKey);
-		long account5FreeAssetNetUsed = accountForAssetIssueCurrentBandwidthAfterTrans;
 
 		//check resource diff
-		Assert.assertTrue(Long.parseLong(result) > 0);
-		Assert.assertTrue(account013CurrentBandwidth == account013CurrentBandwidthAfterTrans);
-		Assert.assertTrue(account5CurrentBandwidth == account5CurrentBandwidthAfterTrans);
+		Assert.assertTrue(result > 0);
+		Assert.assertEquals(account013CurrentBandwidthAfterTrans, account013CurrentBandwidth);
+		Assert.assertEquals(account5CurrentBandwidthAfterTrans, account5CurrentBandwidth);
 	}
 
 	@Test(enabled = true)
@@ -431,7 +430,7 @@ public class WalletTestAccount013 {
 		//Account013 trigger contract
 		String txid = PublicMethed.triggerContract(contractAddress,
 				"add2(uint256)", "1", false,
-				0, 1000000000L, "0", 0, account013Address, testKeyForAccount013, blockingStubFull);
+				0, 1000000000L, 0, 0, account013Address, testKeyForAccount013, blockingStubFull);
 		logger.info(txid);
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		logger.info(String.valueOf(infoById.get().getResultValue()));
@@ -452,11 +451,10 @@ public class WalletTestAccount013 {
 		final long deployCurrentEnergyUsedAfterTrig = PublicMethed.getAccountResource(
 				accountForDeployAddress, blockingStubFull).getEnergyUsed();
 		//compare energy changed
-		Assert.assertTrue(account013CurrentEnergyUsed == account013CurrentEnergyUsedAfterTrig);
-		Assert.assertTrue(account4CurrentEnergyUsed == account4CurrentEnergyUsedAfterTrig);
-		Assert.assertTrue(contractCurrentEnergyUsed == contractCurrentEnergyUsedAfterTrig);
-		Assert.assertTrue(deployCurrentEnergyUsed
-				== deployCurrentEnergyUsedAfterTrig - contractTriggerEnergyUsed);
+		Assert.assertEquals(account013CurrentEnergyUsedAfterTrig, account013CurrentEnergyUsed);
+		Assert.assertEquals(account4CurrentEnergyUsedAfterTrig, account4CurrentEnergyUsed);
+		Assert.assertEquals(contractCurrentEnergyUsedAfterTrig, contractCurrentEnergyUsed);
+		Assert.assertEquals(deployCurrentEnergyUsedAfterTrig - contractTriggerEnergyUsed, deployCurrentEnergyUsed);
 		//compare bandwidth of Account013 before and after trigger contract
 		Assert.assertTrue(account013CurrentBandwidthUsed
 				== account013CurrentBandwidthUsedAfterTrig - contractTriggerBandwidthUsed);

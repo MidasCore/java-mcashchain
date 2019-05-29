@@ -17,7 +17,9 @@
  */
 package io.midasprotocol.common.runtime.vm.program;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.utils.ByteArray;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -300,7 +302,7 @@ public class Program {
 	 */
 	private InternalTransaction addInternalTx(DataWord energyLimit, byte[] senderAddress,
 											  byte[] transferAddress,
-											  long value, byte[] data, String note, long nonce, Map<String, Long> tokenInfo) {
+											  long value, byte[] data, String note, long nonce, Map<Long, Long> tokenInfo) {
 
 		InternalTransaction addedInternalTx = null;
 		if (internalTransaction != null) {
@@ -732,7 +734,7 @@ public class Program {
 		// 2.1 PERFORM THE VALUE (endowment) PART
 		long endowment = msg.getEndowment().value().longValueExact();
 		// transfer trx validation
-		byte[] tokenId = null;
+		long tokenId = 0;
 
 		checkTokenId(msg);
 
@@ -748,7 +750,7 @@ public class Program {
 		}
 		// transfer trc10 token validation
 		else {
-			tokenId = String.valueOf(msg.getTokenId().longValue()).getBytes();
+			tokenId = msg.getTokenId().longValue();
 			long senderBalance = deposit.getTokenBalance(senderAddress, tokenId);
 			if (senderBalance < endowment) {
 				stackPushZero();
@@ -795,9 +797,9 @@ public class Program {
 
 		// CREATE CALL INTERNAL TRANSACTION
 		increaseNonce();
-		HashMap<String, Long> tokenInfo = new HashMap<>();
+		HashMap<Long, Long> tokenInfo = new HashMap<>();
 		if (isTokenTransfer) {
-			tokenInfo.put(new String(stripLeadingZeroes(tokenId)), endowment);
+			tokenInfo.put(tokenId, endowment);
 		}
 		InternalTransaction internalTx = addInternalTx(null, senderAddress, contextAddress,
 				!isTokenTransfer ? endowment : 0, data, "call", nonce,
@@ -1046,7 +1048,7 @@ public class Program {
 	public DataWord getTokenBalance(DataWord address, DataWord tokenId) {
 		checkTokenIdInTokenBalance(tokenId);
 		long ret = getContractState().getTokenBalance(convertToTronAddress(address.getLast20Bytes()),
-				String.valueOf(tokenId.longValue()).getBytes());
+				tokenId.longValue());
 		return ret == 0 ? new DataWord(0) : new DataWord(ret);
 	}
 
@@ -1241,7 +1243,7 @@ public class Program {
 
 		long endowment = msg.getEndowment().value().longValueExact();
 		long senderBalance = 0;
-		byte[] tokenId = null;
+		long tokenId = 0;
 
 		checkTokenId(msg);
 		boolean isTokenTransfer = isTokenTransfer(msg);
@@ -1251,7 +1253,7 @@ public class Program {
 		}
 		// transfer trc10 token validation
 		else {
-			tokenId = String.valueOf(msg.getTokenId().longValue()).getBytes();
+			tokenId = msg.getTokenId().longValue();
 			senderBalance = deposit.getTokenBalance(senderAddress, tokenId);
 		}
 		if (senderBalance < endowment) {

@@ -1,14 +1,9 @@
 package stest.tron.wallet.dailybuild.manual;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI.ExchangeList;
 import io.midasprotocol.api.GrpcAPI.PaginatedMessage;
 import io.midasprotocol.api.WalletGrpc;
@@ -19,6 +14,12 @@ import io.midasprotocol.common.utils.Utils;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Protocol.Account;
 import io.midasprotocol.protos.Protocol.Exchange;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 import stest.tron.wallet.common.client.utils.PublicMethedForMutiSign;
@@ -55,8 +56,8 @@ public class WalletTestMutiSign002 {
 	String[] ownerKeyString = new String[3];
 	String accountPermissionJson = "";
 	Account firstAccount;
-	ByteString assetAccountId1;
-	ByteString assetAccountId2;
+	long assetAccountId1;
+	long assetAccountId2;
 	Optional<ExchangeList> listExchange;
 	Optional<Exchange> exchangeIdInfo;
 	Integer exchangeId = 0;
@@ -176,18 +177,18 @@ public class WalletTestMutiSign002 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
-		assetAccountId1 = getAssetIdFromThisAccount.getAssetIssuedID();
+		assetAccountId1 = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		getAssetIdFromThisAccount = PublicMethed
 				.queryAccount(secondExchange001Address, blockingStubFull);
-		assetAccountId2 = getAssetIdFromThisAccount.getAssetIssuedID();
+		assetAccountId2 = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long token1BeforeBalance = 0L;
-		for (String name : firstAccount.getAssetMap().keySet()) {
+		for (long name : firstAccount.getAssetMap().keySet()) {
 			token1BeforeBalance = firstAccount.getAssetMap().get(name);
 		}
-		Assert.assertTrue(PublicMethed.transferAsset(exchange001Address, assetAccountId2.toByteArray(),
+		Assert.assertTrue(PublicMethed.transferAsset(exchange001Address, assetAccountId2,
 				secondTransferAssetToFirstAccountNum, secondExchange001Address,
 				secondExchange001Key, blockingStubFull));
 		Long token2BeforeBalance = secondTransferAssetToFirstAccountNum;
@@ -200,8 +201,8 @@ public class WalletTestMutiSign002 {
 		//CreateExchange
 		Assert.assertTrue(
 				PublicMethedForMutiSign.exchangeCreate(
-						assetAccountId1.toByteArray(), firstTokenInitialBalance,
-						assetAccountId2.toByteArray(), secondTokenInitialBalance, exchange001Address,
+						assetAccountId1, firstTokenInitialBalance,
+						assetAccountId2, secondTokenInitialBalance, exchange001Address,
 						exchange001Key, blockingStubFull, ownerKeyString));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		listExchange = PublicMethed.getExchangeList(blockingStubFull);
@@ -223,8 +224,7 @@ public class WalletTestMutiSign002 {
 			Assert.assertFalse(ByteArray.toHexString(listExchange.get().getExchanges(i)
 					.getCreatorAddress().toByteArray()).isEmpty());
 			Assert.assertTrue(listExchange.get().getExchanges(i).getExchangeId() > 0);
-			Assert.assertFalse(ByteArray.toStr(listExchange.get().getExchanges(i).getFirstTokenId()
-					.toByteArray()).isEmpty());
+			Assert.assertNotEquals(0, listExchange.get().getExchanges(i).getFirstTokenId());
 			Assert.assertTrue(listExchange.get().getExchanges(i).getFirstTokenBalance() > 0);
 		}
 	}
@@ -241,47 +241,44 @@ public class WalletTestMutiSign002 {
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long beforeToken1Balance = 0L;
 		Long beforeToken2Balance = 0L;
-		for (String id : firstAccount.getAssetV2Map().keySet()) {
-			if (assetAccountId1.toStringUtf8().equalsIgnoreCase(id)) {
-				beforeToken1Balance = firstAccount.getAssetV2Map().get(id);
+		for (long id : firstAccount.getAssetMap().keySet()) {
+			if (assetAccountId1 == id) {
+				beforeToken1Balance = firstAccount.getAssetMap().get(id);
 			}
-			if (assetAccountId2.toStringUtf8().equalsIgnoreCase(id)) {
-				beforeToken2Balance = firstAccount.getAssetV2Map().get(id);
+			if (assetAccountId2 == id) {
+				beforeToken2Balance = firstAccount.getAssetMap().get(id);
 			}
 		}
-		logger.info("before token 1 balance is " + Long.toString(beforeToken1Balance));
-		logger.info("before token 2 balance is " + Long.toString(beforeToken2Balance));
+		logger.info("before token 1 balance is " + beforeToken1Balance);
+		logger.info("before token 2 balance is " + beforeToken2Balance);
 		Integer injectBalance = 100;
 		Assert.assertTrue(
 				PublicMethedForMutiSign.injectExchange(
-						exchangeId, assetAccountId1.toByteArray(), injectBalance,
+						exchangeId, assetAccountId1, injectBalance,
 						exchange001Address, exchange001Key, blockingStubFull, ownerKeyString));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long afterToken1Balance = 0L;
 		Long afterToken2Balance = 0L;
-		for (String id : firstAccount.getAssetV2Map().keySet()) {
-			if (assetAccountId1.toStringUtf8().equalsIgnoreCase(id)) {
-				afterToken1Balance = firstAccount.getAssetV2Map().get(id);
+		for (long id : firstAccount.getAssetMap().keySet()) {
+			if (assetAccountId1 == id) {
+				afterToken1Balance = firstAccount.getAssetMap().get(id);
 			}
-			if (assetAccountId2.toStringUtf8().equalsIgnoreCase(id)) {
-				afterToken2Balance = firstAccount.getAssetV2Map().get(id);
+			if (assetAccountId2 == id) {
+				afterToken2Balance = firstAccount.getAssetMap().get(id);
 			}
 		}
-		logger.info("before token 1 balance is " + Long.toString(afterToken1Balance));
-		logger.info("before token 2 balance is " + Long.toString(afterToken2Balance));
+		logger.info("before token 1 balance is " + afterToken1Balance);
+		logger.info("before token 2 balance is " + afterToken2Balance);
 
-		Assert.assertTrue(beforeToken1Balance - afterToken1Balance == injectBalance);
-		Assert.assertTrue(beforeToken2Balance - afterToken2Balance == injectBalance
-				* exchangeRate);
+		Assert.assertEquals(beforeToken1Balance - afterToken1Balance, (int) injectBalance);
+		Assert.assertEquals(beforeToken2Balance - afterToken2Balance, injectBalance * exchangeRate);
 
 		exchangeIdInfo = PublicMethed.getExchange(exchangeId.toString(), blockingStubFull);
 		Long afterExchangeToken1Balance = exchangeIdInfo.get().getFirstTokenBalance();
 		Long afterExchangeToken2Balance = exchangeIdInfo.get().getSecondTokenBalance();
-		Assert.assertTrue(afterExchangeToken1Balance - beforeExchangeToken1Balance
-				== injectBalance);
-		Assert.assertTrue(afterExchangeToken2Balance - beforeExchangeToken2Balance
-				== injectBalance * exchangeRate);
+		Assert.assertEquals(afterExchangeToken1Balance - beforeExchangeToken1Balance, (int) injectBalance);
+		Assert.assertEquals(afterExchangeToken2Balance - beforeExchangeToken2Balance, injectBalance * exchangeRate);
 		Long balanceAfter = PublicMethed.queryAccount(exchange001Address, blockingStubFull)
 				.getBalance();
 		logger.info("balanceAfter: " + balanceAfter);
@@ -302,48 +299,46 @@ public class WalletTestMutiSign002 {
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long beforeToken1Balance = 0L;
 		Long beforeToken2Balance = 0L;
-		for (String id : firstAccount.getAssetV2Map().keySet()) {
-			if (assetAccountId1.toStringUtf8().equalsIgnoreCase(id)) {
-				beforeToken1Balance = firstAccount.getAssetV2Map().get(id);
+		for (long id : firstAccount.getAssetMap().keySet()) {
+			if (assetAccountId1 == id) {
+				beforeToken1Balance = firstAccount.getAssetMap().get(id);
 			}
-			if (assetAccountId2.toStringUtf8().equalsIgnoreCase(id)) {
-				beforeToken2Balance = firstAccount.getAssetV2Map().get(id);
+			if (assetAccountId2 == id) {
+				beforeToken2Balance = firstAccount.getAssetMap().get(id);
 			}
 		}
 
-		logger.info("before token 1 balance is " + Long.toString(beforeToken1Balance));
-		logger.info("before token 2 balance is " + Long.toString(beforeToken2Balance));
+		logger.info("before token 1 balance is " + beforeToken1Balance);
+		logger.info("before token 2 balance is " + beforeToken2Balance);
 		Integer withdrawNum = 200;
 		Assert.assertTrue(
 				PublicMethedForMutiSign.exchangeWithdraw(
-						exchangeId, assetAccountId1.toByteArray(), withdrawNum,
+						exchangeId, assetAccountId1, withdrawNum,
 						exchange001Address, exchange001Key, blockingStubFull, ownerKeyString));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long afterToken1Balance = 0L;
 		Long afterToken2Balance = 0L;
-		for (String id : firstAccount.getAssetV2Map().keySet()) {
-			if (assetAccountId1.toStringUtf8().equalsIgnoreCase(id)) {
-				afterToken1Balance = firstAccount.getAssetV2Map().get(id);
+		for (long id : firstAccount.getAssetMap().keySet()) {
+			if (assetAccountId1 == id) {
+				afterToken1Balance = firstAccount.getAssetMap().get(id);
 			}
-			if (assetAccountId2.toStringUtf8().equalsIgnoreCase(id)) {
-				afterToken2Balance = firstAccount.getAssetV2Map().get(id);
+			if (assetAccountId1 == id) {
+				afterToken2Balance = firstAccount.getAssetMap().get(id);
 			}
 		}
 
-		logger.info("before token 1 balance is " + Long.toString(afterToken1Balance));
-		logger.info("before token 2 balance is " + Long.toString(afterToken2Balance));
+		logger.info("before token 1 balance is " + afterToken1Balance);
+		logger.info("before token 2 balance is " + afterToken2Balance);
 
-		Assert.assertTrue(afterToken1Balance - beforeToken1Balance == withdrawNum);
-		Assert.assertTrue(afterToken2Balance - beforeToken2Balance == withdrawNum
+		Assert.assertEquals(afterToken1Balance - beforeToken1Balance, (int) withdrawNum);
+		Assert.assertEquals(afterToken2Balance - beforeToken2Balance, withdrawNum
 				* exchangeRate);
 		exchangeIdInfo = PublicMethed.getExchange(exchangeId.toString(), blockingStubFull);
 		Long afterExchangeToken1Balance = exchangeIdInfo.get().getFirstTokenBalance();
 		Long afterExchangeToken2Balance = exchangeIdInfo.get().getSecondTokenBalance();
-		Assert.assertTrue(afterExchangeToken1Balance - beforeExchangeToken1Balance
-				== -withdrawNum);
-		Assert.assertTrue(afterExchangeToken2Balance - beforeExchangeToken2Balance
-				== -withdrawNum * exchangeRate);
+		Assert.assertEquals(afterExchangeToken1Balance - beforeExchangeToken1Balance, -withdrawNum);
+		Assert.assertEquals(afterExchangeToken2Balance - beforeExchangeToken2Balance, -withdrawNum * exchangeRate);
 		Long balanceAfter = PublicMethed.queryAccount(exchange001Address, blockingStubFull)
 				.getBalance();
 		logger.info("balanceAfter: " + balanceAfter);
@@ -366,46 +361,43 @@ public class WalletTestMutiSign002 {
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long beforeToken1Balance = 0L;
 		Long beforeToken2Balance = 0L;
-		for (String id : firstAccount.getAssetV2Map().keySet()) {
-			if (assetAccountId1.toStringUtf8().equalsIgnoreCase(id)) {
-				beforeToken1Balance = firstAccount.getAssetV2Map().get(id);
+		for (long id : firstAccount.getAssetMap().keySet()) {
+			if (assetAccountId1 == id) {
+				beforeToken1Balance = firstAccount.getAssetMap().get(id);
 			}
-			if (assetAccountId2.toStringUtf8().equalsIgnoreCase(id)) {
-				beforeToken2Balance = firstAccount.getAssetV2Map().get(id);
+			if (assetAccountId2 == id) {
+				beforeToken2Balance = firstAccount.getAssetMap().get(id);
 			}
 		}
 
-		logger.info("before token 1 balance is " + Long.toString(beforeToken1Balance));
-		logger.info("before token 2 balance is " + Long.toString(beforeToken2Balance));
-		Integer transactionNum = 50;
+		logger.info("before token 1 balance is " + beforeToken1Balance);
+		logger.info("before token 2 balance is " + beforeToken2Balance);
+		int transactionNum = 50;
 		Assert.assertTrue(
-				PublicMethedForMutiSign
-						.exchangeTransaction(exchangeId, assetAccountId1.toByteArray(), transactionNum, 1,
-								exchange001Address, exchange001Key, blockingStubFull, ownerKeyString));
+				PublicMethedForMutiSign.exchangeTransaction(exchangeId, assetAccountId1, transactionNum, 1,
+						exchange001Address, exchange001Key, blockingStubFull, ownerKeyString));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		firstAccount = PublicMethed.queryAccount(exchange001Address, blockingStubFull);
 		Long afterToken1Balance = 0L;
 		Long afterToken2Balance = 0L;
-		for (String id : firstAccount.getAssetV2Map().keySet()) {
-			if (assetAccountId1.toStringUtf8().equalsIgnoreCase(id)) {
-				afterToken1Balance = firstAccount.getAssetV2Map().get(id);
+		for (long id : firstAccount.getAssetMap().keySet()) {
+			if (assetAccountId1 == id) {
+				afterToken1Balance = firstAccount.getAssetMap().get(id);
 			}
-			if (assetAccountId2.toStringUtf8().equalsIgnoreCase(id)) {
-				afterToken2Balance = firstAccount.getAssetV2Map().get(id);
+			if (assetAccountId2 == id) {
+				afterToken2Balance = firstAccount.getAssetMap().get(id);
 			}
 		}
-		logger.info("before token 1 balance is " + Long.toString(afterToken1Balance));
-		logger.info("before token 2 balance is " + Long.toString(afterToken2Balance));
+		logger.info("before token 1 balance is " + afterToken1Balance);
+		logger.info("before token 2 balance is " + afterToken2Balance);
 
 		exchangeIdInfo = PublicMethed.getExchange(exchangeId.toString(), blockingStubFull);
 		Long afterExchangeToken1Balance = exchangeIdInfo.get().getFirstTokenBalance();
 		Long afterExchangeToken2Balance = exchangeIdInfo.get().getSecondTokenBalance();
 		logger.info("afterExchangeToken1Balance" + afterExchangeToken1Balance);
 		logger.info("afterExchangeToken2Balance" + afterExchangeToken2Balance);
-		Assert.assertTrue(afterExchangeToken1Balance - beforeExchangeToken1Balance
-				== beforeToken1Balance - afterToken1Balance);
-		Assert.assertTrue(afterExchangeToken2Balance - beforeExchangeToken2Balance
-				== beforeToken2Balance - afterToken2Balance);
+		Assert.assertEquals(afterExchangeToken1Balance - beforeExchangeToken1Balance, beforeToken1Balance - afterToken1Balance);
+		Assert.assertEquals(afterExchangeToken2Balance - beforeExchangeToken2Balance, beforeToken2Balance - afterToken2Balance);
 
 		Long balanceAfter = PublicMethed.queryAccount(exchange001Address, blockingStubFull)
 				.getBalance();

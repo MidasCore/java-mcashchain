@@ -44,7 +44,7 @@ public class InternalTransaction {
 	/* the amount of trx to transfer (calculated as sun) */
 	private long value;
 
-	private Map<String, Long> tokenInfo = new HashMap<>();
+	private Map<Long, Long> tokenInfo = new HashMap<>();
 
 	/* the address of the destination account (for message)
 	 * In creation transaction the receive address is - 0 */
@@ -91,7 +91,7 @@ public class InternalTransaction {
 			this.note = "create";
 			this.value = contract.getNewContract().getCallValue();
 			this.data = contract.getNewContract().getBytecode().toByteArray();
-			this.tokenInfo.put(String.valueOf(contract.getTokenId()), contract.getCallTokenValue());
+			this.tokenInfo.put(contract.getTokenId(), contract.getCallTokenValue());
 		} else if (trxType == TrxType.TRX_CONTRACT_CALL_TYPE) {
 			TriggerSmartContract contract = ContractCapsule.getTriggerContractFromTransaction(trx);
 			if (contract == null) {
@@ -103,7 +103,7 @@ public class InternalTransaction {
 			this.note = "call";
 			this.value = contract.getCallValue();
 			this.data = contract.getData().toByteArray();
-			this.tokenInfo.put(String.valueOf(contract.getTokenId()), contract.getCallTokenValue());
+			this.tokenInfo.put(contract.getTokenId(), contract.getCallTokenValue());
 		} else {
 			// do nothing, just for running byte code
 		}
@@ -116,7 +116,7 @@ public class InternalTransaction {
 
 	public InternalTransaction(byte[] parentHash, int deep, int index,
 							   byte[] sendAddress, byte[] transferToAddress, long value, byte[] data, String note,
-							   long nonce, Map<String, Long> tokenInfo) {
+							   long nonce, Map<Long, Long> tokenInfo) {
 		this.parentHash = parentHash.clone();
 		this.deep = deep;
 		this.index = index;
@@ -167,7 +167,7 @@ public class InternalTransaction {
 		return note;
 	}
 
-	public Map<String, Long> getTokenInfo() {
+	public Map<Long, Long> getTokenInfo() {
 		return tokenInfo;
 	}
 

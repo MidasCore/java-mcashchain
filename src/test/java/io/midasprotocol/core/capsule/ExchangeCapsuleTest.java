@@ -73,8 +73,8 @@ public class ExchangeCapsuleTest {
 						ByteString.copyFromUtf8("owner"),
 						1,
 						now,
-						"abc".getBytes(),
-						"def".getBytes());
+						1L,
+						2L);
 
 		dbManager.getExchangeStore().put(exchangeCapsulee.createDbKey(), exchangeCapsulee);
 
@@ -93,7 +93,7 @@ public class ExchangeCapsuleTest {
 			exchangeCapsule.setBalance(sellBalance, buyBalance);
 
 			long sellQuant = ConversionUtil.McashToMatoshi(1);
-			byte[] sellID = "abc".getBytes();
+			long sellID = 1L;
 
 			long result = exchangeCapsule.transaction(sellID, sellQuant);
 			Assert.assertEquals(990_09900L, result);

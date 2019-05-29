@@ -189,7 +189,7 @@ public class ContractOriginEnergyLimit004 {
 
 		final String deployTxid = PublicMethed
 				.deployContractAndGetTransactionInfoById(contractName, abi, code, "",
-						deployFeeLimit, 0L, consumeUserResourcePercent, originEnergyLimit, "0",
+						deployFeeLimit, 0L, consumeUserResourcePercent, originEnergyLimit, 0,
 						0, null, dev001Key, dev001Address, blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 

@@ -314,7 +314,7 @@ public class PublicMethedForMutiSign {
 	/**
 	 * constructor.
 	 */
-	public static boolean participateAssetIssue(byte[] to, byte[] assertName, long amount,
+	public static boolean participateAssetIssue(byte[] to, long assetId, long amount,
 												byte[] from, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
 												String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -329,10 +329,9 @@ public class PublicMethedForMutiSign {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -345,7 +344,7 @@ public class PublicMethedForMutiSign {
 	/**
 	 * constructor.
 	 */
-	public static boolean participateAssetIssueWithPermissionId(byte[] to, byte[] assertName,
+	public static boolean participateAssetIssueWithPermissionId(byte[] to, long assetId,
 																long amount, byte[] from, String priKey, int permissionId,
 																WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -360,10 +359,9 @@ public class PublicMethedForMutiSign {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -381,7 +379,7 @@ public class PublicMethedForMutiSign {
 	/**
 	 * constructor.
 	 */
-	public static String participateAssetIssueForTransactionId(byte[] to, byte[] assertName,
+	public static String participateAssetIssueForTransactionId(byte[] to, long assetId,
 															   long amount, byte[] from, String priKey, int permissionId,
 															   WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -396,10 +394,9 @@ public class PublicMethedForMutiSign {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -761,7 +758,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public static boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 										String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
 		ECKey temKey = null;
 		try {
@@ -774,10 +771,9 @@ public class PublicMethedForMutiSign {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -801,7 +797,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static String transferAssetForTransactionId(byte[] to, byte[] assertName, long amount,
+	public static String transferAssetForTransactionId(byte[] to, long assetId, long amount,
 													   byte[] address,
 													   String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -815,10 +811,9 @@ public class PublicMethedForMutiSign {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -836,7 +831,7 @@ public class PublicMethedForMutiSign {
 		transaction = signTransaction(transaction, blockingStubFull, permissionKeyString);
 
 		boolean result = broadcastTransaction(transaction, blockingStubFull);
-		if (result == false) {
+		if (!result) {
 			return null;
 		} else {
 			return ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray()));
@@ -891,8 +886,8 @@ public class PublicMethedForMutiSign {
 		Long nextNum = nextBlock.getBlockHeader().getRawData().getNumber();
 
 		Integer wait = 0;
-		logger.info("Block num is " + Long.toString(currentBlock
-				.getBlockHeader().getRawData().getNumber()));
+		logger.info("Block num is " + currentBlock
+				.getBlockHeader().getRawData().getNumber());
 		while (nextNum <= currentNum + 1 && wait <= 15) {
 			try {
 				Thread.sleep(3000);
@@ -2023,8 +2018,8 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static Boolean exchangeCreate(byte[] firstTokenId, long firstTokenBalance,
-										 byte[] secondTokenId, long secondTokenBalance, byte[] ownerAddress,
+	public static Boolean exchangeCreate(long firstTokenId, long firstTokenBalance,
+										 long secondTokenId, long secondTokenBalance, byte[] ownerAddress,
 										 String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
 		ECKey temKey = null;
 		try {
@@ -2041,9 +2036,9 @@ public class PublicMethedForMutiSign {
 				.newBuilder();
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
-				.setFirstTokenId(ByteString.copyFrom(firstTokenId))
+				.setFirstTokenId(firstTokenId)
 				.setFirstTokenBalance(firstTokenBalance)
-				.setSecondTokenId(ByteString.copyFrom(secondTokenId))
+				.setSecondTokenId(secondTokenId)
 				.setSecondTokenBalance(secondTokenBalance);
 		Contract.ExchangeCreateContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeCreate(contract);
@@ -2072,7 +2067,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static Boolean injectExchange(long exchangeId, byte[] tokenId, long quant,
+	public static Boolean injectExchange(long exchangeId, long tokenId, long quant,
 										 byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
 										 String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -2091,7 +2086,7 @@ public class PublicMethedForMutiSign {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeInjectContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeInject(contract);
@@ -2126,7 +2121,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static boolean exchangeWithdraw(long exchangeId, byte[] tokenId, long quant,
+	public static boolean exchangeWithdraw(long exchangeId, long tokenId, long quant,
 										   byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
 										   String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -2144,7 +2139,7 @@ public class PublicMethedForMutiSign {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeWithdrawContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeWithdraw(contract);
@@ -2173,7 +2168,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static boolean exchangeTransaction(long exchangeId, byte[] tokenId, long quant,
+	public static boolean exchangeTransaction(long exchangeId, long tokenId, long quant,
 											  long expected, byte[] ownerAddress, String priKey,
 											  WalletGrpc.WalletBlockingStub blockingStubFull, String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -2191,7 +2186,7 @@ public class PublicMethedForMutiSign {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant)
 				.setExpected(expected);
 		Contract.ExchangeTransactionContract contract = builder.build();
@@ -3871,7 +3866,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static String transferAssetForTransactionId1(byte[] to, byte[] assertName, long amount,
+	public static String transferAssetForTransactionId1(byte[] to, long assetId, long amount,
 														byte[] address,
 														String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
 														String[] permissionKeyString) {
@@ -3886,10 +3881,9 @@ public class PublicMethedForMutiSign {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -4209,7 +4203,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static Boolean injectExchange1(long exchangeId, byte[] tokenId, long quant,
+	public static Boolean injectExchange1(long exchangeId, long tokenId, long quant,
 										  byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
 										  int permissionId, String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -4228,7 +4222,7 @@ public class PublicMethedForMutiSign {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeInjectContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeInject(contract);
@@ -4263,7 +4257,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static boolean exchangeWithdraw1(long exchangeId, byte[] tokenId, long quant,
+	public static boolean exchangeWithdraw1(long exchangeId, long tokenId, long quant,
 											byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull,
 											int permissionId, String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -4281,7 +4275,7 @@ public class PublicMethedForMutiSign {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeWithdrawContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeWithdraw(contract);
@@ -4316,7 +4310,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static boolean exchangeTransaction1(long exchangeId, byte[] tokenId, long quant,
+	public static boolean exchangeTransaction1(long exchangeId, long tokenId, long quant,
 											   long expected, byte[] ownerAddress, String priKey,
 											   WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
 											   String[] permissionKeyString) {
@@ -4335,7 +4329,7 @@ public class PublicMethedForMutiSign {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant)
 				.setExpected(expected);
 		Contract.ExchangeTransactionContract contract = builder.build();
@@ -4370,8 +4364,8 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 
-	public static Boolean exchangeCreate1(byte[] firstTokenId, long firstTokenBalance,
-										  byte[] secondTokenId, long secondTokenBalance, byte[] ownerAddress,
+	public static Boolean exchangeCreate1(long firstTokenId, long firstTokenBalance,
+										  long secondTokenId, long secondTokenBalance, byte[] ownerAddress,
 										  String priKey, WalletGrpc.WalletBlockingStub blockingStubFull, int permissionId,
 										  String[] permissionKeyString) {
 		ECKey temKey = null;
@@ -4383,15 +4377,13 @@ public class PublicMethedForMutiSign {
 		}
 		final ECKey ecKey = temKey;
 
-		byte[] owner = ownerAddress;
-
 		Contract.ExchangeCreateContract.Builder builder = Contract.ExchangeCreateContract
 				.newBuilder();
 		builder
-				.setOwnerAddress(ByteString.copyFrom(owner))
-				.setFirstTokenId(ByteString.copyFrom(firstTokenId))
+				.setOwnerAddress(ByteString.copyFrom(ownerAddress))
+				.setFirstTokenId(firstTokenId)
 				.setFirstTokenBalance(firstTokenBalance)
-				.setSecondTokenId(ByteString.copyFrom(secondTokenId))
+				.setSecondTokenId(secondTokenId)
 				.setSecondTokenBalance(secondTokenBalance);
 		Contract.ExchangeCreateContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeCreate(contract);

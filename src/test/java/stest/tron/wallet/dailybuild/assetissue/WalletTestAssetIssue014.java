@@ -95,18 +95,18 @@ public class WalletTestAssetIssue014 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset014Address, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		//Transfer asset to an account.
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Assert.assertTrue(PublicMethed
-				.transferAsset(transferAssetAddress, assetAccountId.toByteArray(), 10000000L,
+				.transferAsset(transferAssetAddress, assetAccountId, 10000000L,
 						asset014Address, testKeyForAssetIssue014, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		//Transfer send some asset issue to default account, to test if this
 		// transaction use the creator net.
-		Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId.toByteArray(), 1L,
+		Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId, 1L,
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -122,7 +122,7 @@ public class WalletTestAssetIssue014 {
 
 		//Transfer send some asset issue to default account, to test if this
 		// transaction use the transaction free net.
-		Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId.toByteArray(), 1L,
+		Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId, 1L,
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetCreatorNet = PublicMethed

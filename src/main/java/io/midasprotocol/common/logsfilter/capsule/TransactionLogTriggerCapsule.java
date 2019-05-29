@@ -78,7 +78,7 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 						TransferContract contractTransfer = contractParameter.unpack(TransferContract.class);
 
 						if (Objects.nonNull(contractTransfer)) {
-							transactionLogTrigger.setAssetName("trx");
+							transactionLogTrigger.setAssetId(0);
 
 							if (Objects.nonNull(contractTransfer.getOwnerAddress())) {
 								transactionLogTrigger.setFromAddress(
@@ -98,9 +98,7 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 								.unpack(TransferAssetContract.class);
 
 						if (Objects.nonNull(contractTransfer)) {
-							if (Objects.nonNull(contractTransfer.getAssetName())) {
-								transactionLogTrigger.setAssetName(contractTransfer.getAssetName().toStringUtf8());
-							}
+							transactionLogTrigger.setAssetId(contractTransfer.getAssetId());
 
 							if (Objects.nonNull(contractTransfer.getOwnerAddress())) {
 								transactionLogTrigger.setFromAddress(

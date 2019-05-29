@@ -81,7 +81,7 @@ public class ContractOriginEnergyLimit001 {
 
 		String contractAddress = PublicMethed
 				.deployContractAndGetTransactionInfoById(contractName, abi, code, "", maxFeeLimit,
-						0L, 100, -1, "0", 0,
+						0L, 100, -1, 0, 0,
 						null, testKeyForGrammarAddress3,
 						grammarAddress3, blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -90,7 +90,7 @@ public class ContractOriginEnergyLimit001 {
 
 		String contractAddress1 = PublicMethed
 				.deployContractAndGetTransactionInfoById(contractName, abi, code, "", maxFeeLimit,
-						0L, 100, 0, "0", 0,
+						0L, 100, 0, 0, 0,
 						null, testKeyForGrammarAddress3,
 						grammarAddress3, blockingStubFull);
 
@@ -98,7 +98,7 @@ public class ContractOriginEnergyLimit001 {
 
 		byte[] contractAddress2 = PublicMethed
 				.deployContract(contractName, abi, code, "", maxFeeLimit,
-						0L, 100, 9223372036854775807L, "0",
+						0L, 100, 9223372036854775807L, 0,
 						0, null, testKeyForGrammarAddress3,
 						grammarAddress3, blockingStubFull);
 

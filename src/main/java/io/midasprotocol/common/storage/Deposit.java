@@ -98,11 +98,11 @@ public interface Deposit {
 
 	long getNextMaintenanceTime();
 
-	long addTokenBalance(byte[] address, byte[] tokenId, long value);
+	long addTokenBalance(byte[] address, long tokenId, long value);
 
-	long getTokenBalance(byte[] address, byte[] tokenId);
+	long getTokenBalance(byte[] address, long tokenId);
 
-	AssetIssueCapsule getAssetIssue(byte[] tokenId);
+	AssetIssueCapsule getAssetIssue(long tokenId);
 
 	TransactionCapsule getTransaction(byte[] trxHash);
 

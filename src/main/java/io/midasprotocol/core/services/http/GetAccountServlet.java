@@ -29,7 +29,7 @@ public class GetAccountServlet extends HttpServlet {
 
 	private String convertOutput(Account account) {
 		// convert asset id
-		if (account.getAssetIssuedID().isEmpty()) {
+		if (account.getAssetIssuedId() == 0) {
 			return JsonFormat.printToString(account);
 		} else {
 			JSONObject accountJson = JSONObject.parseObject(JsonFormat.printToString(account));
@@ -51,7 +51,7 @@ public class GetAccountServlet extends HttpServlet {
 
 			Account reply = wallet.getAccount(build.build());
 			if (reply != null) {
-				response.getWriter().println(convertOutput(reply));
+				response.getWriter().println(JsonFormat.printToString(reply));
 			} else {
 				response.getWriter().println("{}");
 			}
@@ -75,7 +75,7 @@ public class GetAccountServlet extends HttpServlet {
 
 			Account reply = wallet.getAccount(build.build());
 			if (reply != null) {
-				response.getWriter().println(convertOutput(reply));
+				response.getWriter().println(JsonFormat.printToString(reply));
 			} else {
 				response.getWriter().println("{}");
 			}

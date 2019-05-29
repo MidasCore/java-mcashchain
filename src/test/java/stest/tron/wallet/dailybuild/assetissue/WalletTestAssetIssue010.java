@@ -1,5 +1,6 @@
 package stest.tron.wallet.dailybuild.assetissue;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -114,11 +115,11 @@ public class WalletTestAssetIssue010 {
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed
 				.queryAccount(testKeyForAssetIssue010, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		//Query the description and url,freeAssetNetLimit and publicFreeAssetNetLimit
 		GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
-				.setValue(assetAccountId).build();
+				.setValue(ByteString.copyFrom(ByteArray.fromLong(assetAccountId))).build();
 		Contract.AssetIssueContract assetIssueByName = blockingStubFull.getAssetIssueByName(request);
 
 		Assert.assertTrue(
@@ -138,12 +139,10 @@ public class WalletTestAssetIssue010 {
 		// freeAssetNetLimit and publicFreeAssetNetLimit
 		assetIssueByName = blockingStubFull.getAssetIssueByName(request);
 
-		Assert.assertTrue(
-				ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
+		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
 		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(updateUrl));
 		Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == updateFreeAssetNetLimit);
-		Assert
-				.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == updatePublicFreeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == updatePublicFreeAssetNetLimit);
 	}
 
 	@Test(enabled = true, description = "Update asset issue with exception condition")
@@ -314,7 +313,7 @@ public class WalletTestAssetIssue010 {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, byte[] assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -327,10 +326,9 @@ public class WalletTestAssetIssue010 {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(Longs.fromByteArray(assetId));
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -395,7 +393,7 @@ public class WalletTestAssetIssue010 {
 	 * constructor.
 	 */
 
-	public boolean participateAssetIssue(byte[] to, byte[] assertName, long amount, byte[] from,
+	public boolean participateAssetIssue(byte[] to, byte[] assetId, long amount, byte[] from,
 										 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -409,10 +407,9 @@ public class WalletTestAssetIssue010 {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(Longs.fromByteArray(assetId));
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();

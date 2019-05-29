@@ -41,7 +41,7 @@ public class WalletTestAssetIssue016 {
 	Long publicFreeAssetNetLimit = 30000L;
 	String description = "for case assetissue016";
 	String url = "https://stest.assetissue016.url";
-	ByteString assetAccountId;
+	long assetAccountId;
 	//get account
 	ECKey ecKey1 = new ECKey(Utils.getRandom());
 	byte[] asset016Address = ecKey1.getAddress();
@@ -99,7 +99,7 @@ public class WalletTestAssetIssue016 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset016Address, blockingStubFull);
-		assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		AccountNetMessage assetIssueInfo = PublicMethed
 				.getAccountNet(asset016Address, blockingStubFull);
@@ -109,7 +109,7 @@ public class WalletTestAssetIssue016 {
 		Assert.assertFalse(assetIssueInfo.getAssetNetUsedMap().isEmpty());
 
 		GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
-				.setValue(assetAccountId).build();
+				.setValue(ByteString.copyFrom(ByteArray.fromLong(assetAccountId))).build();
 		Contract.AssetIssueContract assetIssueByName = blockingStubFull.getAssetIssueByName(request);
 		Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == freeAssetNetLimit);
 		Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == publicFreeAssetNetLimit);
@@ -118,10 +118,10 @@ public class WalletTestAssetIssue016 {
 		assetIssueInfo.getSerializedSize();
 		assetIssueInfo.equals(assetIssueInfo);
 
-		PublicMethed.transferAsset(transferAssetAddress, assetAccountId.toByteArray(), 1000L,
+		PublicMethed.transferAsset(transferAssetAddress, assetAccountId, 1000L,
 				asset016Address, testKeyForAssetIssue016, blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
-		PublicMethed.transferAsset(toAddress, assetAccountId.toByteArray(), 100L,
+		PublicMethed.transferAsset(toAddress, assetAccountId, 100L,
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull);
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -133,7 +133,7 @@ public class WalletTestAssetIssue016 {
 		Assert.assertTrue(PublicMethed.freezeBalance(asset016Address, 30000000L,
 				3, testKeyForAssetIssue016, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
-		PublicMethed.transferAsset(toAddress, assetAccountId.toByteArray(), 100L,
+		PublicMethed.transferAsset(toAddress, assetAccountId, 100L,
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 

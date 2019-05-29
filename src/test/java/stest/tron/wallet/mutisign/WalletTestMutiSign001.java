@@ -36,7 +36,7 @@ public class WalletTestMutiSign001 {
 			.getString("defaultParameter.assetDescription");
 	String url = Configuration.getByPath("testng.conf")
 			.getString("defaultParameter.assetUrl");
-	ByteString assetAccountId1;
+	long assetAccountId1;
 	String[] permissionKeyString = new String[2];
 	String[] ownerKeyString = new String[2];
 	String accountPermissionJson = "";
@@ -182,12 +182,12 @@ public class WalletTestMutiSign001 {
 		PublicMethed.printAddress(manager1Key);
 		Account getAssetIdFromOwnerAccount;
 		getAssetIdFromOwnerAccount = PublicMethed.queryAccount(ownerAddress, blockingStubFull);
-		assetAccountId1 = getAssetIdFromOwnerAccount.getAssetIssuedID();
+		assetAccountId1 = getAssetIdFromOwnerAccount.getAssetIssuedId();
 		Long balanceBefore = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		logger.info("balanceBefore: " + balanceBefore);
 
 		String txid = PublicMethedForMutiSign.transferAssetForTransactionId(manager1Address,
-				assetAccountId1.toByteArray(), 10, ownerAddress, ownerKey, blockingStubFull,
+				assetAccountId1, 10, ownerAddress, ownerKey, blockingStubFull,
 				ownerKeyString);
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -271,7 +271,7 @@ public class WalletTestMutiSign001 {
 		balanceBefore = balanceAfter;
 
 		txid = PublicMethedForMutiSign.participateAssetIssueForTransactionId(ownerAddress,
-				assetAccountId1.toByteArray(), 10, participateAddress, participateKey, 0,
+				assetAccountId1, 10, participateAddress, participateKey, 0,
 				blockingStubFull, ownerKeyString);
 
 		Assert.assertNotNull(txid);
@@ -299,9 +299,9 @@ public class WalletTestMutiSign001 {
 
 	@Test(enabled = true)
 	public void testMutiSign4updateAssetissue() {
-		url = "MutiSign001_update_url" + Long.toString(now);
+		url = "MutiSign001_update_url" + now;
 		ownerKeyString[0] = ownerKey;
-		description = "MutiSign001_update_description" + Long.toString(now);
+		description = "MutiSign001_update_description" + now;
 
 		Long balanceBefore = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		logger.info("balanceBefore: " + balanceBefore);

@@ -475,7 +475,7 @@ public class RuntimeImpl implements Runtime {
 		}
 		if (VMConfig.allowTvmTransferTrc10()) {
 			if (tokenValue > 0) {
-				transferToken(this.deposit, callerAddress, contractAddress, String.valueOf(tokenId),
+				transferToken(this.deposit, callerAddress, contractAddress, tokenId,
 						tokenValue);
 			}
 		}
@@ -588,8 +588,7 @@ public class RuntimeImpl implements Runtime {
 		}
 		if (VMConfig.allowTvmTransferTrc10()) {
 			if (tokenValue > 0) {
-				transferToken(this.deposit, callerAddress, contractAddress, String.valueOf(tokenId),
-						tokenValue);
+				transferToken(this.deposit, callerAddress, contractAddress, tokenId, tokenValue);
 			}
 		}
 

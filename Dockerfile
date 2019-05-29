@@ -6,10 +6,6 @@ RUN apt-get update \
     && apt-get -y install wget openjdk-8-jdk unzip \
     && rm -rf /var/lib/apt/lists/*
 
-#COPY cache/.gradle /root/.gradle
-
-#RUN ls /root/.gradle
-
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ENV PATH $JAVA_HOME/bin:$PATH
 
@@ -39,7 +35,7 @@ RUN ./gradlew build || return 0
 
 COPY . .
 
-RUN ./gradlew build -x test -x checkstyleMain -x checkstyleTest
+RUN ./gradlew build -x checkstyleMain -x checkstyleTest
 
 FROM openjdk:8
 

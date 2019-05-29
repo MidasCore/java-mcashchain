@@ -19,7 +19,7 @@ public class InternalTransactionPojo {
 
 	@Getter
 	@Setter
-	private Map<String, Long> tokenInfo = new HashMap<>();
+	private Map<Long, Long> tokenInfo = new HashMap<>();
 
 	/* the address of the destination account (for message)
 	 * In creation transaction the receive address is - 0 */

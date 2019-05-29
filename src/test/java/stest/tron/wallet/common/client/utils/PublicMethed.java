@@ -2,15 +2,11 @@ package stest.tron.wallet.common.client.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.primitives.Longs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongycastle.util.encoders.Hex;
-import org.testng.Assert;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.*;
 import io.midasprotocol.api.GrpcAPI.Return.response_code;
@@ -30,6 +26,11 @@ import io.midasprotocol.protos.Contract.UpdateSettingContract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.*;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spongycastle.util.encoders.Hex;
+import org.testng.Assert;
 import stest.tron.wallet.common.client.WalletClient;
 
 import java.math.BigInteger;
@@ -360,7 +361,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static boolean participateAssetIssue(byte[] to, byte[] assertName, long amount,
+	public static boolean participateAssetIssue(byte[] to, long assetId, long amount,
 												byte[] from, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -374,10 +375,9 @@ public class PublicMethed {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -391,7 +391,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static Return participateAssetIssue2(byte[] to, byte[] assertName, long amount,
+	public static Return participateAssetIssue2(byte[] to, byte[] assetId, long amount,
 												byte[] from, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -405,10 +405,9 @@ public class PublicMethed {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(Longs.fromByteArray(assetId));
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
@@ -937,7 +936,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public static boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 										String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -950,10 +949,9 @@ public class PublicMethed {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -1530,7 +1528,7 @@ public class PublicMethed {
 										long consumeUserResourcePercent, String libraryAddress, String priKey, byte[] ownerAddress,
 										WalletGrpc.WalletBlockingStub blockingStubFull) {
 		return deployContract(contractName, abiString, code, data, feeLimit, value,
-				consumeUserResourcePercent, 1000L, "0", 0L, libraryAddress,
+				consumeUserResourcePercent, 1000L, 0, 0L, libraryAddress,
 				priKey, ownerAddress, blockingStubFull);
 	}
 
@@ -1540,7 +1538,7 @@ public class PublicMethed {
 
 	public static byte[] deployContract(String contractName, String abiString, String code,
 										String data, Long feeLimit, long value,
-										long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+										long consumeUserResourcePercent, long originEnergyLimit, long tokenId, long tokenValue,
 										String libraryAddress, String priKey, byte[] ownerAddress,
 										WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
@@ -1582,7 +1580,7 @@ public class PublicMethed {
 		Builder contractBuilder = CreateSmartContract.newBuilder();
 		contractBuilder.setOwnerAddress(ByteString.copyFrom(owner));
 		contractBuilder.setCallTokenValue(tokenValue);
-		contractBuilder.setTokenId(Long.parseLong(tokenId));
+		contractBuilder.setTokenId(tokenId);
 		CreateSmartContract contractDeployContract = contractBuilder
 				.setNewContract(builder.build()).build();
 
@@ -1659,7 +1657,7 @@ public class PublicMethed {
 																 long consumeUserResourcePercent, String libraryAddress, String priKey, byte[] ownerAddress,
 																 WalletGrpc.WalletBlockingStub blockingStubFull) {
 		return deployContractAndGetTransactionInfoById(contractName, abiString, code, data, feeLimit,
-				value, consumeUserResourcePercent, 1000L, "0", 0L, libraryAddress,
+				value, consumeUserResourcePercent, 1000L, 0, 0L, libraryAddress,
 				priKey, ownerAddress, blockingStubFull);
 	}
 
@@ -1669,7 +1667,7 @@ public class PublicMethed {
 
 	public static String deployContractAndGetTransactionInfoById(String contractName,
 																 String abiString, String code, String data, Long feeLimit, long value,
-																 long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+																 long consumeUserResourcePercent, long originEnergyLimit, long tokenId, long tokenValue,
 																 String libraryAddress, String priKey, byte[] ownerAddress,
 																 WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
@@ -1711,7 +1709,7 @@ public class PublicMethed {
 		Builder contractBuilder = CreateSmartContract.newBuilder();
 		contractBuilder.setOwnerAddress(ByteString.copyFrom(owner));
 		contractBuilder.setCallTokenValue(tokenValue);
-		contractBuilder.setTokenId(Long.parseLong(tokenId));
+		contractBuilder.setTokenId(tokenId);
 		CreateSmartContract contractDeployContract = contractBuilder
 				.setNewContract(builder.build()).build();
 
@@ -2066,7 +2064,7 @@ public class PublicMethed {
 										 Boolean isHex, long callValue, long feeLimit, byte[] ownerAddress,
 										 String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		return triggerContract(contractAddress, method, argsStr, isHex, callValue, feeLimit,
-				"0", 0, ownerAddress, priKey, blockingStubFull);
+				0, 0, ownerAddress, priKey, blockingStubFull);
 	}
 
 	/**
@@ -2074,7 +2072,7 @@ public class PublicMethed {
 	 */
 
 	public static String triggerContract(byte[] contractAddress, String method, String argsStr,
-										 Boolean isHex, long callValue, long feeLimit, String tokenId, long tokenValue,
+										 Boolean isHex, long callValue, long feeLimit, long tokenId, long tokenValue,
 										 byte[] ownerAddress,
 										 String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
@@ -2098,7 +2096,7 @@ public class PublicMethed {
 		builder.setContractAddress(ByteString.copyFrom(contractAddress));
 		builder.setData(ByteString.copyFrom(input));
 		builder.setCallValue(callValue);
-		builder.setTokenId(Long.parseLong(tokenId));
+		builder.setTokenId(tokenId);
 		builder.setCallTokenValue(tokenValue);
 		Contract.TriggerSmartContract triggerContract = builder.build();
 
@@ -2170,8 +2168,8 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static Boolean exchangeCreate(byte[] firstTokenId, long firstTokenBalance,
-										 byte[] secondTokenId, long secondTokenBalance, byte[] ownerAddress,
+	public static Boolean exchangeCreate(long firstTokenId, long firstTokenBalance,
+										 long secondTokenId, long secondTokenBalance, byte[] ownerAddress,
 										 String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -2187,9 +2185,9 @@ public class PublicMethed {
 		Contract.ExchangeCreateContract.Builder builder = Contract.ExchangeCreateContract.newBuilder();
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
-				.setFirstTokenId(ByteString.copyFrom(firstTokenId))
+				.setFirstTokenId(firstTokenId)
 				.setFirstTokenBalance(firstTokenBalance)
-				.setSecondTokenId(ByteString.copyFrom(secondTokenId))
+				.setSecondTokenId(secondTokenId)
 				.setSecondTokenBalance(secondTokenBalance);
 		Contract.ExchangeCreateContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeCreate(contract);
@@ -2222,7 +2220,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static Boolean injectExchange(long exchangeId, byte[] tokenId, long quant,
+	public static Boolean injectExchange(long exchangeId, long tokenId, long quant,
 										 byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -2239,7 +2237,7 @@ public class PublicMethed {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeInjectContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeInject(contract);
@@ -2315,7 +2313,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static boolean exchangeWithdraw(long exchangeId, byte[] tokenId, long quant,
+	public static boolean exchangeWithdraw(long exchangeId, long tokenId, long quant,
 										   byte[] ownerAddress, String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
 		try {
@@ -2332,7 +2330,7 @@ public class PublicMethed {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeWithdrawContract contract = builder.build();
 		TransactionExtention transactionExtention = blockingStubFull.exchangeWithdraw(contract);
@@ -2364,7 +2362,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static boolean exchangeTransaction(long exchangeId, byte[] tokenId, long quant,
+	public static boolean exchangeTransaction(long exchangeId, long tokenId, long quant,
 											  long expected, byte[] ownerAddress, String priKey,
 											  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
@@ -2382,7 +2380,7 @@ public class PublicMethed {
 		builder
 				.setOwnerAddress(ByteString.copyFrom(owner))
 				.setExchangeId(exchangeId)
-				.setTokenId(ByteString.copyFrom(tokenId))
+				.setTokenId(tokenId)
 				.setQuant(quant)
 				.setExpected(expected);
 		Contract.ExchangeTransactionContract contract = builder.build();
@@ -2634,9 +2632,9 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static Contract.AssetIssueContract getAssetIssueById(String assetId,
+	public static Contract.AssetIssueContract getAssetIssueById(long assetId,
 																WalletGrpc.WalletBlockingStub blockingStubFull) {
-		ByteString assetIdBs = ByteString.copyFrom(assetId.getBytes());
+		ByteString assetIdBs = ByteString.copyFrom(ByteArray.fromLong(assetId));
 		BytesMessage request = BytesMessage.newBuilder().setValue(assetIdBs).build();
 		return blockingStubFull.getAssetIssueById(request);
 	}
@@ -2795,13 +2793,13 @@ public class PublicMethed {
 	/**
 	 * constructor.
 	 */
-	public static Long getAssetIssueValue(byte[] accountAddress, ByteString assetIssueId,
+	public static Long getAssetIssueValue(byte[] accountAddress, long assetIssueId,
 										  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		Long assetIssueCount = 0L;
 		Account contractAccount = queryAccount(accountAddress, blockingStubFull);
-		Map<String, Long> createAssetIssueMap = contractAccount.getAssetV2Map();
-		for (Map.Entry<String, Long> entry : createAssetIssueMap.entrySet()) {
-			if (assetIssueId.toStringUtf8().equals(entry.getKey())) {
+		Map<Long, Long> createAssetIssueMap = contractAccount.getAssetMap();
+		for (Map.Entry<Long, Long> entry : createAssetIssueMap.entrySet()) {
+			if (assetIssueId == entry.getKey()) {
 				assetIssueCount = entry.getValue();
 			}
 		}
@@ -2863,7 +2861,7 @@ public class PublicMethed {
 	 */
 	public static GrpcAPI.Return deployContractAndGetResponse(String contractName,
 															  String abiString, String code, String data, Long feeLimit, long value,
-															  long consumeUserResourcePercent, long originEnergyLimit, String tokenId, long tokenValue,
+															  long consumeUserResourcePercent, long originEnergyLimit, long tokenId, long tokenValue,
 															  String libraryAddress, String priKey, byte[] ownerAddress,
 															  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
@@ -2905,7 +2903,7 @@ public class PublicMethed {
 		Builder contractBuilder = CreateSmartContract.newBuilder();
 		contractBuilder.setOwnerAddress(ByteString.copyFrom(owner));
 		contractBuilder.setCallTokenValue(tokenValue);
-		contractBuilder.setTokenId(Long.parseLong(tokenId));
+		contractBuilder.setTokenId(tokenId);
 		CreateSmartContract contractDeployContract = contractBuilder
 				.setNewContract(builder.build()).build();
 
@@ -2970,7 +2968,7 @@ public class PublicMethed {
 	 */
 	public static GrpcAPI.Return triggerContractAndGetResponse(byte[] contractAddress, String method,
 															   String argsStr,
-															   Boolean isHex, long callValue, long feeLimit, String tokenId, long tokenValue,
+															   Boolean isHex, long callValue, long feeLimit, long tokenId, long tokenValue,
 															   byte[] ownerAddress,
 															   String priKey, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ECKey temKey = null;
@@ -2994,7 +2992,7 @@ public class PublicMethed {
 		builder.setContractAddress(ByteString.copyFrom(contractAddress));
 		builder.setData(ByteString.copyFrom(input));
 		builder.setCallValue(callValue);
-		builder.setTokenId(Long.parseLong(tokenId));
+		builder.setTokenId(tokenId);
 		builder.setCallTokenValue(tokenValue);
 		Contract.TriggerSmartContract triggerContract = builder.build();
 

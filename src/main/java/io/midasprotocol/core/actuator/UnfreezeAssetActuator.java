@@ -1,6 +1,7 @@
 package io.midasprotocol.core.actuator;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Longs;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -48,26 +49,13 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 				}
 			}
 
-			if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-				accountCapsule
-						.addAssetAmountV2(accountCapsule.getAssetIssuedName().toByteArray(), unfreezeAsset,
-								dbManager);
-			} else {
-				accountCapsule
-						.addAssetAmountV2(accountCapsule.getAssetIssuedID().toByteArray(), unfreezeAsset,
-								dbManager);
-			}
-
+			accountCapsule.addAssetAmountV2(accountCapsule.getAssetIssuedId(), unfreezeAsset);
 			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
 					.clearFrozenSupply().addAllFrozenSupply(frozenList).build());
 
 			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 			ret.setStatus(fee, code.SUCCESS);
-		} catch (InvalidProtocolBufferException e) {
-			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
-			throw new ContractExeException(e.getMessage());
-		} catch (ArithmeticException e) {
+		} catch (InvalidProtocolBufferException | ArithmeticException e) {
 			logger.debug(e.getMessage(), e);
 			ret.setStatus(fee, code.FAILED);
 			throw new ContractExeException(e.getMessage());
@@ -111,14 +99,8 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 			throw new ContractValidateException("No frozen supply balance");
 		}
 
-		if (dbManager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-			if (accountCapsule.getAssetIssuedName().isEmpty()) {
-				throw new ContractValidateException("This account did not issue any asset");
-			}
-		} else {
-			if (accountCapsule.getAssetIssuedID().isEmpty()) {
-				throw new ContractValidateException("This account did not issue any asset");
-			}
+		if (accountCapsule.getAssetIssuedId() == 0) {
+			throw new ContractValidateException("This account did not issue any asset");
 		}
 
 		long now = dbManager.getHeadBlockTimeStamp();

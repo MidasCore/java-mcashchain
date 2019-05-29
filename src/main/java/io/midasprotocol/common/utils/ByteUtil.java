@@ -257,7 +257,6 @@ public class ByteUtil {
 	}
 
 	public static byte[] stripLeadingZeroes(byte[] data) {
-
 		if (data == null) {
 			return null;
 		}

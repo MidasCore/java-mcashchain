@@ -3,12 +3,6 @@ package stest.tron.wallet.dailybuild.trctoken;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
@@ -16,6 +10,12 @@ import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Utils;
 import io.midasprotocol.core.Wallet;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 
@@ -29,9 +29,9 @@ public class ContractTrcToken003 {
 
 	private static final long now = System.currentTimeMillis();
 	private static final long TotalSupply = 1000L;
-	private static String tokenName = "testAssetIssue_" + Long.toString(now);
-	private static ByteString assetAccountDev = null;
-	private static ByteString assetAccountUser = null;
+	private static String tokenName = "testAssetIssue_" + now;
+	private static long assetAccountDev = 0;
+	private static long assetAccountUser = 0;
 	private final String testKey002 = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key1");
 	private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
@@ -97,10 +97,9 @@ public class ContractTrcToken003 {
 				1L, 1L, dev001Key, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-		assetAccountDev = PublicMethed
-				.queryAccount(dev001Address, blockingStubFull).getAssetIssuedID();
+		assetAccountDev = PublicMethed.queryAccount(dev001Address, blockingStubFull).getAssetIssuedId();
 		logger.info("The assetAccountDev token name: " + tokenName);
-		logger.info("The assetAccountDev token ID: " + assetAccountDev.toStringUtf8());
+		logger.info("The assetAccountDev token ID: " + assetAccountDev);
 
 		start = System.currentTimeMillis() + 2000;
 		end = System.currentTimeMillis() + 1000000000;
@@ -110,9 +109,9 @@ public class ContractTrcToken003 {
 				1L, 1L, user001Key, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetAccountUser = PublicMethed
-				.queryAccount(user001Address, blockingStubFull).getAssetIssuedID();
+				.queryAccount(user001Address, blockingStubFull).getAssetIssuedId();
 		logger.info("The assetAccountUser token name: " + tokenName);
-		logger.info("The assetAccountUser token ID: " + assetAccountUser.toStringUtf8());
+		logger.info("The assetAccountUser token ID: " + assetAccountUser);
 
 		//before deploy, check account resource
 		AccountResourceMessage accountResource = PublicMethed.getAccountResource(dev001Address,
@@ -125,13 +124,11 @@ public class ContractTrcToken003 {
 		Long userAssetCountBefore = PublicMethed.getAssetIssueValue(dev001Address, assetAccountUser,
 				blockingStubFull);
 
-		logger.info("before energyLimit is " + Long.toString(energyLimit));
-		logger.info("before energyUsage is " + Long.toString(energyUsage));
-		logger.info("before balanceBefore is " + Long.toString(balanceBefore));
-		logger.info("before dev has AssetId: " + assetAccountDev.toStringUtf8()
-				+ ", devAssetCountBefore: " + devAssetCountBefore);
-		logger.info("before dev has AssetId: " + assetAccountUser.toStringUtf8()
-				+ ", userAssetCountBefore: " + userAssetCountBefore);
+		logger.info("before energyLimit is " + energyLimit);
+		logger.info("before energyUsage is " + energyUsage);
+		logger.info("before balanceBefore is " + balanceBefore);
+		logger.info("before dev has AssetId: " + assetAccountDev + ", devAssetCountBefore: " + devAssetCountBefore);
+		logger.info("before dev has AssetId: " + assetAccountUser + ", userAssetCountBefore: " + userAssetCountBefore);
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -150,14 +147,13 @@ public class ContractTrcToken003 {
 				+ "\"payable\",\"type\":\"constructor\"}]";
 
 		// the tokenId is not exist
-		String fakeTokenId = Long.toString(Long.valueOf(assetAccountDev.toStringUtf8()) + 100);
+		long fakeTokenId = assetAccountDev + 100;
 		Long fakeTokenValue = 100L;
 
-		GrpcAPI.Return response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, fakeTokenValue, null, dev001Key,
-						dev001Address, blockingStubFull);
+		GrpcAPI.Return response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, fakeTokenValue, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -165,14 +161,13 @@ public class ContractTrcToken003 {
 				response.getMessage().toStringUtf8());
 
 		// deployer didn't have any such token
-		fakeTokenId = assetAccountUser.toStringUtf8();
+		fakeTokenId = assetAccountUser;
 		fakeTokenValue = 100L;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, fakeTokenValue, null, dev001Key,
-						dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, fakeTokenValue, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -180,14 +175,13 @@ public class ContractTrcToken003 {
 				response.getMessage().toStringUtf8());
 
 		// deployer didn't have any Long.MAX_VALUE
-		fakeTokenId = Long.toString(Long.MAX_VALUE);
+		fakeTokenId = Long.MAX_VALUE;
 		fakeTokenValue = 100L;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, fakeTokenValue, null, dev001Key,
-						dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, fakeTokenValue, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -195,14 +189,13 @@ public class ContractTrcToken003 {
 				response.getMessage().toStringUtf8());
 
 		// the tokenValue is not enough
-		fakeTokenId = assetAccountDev.toStringUtf8();
+		fakeTokenId = assetAccountDev;
 		fakeTokenValue = devAssetCountBefore + 100;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, fakeTokenValue, null, dev001Key,
-						dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, fakeTokenValue, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -210,12 +203,11 @@ public class ContractTrcToken003 {
 				response.getMessage().toStringUtf8());
 
 		// tokenid is -1
-		fakeTokenId = Long.toString(-1);
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, 100, null, dev001Key,
-						dev001Address, blockingStubFull);
+		fakeTokenId = -1;
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, 100, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -225,25 +217,22 @@ public class ContractTrcToken003 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// tokenid is 100_0000L
-		fakeTokenId = Long.toString(100_0000L);
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, 100, null, dev001Key,
-						dev001Address, blockingStubFull);
+		fakeTokenId = 100_0000L;
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, 100, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
-		Assert.assertEquals("contract validate error : tokenId must > 1000000",
-				response.getMessage().toStringUtf8());
+		Assert.assertEquals("contract validate error : tokenId must > 1000000", response.getMessage().toStringUtf8());
 
 		// tokenid is Long.MIN_VALUE
-		fakeTokenId = Long.toString(Long.MIN_VALUE);
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, 100, null, dev001Key,
-						dev001Address, blockingStubFull);
+		fakeTokenId = Long.MIN_VALUE;
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, 100, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -253,28 +242,25 @@ public class ContractTrcToken003 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		// tokenid is 0
-		fakeTokenId = Long.toString(0);
+		fakeTokenId = 0;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						fakeTokenId, 100, null, dev001Key,
-						dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				fakeTokenId, 100, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
-		Assert.assertEquals(
-				"contract validate error : invalid arguments with tokenValue = 100, tokenId = 0",
+		Assert.assertEquals("contract validate error : invalid arguments with tokenValue = 100, tokenId = 0",
 				response.getMessage().toStringUtf8());
 
 		// tokenvalue is less than 0
 		fakeTokenValue = -1L;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						assetAccountDev.toStringUtf8(), fakeTokenValue, null, dev001Key,
-						dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				assetAccountDev, fakeTokenValue, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -286,25 +272,23 @@ public class ContractTrcToken003 {
 		// tokenvalue is long.min
 		fakeTokenValue = Long.MIN_VALUE;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "",
-						maxFeeLimit, 0L, 0, 10000,
-						assetAccountDev.toStringUtf8(), fakeTokenValue, null, dev001Key,
-						dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "",
+				maxFeeLimit, 0L, 0, 10000,
+				assetAccountDev, fakeTokenValue, null, dev001Key,
+				dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
 		Assert.assertEquals("contract validate error : tokenValue must >= 0",
 				response.getMessage().toStringUtf8());
 
-		String tokenId = Long.toString(-1);
+		long tokenId = -1;
 		long tokenValue = 0;
 		long callValue = 10;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "", maxFeeLimit,
-						callValue, 0, 10000, tokenId, tokenValue,
-						null, dev001Key, dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "", maxFeeLimit,
+				callValue, 0, 10000, tokenId, tokenValue,
+				null, dev001Key, dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -313,14 +297,13 @@ public class ContractTrcToken003 {
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-		tokenId = Long.toString(Long.MIN_VALUE);
+		tokenId = Long.MIN_VALUE;
 		tokenValue = 0;
 		callValue = 10;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "", maxFeeLimit,
-						callValue, 0, 10000, tokenId, tokenValue,
-						null, dev001Key, dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "", maxFeeLimit,
+				callValue, 0, 10000, tokenId, tokenValue,
+				null, dev001Key, dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -329,14 +312,13 @@ public class ContractTrcToken003 {
 
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
-		tokenId = Long.toString(1000000);
+		tokenId = 1000000;
 		tokenValue = 0;
 		callValue = 10;
 
-		response = PublicMethed
-				.deployContractAndGetResponse(contractName, abi, code, "", maxFeeLimit,
-						callValue, 0, 10000, tokenId, tokenValue,
-						null, dev001Key, dev001Address, blockingStubFull);
+		response = PublicMethed.deployContractAndGetResponse(contractName, abi, code, "", maxFeeLimit,
+				callValue, 0, 10000, tokenId, tokenValue,
+				null, dev001Key, dev001Address, blockingStubFull);
 
 		Assert.assertFalse(response.getResult());
 		Assert.assertEquals(CONTRACT_VALIDATE_ERROR, response.getCode());
@@ -352,21 +334,17 @@ public class ContractTrcToken003 {
 		Long userAssetCountAfter = PublicMethed.getAssetIssueValue(dev001Address, assetAccountUser,
 				blockingStubFull);
 
-		logger.info("after energyLimit is " + Long.toString(energyLimit));
-		logger.info("after energyUsage is " + Long.toString(energyUsage));
-		logger.info("after balanceAfter is " + Long.toString(balanceAfter));
-		logger.info("after dev has AssetId: " + assetAccountDev.toStringUtf8()
-				+ ", devAssetCountAfter: " + devAssetCountAfter);
-		logger.info("after user has AssetId: " + assetAccountDev.toStringUtf8()
-				+ ", userAssetCountAfter: " + userAssetCountAfter);
+		logger.info("after energyLimit is " + energyLimit);
+		logger.info("after energyUsage is " + energyUsage);
+		logger.info("after balanceAfter is " + balanceAfter);
+		logger.info("after dev has AssetId: " + assetAccountDev + ", devAssetCountAfter: " + devAssetCountAfter);
+		logger.info("after user has AssetId: " + assetAccountDev + ", userAssetCountAfter: " + userAssetCountAfter);
 
 		Assert.assertEquals(devAssetCountBefore, devAssetCountAfter);
 		Assert.assertEquals(userAssetCountBefore, userAssetCountAfter);
 
-		PublicMethed.unFreezeBalance(fromAddress, testKey002, 1,
-				dev001Address, blockingStubFull);
-		PublicMethed.unFreezeBalance(fromAddress, testKey002, 0,
-				dev001Address, blockingStubFull);
+		PublicMethed.unFreezeBalance(fromAddress, testKey002, 1, dev001Address, blockingStubFull);
+		PublicMethed.unFreezeBalance(fromAddress, testKey002, 0, dev001Address, blockingStubFull);
 	}
 
 	/**

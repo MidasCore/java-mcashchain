@@ -39,7 +39,7 @@ public class CreateAssetIssue2Test {
 			.decodeFromBase58Check("27cu1ozb4mX3m2afY68FSAqn3HmMp815d48");
 	private static final long now = System.currentTimeMillis();
 	private static final long totalSupply = now;
-	private static String name = "testAssetIssue001_" + Long.toString(now);
+	private static String name = "testAssetIssue001_" + now;
 	private final String testKey002 = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key1");
 	private final String testKey003 = Configuration.getByPath("testng.conf")
@@ -81,7 +81,7 @@ public class CreateAssetIssue2Test {
 	}
 
 	@Test()
-	public void testTransferAssetBandwitchDecreaseWithin10Second2() {
+	public void testTransferAssetBandwidthDecreaseWithin10Second2() {
 		ByteString addressBS1 = ByteString.copyFrom(noBandwitchAddress);
 		Account request1 = Account.newBuilder().setAddress(addressBS1).build();
 		GrpcAPI.AssetIssueList assetIssueList1 = blockingStubFull
@@ -102,44 +102,44 @@ public class CreateAssetIssue2Test {
 			Optional<GrpcAPI.AssetIssueList> queryAssetByAccount1 = Optional.ofNullable(assetIssueList1);
 			name = ByteArray.toStr(queryAssetByAccount1.get().getAssetIssue(0).getName().toByteArray());
 		}
+		long assetIssueId = PublicMethed.queryAccount(noBandwitchAddress, blockingStubFull).getAssetIssuedId();
 
 		Assert.assertTrue(
-				transferAsset(toAddress, name.getBytes(), 100L, noBandwitchAddress, noBandwitch));
+				transferAsset(toAddress, assetIssueId, 100L, noBandwitchAddress, noBandwitch));
 		//Transfer Asset failed when transfer to yourself
 		//Assert.assertFalse(transferAsset2(toAddress, name.getBytes(), 100L, toAddress, testKey003));
-		Return ret1 = transferAsset2(toAddress, name.getBytes(), 100L, toAddress, testKey003);
+		Return ret1 = transferAsset2(toAddress, assetIssueId, 100L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Cannot transfer asset to yourself.");
 		//Transfer Asset failed when the transfer amount is large than the asset balance you have.
 		ret1 =
-				transferAsset2(fromAddress, name.getBytes(), 9100000000000000000L, toAddress, testKey003);
+				transferAsset2(fromAddress, assetIssueId, 9100000000000000000L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : assetBalance is not sufficient.");
 		//Transfer Asset failed when the transfer amount is 0
-		ret1 = transferAsset2(fromAddress, name.getBytes(), 0L, toAddress, testKey003);
+		ret1 = transferAsset2(fromAddress, assetIssueId, 0L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Transfer Asset failed when the transfer amount is -1
-		ret1 = transferAsset2(fromAddress, name.getBytes(), -1L, toAddress, testKey003);
+		ret1 = transferAsset2(fromAddress, assetIssueId, -1L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Transfer failed when you want to transfer to an invalid address
-		ret1 = transferAsset2(INVAILD_ADDRESS, name.getBytes(),
+		ret1 = transferAsset2(INVAILD_ADDRESS, assetIssueId,
 				1L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid toAddress");
 		//Transfer failed when the asset issue name is not correct.
-		ret1 =
-				transferAsset2(fromAddress, (name + "wrong").getBytes(), 1L, toAddress, testKey003);
+		ret1 = transferAsset2(fromAddress, assetIssueId + 100000, 1L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : No asset !");
 		//Transfer success.
-		ret1 = transferAsset2(fromAddress, name.getBytes(), 1L, toAddress, testKey003);
+		ret1 = transferAsset2(fromAddress, assetIssueId, 1L, toAddress, testKey003);
 		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
@@ -270,7 +270,7 @@ public class CreateAssetIssue2Test {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, long assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -282,10 +282,9 @@ public class CreateAssetIssue2Test {
 		final ECKey ecKey = temKey;
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.TransferAssetContract contract = builder.build();
@@ -310,7 +309,7 @@ public class CreateAssetIssue2Test {
 	 * constructor.
 	 */
 
-	public Return transferAsset2(byte[] to, byte[] assertName, long amount, byte[] address,
+	public Return transferAsset2(byte[] to, long assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -322,10 +321,9 @@ public class CreateAssetIssue2Test {
 		final ECKey ecKey = temKey;
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(assetId);
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.TransferAssetContract contract = builder.build();

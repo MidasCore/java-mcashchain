@@ -17,9 +17,9 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.midasprotocol.common.utils.ByteUtil;
 import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Contract.AssetIssueContract.FrozenSupply;
 
@@ -45,10 +45,6 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 		this.assetIssueContract = assetIssueContract;
 	}
 
-	public static String createDbKeyString(String name, long order) {
-		return name + "_" + order;
-	}
-
 	public byte[] getData() {
 		return this.assetIssueContract.toByteArray();
 	}
@@ -67,11 +63,11 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 		return this.assetIssueContract.getName();
 	}
 
-	public String getId() {
+	public long getId() {
 		return this.assetIssueContract.getId();
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
 				.setId(id)
 				.build();
@@ -97,27 +93,8 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 				.build();
 	}
 
-	public byte[] createDbV2Key() {
-		return ByteArray.fromString(this.assetIssueContract.getId());
-	}
-
 	public byte[] createDbKey() {
-//    long order = getOrder();
-//    if (order == 0) {
-//      return getName().toByteArray();
-//    }
-//    String name = new String(getName().toByteArray(), Charset.forName("UTF-8"));
-//    String nameKey = createDbKeyString(name, order);
-//    return nameKey.getBytes();
-		return getName().toByteArray();
-	}
-
-	public byte[] createDbKeyFinal(Manager manager) {
-		if (manager.getDynamicPropertiesStore().getAllowSameTokenName() == 0) {
-			return createDbKey();
-		} else {
-			return createDbV2Key();
-		}
+		return ByteArray.fromLong(getId());
 	}
 
 	public int getNum() {

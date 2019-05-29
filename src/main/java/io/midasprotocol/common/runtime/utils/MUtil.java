@@ -1,6 +1,7 @@
 package io.midasprotocol.common.runtime.utils;
 
 import io.midasprotocol.common.storage.Deposit;
+import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.actuator.TransferActuator;
 import io.midasprotocol.core.actuator.TransferAssetActuator;
@@ -29,23 +30,22 @@ public class MUtil {
 		AccountCapsule toAccountCap = deposit.getAccount(toAddress);
 		Protocol.Account.Builder toBuilder = toAccountCap.getInstance().toBuilder();
 		fromAccountCap.getAssetMapV2().forEach((tokenId, amount) -> {
-			toBuilder.putAssetV2(tokenId, toBuilder.getAssetV2Map().getOrDefault(tokenId, 0L) + amount);
-			fromBuilder.putAssetV2(tokenId, 0L);
+			toBuilder.putAsset(tokenId, toBuilder.getAssetMap().getOrDefault(tokenId, 0L) + amount);
+			fromBuilder.putAsset(tokenId, 0L);
 		});
 		deposit.putAccountValue(fromAddress, new AccountCapsule(fromBuilder.build()));
 		deposit.putAccountValue(toAddress, new AccountCapsule(toBuilder.build()));
 	}
 
 	public static void transferToken(Deposit deposit, byte[] fromAddress, byte[] toAddress,
-									 String tokenId, long amount)
+									 long tokenId, long amount)
 			throws ContractValidateException {
 		if (0 == amount) {
 			return;
 		}
-		TransferAssetActuator
-				.validateForSmartContract(deposit, fromAddress, toAddress, tokenId.getBytes(), amount);
-		deposit.addTokenBalance(toAddress, tokenId.getBytes(), amount);
-		deposit.addTokenBalance(fromAddress, tokenId.getBytes(), -amount);
+		TransferAssetActuator.validateForSmartContract(deposit, fromAddress, toAddress, tokenId, amount);
+		deposit.addTokenBalance(toAddress, tokenId, amount);
+		deposit.addTokenBalance(fromAddress, tokenId, -amount);
 	}
 
 	public static byte[] convertToTronAddress(byte[] address) {

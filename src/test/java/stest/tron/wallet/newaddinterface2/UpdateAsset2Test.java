@@ -1,5 +1,6 @@
 package stest.tron.wallet.newaddinterface2;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -343,7 +344,7 @@ public class UpdateAsset2Test {
 	 * constructor.
 	 */
 
-	public boolean transferAsset(byte[] to, byte[] assertName, long amount, byte[] address,
+	public boolean transferAsset(byte[] to, byte[] assetId, long amount, byte[] address,
 								 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -356,10 +357,9 @@ public class UpdateAsset2Test {
 
 		Contract.TransferAssetContract.Builder builder = Contract.TransferAssetContract.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(address);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(Longs.fromByteArray(assetId));
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 
@@ -424,7 +424,7 @@ public class UpdateAsset2Test {
 	 * constructor.
 	 */
 
-	public boolean participateAssetIssue(byte[] to, byte[] assertName, long amount, byte[] from,
+	public boolean participateAssetIssue(byte[] to, byte[] assetId, long amount, byte[] from,
 										 String priKey) {
 		ECKey temKey = null;
 		try {
@@ -438,10 +438,9 @@ public class UpdateAsset2Test {
 		Contract.ParticipateAssetIssueContract.Builder builder = Contract.ParticipateAssetIssueContract
 				.newBuilder();
 		ByteString bsTo = ByteString.copyFrom(to);
-		ByteString bsName = ByteString.copyFrom(assertName);
 		ByteString bsOwner = ByteString.copyFrom(from);
 		builder.setToAddress(bsTo);
-		builder.setAssetName(bsName);
+		builder.setAssetId(Longs.fromByteArray(assetId));
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();

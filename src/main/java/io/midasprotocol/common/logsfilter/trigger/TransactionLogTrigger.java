@@ -84,7 +84,7 @@ public class TransactionLogTrigger extends Trigger {
 
 	@Getter
 	@Setter
-	private String assetName;
+	private long assetId;
 
 	@Getter
 	@Setter

@@ -163,10 +163,6 @@ public class ProposalController {
 					manager.getDynamicPropertiesStore().saveAllowUpdateAccountName(entry.getValue());
 					break;
 				}
-				case (15): {
-					manager.getDynamicPropertiesStore().saveAllowSameTokenName(entry.getValue());
-					break;
-				}
 				case (16): {
 					manager.getDynamicPropertiesStore().saveAllowDelegateResource(entry.getValue());
 					break;

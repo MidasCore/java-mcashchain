@@ -84,7 +84,7 @@ public class TestExchangeTransaction {
 		Long totalSupply = 1500000000000000L;
 		Random rand = new Random();
 		Integer randNum = rand.nextInt(900000000) + 1;
-		String name = "exchange_" + Long.toString(randNum);
+		String name = "exchange_" + randNum;
 		Long start = System.currentTimeMillis() + 20000;
 		Long end = System.currentTimeMillis() + 10000000000L;
 		String description = "This asset issue is use for exchange transaction stress";
@@ -97,7 +97,8 @@ public class TestExchangeTransaction {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		Assert.assertTrue(PublicMethed.transferAsset(transactionAddress, name.getBytes(),
+		long assetIssueId = PublicMethed.queryAccount(exchangeAddress, blockingStubFull).getAssetIssuedId();
+		Assert.assertTrue(PublicMethed.transferAsset(transactionAddress, assetIssueId,
 				1500000000L, exchangeAddress, exchangeKey, blockingStubFull));
 		try {
 			Thread.sleep(30000);
@@ -105,8 +106,8 @@ public class TestExchangeTransaction {
 			e.printStackTrace();
 		}
 		//500000000000000L  //5000000L
-		Assert.assertTrue(PublicMethed.exchangeCreate(name.getBytes(), 500000000000000L,
-				"_".getBytes(), 500000000000000L, exchangeAddress, exchangeKey, blockingStubFull));
+		Assert.assertTrue(PublicMethed.exchangeCreate(assetIssueId, 500000000000000L,
+				0L, 500000000000000L, exchangeAddress, exchangeKey, blockingStubFull));
 		try {
 			Thread.sleep(300000);
 		} catch (InterruptedException e) {
@@ -117,14 +118,14 @@ public class TestExchangeTransaction {
 
 		Integer i = 0;
 		while (i++ < 10000) {
-			PublicMethed.exchangeTransaction(exchangeId, "_".getBytes(), 100000, 99,
+			PublicMethed.exchangeTransaction(exchangeId, 0L, 100000, 99,
 					transactionAddress, transactionKey, blockingStubFull);
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			PublicMethed.exchangeTransaction(exchangeId, name.getBytes(), 100000, 1,
+			PublicMethed.exchangeTransaction(exchangeId, assetIssueId, 100000, 1,
 					transactionAddress, transactionKey, blockingStubFull);
 			try {
 				Thread.sleep(100);

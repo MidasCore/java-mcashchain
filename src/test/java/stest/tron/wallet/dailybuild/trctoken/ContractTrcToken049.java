@@ -81,9 +81,8 @@ public class ContractTrcToken049 {
 	 * constructor.
 	 */
 
-	public ByteString createAssetissue(byte[] devAddress, String devKey, String tokenName) {
-
-		ByteString assetAccountId = null;
+	public long createAssetissue(byte[] devAddress, String devKey, String tokenName) {
+		long assetAccountId = 0;
 		ByteString addressBS1 = ByteString.copyFrom(devAddress);
 		Account request1 = Account.newBuilder().setAddress(addressBS1).build();
 		AssetIssueList assetIssueList1 = blockingStubFull
@@ -101,7 +100,7 @@ public class ContractTrcToken049 {
 					1L, 1L, devKey, blockingStubFull));
 
 			Account getAssetIdFromThisAccount = PublicMethed.queryAccount(devAddress, blockingStubFull);
-			assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+			assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 		} else {
 			logger.info("This account already create an assetisue");
 			Optional<AssetIssueList> queryAssetByAccount1 = Optional.ofNullable(assetIssueList1);
@@ -114,11 +113,9 @@ public class ContractTrcToken049 {
 	@Test(enabled = true, description = "TransferToken to myself")
 	public void deployTransferTokenContract() {
 
-		Assert
-				.assertTrue(PublicMethed.sendcoin(dev001Address, 2048000000, fromAddress,
+		Assert.assertTrue(PublicMethed.sendcoin(dev001Address, 2048000000, fromAddress,
 						testKey002, blockingStubFull));
-		Assert
-				.assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
+		Assert.assertTrue(PublicMethed.sendcoin(user001Address, 4048000000L, fromAddress,
 						testKey002, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -131,11 +128,10 @@ public class ContractTrcToken049 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		String tokenName = "testAI_" + randomInt(10000, 90000);
-		ByteString tokenId = createAssetissue(user001Address, user001Key, tokenName);
-		int i = randomInt(6666666, 9999999);
+		long tokenId = createAssetissue(user001Address, user001Key, tokenName);
 
 		// devAddress transfer token to A
-		PublicMethed.transferAsset(dev001Address, tokenId.toByteArray(), 101, user001Address,
+		PublicMethed.transferAsset(dev001Address, tokenId, 101, user001Address,
 				user001Key, blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -147,7 +143,7 @@ public class ContractTrcToken049 {
 				.getString("abi.abi_ContractTrcToken049_transferTokenContract");
 		byte[] transferTokenContractAddress = PublicMethed
 				.deployContract(contractName, abi, code, "", maxFeeLimit,
-						0L, 100, 10000, tokenId.toStringUtf8(),
+						0L, 100, 10000, tokenId,
 						0, null, dev001Key, dev001Address,
 						blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
@@ -155,7 +151,7 @@ public class ContractTrcToken049 {
 
 		// devAddress transfer token to userAddress
 		PublicMethed
-				.transferAsset(transferTokenContractAddress, tokenId.toByteArray(), 100, user001Address,
+				.transferAsset(transferTokenContractAddress, tokenId, 100, user001Address,
 						user001Key,
 						blockingStubFull);
 
@@ -183,13 +179,10 @@ public class ContractTrcToken049 {
 		logger.info("beforeAssetIssueContractAddress:" + beforeAssetIssueContractAddress);
 
 		// user trigger A to transfer token to B
-		String param =
-				"\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId
-						.toStringUtf8()
-						+ "\",\"1\"";
+		String param = "\"" + Base58.encodeBase58(dev001Address) + "\",\"" + tokenId + "\",\"1\"";
 		final String triggerTxid = PublicMethed.triggerContract(transferTokenContractAddress,
 				"TransferTokenTo(address,trcToken,uint256)",
-				param, false, 0, 100000000L, "0",
+				param, false, 0, 100000000L, 0,
 				0, user001Address, user001Key,
 				blockingStubFull);
 		PublicMethed.waitProduceNextBlock(blockingStubFull);

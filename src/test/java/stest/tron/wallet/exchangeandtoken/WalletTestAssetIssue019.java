@@ -131,32 +131,32 @@ public class WalletTestAssetIssue019 {
 				asset019SecondKey, blockingStubFull));
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019Address, blockingStubFull);
-		ByteString asset019AccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long asset019AccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019SecondAddress, blockingStubFull);
-		ByteString asset019SecondAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long asset019SecondAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
-		PublicMethed.transferAsset(asset019SecondAddress, asset019AccountId.toByteArray(), 100L,
+		PublicMethed.transferAsset(asset019SecondAddress, asset019AccountId, 100L,
 				asset019Address, asset019Key, blockingStubFull);
-		PublicMethed.transferAsset(asset019Address, asset019SecondAccountId.toByteArray(), 100L,
+		PublicMethed.transferAsset(asset019Address, asset019SecondAccountId, 100L,
 				asset019SecondAddress, asset019SecondKey, blockingStubFull);
 
-		PublicMethed.transferAsset(asset019Address, asset019AccountId.toByteArray(), 10L,
+		PublicMethed.transferAsset(asset019Address, asset019AccountId, 10L,
 				asset019SecondAddress, asset019SecondKey, blockingStubFull);
-		PublicMethed.transferAsset(asset019SecondAddress, asset019SecondAccountId.toByteArray(),
+		PublicMethed.transferAsset(asset019SecondAddress, asset019SecondAccountId,
 				10L, asset019Address, asset019Key, blockingStubFull);
 
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019Address, blockingStubFull);
-		for (String id : getAssetIdFromThisAccount.getFreeAssetNetUsageV2Map().keySet()) {
-			if (asset019SecondAccountId.toStringUtf8().equalsIgnoreCase(id)) {
-				Assert.assertTrue(getAssetIdFromThisAccount.getFreeAssetNetUsageV2Map().get(id) > 0);
+		for (long id : getAssetIdFromThisAccount.getFreeAssetNetUsageMap().keySet()) {
+			if (asset019SecondAccountId == id) {
+				Assert.assertTrue(getAssetIdFromThisAccount.getFreeAssetNetUsageMap().get(id) > 0);
 			}
 		}
 
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019SecondAddress, blockingStubFull);
-		for (String id : getAssetIdFromThisAccount.getLatestAssetOperationTimeV2Map().keySet()) {
-			if (asset019AccountId.toStringUtf8().equalsIgnoreCase(id)) {
-				Assert.assertTrue(getAssetIdFromThisAccount.getLatestAssetOperationTimeV2Map().get(id) > 0);
+		for (long id : getAssetIdFromThisAccount.getLatestAssetOperationTimeMap().keySet()) {
+			if (asset019AccountId == id) {
+				Assert.assertTrue(getAssetIdFromThisAccount.getLatestAssetOperationTimeMap().get(id) > 0);
 			}
 		}
 	}

@@ -103,11 +103,11 @@ public class WalletTestAssetIssue012 {
 
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset012Address, blockingStubFull);
-		ByteString assetAccountId = getAssetIdFromThisAccount.getAssetIssuedID();
+		long assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
 		//Transfer asset to an account.
 		Assert.assertTrue(PublicMethed.transferAsset(
-				transferAssetAddress, assetAccountId.toByteArray(), 10000000L, asset012Address,
+				transferAssetAddress, assetAccountId, 10000000L, asset012Address,
 				testKeyForAssetIssue012, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
@@ -123,7 +123,7 @@ public class WalletTestAssetIssue012 {
 
 		//Transfer send some asset issue to default account, to test if this
 		// transaction use the creator net.
-		Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId.toByteArray(), 1L,
+		Assert.assertTrue(PublicMethed.transferAsset(toAddress, assetAccountId, 1L,
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetCreatorNet = PublicMethed

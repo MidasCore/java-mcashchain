@@ -1,5 +1,6 @@
 package io.midasprotocol.core.services;
 
+import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
 import io.grpc.Server;
@@ -314,7 +315,7 @@ public class RpcApiService implements Service {
 			ByteString assetId = request.getValue();
 
 			if (assetId != null) {
-				responseObserver.onNext(wallet.getAssetIssueById(assetId.toStringUtf8()));
+				responseObserver.onNext(wallet.getAssetIssueById(Longs.fromByteArray(assetId.toByteArray())));
 			} else {
 				responseObserver.onNext(null);
 			}
@@ -732,7 +733,7 @@ public class RpcApiService implements Service {
 		}
 
 		private EasyTransferResponse easyTransferAsset(byte[] privateKey, ByteString toAddress,
-													   String assetId, long amount) {
+													   long assetId, long amount) {
 			TransactionCapsule transactionCapsule;
 			GrpcAPI.Return.Builder returnBuilder = GrpcAPI.Return.newBuilder();
 			EasyTransferResponse.Builder responseBuild = EasyTransferResponse.newBuilder();
@@ -742,7 +743,7 @@ public class RpcApiService implements Service {
 				TransferAssetContract.Builder builder = TransferAssetContract.newBuilder();
 				builder.setOwnerAddress(ByteString.copyFrom(owner));
 				builder.setToAddress(toAddress);
-				builder.setAssetName(ByteString.copyFrom(assetId.getBytes()));
+				builder.setAssetId(assetId);
 				builder.setAmount(amount);
 				transactionCapsule = createTransactionCapsule(builder.build(),
 						ContractType.TransferAssetContract);
@@ -1308,7 +1309,7 @@ public class RpcApiService implements Service {
 			ByteString assetId = request.getValue();
 
 			if (assetId != null) {
-				responseObserver.onNext(wallet.getAssetIssueById(assetId.toStringUtf8()));
+				responseObserver.onNext(wallet.getAssetIssueById(Longs.fromByteArray(assetId.toByteArray())));
 			} else {
 				responseObserver.onNext(null);
 			}

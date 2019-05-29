@@ -90,7 +90,6 @@ public class TransferTokenTest {
 	}
 
 	private long createAsset(String tokenName) {
-		dbManager.getDynamicPropertiesStore().saveAllowSameTokenName(1);
 		VMConfig.initAllowTvmTransferTrc10(1);
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
@@ -98,7 +97,7 @@ public class TransferTokenTest {
 				AssetIssueContract.newBuilder()
 						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
 						.setName(ByteString.copyFrom(ByteArray.fromString(tokenName)))
-						.setId(Long.toString(id))
+						.setId(id)
 						.setTotalSupply(TOTAL_SUPPLY)
 						.setTrxNum(TRX_NUM)
 						.setNum(NUM)
@@ -109,10 +108,10 @@ public class TransferTokenTest {
 						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
 						.build();
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
-		dbManager.getAssetIssueV2Store().put(assetIssueCapsule.createDbV2Key(), assetIssueCapsule);
+		dbManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 
-		ownerCapsule.addAssetV2(ByteArray.fromString(String.valueOf(id)), 100_000_000);
-		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
+		ownerCapsule.addAssetV2(id, 100_000_000);
+		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
 		return id;
 	}
 
@@ -135,7 +134,7 @@ public class TransferTokenTest {
 		byte[] contractAddress = deployTransferTokenContract(id);
 		deposit.commit();
 		Assert.assertEquals(100,
-				dbManager.getAccountStore().get(contractAddress).getAssetMapV2().get(String.valueOf(id))
+				dbManager.getAccountStore().get(contractAddress).getAssetMapV2().get(id)
 						.longValue());
 		Assert.assertEquals(1000, dbManager.getAccountStore().get(contractAddress).getBalance());
 
@@ -147,7 +146,7 @@ public class TransferTokenTest {
 
 		/*  2. Test trigger with tokenValue and tokenId, also test internal transaction transferToken function */
 		long triggerCallValue = 10000;
-		long feeLimit = 10000000000L;
+		long feeLimit = 100_000_000_000L;
 		long tokenValue = 8;
 		Transaction transaction = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), contractAddress,
@@ -157,17 +156,17 @@ public class TransferTokenTest {
 
 		org.testng.Assert.assertNull(runtime.getRuntimeError());
 		Assert.assertEquals(100 + tokenValue - 9,
-				dbManager.getAccountStore().get(contractAddress).getAssetMapV2().get(String.valueOf(id))
+				dbManager.getAccountStore().get(contractAddress).getAssetMapV2().get(id)
 						.longValue());
 		Assert.assertEquals(9, dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()
-				.get(String.valueOf(id)).longValue());
+				.get(id).longValue());
 
 		/*   suicide test  */
 		// create new token: testToken2
 		long id2 = createAsset("testToken2");
 		// add token balance for last created contract
 		AccountCapsule changeAccountCapsule = dbManager.getAccountStore().get(contractAddress);
-		changeAccountCapsule.addAssetAmountV2(String.valueOf(id2).getBytes(), 99, dbManager);
+		changeAccountCapsule.addAssetAmountV2(id2, 99);
 		dbManager.getAccountStore().put(contractAddress, changeAccountCapsule);
 		String selectorStr2 = "suicide(address)";
 		String params2 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
@@ -180,9 +179,9 @@ public class TransferTokenTest {
 		org.testng.Assert.assertNull(runtime.getRuntimeError());
 		Assert.assertEquals(100 + tokenValue - 9 + 9,
 				dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()
-						.get(String.valueOf(id)).longValue());
+						.get(id).longValue());
 		Assert.assertEquals(99, dbManager.getAccountStore().get(Hex.decode(TRANSFER_TO)).getAssetMapV2()
-				.get(String.valueOf(id2)).longValue());
+				.get(id2).longValue());
 	}
 
 	private byte[] deployTransferTokenContract(long id)

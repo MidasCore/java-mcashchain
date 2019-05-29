@@ -2,10 +2,6 @@ package io.midasprotocol.common.storage;
 
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.Strings;
-import org.spongycastle.util.encoders.Hex;
-import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.program.Storage;
 import io.midasprotocol.common.utils.ByteArray;
@@ -17,6 +13,9 @@ import io.midasprotocol.core.exception.BadItemException;
 import io.midasprotocol.core.exception.ItemNotFoundException;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.AccountType;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.Strings;
+import org.spongycastle.util.encoders.Hex;
 
 import java.util.HashMap;
 
@@ -307,7 +306,7 @@ public class DepositImpl implements Deposit {
 		if (this.parent != null) {
 			Storage parentStorage = parent.getStorage(address);
 //			if (VMConfig.getEnergyLimitHardFork()) {
-				storage = new Storage(parentStorage);
+			storage = new Storage(parentStorage);
 //			} else {
 //				storage = parentStorage;
 //			}
@@ -318,18 +317,17 @@ public class DepositImpl implements Deposit {
 	}
 
 	@Override
-	public synchronized AssetIssueCapsule getAssetIssue(byte[] tokenId) {
-		byte[] tokenIdWithoutLeadingZero = ByteUtil.stripLeadingZeroes(tokenId);
-		Key key = Key.create(tokenIdWithoutLeadingZero);
+	public synchronized AssetIssueCapsule getAssetIssue(long tokenId) {
+		Key key = Key.create(ByteArray.fromLong(tokenId));
 		if (assetIssueCache.containsKey(key)) {
 			return assetIssueCache.get(key).getAssetIssue();
 		}
 
 		AssetIssueCapsule assetIssueCapsule;
 		if (this.parent != null) {
-			assetIssueCapsule = parent.getAssetIssue(tokenIdWithoutLeadingZero);
+			assetIssueCapsule = parent.getAssetIssue(tokenId);
 		} else {
-			assetIssueCapsule = this.dbManager.getAssetIssueStoreFinal().get(tokenIdWithoutLeadingZero);
+			assetIssueCapsule = this.dbManager.getAssetIssueStore().get(tokenId);
 		}
 		if (assetIssueCapsule != null) {
 			assetIssueCache.put(key, Value.create(assetIssueCapsule.getData()));
@@ -378,14 +376,12 @@ public class DepositImpl implements Deposit {
 	}
 
 	@Override
-	public synchronized long addTokenBalance(byte[] address, byte[] tokenId, long value) {
-		byte[] tokenIdWithoutLeadingZero = ByteUtil.stripLeadingZeroes(tokenId);
+	public synchronized long addTokenBalance(byte[] address, long tokenId, long value) {
 		AccountCapsule accountCapsule = getAccount(address);
 		if (accountCapsule == null) {
 			accountCapsule = createAccount(address, AccountType.Normal);
 		}
-		long balance = accountCapsule.getAssetMapV2()
-				.getOrDefault(new String(tokenIdWithoutLeadingZero), new Long(0));
+		long balance = accountCapsule.getAssetMapV2().getOrDefault(tokenId, 0L);
 		if (value == 0) {
 			return balance;
 		}
@@ -396,17 +392,15 @@ public class DepositImpl implements Deposit {
 							+ " insufficient balance");
 		}
 		if (value >= 0) {
-			accountCapsule.addAssetAmountV2(tokenIdWithoutLeadingZero, value, this.dbManager);
+			accountCapsule.addAssetAmountV2(tokenId, value);
 		} else {
-			accountCapsule.reduceAssetAmountV2(tokenIdWithoutLeadingZero, -value, this.dbManager);
+			accountCapsule.reduceAssetAmountV2(tokenId, -value);
 		}
-//    accountCapsule.getAssetMap().put(new String(tokenIdWithoutLeadingZero), Math.addExact(balance, value));
 		Key key = Key.create(address);
 		Value V = Value.create(accountCapsule.getData(),
 				Type.VALUE_TYPE_DIRTY | accountCache.get(key).getType().getType());
 		accountCache.put(key, V);
-//    accountCapsule.addAssetAmount(tokenIdWithoutLeadingZero, value);
-		return accountCapsule.getAssetMapV2().get(new String(tokenIdWithoutLeadingZero));
+		return accountCapsule.getAssetMapV2().get(tokenId);
 	}
 
 	@Override
@@ -441,13 +435,12 @@ public class DepositImpl implements Deposit {
 	 *                tokenId should be like DataWord.shortHexWithoutZeroX().getbytes().
 	 */
 	@Override
-	public synchronized long getTokenBalance(byte[] address, byte[] tokenId) {
+	public synchronized long getTokenBalance(byte[] address, long tokenId) {
 		AccountCapsule accountCapsule = getAccount(address);
 		if (accountCapsule == null) {
 			return 0;
 		}
-		String tokenStr = new String(ByteUtil.stripLeadingZeroes(tokenId));
-		return accountCapsule.getAssetMapV2().getOrDefault(tokenStr, 0L);
+		return accountCapsule.getAssetMapV2().getOrDefault(tokenId, 0L);
 	}
 
 	@Override

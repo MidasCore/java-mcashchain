@@ -24,6 +24,7 @@ public class EnergyProcessorTest {
 
 	private static final String dbPath = "output_energy_processor_test";
 	private static final String ASSET_NAME;
+	private static final long ASSET_ID;
 	private static final String CONTRACT_PROVIDER_ADDRESS;
 	private static final String USER_ADDRESS;
 	private static Manager dbManager;
@@ -33,6 +34,7 @@ public class EnergyProcessorTest {
 		Args.setParam(new String[]{"--output-directory", dbPath}, Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		ASSET_NAME = "test_token";
+		ASSET_ID = 1;
 		CONTRACT_PROVIDER_ADDRESS = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1abc";
 		USER_ADDRESS = Wallet.getAddressPreFixString() +  "abd4b9367799eaa3197fecb144eb71de1e049abc";
 	}
@@ -70,7 +72,7 @@ public class EnergyProcessorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS)),
 						AccountType.Normal,
 						0L);
-		contractProvierCapsule.addAsset(ASSET_NAME.getBytes(), 100L);
+		contractProvierCapsule.addAssetV2(ASSET_ID, 100L);
 
 		AccountCapsule userCapsule =
 				new AccountCapsule(

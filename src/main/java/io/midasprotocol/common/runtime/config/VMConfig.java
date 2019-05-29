@@ -29,7 +29,7 @@ public class VMConfig {
 
 	public static final int MAX_CODE_LENGTH = 1024 * 1024;
 
-	public static final long MAX_FEE_LIMIT = 100_000_000_000L; //1000 trx
+	public static final long MAX_FEE_LIMIT = 100_000_000_000L; //1000 mcash
 	//Odyssey3.2 hard fork -- ForkBlockVersionConsts.ENERGY_LIMIT
 //	@Setter
 //	private static boolean ENERGY_LIMIT_HARD_FORK = false;

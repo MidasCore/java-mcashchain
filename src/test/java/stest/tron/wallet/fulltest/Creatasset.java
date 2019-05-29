@@ -141,10 +141,11 @@ public class Creatasset {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				transRet = PublicMethed.transferAsset(toAddress, name.getBytes(),
+				long assetIssueId = PublicMethed.queryAccount(asset016Address, blockingStubFull).getAssetIssuedId();
+				transRet = PublicMethed.transferAsset(toAddress, assetIssueId,
 						1L, asset016Address, testKeyForAssetIssue016, blockingStubFull);
 				participateRet = PublicMethed
-						.participateAssetIssue(asset016Address, name.getBytes(), 1L, toAddress, testKey003,
+						.participateAssetIssue(asset016Address, assetIssueId, 1L, toAddress, testKey003,
 								blockingStubFull);
 				if (participateRet) {
 					logger.info("participate success");

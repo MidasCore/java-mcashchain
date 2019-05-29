@@ -951,8 +951,8 @@ message AccountNetMessage {
     int64 freeNetLimit = 2;
     int64 NetUsed = 3;
     int64 NetLimit = 4;
-    map<string, int64> assetNetUsed = 5;
-    map<string, int64> assetNetLimit = 6;
+    map<int64, int64> assetNetUsed = 5;
+    map<int64, int64> assetNetLimit = 6;
     int64 TotalNetLimit = 7;
     int64 TotalNetWeight = 8;
 }
@@ -961,8 +961,8 @@ message AccountResourceMessage {
     int64 freeNetLimit = 2;
     int64 NetUsed = 3;
     int64 NetLimit = 4;
-    map<string, int64> assetNetUsed = 5;
-    map<string, int64> assetNetLimit = 6;
+    map<int64, int64> assetNetUsed = 5;
+    map<int64, int64> assetNetLimit = 6;
     int64 TotalNetLimit = 7;
     int64 TotalNetWeight = 8;
 
@@ -989,7 +989,7 @@ message EasyTransferMessage {
 message EasyTransferAssetMessage {
     bytes passPhrase = 1;
     bytes toAddress = 2;
-    string assetId = 3;
+    int64 assetId = 3;
     int64 amount = 4;
 }
 
@@ -1002,7 +1002,7 @@ message EasyTransferByPrivateMessage {
 message EasyTransferAssetByPrivateMessage {
     bytes privateKey = 1;
     bytes toAddress = 2;
-    string assetId = 3;
+    int64 assetId = 3;
     int64 amount = 4;
 }
 
