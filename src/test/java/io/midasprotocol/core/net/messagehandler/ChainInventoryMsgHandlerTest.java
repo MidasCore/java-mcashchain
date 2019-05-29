@@ -1,6 +1,6 @@
 package io.midasprotocol.core.net.messagehandler;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.junit.Assert;
 import org.junit.Test;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
@@ -28,7 +28,7 @@ public class ChainInventoryMsgHandlerTest {
 			Assert.assertEquals("not send syncBlockChainMsg", e.getMessage());
 		}
 
-		peer.setSyncChainRequested(new Pair<>(new LinkedList<>(), System.currentTimeMillis()));
+		peer.setSyncChainRequested(new MutablePair<>(new LinkedList<>(), System.currentTimeMillis()));
 
 		try {
 			handler.processMessage(peer, msg);

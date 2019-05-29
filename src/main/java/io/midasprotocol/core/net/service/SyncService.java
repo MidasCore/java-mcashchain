@@ -2,9 +2,9 @@ package io.midasprotocol.core.net.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import javafx.util.Pair;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.server.Channel.TronState;
@@ -99,7 +99,7 @@ public class SyncService {
 				return;
 			}
 			LinkedList<BlockId> chainSummary = getBlockChainSummary(peer);
-			peer.setSyncChainRequested(new Pair<>(chainSummary, System.currentTimeMillis()));
+			peer.setSyncChainRequested(new MutablePair<>(chainSummary, System.currentTimeMillis()));
 			peer.sendMessage(new SyncBlockChainMessage(chainSummary));
 		} catch (Exception e) {
 			logger.error("Peer {} sync failed, reason: {}", peer.getInetAddress(), e.getMessage());

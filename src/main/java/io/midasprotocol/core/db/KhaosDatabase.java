@@ -1,8 +1,9 @@
 package io.midasprotocol.core.db;
 
-import javafx.util.Pair;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -181,7 +182,7 @@ public class KhaosDatabase extends TronDatabase {
 			checkNull(miniStore.getByHash(kblk2.id));
 		}
 
-		return new Pair<>(list1, list2);
+		return new ImmutablePair<>(list1, list2);
 	}
 
 	private void checkNull(Object o) throws NonCommonBlockException {
@@ -218,7 +219,7 @@ public class KhaosDatabase extends TronDatabase {
 			}
 		}
 
-		return new Pair<>(list1, list2);
+		return new ImmutablePair<>(list1, list2);
 	}
 
 	// only for unittest

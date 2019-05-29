@@ -3,7 +3,7 @@ FROM ubuntu:16.04 AS builder
 
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install wget openjdk-8-jdk openjfx unzip \
+    && apt-get -y install wget openjdk-8-jdk unzip \
     && rm -rf /var/lib/apt/lists/*
 
 #COPY cache/.gradle /root/.gradle
@@ -42,10 +42,6 @@ COPY . .
 RUN ./gradlew build -x test -x checkstyleMain -x checkstyleTest
 
 FROM openjdk:8
-
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends openjfx \
-	&& rm -rf /var/lib/apt/lists/*
 
 ENV APP_HOME=/usr/app
 ENV APP=FullNode
