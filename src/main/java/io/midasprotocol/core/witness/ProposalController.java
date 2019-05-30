@@ -1,12 +1,12 @@
 package io.midasprotocol.core.witness;
 
 import com.google.protobuf.ByteString;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.capsule.ProposalCapsule;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol.Proposal.State;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class ProposalController {
 
 		long proposalNum = latestProposalNum;
 
-		ProposalCapsule proposalCapsule = null;
+		ProposalCapsule proposalCapsule;
 
 		while (proposalNum > 0) {
 			try {
@@ -46,15 +46,13 @@ public class ProposalController {
 			}
 
 			if (proposalCapsule.hasProcessed()) {
-				logger
-						.info("Proposal has processed，id:[{}],skip it and before it",
-								proposalCapsule.getID());
+				logger.info("Proposal has processed，id:[{}], skip it and before it", proposalCapsule.getID());
 				//proposals with number less than this one, have been processed before
 				break;
 			}
 
 			if (proposalCapsule.hasCanceled()) {
-				logger.info("Proposal has canceled，id:[{}],skip it", proposalCapsule.getID());
+				logger.info("Proposal has canceled，id:[{}], skip it", proposalCapsule.getID());
 				proposalNum--;
 				continue;
 			}
@@ -67,7 +65,7 @@ public class ProposalController {
 			}
 
 			proposalNum--;
-			logger.info("Proposal has not expired，id:[{}],skip it", proposalCapsule.getID());
+			logger.info("Proposal has not expired，id:[{}], skip it", proposalCapsule.getID());
 		}
 		logger.info("Processing proposals done, oldest proposal[{}]", proposalNum);
 	}
@@ -77,8 +75,8 @@ public class ProposalController {
 		List<ByteString> activeWitnesses = this.manager.getWitnessScheduleStore().getActiveWitnesses();
 		if (proposalCapsule.hasMostApprovals(activeWitnesses)) {
 			logger.info(
-					"Processing proposal,id:{},it has received most approvals, "
-							+ "begin to set dynamic parameter:{}, "
+					"Processing proposal, id: {}, it has received most approvals, "
+							+ "begin to set dynamic parameter: {}, "
 							+ "and set proposal state as APPROVED",
 					proposalCapsule.getID(), proposalCapsule.getParameters());
 			setDynamicParameters(proposalCapsule);
@@ -86,7 +84,7 @@ public class ProposalController {
 			manager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
 		} else {
 			logger.info(
-					"Processing proposal,id:{}, "
+					"Processing proposal, id: {}, "
 							+ "it has not received enough approvals, set proposal state as DISAPPROVED",
 					proposalCapsule.getID());
 			proposalCapsule.setState(State.DISAPPROVED);
@@ -125,77 +123,73 @@ public class ProposalController {
 					break;
 				}
 				case (6): {
-					manager.getDynamicPropertiesStore().saveWitnessStandbyAllowance(entry.getValue());
-					break;
-				}
-				case (7): {
 					manager.getDynamicPropertiesStore()
 							.saveCreateNewAccountFeeInSystemContract(entry.getValue());
 					break;
 				}
-				case (8): {
+				case (7): {
 					manager.getDynamicPropertiesStore().saveCreateNewAccountBandwidthRate(entry.getValue());
 					break;
 				}
-				case (9): {
+				case (8): {
 					manager.getDynamicPropertiesStore().saveAllowCreationOfContracts(entry.getValue());
 					break;
 				}
-				case (10): {
+				case (9): {
 					if (manager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr() == 0) {
 						manager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(entry.getValue());
 					}
 					break;
 				}
-				case (11): {
+				case (10): {
 					manager.getDynamicPropertiesStore().saveEnergyFee(entry.getValue());
 					break;
 				}
-				case (12): {
+				case (11): {
 					manager.getDynamicPropertiesStore().saveExchangeCreateFee(entry.getValue());
 					break;
 				}
-				case (13): {
+				case (12): {
 					manager.getDynamicPropertiesStore().saveMaxCpuTimeOfOneTx(entry.getValue());
 					break;
 				}
-				case (14): {
+				case (13): {
 					manager.getDynamicPropertiesStore().saveAllowUpdateAccountName(entry.getValue());
 					break;
 				}
-				case (16): {
+				case (14): {
 					manager.getDynamicPropertiesStore().saveAllowDelegateResource(entry.getValue());
 					break;
 				}
-				case (17): {
+				case (15): {
 					manager.getDynamicPropertiesStore().saveTotalEnergyLimit(entry.getValue());
 					break;
 				}
-				case (18): {
-					manager.getDynamicPropertiesStore().saveAllowTvmTransferTrc10(entry.getValue());
+				case (16): {
+					manager.getDynamicPropertiesStore().saveAllowTvmTransferM1(entry.getValue());
 					break;
 				}
-				case (19): {
+				case (17): {
 					manager.getDynamicPropertiesStore().saveTotalEnergyLimit2(entry.getValue());
 					break;
 				}
-				case (20): {
+				case (18): {
 					if (manager.getDynamicPropertiesStore().getAllowMultiSign() == 0) {
 						manager.getDynamicPropertiesStore().saveAllowMultiSign(entry.getValue());
 					}
 					break;
 				}
-				case (21): {
+				case (19): {
 					if (manager.getDynamicPropertiesStore().getAllowAdaptiveEnergy() == 0) {
 						manager.getDynamicPropertiesStore().saveAllowAdaptiveEnergy(entry.getValue());
 					}
 					break;
 				}
-				case (22): {
+				case (20): {
 					manager.getDynamicPropertiesStore().saveUpdateAccountPermissionFee(entry.getValue());
 					break;
 				}
-				case (23): {
+				case (21): {
 					manager.getDynamicPropertiesStore().saveMultiSignFee(entry.getValue());
 					break;
 				}

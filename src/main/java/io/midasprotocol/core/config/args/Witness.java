@@ -15,11 +15,11 @@
 
 package io.midasprotocol.core.config.args;
 
+import io.midasprotocol.common.utils.StringUtil;
+import io.midasprotocol.core.Wallet;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import io.midasprotocol.common.utils.StringUtil;
-import io.midasprotocol.core.Wallet;
 
 import java.io.Serializable;
 

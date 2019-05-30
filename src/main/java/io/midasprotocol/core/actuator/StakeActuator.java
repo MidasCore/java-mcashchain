@@ -55,10 +55,6 @@ public class StakeActuator extends AbstractActuator {
 
 		long newStakeAmount = stakeAmount + accountCapsule.getNormalStakeAmount();
 		accountCapsule.setStake(newStakeAmount, expireTime);
-//		TODO: set total stake amount
-//		dbManager.getDynamicPropertiesStore()
-//				.addTotalNetWeight(stakeAmount / 1000_000L);
-
 		accountCapsule.setBalance(newBalance);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 

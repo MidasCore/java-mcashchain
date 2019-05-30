@@ -10,17 +10,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
-import io.midasprotocol.core.util.RewardUtil;
-import io.midasprotocol.protos.Protocol;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.DateTime;
-import org.spongycastle.util.encoders.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.common.logsfilter.FilterQuery;
 import io.midasprotocol.common.logsfilter.capsule.*;
@@ -45,11 +34,22 @@ import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.core.db2.core.SnapshotManager;
 import io.midasprotocol.core.exception.*;
 import io.midasprotocol.core.services.WitnessService;
+import io.midasprotocol.core.util.RewardUtil;
 import io.midasprotocol.core.witness.ProposalController;
 import io.midasprotocol.core.witness.WitnessController;
+import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -225,10 +225,6 @@ public class Manager {
 
 	public WitnessStore getWitnessStore() {
 		return this.witnessStore;
-	}
-
-	public boolean needToUpdateAsset() {
-		return getDynamicPropertiesStore().getTokenUpdateDone() == 0L;
 	}
 
 	public DynamicPropertiesStore getDynamicPropertiesStore() {
@@ -494,6 +490,7 @@ public class Manager {
 							final WitnessCapsule witnessCapsule =
 									new WitnessCapsule(address, ownerAddress, key.getVoteCount(), key.getUrl());
 							witnessCapsule.setIsJobs(true);
+							witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
 							this.witnessStore.put(keyAddress, witnessCapsule);
 						});
 	}
@@ -633,18 +630,17 @@ public class Manager {
 			byte[] blockHash = this.recentBlockStore.get(refBlockNumBytes).getData();
 			if (!Arrays.equals(blockHash, refBlockHash)) {
 				String str = String.format(
-						"Tapos failed, different block hash, %s, %s , recent block %s, solid block %s head block %s",
+						"Tapos failed, different block hash, %s, %s, recent block %s, solid block %s head block %s",
 						ByteArray.toLong(refBlockNumBytes), Hex.toHexString(refBlockHash),
 						Hex.toHexString(blockHash),
-						getSolidBlockId().getString(), getHeadBlockId().getString()).toString();
+						getSolidBlockId().getString(), getHeadBlockId().getString());
 				logger.info(str);
 				throw new TaposException(str);
 			}
 		} catch (ItemNotFoundException e) {
-			String str = String.
-					format("Tapos failed, block not found, ref block %s, %s , solid block %s head block %s",
-							ByteArray.toLong(refBlockNumBytes), Hex.toHexString(refBlockHash),
-							getSolidBlockId().getString(), getHeadBlockId().getString()).toString();
+			String str = String.format("Tapos failed, block not found, ref block %s, %s, solid block %s head block %s",
+					ByteArray.toLong(refBlockNumBytes), Hex.toHexString(refBlockHash),
+					getSolidBlockId().getString(), getHeadBlockId().getString());
 			logger.info(str);
 			throw new TaposException(str);
 		}
@@ -773,7 +769,7 @@ public class Manager {
 		block.generatedByMyself = true;
 		long start = System.currentTimeMillis();
 		pushBlock(block);
-		logger.info("push block cost:{}ms, blockNum:{}, blockHash:{}, trx count:{}",
+		logger.info("push block cost: {} ms, blockNum: {}, blockHash: {}, trx count: {}",
 				System.currentTimeMillis() - start,
 				block.getNum(),
 				block.getBlockId(),
@@ -804,12 +800,10 @@ public class Manager {
 			VMIllegalException {
 		Pair<LinkedList<KhaosBlock>, LinkedList<KhaosBlock>> binaryTree;
 		try {
-			binaryTree =
-					khaosDb.getBranch(
-							newHead.getBlockId(), getDynamicPropertiesStore().getLatestBlockHeaderHash());
+			binaryTree = khaosDb.getBranch(
+					newHead.getBlockId(), getDynamicPropertiesStore().getLatestBlockHeaderHash());
 		} catch (NonCommonBlockException e) {
-			logger.info(
-					"there is not the most recent common ancestor, need to remove all blocks in the fork chain.");
+			logger.info("there is not the most recent common ancestor, need to remove all blocks in the fork chain.");
 			BlockCapsule tmp = newHead;
 			while (tmp != null) {
 				khaosDb.removeBlk(tmp.getBlockId());
@@ -854,8 +848,7 @@ public class Manager {
 					throw e;
 				} finally {
 					if (exception != null) {
-						logger.warn("switch back because exception thrown while switching forks. " + exception
-										.getMessage(),
+						logger.warn("switch back because exception thrown while switching forks. " + exception.getMessage(),
 								exception);
 						first.forEach(khaosBlock -> khaosDb.removeBlk(khaosBlock.getBlk().getBlockId()));
 						khaosDb.setHead(binaryTree.getValue().peekFirst());
@@ -910,11 +903,8 @@ public class Manager {
 				}
 
 				if (!block.calcMerkleRoot().equals(block.getMerkleRoot())) {
-					logger.warn(
-							"The merkle root doesn't match, Calc result is "
-									+ block.calcMerkleRoot()
-									+ " , the headers is "
-									+ block.getMerkleRoot());
+					logger.warn("The merkle root doesn't match, Calc result is " + block.calcMerkleRoot()
+							+ ", the headers is " + block.getMerkleRoot());
 					throw new BadBlockException("The merkle hash is not validated");
 				}
 			}
@@ -936,52 +926,47 @@ public class Manager {
 				}
 
 				// switch fork
-				if (!newBlock
-						.getParentHash()
-						.equals(getDynamicPropertiesStore().getLatestBlockHeaderHash())) {
-					logger.warn(
-							"switch fork! new head num = {}, blockid = {}",
+				if (!newBlock.getParentHash().equals(getDynamicPropertiesStore().getLatestBlockHeaderHash())) {
+					logger.warn("switch fork! new head num = {}, blockid = {}",
 							newBlock.getNum(),
 							newBlock.getBlockId());
 
-					logger.warn(
-							"******** before switchFork ******* push block: "
-									+ block.toString()
-									+ ", new block:"
-									+ newBlock.toString()
-									+ ", dynamic head num: "
-									+ dynamicPropertiesStore.getLatestBlockHeaderNumber()
-									+ ", dynamic head hash: "
-									+ dynamicPropertiesStore.getLatestBlockHeaderHash()
-									+ ", dynamic head timestamp: "
-									+ dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
-									+ ", khaosDb head: "
-									+ khaosDb.getHead()
-									+ ", khaosDb miniStore size: "
-									+ khaosDb.getMiniStore().size()
-									+ ", khaosDb unlinkMiniStore size: "
-									+ khaosDb.getMiniUnlinkedStore().size());
+					logger.warn("******** before switchFork ******* push block: "
+							+ block.toString()
+							+ ", new block:"
+							+ newBlock.toString()
+							+ ", dynamic head num: "
+							+ dynamicPropertiesStore.getLatestBlockHeaderNumber()
+							+ ", dynamic head hash: "
+							+ dynamicPropertiesStore.getLatestBlockHeaderHash()
+							+ ", dynamic head timestamp: "
+							+ dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
+							+ ", khaosDb head: "
+							+ khaosDb.getHead()
+							+ ", khaosDb miniStore size: "
+							+ khaosDb.getMiniStore().size()
+							+ ", khaosDb unlinkMiniStore size: "
+							+ khaosDb.getMiniUnlinkedStore().size());
 
 					switchFork(newBlock);
 					logger.info("save block: " + newBlock);
 
-					logger.warn(
-							"******** after switchFork ******* push block: "
-									+ block.toString()
-									+ ", new block:"
-									+ newBlock.toString()
-									+ ", dynamic head num: "
-									+ dynamicPropertiesStore.getLatestBlockHeaderNumber()
-									+ ", dynamic head hash: "
-									+ dynamicPropertiesStore.getLatestBlockHeaderHash()
-									+ ", dynamic head timestamp: "
-									+ dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
-									+ ", khaosDb head: "
-									+ khaosDb.getHead()
-									+ ", khaosDb miniStore size: "
-									+ khaosDb.getMiniStore().size()
-									+ ", khaosDb unlinkMiniStore size: "
-									+ khaosDb.getMiniUnlinkedStore().size());
+					logger.warn("******** after switchFork ******* push block: "
+							+ block.toString()
+							+ ", new block:"
+							+ newBlock.toString()
+							+ ", dynamic head num: "
+							+ dynamicPropertiesStore.getLatestBlockHeaderNumber()
+							+ ", dynamic head hash: "
+							+ dynamicPropertiesStore.getLatestBlockHeaderHash()
+							+ ", dynamic head timestamp: "
+							+ dynamicPropertiesStore.getLatestBlockHeaderTimestamp()
+							+ ", khaosDb head: "
+							+ khaosDb.getHead()
+							+ ", khaosDb miniStore size: "
+							+ khaosDb.getMiniStore().size()
+							+ ", khaosDb unlinkMiniStore size: "
+							+ khaosDb.getMiniUnlinkedStore().size());
 
 					return;
 				}
@@ -1026,14 +1011,12 @@ public class Manager {
 		}
 		for (int i = 1; i < slot; ++i) {
 			if (!witnessController.getScheduledWitness(i).equals(block.getWitnessAddress())) {
-				WitnessCapsule w =
-						this.witnessStore
-								.getUnchecked(StringUtil.createDbKey(witnessController.getScheduledWitness(i)));
+				WitnessCapsule w = this.witnessStore
+						.getUnchecked(StringUtil.createDbKey(witnessController.getScheduledWitness(i)));
 				w.setTotalMissed(w.getTotalMissed() + 1);
 				w.setEpochMissed(w.getEpochMissed() + 1);
 				this.witnessStore.put(w.createDbKey(), w);
-				logger.info(
-						"{} miss a block. totalMissed = {}", w.createReadableString(), w.getTotalMissed());
+				logger.info("{} miss a block. totalMissed = {}", w.createReadableString(), w.getTotalMissed());
 			}
 			this.dynamicPropertiesStore.applyBlock(false);
 		}
@@ -1049,12 +1032,9 @@ public class Manager {
 		this.dynamicPropertiesStore.saveLatestBlockHeaderNumber(block.getNum());
 		this.dynamicPropertiesStore.saveLatestBlockHeaderTimestamp(block.getTimeStamp());
 		revokingStore.setMaxSize((int) (dynamicPropertiesStore.getLatestBlockHeaderNumber()
-				- dynamicPropertiesStore.getLatestSolidifiedBlockNum()
-				+ 1));
-		khaosDb.setMaxSize((int)
-				(dynamicPropertiesStore.getLatestBlockHeaderNumber()
-						- dynamicPropertiesStore.getLatestSolidifiedBlockNum()
-						+ 1));
+				- dynamicPropertiesStore.getLatestSolidifiedBlockNum() + 1));
+		khaosDb.setMaxSize((int) (dynamicPropertiesStore.getLatestBlockHeaderNumber()
+				- dynamicPropertiesStore.getLatestSolidifiedBlockNum() + 1));
 	}
 
 	/**
@@ -1163,7 +1143,7 @@ public class Manager {
 
 		VMConfig.initVmHardFork();
 		VMConfig.initAllowMultiSign(dynamicPropertiesStore.getAllowMultiSign());
-		VMConfig.initAllowTvmTransferTrc10(dynamicPropertiesStore.getAllowTvmTransferTrc10());
+		VMConfig.initAllowTvmTransferTrc10(dynamicPropertiesStore.getAllowTvmTransferM1());
 		trace.init(blockCap, eventPluginLoaded);
 		trace.checkIsConstant();
 		trace.exec();

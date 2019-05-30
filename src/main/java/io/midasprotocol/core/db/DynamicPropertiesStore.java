@@ -1,11 +1,6 @@
 package io.midasprotocol.core.db;
 
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.capsule.BytesCapsule;
@@ -13,6 +8,11 @@ import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.config.Parameter.ChainConstant;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.util.ConversionUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -59,8 +59,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	private static final byte[] WITNESS_PAY_PER_BLOCK = "WITNESS_PAY_PER_BLOCK".getBytes();
 
-	private static final byte[] WITNESS_STANDBY_ALLOWANCE = "WITNESS_STANDBY_ALLOWANCE".getBytes();
-
 	private static final byte[] STAKING_REWARD_PER_EPOCH = "STAKING_REWARD_PER_EPOCH".getBytes();
 	private static final byte[] ENERGY_FEE = "ENERGY_FEE".getBytes();
 	private static final byte[] MAX_CPU_TIME_OF_ONE_TX = "MAX_CPU_TIME_OF_ONE_TX".getBytes();
@@ -104,7 +102,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	//Used only for token updates, once，value is {0,1}
 	private static final byte[] TOKEN_UPDATE_DONE = "TOKEN_UPDATE_DONE".getBytes();
 	//This value is only allowed to be 0, 1, -1
-	private static final byte[] ALLOW_TVM_TRANSFER_TRC10 = "ALLOW_TVM_TRANSFER_TRC10".getBytes();
+	private static final byte[] ALLOW_TVM_TRANSFER_M1 = "ALLOW_TVM_TRANSFER_M1".getBytes();
 	private static final byte[] AVAILABLE_CONTRACT_TYPE = "AVAILABLE_CONTRACT_TYPE".getBytes();
 	private static final byte[] ACTIVE_DEFAULT_OPERATIONS = "ACTIVE_DEFAULT_OPERATIONS".getBytes();
 	private static final byte[] STAKE_TIME_IN_DAY = "STAKE_TIME_IN_DAY".getBytes();
@@ -181,12 +179,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		}
 
 		try {
-			this.getTokenUpdateDone();
-		} catch (IllegalArgumentException e) {
-			this.saveTokenUpdateDone(0);
-		}
-
-		try {
 			this.getMaxFrozenTime();
 		} catch (IllegalArgumentException e) {
 			this.saveMaxFrozenTime(3);
@@ -226,12 +218,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			this.getWitnessPayPerBlock();
 		} catch (IllegalArgumentException e) {
 			this.saveWitnessPayPerBlock(ConversionUtil.McashToMatoshi(3.06666666));
-		}
-
-		try {
-			this.getWitnessStandbyAllowance();
-		} catch (IllegalArgumentException e) {
-			this.saveWitnessStandbyAllowance(115_200_00000000L);
 		}
 
 		try {
@@ -451,9 +437,9 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		}
 
 		try {
-			this.getAllowTvmTransferTrc10();
+			this.getAllowTvmTransferM1();
 		} catch (IllegalArgumentException e) {
-			this.saveAllowTvmTransferTrc10(Args.getInstance().getAllowTvmTransferTrc10());
+			this.saveAllowTvmTransferM1(Args.getInstance().getAllowTvmTransferTrc10());
 		}
 
 		try {
@@ -558,19 +544,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 				.map(ByteArray::toLong)
 				.orElseThrow(
 						() -> new IllegalArgumentException("not found TOKEN_ID_NUM"));
-	}
-
-	public void saveTokenUpdateDone(long num) {
-		this.put(TOKEN_UPDATE_DONE,
-				new BytesCapsule(ByteArray.fromLong(num)));
-	}
-
-	public long getTokenUpdateDone() {
-		return Optional.ofNullable(getUnchecked(TOKEN_UPDATE_DONE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOKEN_UPDATE_DONE"));
 	}
 
 	public void saveBlockFilledSlotsIndex(int blockFilledSlotsIndex) {
@@ -711,20 +684,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 				.map(ByteArray::toLong)
 				.orElseThrow(
 						() -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
-	}
-
-	public void saveWitnessStandbyAllowance(long allowance) {
-		logger.debug("WITNESS_STANDBY_ALLOWANCE:" + allowance);
-		this.put(WITNESS_STANDBY_ALLOWANCE,
-				new BytesCapsule(ByteArray.fromLong(allowance)));
-	}
-
-	public long getWitnessStandbyAllowance() {
-		return Optional.ofNullable(getUnchecked(WITNESS_STANDBY_ALLOWANCE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found WITNESS_STANDBY_ALLOWANCE"));
 	}
 
 	public void saveStakingRewardPerEpoch(long reward) {
@@ -1243,17 +1202,17 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 						() -> new IllegalArgumentException("not found ALLOW_ADAPTIVE_ENERGY"));
 	}
 
-	public void saveAllowTvmTransferTrc10(long value) {
-		this.put(ALLOW_TVM_TRANSFER_TRC10,
+	public void saveAllowTvmTransferM1(long value) {
+		this.put(ALLOW_TVM_TRANSFER_M1,
 				new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
-	public long getAllowTvmTransferTrc10() {
-		return Optional.ofNullable(getUnchecked(ALLOW_TVM_TRANSFER_TRC10))
+	public long getAllowTvmTransferM1() {
+		return Optional.ofNullable(getUnchecked(ALLOW_TVM_TRANSFER_M1))
 				.map(BytesCapsule::getData)
 				.map(ByteArray::toLong)
 				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_TVM_TRANSFER_TRC10"));
+						() -> new IllegalArgumentException("not found ALLOW_TVM_TRANSFER_M1"));
 	}
 
 	public void saveAvailableContractType(byte[] value) {
@@ -1503,7 +1462,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		saveNextMaintenanceTime(nextMaintenanceTime);
 
 		logger.info(
-				"do update nextMaintenanceTime,currentMaintenanceTime:{}, blockTime:{},nextMaintenanceTime:{}",
+				"do update nextMaintenanceTime, currentMaintenanceTime:{}, blockTime:{}, nextMaintenanceTime:{}",
 				new DateTime(currentMaintenanceTime), new DateTime(blockTime),
 				new DateTime(nextMaintenanceTime)
 		);

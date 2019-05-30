@@ -126,7 +126,7 @@ public class RpcApiService implements Service {
 		}));
 	}
 
-	private TransactionExtention transaction2Extention(Transaction transaction) {
+	private TransactionExtention transaction2Extension(Transaction transaction) {
 		if (transaction == null) {
 			return null;
 		}
@@ -139,7 +139,7 @@ public class RpcApiService implements Service {
 		return trxExtBuilder.build();
 	}
 
-	private BlockExtention block2Extention(Block block) {
+	private BlockExtention block2Extension(Block block) {
 		if (block == null) {
 			return null;
 		}
@@ -149,7 +149,7 @@ public class RpcApiService implements Service {
 		builder.setBlockid(ByteString.copyFrom(blockCapsule.getBlockId().getBytes()));
 		for (int i = 0; i < block.getTransactionsCount(); i++) {
 			Transaction transaction = block.getTransactions(i);
-			builder.addTransactions(transaction2Extention(transaction));
+			builder.addTransactions(transaction2Extension(transaction));
 		}
 		return builder.build();
 	}
@@ -331,7 +331,7 @@ public class RpcApiService implements Service {
 		@Override
 		public void getNowBlock2(EmptyMessage request,
 								 StreamObserver<BlockExtention> responseObserver) {
-			responseObserver.onNext(block2Extention(wallet.getNowBlock()));
+			responseObserver.onNext(block2Extension(wallet.getNowBlock()));
 			responseObserver.onCompleted();
 		}
 
@@ -353,7 +353,7 @@ public class RpcApiService implements Service {
 			long num = request.getNum();
 			if (num >= 0) {
 				Block reply = wallet.getBlockByNum(num);
-				responseObserver.onNext(block2Extention(reply));
+				responseObserver.onNext(block2Extension(reply));
 			} else {
 				responseObserver.onNext(null);
 			}
@@ -467,7 +467,7 @@ public class RpcApiService implements Service {
 			}
 			TransactionListExtention.Builder builder = TransactionListExtention.newBuilder();
 			for (Transaction transaction : transactionList.getTransactionList()) {
-				builder.addTransaction(transaction2Extention(transaction));
+				builder.addTransaction(transaction2Extension(transaction));
 			}
 			return builder.build();
 		}
@@ -548,7 +548,7 @@ public class RpcApiService implements Service {
 			}
 			BlockListExtention.Builder builder = BlockListExtention.newBuilder();
 			for (Block block : blockList.getBlockList()) {
-				builder.addBlock(block2Extention(block));
+				builder.addBlock(block2Extension(block));
 			}
 			return builder.build();
 		}
@@ -693,7 +693,7 @@ public class RpcApiService implements Service {
 		@Override
 		public void createAddress(BytesMessage req,
 								  StreamObserver<BytesMessage> responseObserver) {
-			byte[] address = wallet.createAdresss(req.getValue().toByteArray());
+			byte[] address = wallet.createAddress(req.getValue().toByteArray());
 			BytesMessage.Builder builder = BytesMessage.newBuilder();
 			builder.setValue(ByteString.copyFrom(address));
 			responseObserver.onNext(builder.build());
@@ -987,7 +987,7 @@ public class RpcApiService implements Service {
 			} catch (ContractValidateException e) {
 				responseObserver
 						.onNext(null);
-				logger.debug("ContractValidateException", e.getMessage());
+				logger.debug("ContractValidateException: {}", e.getMessage());
 			}
 			responseObserver.onCompleted();
 		}
@@ -1133,7 +1133,7 @@ public class RpcApiService implements Service {
 		public void getNowBlock2(EmptyMessage request,
 								 StreamObserver<BlockExtention> responseObserver) {
 			Block block = wallet.getNowBlock();
-			responseObserver.onNext(block2Extention(block));
+			responseObserver.onNext(block2Extension(block));
 			responseObserver.onCompleted();
 		}
 
@@ -1147,7 +1147,7 @@ public class RpcApiService implements Service {
 		public void getBlockByNum2(NumberMessage request,
 								   StreamObserver<BlockExtention> responseObserver) {
 			Block block = wallet.getBlockByNum(request.getNum());
-			responseObserver.onNext(block2Extention(block));
+			responseObserver.onNext(block2Extension(block));
 			responseObserver.onCompleted();
 		}
 

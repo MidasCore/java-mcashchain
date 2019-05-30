@@ -69,8 +69,7 @@ public class WitnessService implements Service {
 
 	private AtomicInteger dupBlockCount = new AtomicInteger(0);
 	private AtomicLong dupBlockTime = new AtomicLong(0);
-	private long blockCycle =
-			ChainConstant.BLOCK_PRODUCED_INTERVAL * ChainConstant.MAX_ACTIVE_WITNESS_NUM;
+	private long blockCycle = ChainConstant.BLOCK_PRODUCED_INTERVAL * ChainConstant.MAX_ACTIVE_WITNESS_NUM;
 	/**
 	 * Cycle thread to generate blocks
 	 */
@@ -387,7 +386,8 @@ public class WitnessService implements Service {
 				.get(witnessAccountAddress);
 		// need handle init witness
 		if (null == witnessCapsule) {
-			logger.warn("WitnessCapsule[" + witnessAccountAddress + "] is not in witnessStore");
+			logger.warn("WitnessCapsule[" + StringUtil.createReadableString(witnessAccountAddress)
+					+ "] is not in witnessStore");
 			witnessCapsule = new WitnessCapsule(ByteString.copyFrom(witnessAccountAddress));
 		}
 

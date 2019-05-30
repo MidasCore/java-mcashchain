@@ -6,14 +6,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.netty.NettyServerBuilder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.spongycastle.util.encoders.Hex;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.logsfilter.EventPluginConfig;
 import io.midasprotocol.common.logsfilter.FilterQuery;
@@ -32,6 +24,14 @@ import io.midasprotocol.keystore.CipherException;
 import io.midasprotocol.keystore.Credentials;
 import io.midasprotocol.keystore.WalletUtils;
 import io.midasprotocol.program.Version;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -402,10 +402,6 @@ public class Args {
 
 	@Getter
 	@Setter
-	private boolean needToUpdateAsset;
-
-	@Getter
-	@Setter
 	private String trxReferenceBlock;
 
 	@Getter
@@ -572,7 +568,7 @@ public class Args {
 			logger.debug("Got privateKey from config.conf");
 		} else if (config.hasPath("localwitnesskeystore")) {
 			INSTANCE.localWitnesses = new LocalWitnesses();
-			List<String> privateKeys = new ArrayList<String>();
+			List<String> privateKeys = new ArrayList<>();
 			if (INSTANCE.isWitness()) {
 				List<String> localwitness = config.getStringList("localwitnesskeystore");
 				if (localwitness.size() > 0) {
@@ -592,13 +588,9 @@ public class Args {
 						ECKey ecKeyPair = credentials.getEcKeyPair();
 						String prikey = ByteArray.toHexString(ecKeyPair.getPrivKeyBytes());
 						privateKeys.add(prikey);
-					} catch (IOException e) {
+					} catch (IOException | CipherException e) {
 						logger.error(e.getMessage());
-						logger.error("Witness node start faild!");
-						exit(-1);
-					} catch (CipherException e) {
-						logger.error(e.getMessage());
-						logger.error("Witness node start faild!");
+						logger.error("Witness node start failed!");
 						exit(-1);
 					}
 				}
@@ -863,10 +855,6 @@ public class Args {
 				config.getLong("node.receiveTcpMinDataLength") : 2048;
 		INSTANCE.isOpenFullTcpDisconnect = config.hasPath("node.isOpenFullTcpDisconnect") && config
 				.getBoolean("node.isOpenFullTcpDisconnect");
-		INSTANCE.needToUpdateAsset =
-				config.hasPath("storage.needToUpdateAsset") ? config
-						.getBoolean("storage.needToUpdateAsset")
-						: true;
 		INSTANCE.trxReferenceBlock = config.hasPath("trx.reference.block") ?
 				config.getString("trx.reference.block") : "head";
 
@@ -882,16 +870,13 @@ public class Args {
 		INSTANCE.blockNumForEneryLimit = config.hasPath("enery.limit.block.num") ?
 				config.getInt("enery.limit.block.num") : 4727890L;
 
-		INSTANCE.vmTrace =
-				config.hasPath("vm.vmTrace") ? config
-						.getBoolean("vm.vmTrace") : false;
+		INSTANCE.vmTrace = config.hasPath("vm.vmTrace") ? config.getBoolean("vm.vmTrace") : false;
 
 		INSTANCE.saveInternalTx =
 				config.hasPath("vm.saveInternalTx") && config.getBoolean("vm.saveInternalTx");
 
 		INSTANCE.eventPluginConfig =
-				config.hasPath("event.subscribe") ?
-						getEventPluginConfig(config) : null;
+				config.hasPath("event.subscribe") ? getEventPluginConfig(config) : null;
 
 		INSTANCE.eventFilter =
 				config.hasPath("event.subscribe.filter") ? getEventFilter(config) : null;
@@ -1013,7 +998,7 @@ public class Args {
 		triggerConfig.setTriggerName(triggerName);
 
 		String enabled = triggerObject.get("enable").unwrapped().toString();
-		triggerConfig.setEnabled("true".equalsIgnoreCase(enabled) ? true : false);
+		triggerConfig.setEnabled("true".equalsIgnoreCase(enabled));
 
 		String topic = triggerObject.get("topic").unwrapped().toString();
 		triggerConfig.setTopic(topic);
@@ -1029,7 +1014,7 @@ public class Args {
 		try {
 			fromBlockLong = FilterQuery.parseFromBlockNumber(fromBlock);
 		} catch (Exception e) {
-			logger.error("{}", e);
+			logger.error("{}", e.getMessage());
 			return null;
 		}
 		filter.setFromBlock(fromBlockLong);
@@ -1038,18 +1023,18 @@ public class Args {
 		try {
 			toBlockLong = FilterQuery.parseToBlockNumber(toBlock);
 		} catch (Exception e) {
-			logger.error("{}", e);
+			logger.error("{}", e.getMessage());
 			return null;
 		}
 		filter.setToBlock(toBlockLong);
 
 		List<String> addressList = config.getStringList("event.subscribe.filter.contractAddress");
-		addressList = addressList.stream().filter(address -> StringUtils.isNotEmpty(address)).collect(
+		addressList = addressList.stream().filter(StringUtils::isNotEmpty).collect(
 				Collectors.toList());
 		filter.setContractAddressList(addressList);
 
 		List<String> topicList = config.getStringList("event.subscribe.filter.contractTopic");
-		topicList = topicList.stream().filter(top -> StringUtils.isNotEmpty(top)).collect(
+		topicList = topicList.stream().filter(StringUtils::isNotEmpty).collect(
 				Collectors.toList());
 		filter.setContractTopicList(topicList);
 
@@ -1073,8 +1058,7 @@ public class Args {
 				props.setProperty("nodeId", Hex.toHexString(key.getNodeId()));
 				file.getParentFile().mkdirs();
 				try (Writer w = new FileWriter(file)) {
-					props.store(w,
-							"Generated NodeID. To use your own nodeId please refer to 'peer.privateKey' config option.");
+					props.store(w, "Generated NodeID. To use your own nodeId please refer to 'peer.privateKey' config option.");
 				}
 				logger.info("New nodeID generated: " + props.getProperty("nodeId"));
 				logger.info("Generated nodeID and its private key stored in " + file);
@@ -1126,14 +1110,12 @@ public class Args {
 				} catch (IOException e) {
 					INSTANCE.nodeExternalIp = INSTANCE.nodeDiscoveryBindIp;
 					logger.warn(
-							"Can't get external IP. Fall back to peer.bind.ip: " + INSTANCE.nodeExternalIp + " :"
-									+ e);
+							"Can't get external IP. Fall back to peer.bind.ip: " + INSTANCE.nodeExternalIp + " :" + e);
 				} finally {
 					if (in != null) {
 						try {
 							in.close();
-						} catch (IOException e) {
-							//ignore
+						} catch (IOException ignored) {
 						}
 					}
 
@@ -1221,12 +1203,12 @@ public class Args {
 		logger.info("Backup member size: {}", args.getBackupMembers().size());
 		logger.info("Backup priority: {}", args.getBackupPriority());
 		logger.info("************************ Code version *************************");
-		logger.info("Code version : {}", Version.getVersion());
+		logger.info("Code version: {}", Version.getVersion());
 		logger.info("Version name: {}", Version.versionName);
 		logger.info("Version code: {}", Version.versionCode);
 		logger.info("************************ DB config *************************");
-		logger.info("DB version : {}", args.getStorage().getDbVersion());
-		logger.info("DB engine : {}", args.getStorage().getDbEngine());
+		logger.info("DB version: {}", args.getStorage().getDbVersion());
+		logger.info("DB engine: {}", args.getStorage().getDbEngine());
 		logger.info("***************************************************************");
 		logger.info("\n");
 	}

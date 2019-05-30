@@ -127,8 +127,7 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 	}
 
 	public boolean hasProcessed() {
-		return this.proposal.getState().equals(State.DISAPPROVED) || this.proposal.getState()
-				.equals(State.APPROVED);
+		return this.proposal.getState().equals(State.DISAPPROVED) || this.proposal.getState().equals(State.APPROVED);
 	}
 
 	public boolean hasCanceled() {
@@ -155,11 +154,11 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public boolean hasMostApprovals(List<ByteString> activeWitnesses) {
 		long count = this.proposal.getApprovalsList().stream()
-				.filter(witness -> activeWitnesses.contains(witness)).count();
+				.filter(activeWitnesses::contains).count();
 		if (count != this.proposal.getApprovalsCount()) {
 			List<ByteString> InvalidApprovalList = this.proposal.getApprovalsList().stream()
 					.filter(witness -> !activeWitnesses.contains(witness)).collect(Collectors.toList());
-			logger.info("InvalidApprovalList:" + StringUtil.getAddressStringList(InvalidApprovalList));
+			logger.info("InvalidApprovalList: " + StringUtil.getAddressStringList(InvalidApprovalList));
 		}
 		if (activeWitnesses.size() != ChainConstant.MAX_ACTIVE_WITNESS_NUM) {
 			logger.info("activeWitnesses size = {}", activeWitnesses.size());

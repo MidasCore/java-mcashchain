@@ -635,10 +635,10 @@ service Wallet {
 
     rpc Stake (StakeContract) returns (TransactionExtention) {
         option (google.api.http) = {
-      post: "/wallet/stake"
+      post: "/wallet/getstake"
       body: "*"
       additional_bindings {
-        get: "/wallet/stake"
+        get: "/wallet/getstake"
       }
     };
     }

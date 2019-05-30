@@ -29,7 +29,7 @@ public class CreateAddressServlet extends HttpServlet {
 			jsonObject.put("value", input);
 			BytesMessage.Builder build = BytesMessage.newBuilder();
 			JsonFormat.merge(jsonObject.toJSONString(), build);
-			byte[] address = wallet.createAdresss(build.getValue().toByteArray());
+			byte[] address = wallet.createAddress(build.getValue().toByteArray());
 			String base58check = Wallet.encodeBase58Check(address);
 			String hexString = ByteArray.toHexString(address);
 			JSONObject jsonAddress = new JSONObject();
@@ -53,7 +53,7 @@ public class CreateAddressServlet extends HttpServlet {
 			Util.checkBodySize(input);
 			BytesMessage.Builder build = BytesMessage.newBuilder();
 			JsonFormat.merge(input, build);
-			byte[] address = wallet.createAdresss(build.getValue().toByteArray());
+			byte[] address = wallet.createAddress(build.getValue().toByteArray());
 			String base58check = Wallet.encodeBase58Check(address);
 			String hexString = ByteArray.toHexString(address);
 			JSONObject jsonAddress = new JSONObject();

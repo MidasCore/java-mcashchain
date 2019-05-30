@@ -25,13 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.*;
 import io.midasprotocol.api.GrpcAPI.Return.response_code;
@@ -75,6 +68,13 @@ import io.midasprotocol.protos.Protocol.SmartContract.ABI.Entry.StateMutabilityT
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.security.SignatureException;
 import java.util.*;
@@ -226,7 +226,7 @@ public class Wallet {
 		return address;
 	}
 
-	public static boolean checkPermissionOprations(Permission permission, Contract contract)
+	public static boolean checkPermissionOperations(Permission permission, Contract contract)
 			throws PermissionException {
 		ByteString operations = permission.getOperations();
 		if (operations.size() != 32) {
@@ -260,7 +260,6 @@ public class Wallet {
     long balance = getBalance(address);
     return new TransactionCapsule(address, to, amount, balance, utxoStore).getInstance();
   } */
-
 	private static boolean isConstant(SmartContract.ABI abi, byte[] selector) {
 
 		if (selector == null || selector.length != 4 || abi.getEntrysList().size() == 0) {
@@ -274,7 +273,7 @@ public class Wallet {
 			}
 
 			int inputCount = entry.getInputsCount();
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(entry.getName());
 			sb.append("(");
 			for (int k = 0; k < inputCount; k++) {
@@ -554,14 +553,14 @@ public class Wallet {
 				if (permission.getType() != PermissionType.Active) {
 					throw new PermissionException("Permission type is error");
 				}
-				//check oprations
-				if (!checkPermissionOprations(permission, contract)) {
+				//check operations
+				if (!checkPermissionOperations(permission, contract)) {
 					throw new PermissionException("Permission denied");
 				}
 			}
 			tswBuilder.setPermission(permission);
 			if (trx.getSignatureCount() > 0) {
-				List<ByteString> approveList = new ArrayList<ByteString>();
+				List<ByteString> approveList = new ArrayList<>();
 				long currentWeight = TransactionCapsule.checkWeight(permission, trx.getSignatureList(),
 						Sha256Hash.hash(trx.getRawData().toByteArray()), approveList);
 				tswBuilder.addAllApprovedList(approveList);
@@ -609,7 +608,7 @@ public class Wallet {
 			}
 
 			if (trx.getSignatureCount() > 0) {
-				List<ByteString> approveList = new ArrayList<ByteString>();
+				List<ByteString> approveList = new ArrayList<>();
 				byte[] hash = Sha256Hash.hash(trx.getRawData().toByteArray());
 				for (ByteString sig : trx.getSignatureList()) {
 					if (sig.size() < 65) {
@@ -641,7 +640,7 @@ public class Wallet {
 		return Sha256Hash.hash(passPhrase);
 	}
 
-	public byte[] createAdresss(byte[] passPhrase) {
+	public byte[] createAddress(byte[] passPhrase) {
 		byte[] privateKey = pass2Key(passPhrase);
 		ECKey ecKey = ECKey.fromPrivate(privateKey);
 		return ecKey.getAddress();
@@ -764,92 +763,86 @@ public class Wallet {
 						.setKey("getWitnessPayPerBlock")
 						.setValue(dbManager.getDynamicPropertiesStore().getWitnessPayPerBlock())
 						.build());
-		//    WITNESS_STANDBY_ALLOWANCE, //drop ,6
-		builder.addChainParameter(
-				Protocol.ChainParameters.ChainParameter.newBuilder()
-						.setKey("getWitnessStandbyAllowance")
-						.setValue(dbManager.getDynamicPropertiesStore().getWitnessStandbyAllowance())
-						.build());
-		//    CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT, //drop ,7
+		//    CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT, //drop ,6
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getCreateNewAccountFeeInSystemContract")
 						.setValue(
 								dbManager.getDynamicPropertiesStore().getCreateNewAccountFeeInSystemContract())
 						.build());
-		//    CREATE_NEW_ACCOUNT_BANDWIDTH_RATE, // 1 ~ ,8
+		//    CREATE_NEW_ACCOUNT_BANDWIDTH_RATE, // 1 ~ ,7
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getCreateNewAccountBandwidthRate")
 						.setValue(dbManager.getDynamicPropertiesStore().getCreateNewAccountBandwidthRate())
 						.build());
-		//    ALLOW_CREATION_OF_CONTRACTS, // 0 / >0 ,9
+		//    ALLOW_CREATION_OF_CONTRACTS, // 0 / >0 ,8
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getAllowCreationOfContracts")
 						.setValue(dbManager.getDynamicPropertiesStore().getAllowCreationOfContracts())
 						.build());
-		//    REMOVE_THE_POWER_OF_THE_GR,  // 1 ,10
+		//    REMOVE_THE_POWER_OF_THE_GR,  // 1 ,9
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getRemoveThePowerOfTheGr")
 						.setValue(dbManager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr())
 						.build());
-		//    ENERGY_FEE, // drop, 11
+		//    ENERGY_FEE, // drop, 10
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getEnergyFee")
 						.setValue(dbManager.getDynamicPropertiesStore().getEnergyFee())
 						.build());
-		//    EXCHANGE_CREATE_FEE, // drop, 12
+		//    EXCHANGE_CREATE_FEE, // drop, 11
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getExchangeCreateFee")
 						.setValue(dbManager.getDynamicPropertiesStore().getExchangeCreateFee())
 						.build());
-		//    MAX_CPU_TIME_OF_ONE_TX, // ms, 13
+		//    MAX_CPU_TIME_OF_ONE_TX, // ms, 12
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getMaxCpuTimeOfOneTx")
 						.setValue(dbManager.getDynamicPropertiesStore().getMaxCpuTimeOfOneTx())
 						.build());
-		//    ALLOW_UPDATE_ACCOUNT_NAME, // 1, 14
+		//    ALLOW_UPDATE_ACCOUNT_NAME, // 1, 13
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getAllowUpdateAccountName")
 						.setValue(dbManager.getDynamicPropertiesStore().getAllowUpdateAccountName())
 						.build());
-		//    ALLOW_DELEGATE_RESOURCE, // 0, 16
+		//    ALLOW_DELEGATE_RESOURCE, // 0, 14
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getAllowDelegateResource")
 						.setValue(dbManager.getDynamicPropertiesStore().getAllowDelegateResource())
 						.build());
-		//    TOTAL_ENERGY_LIMIT, // 50,000,000,000, 17
+		//    TOTAL_ENERGY_LIMIT, // 50,000,000,000, 15
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getTotalEnergyLimit")
 						.setValue(dbManager.getDynamicPropertiesStore().getTotalEnergyLimit())
 						.build());
-		//    ALLOW_TVM_TRANSFER_TRC10, // 1, 18
+		//    ALLOW_TVM_TRANSFER_M1, // 1, 16
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
-						.setKey("getAllowTvmTransferTrc10")
-						.setValue(dbManager.getDynamicPropertiesStore().getAllowTvmTransferTrc10())
+						.setKey("getAllowTvmTransferM1")
+						.setValue(dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1())
 						.build());
-		//    TOTAL_CURRENT_ENERGY_LIMIT, // 50,000,000,000, 19
+		//    TOTAL_CURRENT_ENERGY_LIMIT, // 50,000,000,000, 17
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getTotalEnergyCurrentLimit")
 						.setValue(dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit())
 						.build());
-		//    ALLOW_MULTI_SIGN, // 1, 20
+		//    ALLOW_MULTI_SIGN, // 1, 18
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getAllowMultiSign")
 						.setValue(dbManager.getDynamicPropertiesStore().getAllowMultiSign())
 						.build());
-		//    ALLOW_ADAPTIVE_ENERGY, // 1, 21
+		//    ALLOW_ADAPTIVE_ENERGY, // 1, 19
 		builder.addChainParameter(
 				Protocol.ChainParameters.ChainParameter.newBuilder()
 						.setKey("getAllowAdaptiveEnergy")
@@ -1019,16 +1012,14 @@ public class Wallet {
 		}
 
 		// get asset issue by name from new DB
-		List<AssetIssueCapsule> assetIssueCapsuleList =
-				dbManager.getAssetIssueStore().getAllAssetIssues();
+		List<AssetIssueCapsule> assetIssueCapsuleList = dbManager.getAssetIssueStore().getAllAssetIssues();
 		AssetIssueList.Builder builder = AssetIssueList.newBuilder();
 		assetIssueCapsuleList
 				.stream()
 				.filter(assetIssueCapsule -> assetIssueCapsule.getName().equals(assetName))
-				.forEach(
-						issueCapsule -> {
-							builder.addAssetIssue(issueCapsule.getInstance());
-						});
+				.forEach(issueCapsule -> {
+					builder.addAssetIssue(issueCapsule.getInstance());
+				});
 
 		// check count
 		if (builder.getAssetIssueCount() > 1) {
@@ -1086,7 +1077,7 @@ public class Wallet {
 		Block block = null;
 		try {
 			block = dbManager.getBlockStore().get(BlockId.toByteArray()).getInstance();
-		} catch (StoreException e) {
+		} catch (StoreException ignored) {
 		}
 		return block;
 	}
@@ -1114,9 +1105,8 @@ public class Wallet {
 		}
 		TransactionCapsule transactionCapsule = null;
 		try {
-			transactionCapsule = dbManager.getTransactionStore()
-					.get(transactionId.toByteArray());
-		} catch (StoreException e) {
+			transactionCapsule = dbManager.getTransactionStore().get(transactionId.toByteArray());
+		} catch (StoreException ignored) {
 		}
 		if (transactionCapsule != null) {
 			return transactionCapsule.getInstance();
@@ -1130,9 +1120,8 @@ public class Wallet {
 		}
 		TransactionInfoCapsule transactionInfoCapsule = null;
 		try {
-			transactionInfoCapsule = dbManager.getTransactionHistoryStore()
-					.get(transactionId.toByteArray());
-		} catch (StoreException e) {
+			transactionInfoCapsule = dbManager.getTransactionHistoryStore().get(transactionId.toByteArray());
+		} catch (StoreException ignored) {
 		}
 		if (transactionInfoCapsule != null) {
 			return transactionInfoCapsule.getInstance();
@@ -1146,9 +1135,8 @@ public class Wallet {
 		}
 		ProposalCapsule proposalCapsule = null;
 		try {
-			proposalCapsule = dbManager.getProposalStore()
-					.get(proposalId.toByteArray());
-		} catch (StoreException e) {
+			proposalCapsule = dbManager.getProposalStore().get(proposalId.toByteArray());
+		} catch (StoreException ignored) {
 		}
 		if (proposalCapsule != null) {
 			return proposalCapsule.getInstance();
@@ -1163,7 +1151,7 @@ public class Wallet {
 		ExchangeCapsule exchangeCapsule = null;
 		try {
 			exchangeCapsule = dbManager.getExchangeStore().get(exchangeId.toByteArray());
-		} catch (StoreException e) {
+		} catch (StoreException ignored) {
 		}
 		if (exchangeCapsule != null) {
 			return exchangeCapsule.getInstance();
@@ -1235,7 +1223,7 @@ public class Wallet {
 					new ProgramInvokeFactoryImpl(), true);
 			VMConfig.initVmHardFork();
 			VMConfig.initAllowTvmTransferTrc10(
-					dbManager.getDynamicPropertiesStore().getAllowTvmTransferTrc10());
+					dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1());
 			VMConfig.initAllowMultiSign(dbManager.getDynamicPropertiesStore().getAllowMultiSign());
 			runtime.execute();
 			runtime.go();
@@ -1265,8 +1253,7 @@ public class Wallet {
 		byte[] address = bytesMessage.getValue().toByteArray();
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(address);
 		if (accountCapsule == null) {
-			logger.error(
-					"Get contract failed, the account is not exist or the account does not have code hash!");
+			logger.error("Get contract failed, the account is not exist or the account does not have code hash!");
 			return null;
 		}
 
