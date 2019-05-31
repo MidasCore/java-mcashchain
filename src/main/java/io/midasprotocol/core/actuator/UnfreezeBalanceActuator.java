@@ -47,7 +47,6 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		long oldBalance = accountCapsule.getBalance();
 
 		long unfreezeBalance = 0L;
-		;
 
 		byte[] receiverAddress = unfreezeBalanceContract.getReceiverAddress().toByteArray();
 		//If the receiver is not included in the contract, unfreeze frozen balance for this account.
@@ -56,8 +55,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 			byte[] key = DelegatedResourceCapsule
 					.createDbKey(unfreezeBalanceContract.getOwnerAddress().toByteArray(),
 							unfreezeBalanceContract.getReceiverAddress().toByteArray());
-			DelegatedResourceCapsule delegatedResourceCapsule = dbManager.getDelegatedResourceStore()
-					.get(key);
+			DelegatedResourceCapsule delegatedResourceCapsule = dbManager.getDelegatedResourceStore().get(key);
 
 			AccountCapsule receiverCapsule = dbManager.getAccountStore().get(receiverAddress);
 

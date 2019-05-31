@@ -101,7 +101,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal = 26275;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -115,7 +115,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -151,7 +151,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal = 26275;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -165,7 +165,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -206,7 +206,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal = 57905;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -220,7 +220,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -270,7 +270,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal = 97341;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -284,7 +284,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -327,7 +327,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal = 42687;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -336,14 +336,14 @@ public class EnergyWhenRequireStyleTest {
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = feeLimit / Constant.SUN_PER_ENERGY;
+		long expectEnergyUsageTotal2 = feeLimit / Constant.MATOSHI_PER_ENERGY;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		// todo: revert should be true!! see later
 		Assert.assertFalse(result.getRuntime().getResult().isRevert());
 		Assert.assertTrue(
 				result.getRuntime().getResult().getException() instanceof OutOfEnergyException);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -393,7 +393,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		result = TVMTestUtils
 				.deployContractAndReturnTVMTestResult(contractName, address, ABI, code,
@@ -404,7 +404,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal2 = 100341;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 		/* ====================================================================== */
 		byte[] triggerData = TVMTestUtils.parseABI("testFallback()", null);
 		result = TVMTestUtils
@@ -417,7 +417,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
 				totalBalance
-						- (expectEnergyUsageTotal + expectEnergyUsageTotal2 + expectEnergyUsageTotal3) * Constant.SUN_PER_ENERGY);
+						- (expectEnergyUsageTotal + expectEnergyUsageTotal2 + expectEnergyUsageTotal3) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -466,7 +466,7 @@ public class EnergyWhenRequireStyleTest {
 		long expectEnergyUsageTotal = 36481;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -480,7 +480,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	@Test

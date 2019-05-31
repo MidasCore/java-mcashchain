@@ -2,7 +2,6 @@ package io.midasprotocol.core.capsule;
 
 import lombok.Getter;
 import lombok.Setter;
-import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Constant;
@@ -146,7 +145,7 @@ public class ReceiptCapsule {
 			this.setEnergyUsage(usage);
 		} else {
 			energyProcessor.useEnergy(account, accountEnergyLeft, now);
-			long sunPerEnergy = Constant.SUN_PER_ENERGY;
+			long sunPerEnergy = Constant.MATOSHI_PER_ENERGY;
 			long dynamicEnergyFee = manager.getDynamicPropertiesStore().getEnergyFee();
 			if (dynamicEnergyFee > 0) {
 				sunPerEnergy = dynamicEnergyFee;

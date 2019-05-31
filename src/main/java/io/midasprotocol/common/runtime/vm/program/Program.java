@@ -17,9 +17,7 @@
  */
 package io.midasprotocol.common.runtime.vm.program;
 
-import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-import io.midasprotocol.common.utils.ByteArray;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -60,7 +58,6 @@ import static org.apache.commons.lang3.ArrayUtils.*;
 import static io.midasprotocol.common.runtime.utils.MUtil.*;
 import static io.midasprotocol.common.utils.BIUtil.isPositive;
 import static io.midasprotocol.common.utils.BIUtil.toBI;
-import static io.midasprotocol.common.utils.ByteUtil.stripLeadingZeroes;
 
 /**
  * @author Roman Mandeleil
@@ -526,14 +523,14 @@ public class Program {
 			// if owner == obtainer just zeroing account according to Yellow Paper
 			getContractState().addBalance(owner, -balance);
 			byte[] blackHoleAddress = getContractState().getBlackHoleAddress();
-			if (VMConfig.allowTvmTransferTrc10()) {
+			if (VMConfig.allowTvmTransferM1()) {
 				getContractState().addBalance(blackHoleAddress, balance);
 				transferAllToken(getContractState(), owner, blackHoleAddress);
 			}
 		} else {
 			try {
 				transfer(getContractState(), owner, obtainer, balance);
-				if (VMConfig.allowTvmTransferTrc10()) {
+				if (VMConfig.allowTvmTransferM1()) {
 					transferAllToken(getContractState(), owner, obtainer);
 				}
 			} catch (ContractValidateException e) {

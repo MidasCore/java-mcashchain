@@ -90,7 +90,7 @@ public class TransferTokenTest {
 	}
 
 	private long createAsset(String tokenName) {
-		VMConfig.initAllowTvmTransferTrc10(1);
+		VMConfig.initAllowTvmTransferM1(1);
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
 		AssetIssueContract assetIssueContract =

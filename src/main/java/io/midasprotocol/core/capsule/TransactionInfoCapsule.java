@@ -90,8 +90,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		builder.setReceipt(traceReceipt.getReceipt());
 
 		if (Args.getInstance().isSaveInternalTx() && null != programResult.getInternalTransactions()) {
-			for (InternalTransaction internalTransaction : programResult
-					.getInternalTransactions()) {
+			for (InternalTransaction internalTransaction : programResult.getInternalTransactions()) {
 				Protocol.InternalTransaction.Builder internalTrxBuilder = Protocol.InternalTransaction
 						.newBuilder();
 				// set hash

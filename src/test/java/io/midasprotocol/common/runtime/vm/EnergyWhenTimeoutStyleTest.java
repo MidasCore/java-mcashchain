@@ -92,16 +92,16 @@ public class EnergyWhenTimeoutStyleTest {
 				consumeUserResourcePercent);
 
 		if (null != result.getRuntime().getResult().getException()) {
-			long expectEnergyUsageTotal = feeLimit / Constant.SUN_PER_ENERGY;
+			long expectEnergyUsageTotal = feeLimit / Constant.MATOSHI_PER_ENERGY;
 			Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 			Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-					totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+					totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 			return;
 		}
 		long expectEnergyUsageTotal = 55107;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		byte[] contractAddress = result.getContractAddress();
 
@@ -113,13 +113,13 @@ public class EnergyWhenTimeoutStyleTest {
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,
 						triggerData, value, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = feeLimit / Constant.SUN_PER_ENERGY;
+		long expectEnergyUsageTotal2 = feeLimit / Constant.MATOSHI_PER_ENERGY;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Exception exception = result.getRuntime().getResult().getException();
 		Assert.assertTrue((exception instanceof OutOfTimeException)
 				|| (exception instanceof OutOfEnergyException));
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	public TVMTestResult deployEndlessLoopContract(long value, long feeLimit,

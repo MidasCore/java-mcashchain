@@ -251,7 +251,7 @@ public class TransactionTraceTest {
 		Assert.assertEquals(0, trace.getReceipt().getEnergyUsage());
 		Assert.assertEquals(202520000, trace.getReceipt().getEnergyFee());
 		Assert.assertEquals(202520000,
-				trace.getReceipt().getEnergyUsage() * Constant.SUN_PER_ENERGY + trace.getReceipt().getEnergyFee());
+				trace.getReceipt().getEnergyUsage() * Constant.MATOSHI_PER_ENERGY + trace.getReceipt().getEnergyFee());
 		accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
 		Assert.assertEquals(totalBalance,
 				accountCapsule.getBalance() + trace.getReceipt().getEnergyFee());

@@ -10,7 +10,6 @@ import io.midasprotocol.common.runtime.TVMTestUtils;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.program.Program.OutOfEnergyException;
 import io.midasprotocol.common.storage.DepositImpl;
-import io.midasprotocol.core.config.Parameter.ForkBlockVersionEnum;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.exception.ReceiptCheckErrException;
@@ -110,7 +109,7 @@ contract D {
 			throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
 		byte[] stats = new byte[27];
 		Arrays.fill(stats, (byte) 1);
-		VMConfig.initAllowTvmTransferTrc10(1);
+		VMConfig.initAllowTvmTransferM1(1);
 		byte[] address = Hex.decode(OWNER_ADDRESS);
 
 		VMConfig.initAllowMultiSign(1);

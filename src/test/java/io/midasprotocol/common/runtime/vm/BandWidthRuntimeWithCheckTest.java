@@ -175,8 +175,8 @@ public class BandWidthRuntimeWithCheckTest {
 			Assert.assertEquals(624668, trace.getReceipt().getEnergyUsageTotal());
 			Assert.assertEquals(50000, energy);
 			Assert.assertEquals(57466800, balance);
-			Assert.assertEquals(624668 * Constant.SUN_PER_ENERGY,
-					balance + energy * Constant.SUN_PER_ENERGY);
+			Assert.assertEquals(624668 * Constant.MATOSHI_PER_ENERGY,
+					balance + energy * Constant.MATOSHI_PER_ENERGY);
 		} catch (TronException e) {
 			Assert.assertNotNull(e);
 		} catch (ReceiptCheckErrException e) {
@@ -262,7 +262,7 @@ public class BandWidthRuntimeWithCheckTest {
 		Assert.assertEquals(50000, energy);
 		Assert.assertEquals(3852900, balance);
 		Assert
-				.assertEquals(88529 * Constant.SUN_PER_ENERGY, balance + energy * Constant.SUN_PER_ENERGY);
+				.assertEquals(88529 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
 		if (runtime.getRuntimeError() != null) {
 			return runtime.getResult().getContractAddress();
 		}

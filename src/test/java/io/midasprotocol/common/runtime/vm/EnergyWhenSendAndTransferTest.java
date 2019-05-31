@@ -103,7 +103,7 @@ public class EnergyWhenSendAndTransferTest {
 		byte[] contractAddress = result.getContractAddress();
 		Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - value - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - value - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL simpleCall() =================================== */
 		byte[] triggerData = TVMTestUtils.parseABI("simpleCall()", null);
@@ -114,7 +114,7 @@ public class EnergyWhenSendAndTransferTest {
 		long expectEnergyUsageTotal2 = 7370;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL complexCall() =================================== */
 		triggerData = TVMTestUtils.parseABI("complexCall()", null);
@@ -127,7 +127,7 @@ public class EnergyWhenSendAndTransferTest {
 		Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
 				totalBalance - value
-						- (expectEnergyUsageTotal + expectEnergyUsageTotal2 + expectEnergyUsageTotal3) * Constant.SUN_PER_ENERGY);
+						- (expectEnergyUsageTotal + expectEnergyUsageTotal2 + expectEnergyUsageTotal3) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	// solidity for sendTest and transferTest
@@ -179,7 +179,7 @@ public class EnergyWhenSendAndTransferTest {
 		byte[] contractAddress = result.getContractAddress();
 		Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - value - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - value - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL doSend() =================================== */
 		byte[] triggerData = TVMTestUtils.parseABI("doSend()", null);
@@ -193,7 +193,7 @@ public class EnergyWhenSendAndTransferTest {
 		Assert.assertFalse(result.getRuntime().getResult().isRevert());
 		Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	@Test
@@ -213,7 +213,7 @@ public class EnergyWhenSendAndTransferTest {
 		byte[] contractAddress = result.getContractAddress();
 		Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - value - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - value - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL doSend() =================================== */
 		byte[] triggerData = TVMTestUtils.parseABI("doTransfer()", null);
@@ -227,7 +227,7 @@ public class EnergyWhenSendAndTransferTest {
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());
 		Assert.assertEquals(deposit.getAccount(contractAddress).getBalance(), value);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	public TVMTestResult deployCallValueTestContract(long value, long feeLimit,

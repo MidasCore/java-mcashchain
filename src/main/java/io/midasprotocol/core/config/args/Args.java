@@ -821,8 +821,8 @@ public class Args {
 						.getInt("committee.allowSameTokenName") : 0;
 
 		INSTANCE.allowTvmTransferTrc10 =
-				config.hasPath("committee.allowTvmTransferTrc10") ? config
-						.getInt("committee.allowTvmTransferTrc10") : 0;
+				config.hasPath("committee.allowTvmTransferM1") ? config
+						.getInt("committee.allowTvmTransferM1") : 0;
 
 		INSTANCE.tcpNettyWorkThreadNum = config.hasPath("node.tcpNettyWorkThreadNum") ? config
 				.getInt("node.tcpNettyWorkThreadNum") : 0;

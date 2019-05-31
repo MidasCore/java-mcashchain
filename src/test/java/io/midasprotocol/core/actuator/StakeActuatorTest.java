@@ -359,7 +359,7 @@ public class StakeActuatorTest {
 
 	@Test
 	public void lessThan1TrxTest() {
-		long stakeAmount = 1;
+		long stakeAmount = 100000000;
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
 				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -369,7 +369,7 @@ public class StakeActuatorTest {
 			actuator.execute(ret);
 			Assert.fail("cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Stake amount must be more than 1 MCASH", e.getMessage());
+			Assert.assertEquals("Stake amount must be more than 1000 MCASH", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

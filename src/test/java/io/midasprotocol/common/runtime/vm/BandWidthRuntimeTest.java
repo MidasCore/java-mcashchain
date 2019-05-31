@@ -248,7 +248,7 @@ public class BandWidthRuntimeTest {
 		Assert.assertEquals(52299, trace.getReceipt().getEnergyUsageTotal());
 		Assert.assertEquals(0, energy);
 		Assert.assertEquals(522990000, balance);
-		Assert.assertEquals(52299 * Constant.SUN_PER_ENERGY, balance + energy * Constant.SUN_PER_ENERGY);
+		Assert.assertEquals(52299 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
 		Assert.assertNull(runtime.getRuntimeError());
 		return runtime.getResult().getContractAddress();
 	}

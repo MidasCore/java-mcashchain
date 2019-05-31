@@ -315,9 +315,6 @@ public class WitnessController {
 		long now = manager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp();
 
 		List<ByteString> currentWits = getActiveWitnesses();
-		for (ByteString wit: currentWits) {
-			logger.info("abc " + StringUtil.createReadableString(wit));
-		}
 
 			List<ByteString> newWitnessAddressList = new ArrayList<>();
 			witnessStore.getAllWitnesses().forEach(witnessCapsule -> {
@@ -363,7 +360,7 @@ public class WitnessController {
 				if (epochBlock > 0) {
 					double pc = 1d * witnessCapsule.getEpochMissed() / epochBlock;
 					if (pc > Parameter.NodeConstant.PENALTY_RATE) {
-						long expiration ;
+						long expiration;
 						if (witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE) {
 							// minor penalty
 							expiration = now + Parameter.NodeConstant.MINOR_PENALTY_EPOCH
@@ -383,7 +380,7 @@ public class WitnessController {
 						bannedWitnessStore.put(witnessAddress.toByteArray(), bannedWitnessCapsule);
 						witnessCapsule.setStatus(Protocol.Witness.Status.SLASHED);
 					} else {
-						witnessCapsule.setStatus(Protocol.Witness.Status.ACTIVE);
+						witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
 						newActiveWitnessAddressList.add(witnessAddress);
 					}
 					witnessCapsule.setEpochMissed(0);

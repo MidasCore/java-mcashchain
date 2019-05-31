@@ -92,7 +92,7 @@ public class ChargeTest {
 		long expectEnergyUsageTotal = 51293; // 200 * code.length() + 93
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -101,13 +101,13 @@ public class ChargeTest {
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 2_000_000_000_000L, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = feeLimit / Constant.SUN_PER_ENERGY;
+		long expectEnergyUsageTotal2 = feeLimit / Constant.MATOSHI_PER_ENERGY;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
 		Assert.assertTrue(
 				result.getRuntime().getResult().getException() instanceof ArithmeticException);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	// pragma solidity ^0.4.16;
@@ -148,7 +148,7 @@ public class ChargeTest {
 		long expectEnergyUsageTotal = 68111;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ======================================CALL testNegative() with 0 callvalue ================================ */
@@ -157,13 +157,13 @@ public class ChargeTest {
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, value, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = feeLimit / Constant.SUN_PER_ENERGY;
+		long expectEnergyUsageTotal2 = feeLimit / Constant.MATOSHI_PER_ENERGY;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
 		Assert.assertTrue(
 				result.getRuntime().getResult().getException() instanceof ArithmeticException);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 
 		/* ======================================CALL testNegative() with -100 callvalue ================================ */
@@ -175,14 +175,14 @@ public class ChargeTest {
 			Assert.fail();
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("callValue must >= 0", e.getMessage());
-			long expectEnergyUsageTotal3 = feeLimit / Constant.SUN_PER_ENERGY;
+			long expectEnergyUsageTotal3 = feeLimit / Constant.MATOSHI_PER_ENERGY;
 			Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal3);
 			Assert.assertFalse(result.getRuntime().getResult().isRevert());
 			Assert.assertTrue(
 					result.getRuntime().getResult().getException() instanceof ArithmeticException);
 			Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
 					totalBalance
-							- (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+							- (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 		}
 	}
 
@@ -229,7 +229,7 @@ public class ChargeTest {
 		long expectEnergyUsageTotal = 74517;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -245,7 +245,7 @@ public class ChargeTest {
 		Assert.assertEquals(result.getRuntime().getResult().isRevert(), true);
 		Assert.assertEquals(result.getRuntime().getResult().getException(), null);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -312,7 +312,7 @@ public class ChargeTest {
 		long expectEnergyUsageTotal = 286450;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -328,7 +328,7 @@ public class ChargeTest {
 		Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
 		Assert.assertEquals(result.getRuntime().getResult().getException(), null);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 
@@ -354,7 +354,7 @@ public class ChargeTest {
 		long expectEnergyUsageTotal = 201839;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * Constant.SUN_PER_ENERGY);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
@@ -370,7 +370,7 @@ public class ChargeTest {
 		Assert.assertEquals(result.getRuntime().getResult().isRevert(), false);
 		Assert.assertEquals(result.getRuntime().getResult().getException(), null);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.SUN_PER_ENERGY);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 	}
 

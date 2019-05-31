@@ -193,7 +193,7 @@ public class RuntimeImpl implements Runtime {
 	public long getAccountEnergyLimitWithFixRatio(AccountCapsule account, long feeLimit,
 												  long callValue) {
 
-		long sunPerEnergy = Constant.SUN_PER_ENERGY;
+		long sunPerEnergy = Constant.MATOSHI_PER_ENERGY;
 		if (deposit.getDbManager().getDynamicPropertiesStore().getEnergyFee() > 0) {
 			sunPerEnergy = deposit.getDbManager().getDynamicPropertiesStore().getEnergyFee();
 		}
@@ -211,21 +211,21 @@ public class RuntimeImpl implements Runtime {
 	private long getAccountEnergyLimitWithFloatRatio(AccountCapsule account, long feeLimit,
 													 long callValue) {
 
-		long sunPerEnergy = Constant.SUN_PER_ENERGY;
+		long matoshiPerEnergy = Constant.MATOSHI_PER_ENERGY;
 		if (deposit.getDbManager().getDynamicPropertiesStore().getEnergyFee() > 0) {
-			sunPerEnergy = deposit.getDbManager().getDynamicPropertiesStore().getEnergyFee();
+			matoshiPerEnergy = deposit.getDbManager().getDynamicPropertiesStore().getEnergyFee();
 		}
 		// can change the calc way
 		long leftEnergyFromFreeze = energyProcessor.getAccountLeftEnergyFromFreeze(account);
 		callValue = max(callValue, 0);
 		long energyFromBalance = Math
-				.floorDiv(max(account.getBalance() - callValue, 0), sunPerEnergy);
+				.floorDiv(max(account.getBalance() - callValue, 0), matoshiPerEnergy);
 
 		long energyFromFeeLimit;
 		long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEnergy();
 		if (0 == totalBalanceForEnergyFreeze) {
 			energyFromFeeLimit =
-					feeLimit / sunPerEnergy;
+					feeLimit / matoshiPerEnergy;
 		} else {
 			long totalEnergyFromFreeze = energyProcessor
 					.calculateGlobalEnergyLimit(account);
@@ -240,7 +240,7 @@ public class RuntimeImpl implements Runtime {
 			} else {
 				energyFromFeeLimit = Math
 						.addExact(leftEnergyFromFreeze,
-								(feeLimit - leftBalanceForEnergyFreeze) / sunPerEnergy);
+								(feeLimit - leftBalanceForEnergyFreeze) / matoshiPerEnergy);
 			}
 		}
 
@@ -394,7 +394,7 @@ public class RuntimeImpl implements Runtime {
 		long callValue = newSmartContract.getCallValue();
 		long tokenValue = 0;
 		long tokenId = 0;
-		if (VMConfig.allowTvmTransferTrc10()) {
+		if (VMConfig.allowTvmTransferM1()) {
 			tokenValue = contract.getCallTokenValue();
 			tokenId = contract.getTokenId();
 		}
@@ -473,10 +473,9 @@ public class RuntimeImpl implements Runtime {
 		if (callValue > 0) {
 			transfer(this.deposit, callerAddress, contractAddress, callValue);
 		}
-		if (VMConfig.allowTvmTransferTrc10()) {
+		if (VMConfig.allowTvmTransferM1()) {
 			if (tokenValue > 0) {
-				transferToken(this.deposit, callerAddress, contractAddress, tokenId,
-						tokenValue);
+				transferToken(this.deposit, callerAddress, contractAddress, tokenId, tokenValue);
 			}
 		}
 
@@ -514,7 +513,7 @@ public class RuntimeImpl implements Runtime {
 		long callValue = contract.getCallValue();
 		long tokenValue = 0;
 		long tokenId = 0;
-		if (VMConfig.allowTvmTransferTrc10()) {
+		if (VMConfig.allowTvmTransferM1()) {
 			tokenValue = contract.getCallTokenValue();
 			tokenId = contract.getTokenId();
 		}
@@ -586,7 +585,7 @@ public class RuntimeImpl implements Runtime {
 		if (callValue > 0) {
 			transfer(this.deposit, callerAddress, contractAddress, callValue);
 		}
-		if (VMConfig.allowTvmTransferTrc10()) {
+		if (VMConfig.allowTvmTransferM1()) {
 			if (tokenValue > 0) {
 				transferToken(this.deposit, callerAddress, contractAddress, tokenId, tokenValue);
 			}
@@ -754,7 +753,7 @@ public class RuntimeImpl implements Runtime {
 	}
 
 	public void checkTokenValueAndId(long tokenValue, long tokenId) throws ContractValidateException {
-		if (VMConfig.allowTvmTransferTrc10()) {
+		if (VMConfig.allowTvmTransferM1()) {
 			if (VMConfig.allowMultiSign()) { //allowMultiSigns
 				// tokenid can only be 0
 				// or (MIN_TOKEN_ID, Long.Max]

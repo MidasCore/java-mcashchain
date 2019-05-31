@@ -35,9 +35,9 @@ public class Constant {
 
 	public static final String DATABASE_DIR = "storage.directory";
 
-	public static final byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x32;   //41 + address
+	public static final byte ADD_PRE_FIX_BYTE_MAINNET = (byte) 0x32;   //32 + address
 	public static final String ADD_PRE_FIX_STRING_MAINNET = "32";
-	public static final byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0x6e;   //a0 + address
+	public static final byte ADD_PRE_FIX_BYTE_TESTNET = (byte) 0x6e;   //6e + address
 	public static final String ADD_PRE_FIX_STRING_TESTNET = "6e";
 	public static final int ADDRESS_SIZE = 42;
 
@@ -47,7 +47,7 @@ public class Constant {
 	public static final long TRANSACTION_DEFAULT_EXPIRATION_TIME = 60 * 1_000L; //60 seconds
 
 	// config for smart contract
-	public static final long SUN_PER_ENERGY = 10000; // 1 us = 100 DROP = 100 * 10^-6 TRX
+	public static final long MATOSHI_PER_ENERGY = 10000; // 1 us = 100 DROP = 100 * 10^-6 TRX
 	public static final long ENERGY_LIMIT_IN_CONSTANT_TX = 3_000_000L; // ref: 1 us = 1 energy
 	public static final long MAX_RESULT_SIZE_IN_TX = 64; // max 8 * 8 items in result
 	public static final long PB_DEFAULT_ENERGY_LIMIT = 0L;

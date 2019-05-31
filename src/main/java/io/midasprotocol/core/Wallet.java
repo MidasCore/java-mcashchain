@@ -1222,7 +1222,7 @@ public class Wallet {
 			Runtime runtime = new RuntimeImpl(trxCap.getInstance(), new BlockCapsule(headBlock), deposit,
 					new ProgramInvokeFactoryImpl(), true);
 			VMConfig.initVmHardFork();
-			VMConfig.initAllowTvmTransferTrc10(
+			VMConfig.initAllowTvmTransferM1(
 					dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1());
 			VMConfig.initAllowMultiSign(dbManager.getDynamicPropertiesStore().getAllowMultiSign());
 			runtime.execute();
