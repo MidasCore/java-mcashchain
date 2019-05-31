@@ -59,7 +59,7 @@ public class RuntimeImplTest {
 		creatorAddress = Hex.decode(Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abd");
 		dbManager = context.getBean(Manager.class);
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(500_000_000_000L); // unit is trx
+		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(5_000_000_000L); // unit is trx
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(callerAddress, AccountType.Normal);
 		deposit.addBalance(callerAddress, callerTotalBalance);

@@ -295,13 +295,13 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		try {
 			this.getTotalEnergyLimit();
 		} catch (IllegalArgumentException e) {
-			this.saveTotalEnergyLimit(5_000_000_000_000L);
+			this.saveTotalEnergyLimit(50_000_000_000L);
 		}
 
 		try {
 			this.getEnergyFee();
 		} catch (IllegalArgumentException e) {
-			this.saveEnergyFee(10000L);// 100 sun per energy
+			this.saveEnergyFee(10000L);// 10000 matoshi per energy
 		}
 
 		try {
@@ -331,7 +331,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		try {
 			this.getTransactionFee();
 		} catch (IllegalArgumentException e) {
-			this.saveTransactionFee(10L); // 10sun/byte
+			this.saveTransactionFee(1000L); // 10 matoshi/byte
 		}
 
 		try {

@@ -102,7 +102,7 @@ public class EnergyProcessorTest {
 	@Test
 	public void testUseContractCreatorEnergy() throws Exception {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(1_000_000_000L);
+		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
 
 		AccountCapsule ownerCapsule = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS));
