@@ -37,7 +37,7 @@ public class PeerClient {
 
 			@Override
 			public Thread newThread(Runnable r) {
-				return new Thread(r, "TronJClientWorker-" + cnt.getAndIncrement());
+				return new Thread(r, "ClientWorker-" + cnt.getAndIncrement());
 			}
 		});
 	}
