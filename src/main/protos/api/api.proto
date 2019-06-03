@@ -448,7 +448,7 @@ service Wallet {
       };
     };
 
-    rpc GetPaginatedBlockRewardList (BlockRewardPaginatedMessage) returns (BlockRewardList) {
+    rpc GetBlockReward (NumberMessage) returns (BlockRewardList) {
         option (google.api.http) = {
           post: "/wallet/getreward"
           body: "*"
@@ -1015,12 +1015,6 @@ message EasyTransferResponse {
 message AddressPrKeyPairMessage {
     string address = 1;
     string privateKey = 2;
-}
-
-message BlockRewardPaginatedMessage {
-    bytes address = 1;
-    int64 offset = 2;
-    int64 limit = 3;
 }
 
 message TransactionExtention {

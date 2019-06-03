@@ -145,9 +145,12 @@ public class StakeActuatorTest {
 					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertNotEquals(0, accountCapsule.getAllowance());
 
-			Assert.assertTrue(dbManager.getBlockRewardStore().has(ByteArray.fromHexString(OWNER_ADDRESS)));
+			long blockNumber = dbManager.getHeadBlockNum();
+			byte[] key = ByteArray.fromLong(blockNumber);
 
-			GrpcAPI.BlockRewardList rewardList = wallet.getPaginatedBlockRewardList(accountCapsule.getAddress(), 0, 10);
+			Assert.assertTrue(dbManager.getBlockRewardStore().has(key));
+
+			GrpcAPI.BlockRewardList rewardList = wallet.getBlockReward(blockNumber);
 
 			for (Protocol.BlockReward.Reward reward : rewardList.getRewardsList()) {
 				logger.info(String.valueOf(reward.getAmount()));

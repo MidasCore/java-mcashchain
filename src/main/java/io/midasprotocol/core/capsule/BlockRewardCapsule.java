@@ -3,6 +3,7 @@ package io.midasprotocol.core.capsule;
 import com.beust.jcommander.internal.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Protocol;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,14 +26,17 @@ public class BlockRewardCapsule implements ProtoCapsule<Protocol.BlockReward> {
 		}
 	}
 
-	public BlockRewardCapsule(final ByteString address) {
-		this.blockReward = Protocol.BlockReward.newBuilder().setAddress(address).build();
+	public BlockRewardCapsule(final long blockNumber) {
+		this.blockReward = Protocol.BlockReward.newBuilder().setBlockNumber(blockNumber).build();
 	}
 
-	public void addReward(long amount, Protocol.BlockReward.RewardType rewardType, long time) {
+	public void addReward(ByteString address, long amount, Protocol.BlockReward.RewardType rewardType) {
 		this.blockReward = this.blockReward.toBuilder()
-				.addRewards(Protocol.BlockReward.Reward.newBuilder().setAmount(amount)
-				.setType(rewardType).setTimestamp(time).build()).build();
+				.addRewards(
+						Protocol.BlockReward.Reward.newBuilder()
+								.setAddress(address)
+								.setAmount(amount)
+								.setType(rewardType).build()).build();
 	}
 
 	public void clearReward() {
@@ -48,13 +52,12 @@ public class BlockRewardCapsule implements ProtoCapsule<Protocol.BlockReward> {
 	}
 
 	public byte[] createDbKey() {
-		return getAddress().toByteArray();
+		return ByteArray.fromLong(getBlockNumber());
 	}
 
-	public ByteString getAddress() {
-		return this.blockReward.getAddress();
+	public long getBlockNumber() {
+		return this.blockReward.getBlockNumber();
 	}
-
 
 	@Override
 	public byte[] getData() {

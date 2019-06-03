@@ -241,11 +241,11 @@ message BlockReward {
         STAKE = 1;
     }
     message Reward {
+        bytes address = 1;
         int64 amount = 2;
         RewardType type = 3;
-        int64 timestamp = 4;
     }
-    bytes address = 1;
+    int64 blockNumber = 1;
     repeated Reward rewards = 2;
 }
 

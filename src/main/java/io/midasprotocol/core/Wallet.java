@@ -1328,29 +1328,15 @@ public class Wallet {
 
 	}
 
-	public BlockRewardList getPaginatedBlockRewardList(ByteString address, long offset, long limit) {
-		if (limit < 0 || offset < 0) {
-			return null;
-		}
+	public BlockRewardList getBlockReward(long blockNumber) {
 		BlockRewardStore blockRewardStore = dbManager.getBlockRewardStore();
-		if (!blockRewardStore.has(address.toByteArray())) {
+		byte[] key = ByteArray.fromLong(blockNumber);
+		if (!blockRewardStore.has(key)) {
 			return null;
 		}
-		List<BlockReward.Reward> rewards = new ArrayList<>(blockRewardStore.get(address.toByteArray()).getRewardsList());
-		rewards.sort(Comparator.comparingLong(BlockReward.Reward::getTimestamp).reversed());
-
-		if (rewards.size() <= offset) {
-			return null;
-		}
-
-		limit = limit > STAKE_COUNT_LIMIT_MAX ? STAKE_COUNT_LIMIT_MAX : limit;
-		long end = offset + limit;
-		end = end > rewards.size() ? rewards.size() : end;
-
+		List<BlockReward.Reward> rewards = new ArrayList<>(blockRewardStore.get(key).getRewardsList());
 		BlockRewardList.Builder builder = BlockRewardList.newBuilder();
-		for (long i = offset; i < end; i++) {
-			builder.addRewards(rewards.get((int) i));
-		}
+		builder.addAllRewards(rewards);
 		return builder.build();
 	}
 }

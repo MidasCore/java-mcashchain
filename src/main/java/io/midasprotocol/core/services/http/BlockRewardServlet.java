@@ -27,13 +27,10 @@ public class BlockRewardServlet extends HttpServlet {
 			String input = request.getReader().lines()
 					.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
-			GrpcAPI.BlockRewardPaginatedMessage.Builder builder =
-					GrpcAPI.BlockRewardPaginatedMessage.newBuilder();
-
+			GrpcAPI.NumberMessage.Builder builder = GrpcAPI.NumberMessage.newBuilder();
 			JsonFormat.merge(input, builder);
 
-			GrpcAPI.BlockRewardList blockRewards = wallet.getPaginatedBlockRewardList(
-					builder.getAddress(), builder.getOffset(), builder.getLimit());
+			GrpcAPI.BlockRewardList blockRewards = wallet.getBlockReward(builder.getNum());
 			if (blockRewards != null) {
 				response.getWriter().println(JsonFormat.printToString(blockRewards));
 			} else {

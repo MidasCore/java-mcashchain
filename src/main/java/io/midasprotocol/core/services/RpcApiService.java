@@ -1604,12 +1604,8 @@ public class RpcApiService implements Service {
 		}
 
 		@Override
-		public void getPaginatedBlockRewardList(BlockRewardPaginatedMessage request,
-												StreamObserver<BlockRewardList> responseObserver) {
-			responseObserver.onNext(wallet.getPaginatedBlockRewardList(
-					request.getAddress(),
-					request.getOffset(),
-					request.getLimit()));
+		public void getBlockReward(NumberMessage request, StreamObserver<BlockRewardList> responseObserver) {
+			responseObserver.onNext(wallet.getBlockReward(request.getNum()));
 			responseObserver.onCompleted();
 		}
 

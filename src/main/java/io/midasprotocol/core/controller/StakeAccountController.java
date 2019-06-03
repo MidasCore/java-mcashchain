@@ -2,6 +2,7 @@ package io.midasprotocol.core.controller;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.capsule.BlockRewardCapsule;
 import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.util.RewardUtil;
@@ -75,6 +76,12 @@ public class StakeAccountController {
 		long totalPay = RewardUtil.rewardInflation(manager.getDynamicPropertiesStore().getStakingRewardPerEpoch(),
 				manager.getHeadBlockNum(), Parameter.ChainConstant.BLOCKS_PER_YEAR);
 
+		long blockNumber = manager.getHeadBlockNum();
+		BlockRewardCapsule blockRewardCapsule = manager.getBlockRewardStore().get(ByteArray.fromLong(blockNumber));
+		if (blockRewardCapsule == null) {
+			blockRewardCapsule = new BlockRewardCapsule(blockNumber);
+		}
+
 		for (Map.Entry<ByteString, Long> entry : stakes.entrySet()) {
 			ByteString address = entry.getKey();
 			long reward = (long) (entry.getValue() * ((double) totalPay / stakeSum));
@@ -82,17 +89,12 @@ public class StakeAccountController {
 			logger.info("Paying {} MCASH to {}", reward, readableAddress);
 			try {
 				manager.adjustAllowance(address.toByteArray(), reward);
-				BlockRewardCapsule blockRewardCapsule = manager.getBlockRewardStore().get(address.toByteArray());
-				if (blockRewardCapsule == null) {
-					blockRewardCapsule = new BlockRewardCapsule(address);
-				}
-				blockRewardCapsule.addReward(reward, Protocol.BlockReward.RewardType.STAKE,
-						manager.getHeadBlockTimeStamp());
-				manager.getBlockRewardStore().put(blockRewardCapsule.createDbKey(), blockRewardCapsule);
+				blockRewardCapsule.addReward(address, reward, Protocol.BlockReward.RewardType.STAKE);
 			} catch (BalanceInsufficientException e) {
 				logger.error("{}", e.toString());
 			}
 		}
+		manager.getBlockRewardStore().put(blockRewardCapsule.createDbKey(), blockRewardCapsule);
 	}
 
 

@@ -1578,12 +1578,14 @@ public class Manager {
 			long reward = RewardUtil.rewardInflation(getDynamicPropertiesStore().getWitnessPayPerBlock(),
 					getHeadBlockNum(), ChainConstant.BLOCKS_PER_YEAR);
 			adjustAllowance(witnessCapsule.getOwnerAddress().toByteArray(), reward);
-			BlockRewardCapsule blockRewardCapsule = getBlockRewardStore().get(witnessCapsule.getOwnerAddress().toByteArray());
+
+			long blockNumber = block.getInstance().getBlockHeader().getRawData().getNumber();
+			BlockRewardCapsule blockRewardCapsule = getBlockRewardStore().get(ByteArray.fromLong(blockNumber));
 			if (blockRewardCapsule == null) {
-				blockRewardCapsule = new BlockRewardCapsule(witnessCapsule.getOwnerAddress());
+				blockRewardCapsule = new BlockRewardCapsule(blockNumber);
 			}
-			blockRewardCapsule.addReward(reward, Protocol.BlockReward.RewardType.INFRASTRUCTURE,
-					getHeadBlockTimeStamp());
+			blockRewardCapsule.addReward(witnessCapsule.getOwnerAddress(), reward,
+					Protocol.BlockReward.RewardType.INFRASTRUCTURE);
 			getBlockRewardStore().put(blockRewardCapsule.createDbKey(), blockRewardCapsule);
 		} catch (BalanceInsufficientException e) {
 			logger.warn(e.getMessage(), e);
