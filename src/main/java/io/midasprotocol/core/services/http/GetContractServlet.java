@@ -1,12 +1,12 @@
 package io.midasprotocol.core.services.http;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.api.GrpcAPI.BytesMessage;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Protocol.SmartContract;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +30,13 @@ public class GetContractServlet extends HttpServlet {
 			BytesMessage.Builder build = BytesMessage.newBuilder();
 			JsonFormat.merge(jsonObject.toJSONString(), build);
 			SmartContract smartContract = wallet.getContract(build.build());
-			JSONObject jsonSmartContract = JSONObject
-					.parseObject(JsonFormat.printToString(smartContract));
-			response.getWriter().println(jsonSmartContract.toJSONString());
+			if (smartContract != null) {
+				JSONObject jsonSmartContract = JSONObject
+						.parseObject(JsonFormat.printToString(smartContract));
+				response.getWriter().println(jsonSmartContract.toJSONString());
+			} else {
+				response.getWriter().println("{}");
+			}
 		} catch (Exception e) {
 			logger.debug("Exception: {}", e.getMessage());
 			try {
@@ -51,9 +55,13 @@ public class GetContractServlet extends HttpServlet {
 			BytesMessage.Builder build = BytesMessage.newBuilder();
 			JsonFormat.merge(input, build);
 			SmartContract smartContract = wallet.getContract(build.build());
-			JSONObject jsonSmartContract = JSONObject
-					.parseObject(JsonFormat.printToString(smartContract));
-			response.getWriter().println(jsonSmartContract.toJSONString());
+			if (smartContract != null) {
+				JSONObject jsonSmartContract = JSONObject
+						.parseObject(JsonFormat.printToString(smartContract));
+				response.getWriter().println(jsonSmartContract.toJSONString());
+			} else {
+				response.getWriter().println("{}");
+			}
 		} catch (Exception e) {
 			logger.debug("Exception: {}", e.getMessage());
 			try {
