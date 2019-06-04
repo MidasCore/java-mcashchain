@@ -69,6 +69,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		builder.setAssetIssueID(programResult.getRet().getAssetIssueID());
 		builder.setExchangeId(programResult.getRet().getExchangeId());
 		builder.setWithdrawAmount(programResult.getRet().getWithdrawAmount());
+		builder.setUnstakeAmount(programResult.getRet().getUnstakeAmount());
 		builder.setExchangeReceivedAmount(programResult.getRet().getExchangeReceivedAmount());
 		builder.setExchangeInjectAnotherAmount(programResult.getRet().getExchangeInjectAnotherAmount());
 		builder.setExchangeWithdrawAnotherAmount(
@@ -155,6 +156,14 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
 	public void setWithdrawAmount(long amount) {
 		this.transactionInfo = this.transactionInfo.toBuilder().setWithdrawAmount(amount).build();
+	}
+
+	public long getUnstakeAmount() {
+		return transactionInfo.getUnstakeAmount();
+	}
+
+	public void setUnstakeAmount(long amount) {
+		this.transactionInfo = this.transactionInfo.toBuilder().setUnstakeAmount(amount).build();
 	}
 
 	public void setResult(code result) {

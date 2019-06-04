@@ -413,6 +413,7 @@ message TransactionInfo {
     int64 exchange_inject_another_amount = 19;
     int64 exchange_withdraw_another_amount = 20;
     int64 exchange_id = 21;
+    int64 unstake_amount = 22;
 }
 
 message Transactions {
