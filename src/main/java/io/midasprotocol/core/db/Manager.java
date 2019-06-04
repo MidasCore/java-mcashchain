@@ -521,7 +521,7 @@ public class Manager {
 							} else {
 								accountCapsule = this.accountStore.get(keyOwnerAddress);
 							}
-							accountCapsule.setStake(accountCapsule.getWitnessStakeAmount() + stakeAmount, -1);
+							accountCapsule.setWitnessStake(accountCapsule.getWitnessStakeAmount() + stakeAmount);
 							this.accountStore.put(keyOwnerAddress, accountCapsule);
 						});
 	}

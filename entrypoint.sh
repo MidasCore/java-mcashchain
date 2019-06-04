@@ -62,10 +62,10 @@ elif [[ ${DB} == "backup" ]]; then
   echo "backup db success"
 fi
 
-echo "process    : java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/${CONFIG_FILE} -p ${PRIVATE_KEY} -d ${OUTPUT_DIRECTORY} ${OPT}"
+echo "process    : java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/config/${CONFIG_FILE} -p ${PRIVATE_KEY} -d ${OUTPUT_DIRECTORY} ${OPT}"
 echo "application: $APP"
 echo "db path    : $OUTPUT_DIRECTORY"
 echo "pk         : $PRIVATE_KEY"
 echo "config     : $CONFIG_FILE"
 
-java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/${CONFIG_FILE} -d ${OUTPUT_DIRECTORY} ${OPT}
+java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/config/${CONFIG_FILE} -d ${OUTPUT_DIRECTORY} ${OPT}

@@ -40,11 +40,12 @@ RUN ./gradlew build -x checkstyleMain -x checkstyleTest
 FROM openjdk:8
 
 ENV APP_HOME=/usr/app
-ENV APP=FullNode
+
+RUN mkdir -p $APP_HOME/config
 
 COPY --from=builder $APP_HOME/entrypoint.sh /entrypoint.sh
-COPY --from=builder $APP_HOME/build/libs/$APP.jar $APP_HOME/$APP.jar
-COPY --from=builder $APP_HOME/src/main/resources/*.conf $APP_HOME/
+COPY --from=builder $APP_HOME/build/libs/*.jar $APP_HOME/
+COPY --from=builder $APP_HOME/src/main/resources/*.conf $APP_HOME/config/
 
 RUN chmod +x /entrypoint.sh
 
