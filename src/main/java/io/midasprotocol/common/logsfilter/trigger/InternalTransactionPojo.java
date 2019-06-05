@@ -25,7 +25,7 @@ public class InternalTransactionPojo {
 	 * In creation transaction the receive address is - 0 */
 	@Getter
 	@Setter
-	private String transferTo_address;
+	private String transferToAddress;
 
 	/* An unlimited size byte array specifying
 	 * input [data] of the message call or
@@ -37,7 +37,7 @@ public class InternalTransactionPojo {
 	/*  Message sender address */
 	@Getter
 	@Setter
-	private String caller_address;
+	private String callerAddress;
 
 	@Getter
 	@Setter

@@ -140,7 +140,7 @@ public class WalletTest {
 	private static Transaction getBuildTransaction(
 			TransferContract transferContract, long transactionTimestamp, long refBlockNum) {
 		return Transaction.newBuilder().setRawData(
-				Transaction.raw.newBuilder().setTimestamp(transactionTimestamp).setRefBlockNum(refBlockNum)
+				Transaction.Raw.newBuilder().setTimestamp(transactionTimestamp).setRefBlockNum(refBlockNum)
 						.addContract(
 								Contract.newBuilder().setType(ContractType.TransferContract)
 										.setParameter(Any.pack(transferContract)).build()).build()).build();

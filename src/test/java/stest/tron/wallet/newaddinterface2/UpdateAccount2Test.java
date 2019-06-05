@@ -105,7 +105,7 @@ public class UpdateAccount2Test {
 					blockingStubFull));
 			//Assert.assertTrue(sendCoin2(lowBalAddress, 1L, fromAddress, testKey002));
 			GrpcAPI.Return ret1 = sendCoin2(lowBalAddress, 1000000L, fromAddress, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 			//Assert.assertTrue(Sendcoin(Low_Bal_ADDRESS, 1000000L, fromAddress, testKey002));
@@ -128,7 +128,7 @@ public class UpdateAccount2Test {
 
 			ret1 = PublicMethed.sendcoin2(lowBalAddress2, 21245000000L,
 					fromAddress, testKey002, blockingStubFull);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 
 			WitnessList witnesslist = blockingStubFull
 					.listWitnesses(GrpcAPI.EmptyMessage.newBuilder().build());
@@ -139,14 +139,14 @@ public class UpdateAccount2Test {
 				byte[] createUrl = createUrl1.getBytes();
 				String lowBalTest2 = ByteArray.toHexString(ecKey2.getPrivKeyBytes());
 				ret1 = createWitness2(lowBalAddress2, createUrl, lowBalTest2);
-				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 				Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 				String voteStr1 = Base58.encodeBase58(lowBalAddress2);
 				HashMap<String, String> voteToWitAddress = new HashMap<String, String>();
 				voteToWitAddress.put(voteStr1, "1");
 				PublicMethed.printAddress(lowBalTest);
 				ret1 = voteWitness2(voteToWitAddress, fromAddress, testKey002);
-				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 				Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 				//logger.info("vote to non witness account ok!!!");
 			}
@@ -154,15 +154,15 @@ public class UpdateAccount2Test {
 			//normal freezeBalance
 			//Assert.assertTrue(freezeBalance2(fromAddress, 10000000L, 3L, testKey002))
 			ret1 = freezeBalance2(fromAddress, 100000000L, 3L, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 			//vote To NonWitnessAccount
 			ret1 = voteWitness2(voteToNonWitnessAccount, fromAddress, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			//vote to InvaildAddress
 			ret1 = voteWitness2(voteToInvaildAddress, fromAddress, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : VoteNumber must more than 0");
 
@@ -178,23 +178,23 @@ public class UpdateAccount2Test {
 		if (tryToUpdateAccount.getAccountName().isEmpty()) {
 			GrpcAPI.Return ret1 = updateAccount2(lowBalAddress, mostLongNamePlusOneChar.getBytes(),
 					lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : Invalid accountName");
 
 			ret1 = updateAccount2(lowBalAddress, "".getBytes(), lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : This name has existed");
 
 			System.out.println("dingwei2:");
 			ret1 = updateAccount2(lowBalAddress, mostLongName.getBytes(), lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : This name has existed");
 
 			ret1 = updateAccount2(lowBalAddress, "secondUpdateName".getBytes(), lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : This name has existed");
 
@@ -212,7 +212,7 @@ public class UpdateAccount2Test {
 		GrpcAPI.Return ret1 = PublicMethed.createAssetIssue2(lowBalAddress, name, TotalSupply, 1, 1,
 				now + 100000000L, now + 10000000000L, 2, description, url, 10000L,
 				10000L, 1L, 1L, lowBalTest, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : No enough balance for fee!");
 		logger.info("nobalancecreateassetissue");
@@ -230,7 +230,7 @@ public class UpdateAccount2Test {
 		//Assert.assertFalse(createWitness2(lowBalAddress, fromAddress, lowBalTest));
 		System.out.println("1111222333:" + lowBalAddress);
 		GrpcAPI.Return ret1 = createWitness2(lowBalAddress, fromAddress, lowBalTest);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : balance < AccountUpgradeCost");
 
@@ -242,7 +242,7 @@ public class UpdateAccount2Test {
 		Account noFreezeAccount = queryAccount(lowBalTest, blockingStubFull);
 		if (noFreezeAccount.getFrozenCount() == 0) {
 			GrpcAPI.Return ret1 = unFreezeBalance2(lowBalAddress, lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : no frozenBalance");
 		} else {

@@ -6,7 +6,7 @@ import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
 import io.midasprotocol.api.DatabaseGrpc.DatabaseImplBase;
 import io.midasprotocol.api.GrpcAPI.*;
-import io.midasprotocol.api.GrpcAPI.Return.response_code;
+import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
 import io.midasprotocol.api.WalletSolidityGrpc.WalletSolidityImplBase;
 import io.midasprotocol.common.application.Service;
 import io.midasprotocol.common.crypto.ECKey;
@@ -92,7 +92,7 @@ public class RpcApiServiceOnSolidity implements Service {
 		Return.Builder retBuilder = Return.newBuilder();
 		trxExtBuilder.setTransaction(transaction);
 		trxExtBuilder.setTxid(Sha256Hash.of(transaction.getRawData().toByteArray()).getByteString());
-		retBuilder.setResult(true).setCode(response_code.SUCCESS);
+		retBuilder.setResult(true).setCode(ResponseCode.SUCCESS);
 		trxExtBuilder.setResult(retBuilder);
 		return trxExtBuilder.build();
 	}

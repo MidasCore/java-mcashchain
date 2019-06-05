@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static io.midasprotocol.api.GrpcAPI.Return.response_code.SIGERROR;
+import static io.midasprotocol.api.GrpcAPI.Return.ResponseCode.SIGERROR;
 
 @Slf4j
 public class MultiSign22 {
@@ -552,11 +552,11 @@ public class MultiSign22 {
 		PublicMethed.printAddress(ownerKey);
 
 		String accountPermissionJson =
-				"{\"owner_permission\":{\"type\":0,\"permission_name\":\"owner\",\"threshold\":1,\"keys\":["
+				"{\"ownerPermission\":{\"type\":0,\"permissionName\":\"owner\",\"threshold\":1,\"keys\":["
 						+ "{\"address\":\"" + PublicMethed.getAddressString(witnessKey001) + "\",\"weight\":1},"
 						+ "{\"address\":\"" + PublicMethed.getAddressString(ownerKey)
 						+ "\",\"weight\":1}]},"
-						+ "\"active_permissions\":[{\"type\":2,\"permission_name\":\"active0\",\"threshold\":1,"
+						+ "\"activePermissions\":[{\"type\":2,\"permissionName\":\"active0\",\"threshold\":1,"
 						+ "\"operations\":\"7fff1fc0033e0000000000000000000000000000000000000000000000000000\","
 						+ "\"keys\":["
 						+ "{\"address\":\"" + PublicMethed.getAddressString(testKey002) + "\",\"weight\":1},"

@@ -95,7 +95,7 @@ public class CreateAssetIssue2Test {
 			GrpcAPI.Return ret1 = PublicMethed.createAssetIssue2(noBandwitchAddress, name, totalSupply, 1,
 					100, start, end, 1, description, url, 10000L, 10000L,
 					1L, 1L, noBandwitch, blockingStubFull);
-			Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		} else {
 			logger.info("This account already create an assetisue");
@@ -109,38 +109,38 @@ public class CreateAssetIssue2Test {
 		//Transfer Asset failed when transfer to yourself
 		//Assert.assertFalse(transferAsset2(toAddress, name.getBytes(), 100L, toAddress, testKey003));
 		Return ret1 = transferAsset2(toAddress, assetIssueId, 100L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Cannot transfer asset to yourself.");
 		//Transfer Asset failed when the transfer amount is large than the asset balance you have.
 		ret1 =
 				transferAsset2(fromAddress, assetIssueId, 9100000000000000000L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : assetBalance is not sufficient.");
 		//Transfer Asset failed when the transfer amount is 0
 		ret1 = transferAsset2(fromAddress, assetIssueId, 0L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Transfer Asset failed when the transfer amount is -1
 		ret1 = transferAsset2(fromAddress, assetIssueId, -1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Transfer failed when you want to transfer to an invalid address
 		ret1 = transferAsset2(INVAILD_ADDRESS, assetIssueId,
 				1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid toAddress");
 		//Transfer failed when the asset issue name is not correct.
 		ret1 = transferAsset2(fromAddress, assetIssueId + 100000, 1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : No asset !");
 		//Transfer success.
 		ret1 = transferAsset2(fromAddress, assetIssueId, 1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		//No freeze asset, try to unfreeze asset failed.

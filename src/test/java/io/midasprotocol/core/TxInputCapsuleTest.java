@@ -37,7 +37,7 @@ public class TxInputCapsuleTest {
 		TxInputCapsule txInputCapsule = new TxInputCapsule(txId, vout, signature, pubkey);
 
 		Assert
-				.assertArrayEquals(txId, txInputCapsule.getTxInput().getRawData().getTxID().toByteArray());
+				.assertArrayEquals(txId, txInputCapsule.getTxInput().getRawData().getTxId().toByteArray());
 		Assert.assertEquals(vout, txInputCapsule.getTxInput().getRawData().getVout());
 		Assert.assertArrayEquals(signature, txInputCapsule.getTxInput().getSignature().toByteArray());
 		Assert.assertArrayEquals(pubkey,

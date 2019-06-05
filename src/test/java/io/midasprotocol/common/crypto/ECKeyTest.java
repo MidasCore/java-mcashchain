@@ -1,5 +1,6 @@
 package io.midasprotocol.common.crypto;
 
+import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
 import io.midasprotocol.common.utils.Base58;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
@@ -8,7 +9,6 @@ import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.spongycastle.util.encoders.Hex;
-import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
 
 import java.math.BigInteger;
 import java.security.KeyPairGenerator;

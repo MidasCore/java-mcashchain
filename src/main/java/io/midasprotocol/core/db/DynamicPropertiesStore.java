@@ -217,13 +217,13 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		try {
 			this.getWitnessPayPerBlock();
 		} catch (IllegalArgumentException e) {
-			this.saveWitnessPayPerBlock(ConversionUtil.McashToMatoshi(3.06666666));
+			this.saveWitnessPayPerBlock(ConversionUtil.McashToMatoshi(2));
 		}
 
 		try {
 			this.getStakingRewardPerEpoch();
 		} catch (IllegalArgumentException e) {
-			this.saveStakingRewardPerEpoch(ConversionUtil.McashToMatoshi(29_440));
+			this.saveStakingRewardPerEpoch(ConversionUtil.McashToMatoshi(19_200));
 		}
 
 		try {

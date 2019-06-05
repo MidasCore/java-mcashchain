@@ -850,7 +850,7 @@ public class MultiSign36 {
 	private Transaction setReference(Transaction transaction, long blockNum,
 									 byte[] blockHash) {
 		byte[] refBlockNum = ByteArray.fromLong(blockNum);
-		Transaction.raw rawData = transaction.getRawData().toBuilder()
+		Transaction.Raw rawData = transaction.getRawData().toBuilder()
 				.setRefBlockHash(ByteString.copyFrom(blockHash))
 				.setRefBlockBytes(ByteString.copyFrom(refBlockNum))
 				.build();
@@ -863,7 +863,7 @@ public class MultiSign36 {
 	 */
 
 	public Transaction setExpiration(Transaction transaction, long expiration) {
-		Transaction.raw rawData = transaction.getRawData().toBuilder().setExpiration(expiration)
+		Transaction.Raw rawData = transaction.getRawData().toBuilder().setExpiration(expiration)
 				.build();
 		return transaction.toBuilder().setRawData(rawData).build();
 	}
@@ -875,7 +875,7 @@ public class MultiSign36 {
 
 	public Transaction createTransaction(com.google.protobuf.Message message,
 										 ContractType contractType) {
-		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+		Transaction.Raw.Builder transactionBuilder = Transaction.Raw.newBuilder().addContract(
 				Transaction.Contract.newBuilder().setType(contractType).setParameter(
 						Any.pack(message)).build());
 

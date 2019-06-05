@@ -41,7 +41,7 @@ import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
 import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
-import io.midasprotocol.protos.Protocol.Transaction.raw;
+import io.midasprotocol.protos.Protocol.Transaction.Raw;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -145,7 +145,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		createTransaction(participateAssetIssueContract, ContractType.ParticipateAssetIssueContract);
 	}
 
-	public TransactionCapsule(raw rawData, List<ByteString> signatureList) {
+	public TransactionCapsule(Raw rawData, List<ByteString> signatureList) {
 		this.transaction = Transaction.newBuilder().setRawData(rawData).addAllSignature(signatureList)
 			.build();
 	}
@@ -156,7 +156,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	}
 
 	public TransactionCapsule(com.google.protobuf.Message message, ContractType contractType) {
-		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+		Transaction.Raw.Builder transactionBuilder = Transaction.Raw.newBuilder().addContract(
 			Transaction.Contract.newBuilder().setType(contractType).setParameter(
 				Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
@@ -464,7 +464,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public void setReference(long blockNum, byte[] blockHash) {
 		byte[] refBlockNum = ByteArray.fromLong(blockNum);
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+		Transaction.Raw rawData = this.transaction.getRawData().toBuilder()
 			.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
 			.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
 			.build();
@@ -479,13 +479,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	 * @param expiration must be in milliseconds format
 	 */
 	public void setExpiration(long expiration) {
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
+		Transaction.Raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
 			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
 	}
 
 	public void setTimestamp() {
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+		Transaction.Raw rawData = this.transaction.getRawData().toBuilder()
 			.setTimestamp(System.currentTimeMillis())
 			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
@@ -497,7 +497,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	@Deprecated
 	public void createTransaction(com.google.protobuf.Message message, ContractType contractType) {
-		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+		Transaction.Raw.Builder transactionBuilder = Transaction.Raw.newBuilder().addContract(
 			Transaction.Contract.newBuilder().setType(contractType).setParameter(
 				Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();

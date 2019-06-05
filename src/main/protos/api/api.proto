@@ -842,12 +842,12 @@ service Database {
 };
 
 message Return {
-    enum response_code {
+    enum ResponseCode {
         SUCCESS = 0;
         SIGERROR = 1; // error in signature
         CONTRACT_VALIDATE_ERROR = 2;
         CONTRACT_EXE_ERROR = 3;
-        BANDWITH_ERROR = 4;
+        BANDWIDTH_ERROR = 4;
         DUP_TRANSACTION_ERROR = 5;
         TAPOS_ERROR = 6;
         TOO_BIG_TRANSACTION_ERROR = 7;
@@ -859,13 +859,13 @@ message Return {
     }
 
     bool result = 1;
-    response_code code = 2;
+    ResponseCode code = 2;
     bytes message = 3;
 }
 
 message BlockReference {
-    int64 block_num = 1;
-    bytes block_hash = 2;
+    int64 blockNum = 1;
+    bytes blockHash = 2;
 }
 
 // the api of tron's network such as node list.
@@ -1009,7 +1009,7 @@ message EasyTransferAssetByPrivateMessage {
 message EasyTransferResponse {
     Transaction transaction = 1;
     Return result = 2;
-    bytes txid = 3; //transaction id =  sha256(transaction.rowdata)
+    bytes txid = 3; //transaction id =  sha256(transaction.rawdata)
 }
 
 message AddressPrKeyPairMessage {
@@ -1019,14 +1019,14 @@ message AddressPrKeyPairMessage {
 
 message TransactionExtention {
     Transaction transaction = 1;
-    bytes txid = 2; //transaction id =  sha256(transaction.rowdata)
-    repeated bytes constant_result = 3;
+    bytes txid = 2; //transaction id =  sha256(transaction.rawdata)
+    repeated bytes constantResult = 3;
     Return result = 4;
 }
 
 message BlockExtention {
     repeated TransactionExtention transactions = 1;
-    BlockHeader block_header = 2;
+    BlockHeader blockHeader = 2;
     bytes blockid = 3;
 }
 
@@ -1040,7 +1040,7 @@ message TransactionListExtention {
 
 message TransactionSignWeight {
     message Result {
-        enum response_code {
+        enum ResponseCode {
             ENOUGH_PERMISSION = 0;
             NOT_ENOUGH_PERMISSION = 1; // error in
             SIGNATURE_FORMAT_ERROR = 2;
@@ -1048,30 +1048,30 @@ message TransactionSignWeight {
             PERMISSION_ERROR = 4; //The key is not in permission
             OTHER_ERROR = 20;
         }
-        response_code code = 1;
+        ResponseCode code = 1;
         string message = 2;
     }
 
     Permission permission = 1;
-    repeated bytes approved_list = 2;
-    int64 current_weight = 3;
+    repeated bytes approvedList = 2;
+    int64 currentWeight = 3;
     Result result = 4;
     TransactionExtention transaction = 5;
 }
 
 message TransactionApprovedList {
     message Result {
-        enum response_code {
+        enum ResponseCode {
             SUCCESS = 0;
             SIGNATURE_FORMAT_ERROR = 1;
             COMPUTE_ADDRESS_ERROR = 2;
             OTHER_ERROR = 20;
         }
-        response_code code = 1;
+        ResponseCode code = 1;
         string message = 2;
     }
 
-    repeated bytes approved_list = 2;
+    repeated bytes approvedList = 2;
     Result result = 4;
     TransactionExtention transaction = 5;
 }

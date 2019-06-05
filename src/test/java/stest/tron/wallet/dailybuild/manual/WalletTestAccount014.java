@@ -101,19 +101,19 @@ public class WalletTestAccount014 {
 		Account account014 = PublicMethed.queryAccount(account014Address, blockingStubFull);
 		final long freeNetUsageInFullnode = account014.getFreeNetUsage();
 		final long createTimeInFullnode = account014.getCreateTime();
-		final long lastOperationTimeInFullnode = account014.getLatestOprationTime();
+		final long lastOperationTimeInFullnode = account014.getLatestOperationTime();
 		final long lastCustomeFreeTimeInFullnode = account014.getLatestConsumeFreeTime();
 		PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSoliInFull);
 		account014 = PublicMethed.queryAccount(account014Address, blockingStubSoliInFull);
 		final long freeNetUsageInSoliInFull = account014.getFreeNetUsage();
 		final long createTimeInSoliInFull = account014.getCreateTime();
-		final long lastOperationTimeInSoliInFull = account014.getLatestOprationTime();
+		final long lastOperationTimeInSoliInFull = account014.getLatestOperationTime();
 		final long lastCustomeFreeTimeInSoliInFull = account014.getLatestConsumeFreeTime();
 		//PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull,blockingStubSolidity);
 		account014 = PublicMethed.queryAccount(account014Address, blockingStubSolidity);
 		final long freeNetUsageInSolidity = account014.getFreeNetUsage();
 		final long createTimeInSolidity = account014.getCreateTime();
-		final long lastOperationTimeInSolidity = account014.getLatestOprationTime();
+		final long lastOperationTimeInSolidity = account014.getLatestOperationTime();
 		final long lastCustomeFreeTimeInSolidity = account014.getLatestConsumeFreeTime();
 		Assert.assertTrue(freeNetUsageInSoliInFull > 0 && freeNetUsageInSolidity > 0
 				&& freeNetUsageInFullnode > 0);

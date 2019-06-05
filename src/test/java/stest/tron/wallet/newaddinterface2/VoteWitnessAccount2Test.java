@@ -96,11 +96,11 @@ public class VoteWitnessAccount2Test {
 		//sendcoin
 		Return ret1 = PublicMethed.sendcoin2(lowBalAddress, 21245000000L,
 				fromAddress, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		ret1 = PublicMethed.sendcoin2(lowBalAddress2, 21245000000L,
 				fromAddress, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		//assetissue
@@ -108,7 +108,7 @@ public class VoteWitnessAccount2Test {
 		byte[] createUrl = createUrl1.getBytes();
 		String lowBalTest = ByteArray.toHexString(ecKey.getPrivKeyBytes());
 		ret1 = createWitness2(lowBalAddress, createUrl, lowBalTest);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		String voteStr1 = Base58.encodeBase58(lowBalAddress);
@@ -133,29 +133,29 @@ public class VoteWitnessAccount2Test {
 
 		//Freeze balance to get vote ability.
 		ret1 = PublicMethed.freezeBalance2(fromAddress, 10000000L, 3L, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		//Vote failed when the vote is large than the freeze balance.
 		ret1 = voteWitness2(veryLargeMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 
 		//Vote failed due to 0 vote.
 		ret1 = voteWitness2(zeroVoteMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : vote count must be greater than 0");
 
 		ret1 = voteWitness2(wrongVoteMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : vote count must be greater than 0");
 
 		ret1 = voteWitness2(wrongDropMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : overflow: checkedMultiply(10000000000000000, 1000000)");
 		ret1 = voteWitness2(smallVoteMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 	}

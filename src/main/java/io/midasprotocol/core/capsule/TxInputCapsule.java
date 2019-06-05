@@ -33,7 +33,7 @@ public class TxInputCapsule implements ProtoCapsule<TXInput> {
 	public TxInputCapsule(byte[] txId, long vout, byte[]
 		signature, byte[] pubKey) {
 		TXInput.raw txInputRaw = TXInput.raw.newBuilder()
-			.setTxID(ByteString.copyFrom(txId))
+			.setTxId(ByteString.copyFrom(txId))
 			.setVout(vout)
 			.setPubKey(ByteString.copyFrom(pubKey)).build();
 

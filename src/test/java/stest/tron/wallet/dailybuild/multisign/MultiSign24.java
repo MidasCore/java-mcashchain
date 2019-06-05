@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.response_code.ENOUGH_PERMISSION;
+import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.ResponseCode.ENOUGH_PERMISSION;
 
 @Slf4j
 public class MultiSign24 {
