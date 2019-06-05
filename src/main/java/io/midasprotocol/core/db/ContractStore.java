@@ -1,13 +1,13 @@
 package io.midasprotocol.core.db;
 
 import com.google.common.collect.Streams;
+import io.midasprotocol.core.capsule.ContractCapsule;
+import io.midasprotocol.protos.Protocol.SmartContract;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.ContractCapsule;
-import io.midasprotocol.protos.Protocol.SmartContract;
 
 @Slf4j(topic = "DB")
 @Component

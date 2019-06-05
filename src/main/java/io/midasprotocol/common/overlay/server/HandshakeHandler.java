@@ -17,20 +17,6 @@
  */
 package io.midasprotocol.common.overlay.server;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
-
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.encoders.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.discover.node.NodeManager;
 import io.midasprotocol.common.overlay.message.DisconnectMessage;
 import io.midasprotocol.common.overlay.message.HelloMessage;
@@ -40,25 +26,33 @@ import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j(topic = "net")
 @Component
 @Scope("prototype")
 public class HandshakeHandler extends ByteToMessageDecoder {
 
-	private byte[] remoteId;
-
 	protected Channel channel;
-
 	@Autowired
 	protected NodeManager nodeManager;
-
 	@Autowired
 	protected ChannelManager channelManager;
-
 	@Autowired
 	protected Manager manager;
-
+	private byte[] remoteId;
 	private P2pMessageFactory messageFactory = new P2pMessageFactory();
 
 	@Autowired
@@ -76,7 +70,7 @@ public class HandshakeHandler extends ByteToMessageDecoder {
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out)
-			throws Exception {
+		throws Exception {
 		byte[] encoded = new byte[buffer.readableBytes()];
 		buffer.readBytes(encoded);
 		P2pMessage msg = messageFactory.create(encoded);
@@ -90,7 +84,7 @@ public class HandshakeHandler extends ByteToMessageDecoder {
 			case P2P_DISCONNECT:
 				if (channel.getNodeStatistics() != null) {
 					channel.getNodeStatistics()
-							.nodeDisconnectedRemote(((DisconnectMessage) msg).getReasonCode());
+						.nodeDisconnectedRemote(((DisconnectMessage) msg).getReasonCode());
 				}
 				channel.close();
 				break;
@@ -113,7 +107,7 @@ public class HandshakeHandler extends ByteToMessageDecoder {
 	protected void sendHelloMsg(ChannelHandlerContext ctx, long time) {
 
 		HelloMessage message = new HelloMessage(nodeManager.getPublicHomeNode(), time,
-				manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
+			manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
 		ctx.writeAndFlush(message.getSendData());
 		channel.getNodeStatistics().messageStatistics.addTcpOutMessage(message);
 		logger.info("Handshake Send to {}, {} ", ctx.channel().remoteAddress(), message);
@@ -133,24 +127,24 @@ public class HandshakeHandler extends ByteToMessageDecoder {
 
 		if (msg.getVersion() != Args.getInstance().getNodeP2pVersion()) {
 			logger.info("Peer {} different p2p version, peer->{}, me->{}",
-					ctx.channel().remoteAddress(), msg.getVersion(), Args.getInstance().getNodeP2pVersion());
+				ctx.channel().remoteAddress(), msg.getVersion(), Args.getInstance().getNodeP2pVersion());
 			channel.disconnect(ReasonCode.INCOMPATIBLE_VERSION);
 			return;
 		}
 
 		if (!Arrays
-				.equals(manager.getGenesisBlockId().getBytes(), msg.getGenesisBlockId().getBytes())) {
+			.equals(manager.getGenesisBlockId().getBytes(), msg.getGenesisBlockId().getBytes())) {
 			logger
-					.info("Peer {} different genesis block, peer->{}, me->{}", ctx.channel().remoteAddress(),
-							msg.getGenesisBlockId().getString(), manager.getGenesisBlockId().getString());
+				.info("Peer {} different genesis block, peer->{}, me->{}", ctx.channel().remoteAddress(),
+					msg.getGenesisBlockId().getString(), manager.getGenesisBlockId().getString());
 			channel.disconnect(ReasonCode.INCOMPATIBLE_CHAIN);
 			return;
 		}
 
 		if (manager.getSolidBlockId().getNum() >= msg.getSolidBlockId().getNum() && !manager
-				.containBlockInMainChain(msg.getSolidBlockId())) {
+			.containBlockInMainChain(msg.getSolidBlockId())) {
 			logger.info("Peer {} different solid block, peer->{}, me->{}", ctx.channel().remoteAddress(),
-					msg.getSolidBlockId().getString(), manager.getSolidBlockId().getString());
+				msg.getSolidBlockId().getString(), manager.getSolidBlockId().getString());
 			channel.disconnect(ReasonCode.FORKED);
 			return;
 		}

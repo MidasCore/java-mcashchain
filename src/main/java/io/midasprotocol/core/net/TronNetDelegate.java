@@ -1,9 +1,5 @@
 package io.midasprotocol.core.net;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.overlay.server.SyncPool;
 import io.midasprotocol.common.utils.Sha256Hash;
@@ -20,6 +16,10 @@ import io.midasprotocol.core.net.message.MessageTypes;
 import io.midasprotocol.core.net.message.TransactionMessage;
 import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -144,7 +144,7 @@ public class TronNetDelegate {
 			}
 		} catch (StoreException e) {
 			throw new P2pException(TypeEnum.DB_ITEM_NOT_FOUND,
-					"type: " + type + ", hash: " + hash.getByteString());
+				"type: " + type + ", hash: " + hash.getByteString());
 		}
 	}
 
@@ -157,21 +157,21 @@ public class TronNetDelegate {
 					logger.info("Success process block {}.", block.getBlockId().getString());
 				}
 			} catch (ValidateSignatureException
-					| ContractValidateException
-					| ContractExeException
-					| UnLinkedBlockException
-					| ValidateScheduleException
-					| AccountResourceInsufficientException
-					| TaposException
-					| TooBigTransactionException
-					| TooBigTransactionResultException
-					| DupTransactionException
-					| TransactionExpirationException
-					| BadNumberBlockException
-					| BadBlockException
-					| NonCommonBlockException
-					| ReceiptCheckErrException
-					| VMIllegalException e) {
+				| ContractValidateException
+				| ContractExeException
+				| UnLinkedBlockException
+				| ValidateScheduleException
+				| AccountResourceInsufficientException
+				| TaposException
+				| TooBigTransactionException
+				| TooBigTransactionResultException
+				| DupTransactionException
+				| TransactionExpirationException
+				| BadNumberBlockException
+				| BadBlockException
+				| NonCommonBlockException
+				| ReceiptCheckErrException
+				| VMIllegalException e) {
 				throw new P2pException(TypeEnum.BAD_BLOCK, e);
 			}
 		}
@@ -181,18 +181,18 @@ public class TronNetDelegate {
 		try {
 			dbManager.pushTransaction(trx);
 		} catch (ContractSizeNotEqualToOneException
-				| VMIllegalException e) {
+			| VMIllegalException e) {
 			throw new P2pException(TypeEnum.BAD_TRX, e);
 		} catch (ContractValidateException
-				| ValidateSignatureException
-				| ContractExeException
-				| DupTransactionException
-				| TaposException
-				| TooBigTransactionException
-				| TransactionExpirationException
-				| ReceiptCheckErrException
-				| TooBigTransactionResultException
-				| AccountResourceInsufficientException e) {
+			| ValidateSignatureException
+			| ContractExeException
+			| DupTransactionException
+			| TaposException
+			| TooBigTransactionException
+			| TransactionExpirationException
+			| ReceiptCheckErrException
+			| TooBigTransactionResultException
+			| AccountResourceInsufficientException e) {
 			throw new P2pException(TypeEnum.TRX_EXE_FAILED, e);
 		}
 	}

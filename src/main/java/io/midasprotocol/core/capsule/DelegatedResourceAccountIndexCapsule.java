@@ -2,20 +2,20 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Protocol.DelegatedResourceAccountIndex;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j(topic = "capsule")
 public class DelegatedResourceAccountIndexCapsule implements
-		ProtoCapsule<DelegatedResourceAccountIndex> {
+	ProtoCapsule<DelegatedResourceAccountIndex> {
 
 	private DelegatedResourceAccountIndex delegatedResourceAccountIndex;
 
 	public DelegatedResourceAccountIndexCapsule(
-			final DelegatedResourceAccountIndex delegatedResourceAccountIndex) {
+		final DelegatedResourceAccountIndex delegatedResourceAccountIndex) {
 		this.delegatedResourceAccountIndex = delegatedResourceAccountIndex;
 	}
 
@@ -29,8 +29,8 @@ public class DelegatedResourceAccountIndexCapsule implements
 
 	public DelegatedResourceAccountIndexCapsule(ByteString address) {
 		this.delegatedResourceAccountIndex = DelegatedResourceAccountIndex.newBuilder()
-				.setAccount(address)
-				.build();
+			.setAccount(address)
+			.build();
 	}
 
 	public ByteString getAccount() {
@@ -39,7 +39,7 @@ public class DelegatedResourceAccountIndexCapsule implements
 
 	public void setAccount(ByteString address) {
 		this.delegatedResourceAccountIndex = this.delegatedResourceAccountIndex.toBuilder()
-				.setAccount(address).build();
+			.setAccount(address).build();
 	}
 
 	public List<ByteString> getFromAccountsList() {
@@ -48,15 +48,15 @@ public class DelegatedResourceAccountIndexCapsule implements
 
 	public void setAllFromAccounts(List<ByteString> fromAccounts) {
 		this.delegatedResourceAccountIndex = this.delegatedResourceAccountIndex.toBuilder()
-				.clearFromAccounts()
-				.addAllFromAccounts(fromAccounts)
-				.build();
+			.clearFromAccounts()
+			.addAllFromAccounts(fromAccounts)
+			.build();
 	}
 
 	public void addFromAccount(ByteString fromAccount) {
 		this.delegatedResourceAccountIndex = this.delegatedResourceAccountIndex.toBuilder()
-				.addFromAccounts(fromAccount)
-				.build();
+			.addFromAccounts(fromAccount)
+			.build();
 	}
 
 	public List<ByteString> getToAccountsList() {
@@ -65,15 +65,15 @@ public class DelegatedResourceAccountIndexCapsule implements
 
 	public void setAllToAccounts(List<ByteString> toAccounts) {
 		this.delegatedResourceAccountIndex = this.delegatedResourceAccountIndex.toBuilder()
-				.clearToAccounts()
-				.addAllToAccounts(toAccounts)
-				.build();
+			.clearToAccounts()
+			.addAllToAccounts(toAccounts)
+			.build();
 	}
 
 	public void addToAccount(ByteString toAccount) {
 		this.delegatedResourceAccountIndex = this.delegatedResourceAccountIndex.toBuilder()
-				.addToAccounts(toAccount)
-				.build();
+			.addToAccounts(toAccount)
+			.build();
 	}
 
 //  public void removeToAccount(ByteString toAccount) {

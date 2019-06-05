@@ -1,15 +1,15 @@
 package io.midasprotocol.common.storage.leveldb;
 
 import com.google.common.collect.Sets;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.rocksdb.*;
 import io.midasprotocol.common.storage.DbSourceInter;
 import io.midasprotocol.common.storage.RocksDbSettings;
 import io.midasprotocol.common.storage.WriteOptionsWrapper;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.common.utils.PropUtil;
 import io.midasprotocol.core.db.common.iterator.RockStoreIterator;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.rocksdb.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Slf4j
 @NoArgsConstructor
 public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
-		Iterable<Map.Entry<byte[], byte[]>> {
+	Iterable<Map.Entry<byte[], byte[]>> {
 
 	ReadOptions readOpts;
 	private String dataBaseName;
@@ -202,7 +202,7 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
 				// read options
 				readOpts = new ReadOptions();
 				readOpts = readOpts.setPrefixSameAsStart(true)
-						.setVerifyChecksums(false);
+					.setVerifyChecksums(false);
 
 				try {
 					logger.debug("Opening database");
@@ -335,7 +335,7 @@ public class RocksDbDataSourceImpl implements DbSourceInter<byte[]>,
 	}
 
 	private void updateByBatchInner(Map<byte[], byte[]> rows, WriteOptions options)
-			throws Exception {
+		throws Exception {
 		if (quitIfNotAlive()) {
 			return;
 		}

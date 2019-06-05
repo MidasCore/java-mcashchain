@@ -1,13 +1,13 @@
 package io.midasprotocol.common.application;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.BlockStore;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.net.TronNetService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Slf4j(topic = "app")
 @Component

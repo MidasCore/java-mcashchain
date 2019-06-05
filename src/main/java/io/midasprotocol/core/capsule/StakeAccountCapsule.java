@@ -2,10 +2,10 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.util.StakeUtil;
 import io.midasprotocol.protos.Protocol;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class StakeAccountCapsule implements ProtoCapsule<Protocol.StakeAccount>, Comparable<StakeAccountCapsule> {
@@ -28,8 +28,8 @@ public class StakeAccountCapsule implements ProtoCapsule<Protocol.StakeAccount>,
 	 */
 	public StakeAccountCapsule(ByteString address) {
 		this.stakeAccount = Protocol.StakeAccount.newBuilder()
-				.setAddress(address)
-				.build();
+			.setAddress(address)
+			.build();
 	}
 
 	public StakeAccountCapsule(Protocol.StakeAccount stakeAccount) {
@@ -38,10 +38,10 @@ public class StakeAccountCapsule implements ProtoCapsule<Protocol.StakeAccount>,
 
 	public StakeAccountCapsule(ByteString address, long stakeAmount, long votingPower) {
 		this.stakeAccount = Protocol.StakeAccount.newBuilder()
-				.setAddress(address)
-				.setStakeAmount(stakeAmount)
-				.setVotingPower(votingPower)
-				.build();
+			.setAddress(address)
+			.setStakeAmount(stakeAmount)
+			.setVotingPower(votingPower)
+			.build();
 	}
 
 	@Override
@@ -83,10 +83,10 @@ public class StakeAccountCapsule implements ProtoCapsule<Protocol.StakeAccount>,
 		long stakeAmountWithBonus = StakeUtil.getStakeAmountWithBonusFromStakeAmount(stakeAmount);
 		long votingPower = StakeUtil.getVotingPowerFromStakeAmount(stakeAmount);
 		this.stakeAccount = this.stakeAccount.toBuilder()
-				.setStakeAmount(stakeAmount)
-				.setStakeAmountWithBonus(stakeAmountWithBonus)
-				.setVotingPower(votingPower)
-				.build();
+			.setStakeAmount(stakeAmount)
+			.setStakeAmountWithBonus(stakeAmountWithBonus)
+			.setVotingPower(votingPower)
+			.build();
 	}
 
 	public long getStakeAmountWithBonus() {

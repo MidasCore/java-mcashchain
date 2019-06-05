@@ -18,7 +18,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.AssetIssueCapsule;
@@ -33,6 +32,7 @@ import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Contract.AssetIssueContract.FrozenSupply;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,7 +58,7 @@ public class AssetIssueActuator extends AbstractActuator {
 			assetIssueCapsule.setId(tokenIdNum);
 			dbManager.getDynamicPropertiesStore().saveTokenIdNum(tokenIdNum);
 			dbManager.getAssetIssueStore()
-					.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
+				.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 			dbManager.adjustBalance(ownerAddress, -fee);
 			//send fee to blackhole
 			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().getAddress().toByteArray(), fee);
@@ -74,9 +74,9 @@ public class AssetIssueActuator extends AbstractActuator {
 				FrozenSupply next = iterator.next();
 				long expireTime = startTime + next.getFrozenDays() * Parameter.TimeConstant.MS_PER_DAY;
 				Frozen newFrozen = Frozen.newBuilder()
-						.setFrozenBalance(next.getFrozenAmount())
-						.setExpireTime(expireTime)
-						.build();
+					.setFrozenBalance(next.getFrozenAmount())
+					.setExpireTime(expireTime)
+					.build();
 				frozenList.add(newFrozen);
 				remainSupply -= next.getFrozenAmount();
 			}
@@ -108,7 +108,7 @@ public class AssetIssueActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(AssetIssueContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected AssetIssueContract, actual " + contract.getClass());
+				"Contract type error, expected AssetIssueContract, actual " + contract.getClass());
 		}
 
 		final AssetIssueContract assetIssueContract;
@@ -139,7 +139,7 @@ public class AssetIssueActuator extends AbstractActuator {
 		}
 
 		if ((!assetIssueContract.getAbbr().isEmpty()) && !TransactionUtil
-				.validAssetName(assetIssueContract.getAbbr().toByteArray())) {
+			.validAssetName(assetIssueContract.getAbbr().toByteArray())) {
 			throw new ContractValidateException("Invalid abbreviation for token");
 		}
 
@@ -148,7 +148,7 @@ public class AssetIssueActuator extends AbstractActuator {
 		}
 
 		if (!TransactionUtil
-				.validAssetDescription(assetIssueContract.getDescription().toByteArray())) {
+			.validAssetDescription(assetIssueContract.getDescription().toByteArray())) {
 			throw new ContractValidateException("Invalid description");
 		}
 
@@ -182,19 +182,19 @@ public class AssetIssueActuator extends AbstractActuator {
 		}
 
 		if (assetIssueContract.getFrozenSupplyCount()
-				> this.dbManager.getDynamicPropertiesStore().getMaxFrozenSupplyNumber()) {
+			> this.dbManager.getDynamicPropertiesStore().getMaxFrozenSupplyNumber()) {
 			throw new ContractValidateException("Frozen supply list length is too long");
 		}
 
 		if (assetIssueContract.getFreeAssetNetLimit() < 0
-				|| assetIssueContract.getFreeAssetNetLimit() >=
-				dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			|| assetIssueContract.getFreeAssetNetLimit() >=
+			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
 			throw new ContractValidateException("Invalid FreeAssetNetLimit");
 		}
 
 		if (assetIssueContract.getPublicFreeAssetNetLimit() < 0
-				|| assetIssueContract.getPublicFreeAssetNetLimit() >=
-				dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			|| assetIssueContract.getPublicFreeAssetNetLimit() >=
+			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
 			throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
 		}
 
@@ -213,10 +213,10 @@ public class AssetIssueActuator extends AbstractActuator {
 				throw new ContractValidateException("Frozen supply cannot exceed total supply");
 			}
 			if (!(next.getFrozenDays() >= minFrozenSupplyTime
-					&& next.getFrozenDays() <= maxFrozenSupplyTime)) {
+				&& next.getFrozenDays() <= maxFrozenSupplyTime)) {
 				throw new ContractValidateException(
-						"frozenDuration must be less than " + maxFrozenSupplyTime + " days "
-								+ "and more than " + minFrozenSupplyTime + " days");
+					"frozenDuration must be less than " + maxFrozenSupplyTime + " days "
+						+ "and more than " + minFrozenSupplyTime + " days");
 			}
 			remainSupply -= next.getFrozenAmount();
 		}

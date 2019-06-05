@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.googlecode.cqengine.resultset.ResultSet;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import io.midasprotocol.core.db.api.index.Index;
 import io.midasprotocol.core.db.api.index.TransactionIndex;
 import io.midasprotocol.core.exception.NonUniqueObjectException;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public class StoreAPI {
 		}
 		Index.Iface<Transaction> index = indexHelper.getTransactionIndex();
 		try (ResultSet<Transaction> resultSet = index
-				.retrieve(equal(TransactionIndex.Transaction_ID, id))) {
+			.retrieve(equal(TransactionIndex.Transaction_ID, id))) {
 			if (resultSet.isEmpty()) {
 				return null;
 			}
@@ -95,10 +95,10 @@ public class StoreAPI {
 		}
 		Index.Iface<Transaction> index = indexHelper.getTransactionIndex();
 		try (ResultSet<Transaction> resultSet =
-					 index.retrieve(
-							 equal(TransactionIndex.OWNERS, address),
-							 queryOptions(
-									 orderBy(ascending(TransactionIndex.TIMESTAMP))))) {
+				 index.retrieve(
+					 equal(TransactionIndex.OWNERS, address),
+					 queryOptions(
+						 orderBy(ascending(TransactionIndex.TIMESTAMP))))) {
 			if (limit > TRANSACTIONS_COUNT_LIMIT_MAX) {
 				limit = TRANSACTIONS_COUNT_LIMIT_MAX;
 			}
@@ -113,10 +113,10 @@ public class StoreAPI {
 		}
 		Index.Iface<Transaction> index = indexHelper.getTransactionIndex();
 		try (ResultSet<Transaction> resultSet =
-					 index.retrieve(
-							 equal(TransactionIndex.TOS, address),
-							 queryOptions(
-									 orderBy(ascending(TransactionIndex.TIMESTAMP))))) {
+				 index.retrieve(
+					 equal(TransactionIndex.TOS, address),
+					 queryOptions(
+						 orderBy(ascending(TransactionIndex.TIMESTAMP))))) {
 			if (limit > TRANSACTIONS_COUNT_LIMIT_MAX) {
 				limit = TRANSACTIONS_COUNT_LIMIT_MAX;
 			}

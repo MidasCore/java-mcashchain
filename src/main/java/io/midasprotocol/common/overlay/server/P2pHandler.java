@@ -17,24 +17,23 @@
  */
 package io.midasprotocol.common.overlay.server;
 
-import static io.midasprotocol.common.overlay.message.StaticMessages.PING_MESSAGE;
-import static io.midasprotocol.common.overlay.message.StaticMessages.PONG_MESSAGE;
-
+import io.midasprotocol.common.overlay.discover.node.statistics.MessageStatistics;
+import io.midasprotocol.common.overlay.message.DisconnectMessage;
+import io.midasprotocol.common.overlay.message.P2pMessage;
+import io.midasprotocol.protos.Protocol.ReasonCode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import io.midasprotocol.common.overlay.discover.node.statistics.MessageStatistics;
-import io.midasprotocol.common.overlay.message.DisconnectMessage;
-import io.midasprotocol.common.overlay.message.P2pMessage;
-import io.midasprotocol.protos.Protocol.ReasonCode;
+import static io.midasprotocol.common.overlay.message.StaticMessages.PING_MESSAGE;
+import static io.midasprotocol.common.overlay.message.StaticMessages.PONG_MESSAGE;
 
 @Slf4j(topic = "net")
 @Component
@@ -42,7 +41,7 @@ import io.midasprotocol.protos.Protocol.ReasonCode;
 public class P2pHandler extends SimpleChannelInboundHandler<P2pMessage> {
 
 	private static ScheduledExecutorService pingTimer =
-			Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "P2pPingTimer"));
+		Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "P2pPingTimer"));
 
 	private MessageQueue msgQueue;
 
@@ -77,7 +76,7 @@ public class P2pHandler extends SimpleChannelInboundHandler<P2pMessage> {
 				int count = messageStatistics.p2pInPing.getCount(10);
 				if (count > 3) {
 					logger.warn("TCP attack found: {} with ping count({})", ctx.channel().remoteAddress(),
-							count);
+						count);
 					channel.disconnect(ReasonCode.BAD_PROTOCOL);
 					return;
 				}
@@ -85,11 +84,11 @@ public class P2pHandler extends SimpleChannelInboundHandler<P2pMessage> {
 				break;
 			case P2P_PONG:
 				if (messageStatistics.p2pInPong.getTotalCount() > messageStatistics.p2pOutPing
-						.getTotalCount()) {
+					.getTotalCount()) {
 					logger.warn("TCP attack found: {} with ping count({}), pong count({})",
-							ctx.channel().remoteAddress(),
-							messageStatistics.p2pOutPing.getTotalCount(),
-							messageStatistics.p2pInPong.getTotalCount());
+						ctx.channel().remoteAddress(),
+						messageStatistics.p2pOutPing.getTotalCount(),
+						messageStatistics.p2pInPong.getTotalCount());
 					channel.disconnect(ReasonCode.BAD_PROTOCOL);
 					return;
 				}
@@ -99,7 +98,7 @@ public class P2pHandler extends SimpleChannelInboundHandler<P2pMessage> {
 				break;
 			case P2P_DISCONNECT:
 				channel.getNodeStatistics()
-						.nodeDisconnectedRemote(((DisconnectMessage) msg).getReasonCode());
+					.nodeDisconnectedRemote(((DisconnectMessage) msg).getReasonCode());
 				channel.close();
 				break;
 			default:

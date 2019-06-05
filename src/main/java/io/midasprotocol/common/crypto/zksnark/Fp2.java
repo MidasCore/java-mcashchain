@@ -40,9 +40,9 @@ class Fp2 implements Field<Fp2> {
 	static final Fp2 NON_RESIDUE = new Fp2(BigInteger.valueOf(9), BigInteger.ONE);
 
 	static final Fp[] FROBENIUS_COEFFS_B = new Fp[]{
-			new Fp(BigInteger.ONE),
-			new Fp(new BigInteger(
-					"21888242871839275222246405745257275088696311157297823662689037894645226208582"))
+		new Fp(BigInteger.ONE),
+		new Fp(new BigInteger(
+			"21888242871839275222246405745257275088696311157297823662689037894645226208582"))
 	};
 
 	Fp a;
@@ -57,6 +57,22 @@ class Fp2 implements Field<Fp2> {
 		this(new Fp(a), new Fp(b));
 	}
 
+	static Fp2 create(BigInteger aa, BigInteger bb) {
+
+		Fp a = Fp.create(aa);
+		Fp b = Fp.create(bb);
+
+		return new Fp2(a, b);
+	}
+
+	static Fp2 create(byte[] aa, byte[] bb) {
+
+		Fp a = Fp.create(aa);
+		Fp b = Fp.create(bb);
+
+		return new Fp2(a, b);
+	}
+
 	@Override
 	public Fp2 squared() {
 
@@ -65,8 +81,8 @@ class Fp2 implements Field<Fp2> {
 		Fp ab = a.mul(b);
 
 		Fp ra = a.add(b).mul(b.mul(Fp.NON_RESIDUE).add(a))
-				.sub(ab)
-				.sub(ab.mul(Fp.NON_RESIDUE)); // ra = (a + b)(a + NON_RESIDUE * b) - ab - NON_RESIDUE * b
+			.sub(ab)
+			.sub(ab.mul(Fp.NON_RESIDUE)); // ra = (a + b)(a + NON_RESIDUE * b) - ab - NON_RESIDUE * b
 		Fp rb = ab.dbl();
 
 		return new Fp2(ra, rb);
@@ -80,7 +96,7 @@ class Fp2 implements Field<Fp2> {
 
 		Fp ra = bb.mul(Fp.NON_RESIDUE).add(aa);    // ra = a1 * a2 + NON_RESIDUE * b1 * b2
 		Fp rb = a.add(b).mul(o.a.add(o.b)).sub(aa)
-				.sub(bb);     // rb = (a1 + b1)(a2 + b2) - a1 * a2 - b1 * b2
+			.sub(bb);     // rb = (a1 + b1)(a2 + b2) - a1 * a2 - b1 * b2
 
 		return new Fp2(ra, rb);
 	}
@@ -127,22 +143,6 @@ class Fp2 implements Field<Fp2> {
 	@Override
 	public boolean isValid() {
 		return a.isValid() && b.isValid();
-	}
-
-	static Fp2 create(BigInteger aa, BigInteger bb) {
-
-		Fp a = Fp.create(aa);
-		Fp b = Fp.create(bb);
-
-		return new Fp2(a, b);
-	}
-
-	static Fp2 create(byte[] aa, byte[] bb) {
-
-		Fp a = Fp.create(aa);
-		Fp b = Fp.create(bb);
-
-		return new Fp2(a, b);
 	}
 
 	@Override

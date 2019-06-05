@@ -18,10 +18,6 @@ package io.midasprotocol.core.capsule;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
 import io.midasprotocol.common.runtime.Runtime;
@@ -46,15 +42,18 @@ import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
 import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
 import io.midasprotocol.protos.Protocol.Transaction.raw;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
+import java.lang.Exception;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import java.lang.Exception;
 
 @Slf4j(topic = "capsule")
 public class TransactionCapsule implements ProtoCapsule<Transaction> {
@@ -148,7 +147,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public TransactionCapsule(raw rawData, List<ByteString> signatureList) {
 		this.transaction = Transaction.newBuilder().setRawData(rawData).addAllSignature(signatureList)
-				.build();
+			.build();
 	}
 
 	@Deprecated
@@ -158,8 +157,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public TransactionCapsule(com.google.protobuf.Message message, ContractType contractType) {
 		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
-				Transaction.Contract.newBuilder().setType(contractType).setParameter(
-						Any.pack(message)).build());
+			Transaction.Contract.newBuilder().setType(contractType).setParameter(
+				Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
 	}
 
@@ -175,29 +174,29 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public static long checkWeight(Permission permission, List<ByteString> sigs, byte[] hash,
 								   List<ByteString> approveList)
-			throws SignatureException, PermissionException, SignatureFormatException {
+		throws SignatureException, PermissionException, SignatureFormatException {
 		long currentWeight = 0;
 //    if (signature.size() % 65 != 0) {
 //      throw new SignatureFormatException("Signature size is " + signature.size());
 //    }
 		if (sigs.size() > permission.getKeysCount()) {
 			throw new PermissionException(
-					"Signature count is " + (sigs.size()) + " more than key counts of permission : "
-							+ permission.getKeysCount());
+				"Signature count is " + (sigs.size()) + " more than key counts of permission : "
+					+ permission.getKeysCount());
 		}
 		HashMap addMap = new HashMap();
 		for (ByteString sig : sigs) {
 			if (sig.size() < 65) {
 				throw new SignatureFormatException(
-						"Signature size is " + sig.size());
+					"Signature size is " + sig.size());
 			}
 			String base64 = TransactionCapsule.getBase64FromByteString(sig);
 			byte[] address = ECKey.signatureToAddress(hash, base64);
 			long weight = getWeight(permission, address);
 			if (weight == 0) {
 				throw new PermissionException(
-						ByteArray.toHexString(sig.toByteArray()) + " is signed by " + Wallet
-								.encodeBase58Check(address) + " but it is not contained of permission.");
+					ByteArray.toHexString(sig.toByteArray()) + " is signed by " + Wallet
+						.encodeBase58Check(address) + " but it is not contained of permission.");
 			}
 			if (addMap.containsKey(base64)) {
 				throw new PermissionException(Wallet.encodeBase58Check(address) + " has signed twice!");
@@ -291,11 +290,11 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 //					break;
 				case UpdateSettingContract:
 					owner = contractParameter.unpack(UpdateSettingContract.class)
-							.getOwnerAddress();
+						.getOwnerAddress();
 					break;
 				case UpdateEnergyLimitContract:
 					owner = contractParameter.unpack(UpdateEnergyLimitContract.class)
-							.getOwnerAddress();
+						.getOwnerAddress();
 					break;
 				case ExchangeCreateContract:
 					owner = contractParameter.unpack(ExchangeCreateContract.class).getOwnerAddress();
@@ -371,7 +370,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 				case CreateSmartContract:
 					return contractParameter.unpack(CreateSmartContract.class).getNewContract()
-							.getCallValue();
+						.getCallValue();
 				default:
 					return 0L;
 			}
@@ -415,7 +414,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public static boolean validateSignature(Transaction transaction,
 											byte[] hash, Manager manager)
-			throws PermissionException, SignatureException, SignatureFormatException {
+		throws PermissionException, SignatureException, SignatureFormatException {
 		AccountStore accountStore = manager.getAccountStore();
 		Transaction.Contract contract = transaction.getRawData().getContractList().get(0);
 		int permissionId = contract.getPermissionId();
@@ -428,7 +427,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 			}
 			if (permissionId == 2) {
 				permission = AccountCapsule
-						.createDefaultActivePermission(ByteString.copyFrom(owner), manager);
+					.createDefaultActivePermission(ByteString.copyFrom(owner), manager);
 			}
 		} else {
 			permission = account.getPermissionById(permissionId);
@@ -460,15 +459,15 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public void setResult(TransactionResultCapsule transactionResultCapsule) {
 		this.transaction = this.getInstance().toBuilder().addRet(transactionResultCapsule.getInstance())
-				.build();
+			.build();
 	}
 
 	public void setReference(long blockNum, byte[] blockHash) {
 		byte[] refBlockNum = ByteArray.fromLong(blockNum);
 		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
-				.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
-				.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
-				.build();
+			.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
+			.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
+			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
 	}
 
@@ -481,14 +480,14 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	 */
 	public void setExpiration(long expiration) {
 		Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
-				.build();
+			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
 	}
 
 	public void setTimestamp() {
 		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
-				.setTimestamp(System.currentTimeMillis())
-				.build();
+			.setTimestamp(System.currentTimeMillis())
+			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
 	}
 
@@ -499,8 +498,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	@Deprecated
 	public void createTransaction(com.google.protobuf.Message message, ContractType contractType) {
 		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
-				Transaction.Contract.newBuilder().setType(contractType).setParameter(
-						Any.pack(message)).build());
+			Transaction.Contract.newBuilder().setType(contractType).setParameter(
+				Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
 	}
 
@@ -521,7 +520,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	}
 
 	public void addSign(byte[] privateKey, AccountStore accountStore)
-			throws PermissionException, SignatureException, SignatureFormatException {
+		throws PermissionException, SignatureException, SignatureFormatException {
 		Transaction.Contract contract = this.transaction.getRawData().getContract(0);
 		int permissionId = contract.getPermissionId();
 		byte[] owner = getOwner(contract);
@@ -547,7 +546,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		byte[] address = ecKey.getAddress();
 		if (this.transaction.getSignatureCount() > 0) {
 			checkWeight(permission, this.transaction.getSignatureList(), this.getRawHash().getBytes(),
-					approveList);
+				approveList);
 			if (approveList.contains(ByteString.copyFrom(address))) {
 				throw new PermissionException(Wallet.encodeBase58Check(address) + " had signed!");
 			}
@@ -556,8 +555,8 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		long weight = getWeight(permission, address);
 		if (weight == 0) {
 			throw new PermissionException(
-					ByteArray.toHexString(privateKey) + "'s address is " + Wallet
-							.encodeBase58Check(address) + " but it is not contained of permission.");
+				ByteArray.toHexString(privateKey) + "'s address is " + Wallet
+					.encodeBase58Check(address) + " but it is not contained of permission.");
 		}
 		ECDSASignature signature = ecKey.sign(getRawHash().getBytes());
 		ByteString sig = ByteString.copyFrom(signature.toByteArray());
@@ -568,16 +567,16 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	 * validate signature
 	 */
 	public boolean validateSignature(Manager manager)
-			throws ValidateSignatureException {
+		throws ValidateSignatureException {
 		if (isVerified == true) {
 			return true;
 		}
 		if (this.transaction.getSignatureCount() <= 0
-				|| this.transaction.getRawData().getContractCount() <= 0) {
+			|| this.transaction.getRawData().getContractCount() <= 0) {
 			throw new ValidateSignatureException("miss sig or contract");
 		}
 		if (this.transaction.getSignatureCount() >
-				manager.getDynamicPropertiesStore().getTotalSignNum()) {
+			manager.getDynamicPropertiesStore().getTotalSignNum()) {
 			throw new ValidateSignatureException("too many signatures");
 		}
 		byte[] hash = this.getRawHash().getBytes();
@@ -639,16 +638,16 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 			toStringBuff.append("contract list:{ ");
 			getInstance().getRawData().getContractList().forEach(contract -> {
 				toStringBuff.append("[" + i + "] ").append("type: ").append(contract.getType())
-						.append("\n");
+					.append("\n");
 				toStringBuff.append("from address=").append(getOwner(contract)).append("\n");
 				toStringBuff.append("to address=").append(getToAddress(contract)).append("\n");
 				if (contract.getType().equals(ContractType.TransferContract)) {
 					TransferContract transferContract;
 					try {
 						transferContract = contract.getParameter()
-								.unpack(TransferContract.class);
+							.unpack(TransferContract.class);
 						toStringBuff.append("transfer amount=").append(transferContract.getAmount())
-								.append("\n");
+							.append("\n");
 					} catch (InvalidProtocolBufferException e) {
 						e.printStackTrace();
 					}
@@ -656,18 +655,18 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 					TransferAssetContract transferAssetContract;
 					try {
 						transferAssetContract = contract.getParameter()
-								.unpack(TransferAssetContract.class);
+							.unpack(TransferAssetContract.class);
 						toStringBuff.append("transfer asset=").append(transferAssetContract.getAssetId())
-								.append("\n");
+							.append("\n");
 						toStringBuff.append("transfer amount=").append(transferAssetContract.getAmount())
-								.append("\n");
+							.append("\n");
 					} catch (InvalidProtocolBufferException e) {
 						e.printStackTrace();
 					}
 				}
 				if (this.transaction.getSignatureList().size() >= i.get() + 1) {
 					toStringBuff.append("sign=").append(getBase64FromByteString(
-							this.transaction.getSignature(i.getAndIncrement()))).append("\n");
+						this.transaction.getSignature(i.getAndIncrement()))).append("\n");
 				}
 			});
 			toStringBuff.append("}\n");
@@ -682,7 +681,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	public void setResult(Runtime runtime) {
 		RuntimeException exception = runtime.getResult().getException();
 		if (Objects.isNull(exception) && StringUtils
-				.isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
+			.isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
 			this.setResultCode(contractResult.OK);
 			return;
 		}

@@ -1,9 +1,6 @@
 package io.midasprotocol.core.services.http;
 
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.EasyTransferAssetMessage;
 import io.midasprotocol.api.GrpcAPI.EasyTransferResponse;
@@ -15,6 +12,9 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.services.http.JsonFormat.ParseException;
 import io.midasprotocol.protos.Contract.TransferAssetContract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +39,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 		EasyTransferResponse.Builder responseBuild = EasyTransferResponse.newBuilder();
 		try {
 			String input = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			EasyTransferAssetMessage.Builder build = EasyTransferAssetMessage.newBuilder();
 			JsonFormat.merge(input, build);
 			byte[] privateKey = wallet.pass2Key(build.getPassPhrase().toByteArray());
@@ -53,7 +53,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 
 			TransactionCapsule transactionCapsule;
 			transactionCapsule = wallet
-					.createTransactionCapsule(builder.build(), ContractType.TransferAssetContract);
+				.createTransactionCapsule(builder.build(), ContractType.TransferAssetContract);
 			transactionCapsule.sign(privateKey);
 			GrpcAPI.Return retur = wallet.broadcastTransaction(transactionCapsule.getInstance());
 			responseBuild.setTransaction(transactionCapsule.getInstance());
@@ -62,7 +62,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 		} catch (ParseException e) {
 			logger.debug("ParseException: {}", e.getMessage());
 			returnBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
-					.setMessage(ByteString.copyFromUtf8(e.getMessage()));
+				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {
 				response.getWriter().println(JsonFormat.printToString(responseBuild.build()));
@@ -73,7 +73,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 		} catch (IOException e) {
 			logger.debug("IOException: {}", e.getMessage());
 			returnBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
-					.setMessage(ByteString.copyFromUtf8(e.getMessage()));
+				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {
 				response.getWriter().println(JsonFormat.printToString(responseBuild.build()));
@@ -83,7 +83,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 			return;
 		} catch (ContractValidateException e) {
 			returnBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
-					.setMessage(ByteString.copyFromUtf8(e.getMessage()));
+				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {
 				response.getWriter().println(JsonFormat.printToString(responseBuild.build()));

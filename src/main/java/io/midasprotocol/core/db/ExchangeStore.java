@@ -1,11 +1,11 @@
 package io.midasprotocol.core.db;
 
 import com.google.common.collect.Streams;
+import io.midasprotocol.core.capsule.ExchangeCapsule;
+import io.midasprotocol.core.exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.ExchangeCapsule;
-import io.midasprotocol.core.exception.ItemNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -31,10 +31,10 @@ public class ExchangeStore extends TronStoreWithRevoking<ExchangeCapsule> {
 	 */
 	public List<ExchangeCapsule> getAllExchanges() {
 		return Streams.stream(iterator())
-				.map(Map.Entry::getValue)
-				.sorted(
-						(ExchangeCapsule a, ExchangeCapsule b) -> a.getCreateTime() <= b.getCreateTime() ? 1
-								: -1)
-				.collect(Collectors.toList());
+			.map(Map.Entry::getValue)
+			.sorted(
+				(ExchangeCapsule a, ExchangeCapsule b) -> a.getCreateTime() <= b.getCreateTime() ? 1
+					: -1)
+			.collect(Collectors.toList());
 	}
 }

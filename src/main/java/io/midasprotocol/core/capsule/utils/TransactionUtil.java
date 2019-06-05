@@ -16,31 +16,31 @@
 package io.midasprotocol.core.capsule.utils;
 
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.protos.Contract.TransferContract;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 
 @Slf4j(topic = "capsule")
 public class TransactionUtil {
 
 	public static Transaction newGenesisTransaction(byte[] key, long value)
-			throws IllegalArgumentException {
+		throws IllegalArgumentException {
 
 		if (!Wallet.addressValid(key)) {
 			throw new IllegalArgumentException("Invalid address");
 		}
 		TransferContract transferContract = TransferContract.newBuilder()
-				.setAmount(value)
-				.setOwnerAddress(ByteString.copyFrom("0x000000000000000000000".getBytes()))
-				.setToAddress(ByteString.copyFrom(key))
-				.build();
+			.setAmount(value)
+			.setOwnerAddress(ByteString.copyFrom("0x000000000000000000000".getBytes()))
+			.setToAddress(ByteString.copyFrom(key))
+			.build();
 
 		return new TransactionCapsule(transferContract,
-				Contract.ContractType.TransferContract).getInstance();
+			Contract.ContractType.TransferContract).getInstance();
 	}
 
 	/**

@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -15,6 +14,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.ExchangeCreateContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class ExchangeCreateActuator extends AbstractActuator {
@@ -28,9 +28,9 @@ public class ExchangeCreateActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final ExchangeCreateContract exchangeCreateContract = this.contract
-					.unpack(ExchangeCreateContract.class);
+				.unpack(ExchangeCreateContract.class);
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
-					.get(exchangeCreateContract.getOwnerAddress().toByteArray());
+				.get(exchangeCreateContract.getOwnerAddress().toByteArray());
 
 			long firstTokenID = exchangeCreateContract.getFirstTokenId();
 			long secondTokenID = exchangeCreateContract.getSecondTokenId();
@@ -56,13 +56,13 @@ public class ExchangeCreateActuator extends AbstractActuator {
 			long id = dbManager.getDynamicPropertiesStore().getLatestExchangeNum() + 1;
 			long now = dbManager.getHeadBlockTimeStamp();
 			ExchangeCapsule exchangeCapsule =
-					new ExchangeCapsule(
-							exchangeCreateContract.getOwnerAddress(),
-							id,
-							now,
-							firstTokenID,
-							secondTokenID
-					);
+				new ExchangeCapsule(
+					exchangeCreateContract.getOwnerAddress(),
+					id,
+					now,
+					firstTokenID,
+					secondTokenID
+				);
 			exchangeCapsule.setBalance(firstTokenBalance, secondTokenBalance);
 			dbManager.getExchangeStore().put(exchangeCapsule.createDbKey(), exchangeCapsule);
 
@@ -91,7 +91,7 @@ public class ExchangeCreateActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(ExchangeCreateContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected ExchangeCreateContract, actual " + contract.getClass());
+				"Contract type error, expected ExchangeCreateContract, actual " + contract.getClass());
 		}
 		final ExchangeCreateContract contract;
 		try {

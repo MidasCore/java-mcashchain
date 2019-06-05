@@ -1,9 +1,5 @@
 package io.midasprotocol.core.net.messagehandler;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
 import io.midasprotocol.core.config.Parameter.NodeConstant;
 import io.midasprotocol.core.exception.P2pException;
@@ -13,6 +9,10 @@ import io.midasprotocol.core.net.message.ChainInventoryMessage;
 import io.midasprotocol.core.net.message.SyncBlockChainMessage;
 import io.midasprotocol.core.net.message.TronMessage;
 import io.midasprotocol.core.net.peer.PeerConnection;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -69,14 +69,14 @@ public class SyncBlockChainMsgHandler implements TronMsgHandler {
 		long headNum = tronNetDelegate.getHeadBlockId().getNum();
 		if (firstId.getNum() > headNum) {
 			throw new P2pException(TypeEnum.BAD_MESSAGE,
-					"First blockNum:" + firstId.getNum() + " gt my head BlockNum:" + headNum);
+				"First blockNum:" + firstId.getNum() + " gt my head BlockNum:" + headNum);
 		}
 
 		BlockId lastSyncBlockId = peer.getLastSyncBlockId();
 		long lastNum = blockIds.get(blockIds.size() - 1).getNum();
 		if (lastSyncBlockId != null && lastSyncBlockId.getNum() > lastNum) {
 			throw new P2pException(TypeEnum.BAD_MESSAGE,
-					"lastSyncNum:" + lastSyncBlockId.getNum() + " gt lastNum:" + lastNum);
+				"lastSyncNum:" + lastSyncBlockId.getNum() + " gt lastNum:" + lastNum);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class SyncBlockChainMsgHandler implements TronMsgHandler {
 		}
 
 		long len = Math.min(tronNetDelegate.getHeadBlockId().getNum(),
-				unForkId.getNum() + NodeConstant.SYNC_FETCH_BATCH_NUM);
+			unForkId.getNum() + NodeConstant.SYNC_FETCH_BATCH_NUM);
 
 		LinkedList<BlockId> ids = new LinkedList<>();
 		for (long i = unForkId.getNum(); i <= len; i++) {

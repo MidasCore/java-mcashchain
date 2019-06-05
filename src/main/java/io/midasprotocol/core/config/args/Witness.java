@@ -46,7 +46,7 @@ public class Witness implements Serializable {
 	public void setAddress(final byte[] address) {
 		if (!Wallet.addressValid(address)) {
 			throw new IllegalArgumentException(
-					"The address " + StringUtil.createReadableString(address) + " must be a 20 bytes.");
+				"The address " + StringUtil.createReadableString(address) + " must be a 20 bytes.");
 		}
 		this.address = address;
 	}
@@ -57,7 +57,7 @@ public class Witness implements Serializable {
 	public void setOwnerAddress(final byte[] ownerAddress) {
 		if (!Wallet.addressValid(ownerAddress)) {
 			throw new IllegalArgumentException(
-					"The address " + StringUtil.createReadableString(ownerAddress) + " must be a 20 bytes.");
+				"The address " + StringUtil.createReadableString(ownerAddress) + " must be a 20 bytes.");
 		}
 		this.ownerAddress = ownerAddress;
 	}

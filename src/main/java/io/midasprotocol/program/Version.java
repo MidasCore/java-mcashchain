@@ -9,4 +9,3 @@ public class Version {
 		return version;
 	}
 }
-

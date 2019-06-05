@@ -1,5 +1,17 @@
 package io.midasprotocol.common.overlay.server;
 
+import io.midasprotocol.common.overlay.discover.node.statistics.NodeStatistics;
+import io.midasprotocol.common.utils.CollectionUtils;
+import io.midasprotocol.core.config.args.Args;
+import io.midasprotocol.core.db.Manager;
+import io.midasprotocol.core.net.peer.PeerConnection;
+import io.midasprotocol.protos.Protocol.ReasonCode;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,18 +19,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import io.midasprotocol.common.overlay.discover.node.statistics.NodeStatistics;
-import io.midasprotocol.common.utils.CollectionUtils;
-import io.midasprotocol.core.config.args.Args;
-import io.midasprotocol.core.db.Manager;
-import io.midasprotocol.core.net.peer.PeerConnection;
-import io.midasprotocol.protos.Protocol.ReasonCode;
 
 @Slf4j(topic = "net")
 @Service
@@ -38,16 +38,16 @@ public class PeerConnectionCheckService {
 	private Manager manager;
 
 	private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2,
-			r -> new Thread(r, "check-peer-connect"));
+		r -> new Thread(r, "check-peer-connect"));
 
 	@PostConstruct
 	public void check() {
 		logger.info("start the PeerConnectionCheckService");
 		scheduledExecutorService
-				.scheduleWithFixedDelay(new CheckDataTransferTask(), 5, 5, TimeUnit.MINUTES);
+			.scheduleWithFixedDelay(new CheckDataTransferTask(), 5, 5, TimeUnit.MINUTES);
 		if (Args.getInstance().isOpenFullTcpDisconnect()) {
 			scheduledExecutorService
-					.scheduleWithFixedDelay(new CheckConnectNumberTask(), 4, 1, TimeUnit.MINUTES);
+				.scheduleWithFixedDelay(new CheckConnectNumberTask(), 4, 1, TimeUnit.MINUTES);
 		}
 	}
 
@@ -65,20 +65,20 @@ public class PeerConnectionCheckService {
 			for (PeerConnection peerConnection : peerConnectionList) {
 				NodeStatistics nodeStatistics = peerConnection.getNodeStatistics();
 				if (!nodeStatistics.nodeIsHaveDataTransfer()
-						&& System.currentTimeMillis() - peerConnection.getStartTime() >= CHECK_TIME
-						&& !peerConnection.isTrustPeer()
-						&& !nodeStatistics.isPredefined()) {
+					&& System.currentTimeMillis() - peerConnection.getStartTime() >= CHECK_TIME
+					&& !peerConnection.isTrustPeer()
+					&& !nodeStatistics.isPredefined()) {
 					//if xxx minutes not have data transfer,disconnect the peer,exclude trust peer and active peer
 					willDisconnectPeerList.add(peerConnection);
 				}
 				nodeStatistics.resetTcpFlow();
 			}
 			if (!willDisconnectPeerList.isEmpty() && peerConnectionList.size()
-					> Args.getInstance().getNodeMaxActiveNodes() * maxConnectNumberFactor) {
+				> Args.getInstance().getNodeMaxActiveNodes() * maxConnectNumberFactor) {
 				Collections.shuffle(willDisconnectPeerList);
 				for (int i = 0; i < willDisconnectPeerList.size() * disconnectNumberFactor; i++) {
 					logger.error("{} not have data transfer, disconnect the peer",
-							willDisconnectPeerList.get(i).getInetAddress());
+						willDisconnectPeerList.get(i).getInetAddress());
 					willDisconnectPeerList.get(i).disconnect(ReasonCode.TOO_MANY_PEERS);
 				}
 			}
@@ -99,12 +99,12 @@ public class PeerConnectionCheckService {
 				}
 				if (peerList.size() >= 2) {
 					peerList.sort(
-							Comparator.comparingInt((PeerConnection o) -> o.getNodeStatistics().getReputation()));
+						Comparator.comparingInt((PeerConnection o) -> o.getNodeStatistics().getReputation()));
 					peerList = CollectionUtils.truncateRandom(peerList, 2, 1);
 				}
 				for (PeerConnection peerConnection : peerList) {
 					logger.warn("connection pool is full, disconnect the peer : {}",
-							peerConnection.getInetAddress());
+						peerConnection.getInetAddress());
 					peerConnection.disconnect(ReasonCode.RESET);
 				}
 			}

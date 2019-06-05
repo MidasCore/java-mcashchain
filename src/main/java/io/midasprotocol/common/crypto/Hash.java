@@ -18,16 +18,16 @@
 
 package io.midasprotocol.common.crypto;
 
-import static java.util.Arrays.copyOfRange;
+import io.midasprotocol.common.crypto.jce.TronCastleProvider;
+import io.midasprotocol.core.Wallet;
+import lombok.extern.slf4j.Slf4j;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 
-import lombok.extern.slf4j.Slf4j;
-import io.midasprotocol.common.crypto.jce.TronCastleProvider;
-import io.midasprotocol.core.Wallet;
+import static java.util.Arrays.copyOfRange;
 
 @Slf4j(topic = "crypto")
 public class Hash {
@@ -48,7 +48,7 @@ public class Hash {
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance(HASH_256_ALGORITHM_NAME,
-					CRYPTO_PROVIDER);
+				CRYPTO_PROVIDER);
 			digest.update(input);
 			return digest.digest();
 		} catch (NoSuchAlgorithmException e) {
@@ -62,7 +62,7 @@ public class Hash {
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance(HASH_256_ALGORITHM_NAME,
-					CRYPTO_PROVIDER);
+				CRYPTO_PROVIDER);
 			digest.update(input1, 0, input1.length);
 			digest.update(input2, 0, input2.length);
 			return digest.digest();
@@ -84,7 +84,7 @@ public class Hash {
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance(HASH_256_ALGORITHM_NAME,
-					CRYPTO_PROVIDER);
+				CRYPTO_PROVIDER);
 			digest.update(input, start, length);
 			return digest.digest();
 		} catch (NoSuchAlgorithmException e) {
@@ -97,7 +97,7 @@ public class Hash {
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance(HASH_512_ALGORITHM_NAME,
-					CRYPTO_PROVIDER);
+				CRYPTO_PROVIDER);
 			digest.update(input);
 			return digest.digest();
 		} catch (NoSuchAlgorithmException e) {

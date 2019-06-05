@@ -14,10 +14,10 @@
  */
 package io.midasprotocol.common.application;
 
-import java.util.ArrayList;
-
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.config.args.Args;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
 
 @Slf4j(topic = "app")
 public class ServiceContainer {

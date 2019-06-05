@@ -2,11 +2,6 @@ package io.midasprotocol.core.witness;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.joda.time.DateTime;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.common.utils.Time;
@@ -17,6 +12,11 @@ import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.*;
 import io.midasprotocol.core.exception.HeaderNotFound;
 import io.midasprotocol.protos.Protocol;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -133,7 +133,7 @@ public class WitnessController {
 
 		long headSlotTime = manager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp();
 		headSlotTime = headSlotTime
-				- ((headSlotTime - getGenesisBlock().getTimeStamp()) % interval);
+			- ((headSlotTime - getGenesisBlock().getTimeStamp()) % interval);
 
 		return headSlotTime + interval * slotNum;
 	}
@@ -144,7 +144,7 @@ public class WitnessController {
 	public boolean validateWitnessSchedule(BlockCapsule block) {
 
 		ByteString witnessAddress = block.getInstance().getBlockHeader().getRawData()
-				.getWitnessAddress();
+			.getWitnessAddress();
 		long timeStamp = block.getTimeStamp();
 		return validateWitnessSchedule(witnessAddress, timeStamp);
 	}
@@ -157,7 +157,7 @@ public class WitnessController {
 		}
 		long blockAbSlot = getAbSlotAtTime(timeStamp);
 		long headBlockAbSlot = getAbSlotAtTime(
-				manager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp());
+			manager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp());
 		if (blockAbSlot <= headBlockAbSlot) {
 			logger.warn("blockAbSlot is equals with headBlockAbSlot[" + blockAbSlot + "]");
 			return false;
@@ -167,15 +167,15 @@ public class WitnessController {
 		final ByteString scheduledWitness = getScheduledWitness(slot);
 		if (!scheduledWitness.equals(witnessAddress)) {
 			logger.warn(
-					"Witness is out of order, scheduledWitness[{}],blockWitnessAddress[{}],blockTimeStamp[{}],slot[{}]",
-					ByteArray.toHexString(scheduledWitness.toByteArray()),
-					ByteArray.toHexString(witnessAddress.toByteArray()), new DateTime(timeStamp),
-					slot);
+				"Witness is out of order, scheduledWitness[{}],blockWitnessAddress[{}],blockTimeStamp[{}],slot[{}]",
+				ByteArray.toHexString(scheduledWitness.toByteArray()),
+				ByteArray.toHexString(witnessAddress.toByteArray()), new DateTime(timeStamp),
+				slot);
 			return false;
 		}
 
 		logger.debug("Validate witnessSchedule successfully,scheduledWitness:{}",
-				ByteArray.toHexString(witnessAddress.toByteArray()));
+			ByteArray.toHexString(witnessAddress.toByteArray()));
 		return true;
 	}
 
@@ -208,20 +208,20 @@ public class WitnessController {
 		int witnessIndex = (int) currentSlot % (numberActiveWitness * singleRepeat);
 		witnessIndex /= singleRepeat;
 		logger.debug("currentSlot:" + currentSlot
-				+ ", witnessIndex" + witnessIndex
-				+ ", currentActiveWitnesses size:" + numberActiveWitness);
+			+ ", witnessIndex" + witnessIndex
+			+ ", currentActiveWitnesses size:" + numberActiveWitness);
 
 		final ByteString scheduledWitness = this.getActiveWitnesses().get(witnessIndex);
 		logger.info("scheduledWitness:" + ByteArray.toHexString(scheduledWitness.toByteArray())
-				+ ", currentSlot:" + currentSlot);
+			+ ", currentSlot:" + currentSlot);
 
 		return scheduledWitness;
 	}
 
 	public long getHeadSlot() {
 		return (manager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp() - getGenesisBlock()
-				.getTimeStamp())
-				/ ChainConstant.BLOCK_PRODUCED_INTERVAL;
+			.getTimeStamp())
+			/ ChainConstant.BLOCK_PRODUCED_INTERVAL;
 	}
 
 	/**
@@ -316,110 +316,110 @@ public class WitnessController {
 
 		List<ByteString> currentWits = getActiveWitnesses();
 
-			List<ByteString> newWitnessAddressList = new ArrayList<>();
-			witnessStore.getAllWitnesses().forEach(witnessCapsule -> {
-				boolean ok = witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE
-						|| witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE;
-				if (witnessCapsule.getStatus() == Protocol.Witness.Status.SLASHED) {
-					BannedWitnessCapsule bannedWitnessCapsule =
-							bannedWitnessStore.get(witnessCapsule.getAddress().toByteArray());
-					if (bannedWitnessCapsule == null) {
-						ok = true;
-					} else if (bannedWitnessCapsule.getExpirationTime() <= now) {
-						ok = true;
-						bannedWitnessStore.delete(bannedWitnessCapsule.getWitnessAddress().toByteArray());
-					}
+		List<ByteString> newWitnessAddressList = new ArrayList<>();
+		witnessStore.getAllWitnesses().forEach(witnessCapsule -> {
+			boolean ok = witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE
+				|| witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE;
+			if (witnessCapsule.getStatus() == Protocol.Witness.Status.SLASHED) {
+				BannedWitnessCapsule bannedWitnessCapsule =
+					bannedWitnessStore.get(witnessCapsule.getAddress().toByteArray());
+				if (bannedWitnessCapsule == null) {
+					ok = true;
+				} else if (bannedWitnessCapsule.getExpirationTime() <= now) {
+					ok = true;
+					bannedWitnessStore.delete(bannedWitnessCapsule.getWitnessAddress().toByteArray());
 				}
-				if (ok)
-					newWitnessAddressList.add(witnessCapsule.getAddress());
-			});
+			}
+			if (ok)
+				newWitnessAddressList.add(witnessCapsule.getAddress());
+		});
 
-			countWitness.forEach((address, voteCount) -> {
-				final WitnessCapsule witnessCapsule = witnessStore.get(StringUtil.createDbKey(address));
-				if (null == witnessCapsule) {
-					logger.warn("witnessCapsule is null. address is {}", StringUtil.createReadableString(address));
-					return;
-				}
+		countWitness.forEach((address, voteCount) -> {
+			final WitnessCapsule witnessCapsule = witnessStore.get(StringUtil.createDbKey(address));
+			if (null == witnessCapsule) {
+				logger.warn("witnessCapsule is null. address is {}", StringUtil.createReadableString(address));
+				return;
+			}
 
-				AccountCapsule witnessAccountCapsule = accountStore
-						.get(StringUtil.createDbKey(address));
-				if (witnessAccountCapsule == null) {
-					logger.warn("witnessAccount " + StringUtil.createReadableString(address) + " does not exist");
-				} else {
-					witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
-					witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
-					logger.info("address is {}, countVote is {}", witnessCapsule.createReadableString(),
-							witnessCapsule.getVoteCount());
-				}
-			});
-			List<ByteString> newActiveWitnessAddressList = new ArrayList<>();
+			AccountCapsule witnessAccountCapsule = accountStore
+				.get(StringUtil.createDbKey(address));
+			if (witnessAccountCapsule == null) {
+				logger.warn("witnessAccount " + StringUtil.createReadableString(address) + " does not exist");
+			} else {
+				witnessCapsule.setVoteCount(witnessCapsule.getVoteCount() + voteCount);
+				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+				logger.info("address is {}, countVote is {}", witnessCapsule.createReadableString(),
+					witnessCapsule.getVoteCount());
+			}
+		});
+		List<ByteString> newActiveWitnessAddressList = new ArrayList<>();
 
-			for (ByteString witnessAddress : newWitnessAddressList) {
-				WitnessCapsule witnessCapsule = witnessStore.get(witnessAddress.toByteArray());
-				long epochBlock = witnessCapsule.getEpochMissed() + witnessCapsule.getEpochProduced();
-				if (epochBlock > 0) {
-					double pc = 1d * witnessCapsule.getEpochMissed() / epochBlock;
-					if (pc > Parameter.NodeConstant.PENALTY_RATE) {
-						long expiration;
-						if (witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE) {
-							// minor penalty
-							expiration = now + Parameter.NodeConstant.MINOR_PENALTY_EPOCH
-									* manager.getDynamicPropertiesStore().getMaintenanceTimeInterval();
-						} else {
-							// major penalty
-							expiration = now + Parameter.NodeConstant.MAJOR_PENALTY_EPOCH
-									* manager.getDynamicPropertiesStore().getMaintenanceTimeInterval();
-						}
-						logger.info("Super node {} performed badly, {} produced, {} missed, will be banned until {}",
-								StringUtil.createReadableString(witnessAddress),
-								witnessCapsule.getEpochProduced(),
-								witnessCapsule.getEpochMissed(),
-								expiration);
-						BannedWitnessCapsule bannedWitnessCapsule =
-								new BannedWitnessCapsule(witnessAddress, expiration);
-						bannedWitnessStore.put(witnessAddress.toByteArray(), bannedWitnessCapsule);
-						witnessCapsule.setStatus(Protocol.Witness.Status.SLASHED);
+		for (ByteString witnessAddress : newWitnessAddressList) {
+			WitnessCapsule witnessCapsule = witnessStore.get(witnessAddress.toByteArray());
+			long epochBlock = witnessCapsule.getEpochMissed() + witnessCapsule.getEpochProduced();
+			if (epochBlock > 0) {
+				double pc = 1d * witnessCapsule.getEpochMissed() / epochBlock;
+				if (pc > Parameter.NodeConstant.PENALTY_RATE) {
+					long expiration;
+					if (witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE) {
+						// minor penalty
+						expiration = now + Parameter.NodeConstant.MINOR_PENALTY_EPOCH
+							* manager.getDynamicPropertiesStore().getMaintenanceTimeInterval();
 					} else {
-						witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
-						newActiveWitnessAddressList.add(witnessAddress);
+						// major penalty
+						expiration = now + Parameter.NodeConstant.MAJOR_PENALTY_EPOCH
+							* manager.getDynamicPropertiesStore().getMaintenanceTimeInterval();
 					}
-					witnessCapsule.setEpochMissed(0);
-					witnessCapsule.setEpochProduced(0);
-					witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+					logger.info("Super node {} performed badly, {} produced, {} missed, will be banned until {}",
+						StringUtil.createReadableString(witnessAddress),
+						witnessCapsule.getEpochProduced(),
+						witnessCapsule.getEpochMissed(),
+						expiration);
+					BannedWitnessCapsule bannedWitnessCapsule =
+						new BannedWitnessCapsule(witnessAddress, expiration);
+					bannedWitnessStore.put(witnessAddress.toByteArray(), bannedWitnessCapsule);
+					witnessCapsule.setStatus(Protocol.Witness.Status.SLASHED);
 				} else {
+					witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
 					newActiveWitnessAddressList.add(witnessAddress);
 				}
-			}
-
-			sortWitness(newActiveWitnessAddressList);
-			if (newActiveWitnessAddressList.size() > ChainConstant.MAX_ACTIVE_WITNESS_NUM) {
-				setActiveWitnesses(newActiveWitnessAddressList.subList(0, ChainConstant.MAX_ACTIVE_WITNESS_NUM));
+				witnessCapsule.setEpochMissed(0);
+				witnessCapsule.setEpochProduced(0);
+				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
 			} else {
-				setActiveWitnesses(newActiveWitnessAddressList);
+				newActiveWitnessAddressList.add(witnessAddress);
 			}
+		}
 
-			List<ByteString> newWits = getActiveWitnesses();
-			if (witnessSetChanged(currentWits, newWits)) {
-				currentWits.forEach(address -> {
-					WitnessCapsule witnessCapsule = getWitnessByAddress(address);
-					witnessCapsule.setIsJobs(false);
-					if (witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE)
-						witnessCapsule.setStatus(Protocol.Witness.Status.ACTIVE);
-					witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
-				});
+		sortWitness(newActiveWitnessAddressList);
+		if (newActiveWitnessAddressList.size() > ChainConstant.MAX_ACTIVE_WITNESS_NUM) {
+			setActiveWitnesses(newActiveWitnessAddressList.subList(0, ChainConstant.MAX_ACTIVE_WITNESS_NUM));
+		} else {
+			setActiveWitnesses(newActiveWitnessAddressList);
+		}
 
-				newWits.forEach(address -> {
-					WitnessCapsule witnessCapsule = getWitnessByAddress(address);
-					witnessCapsule.setIsJobs(true);
-					if (witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE)
-						witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
-					witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
-				});
-			}
+		List<ByteString> newWits = getActiveWitnesses();
+		if (witnessSetChanged(currentWits, newWits)) {
+			currentWits.forEach(address -> {
+				WitnessCapsule witnessCapsule = getWitnessByAddress(address);
+				witnessCapsule.setIsJobs(false);
+				if (witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE)
+					witnessCapsule.setStatus(Protocol.Witness.Status.ACTIVE);
+				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+			});
 
-			logger.info(
-					"updateWitness,before:{} ", StringUtil.getAddressStringList(currentWits)
-							+ ",\nafter:{} " + StringUtil.getAddressStringList(newWits));
+			newWits.forEach(address -> {
+				WitnessCapsule witnessCapsule = getWitnessByAddress(address);
+				witnessCapsule.setIsJobs(true);
+				if (witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE)
+					witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
+				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+			});
+		}
+
+		logger.info(
+			"updateWitness,before:{} ", StringUtil.getAddressStringList(currentWits)
+				+ ",\nafter:{} " + StringUtil.getAddressStringList(newWits));
 //		}
 	}
 
@@ -431,7 +431,7 @@ public class WitnessController {
 			Args.getInstance().getGenesisBlock().getWitnesses().forEach(witnessInGenesisBlock -> {
 				WitnessCapsule witnessCapsule = witnessStore.get(witnessInGenesisBlock.getAddress());
 				witnessCapsule
-						.setVoteCount(witnessCapsule.getVoteCount() - witnessInGenesisBlock.getVoteCount());
+					.setVoteCount(witnessCapsule.getVoteCount() - witnessInGenesisBlock.getVoteCount());
 
 				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
 			});
@@ -448,7 +448,7 @@ public class WitnessController {
 		StringBuilder builder = new StringBuilder();
 		int[] blockFilledSlots = manager.getDynamicPropertiesStore().getBlockFilledSlots();
 		builder.append("dump participation log \n ").append("blockFilledSlots:")
-				.append(Arrays.toString(blockFilledSlots)).append(",");
+			.append(Arrays.toString(blockFilledSlots)).append(",");
 		long headSlot = getHeadSlot();
 		builder.append("\n").append(" headSlot:").append(headSlot).append(",");
 
@@ -456,9 +456,9 @@ public class WitnessController {
 		activeWitnesses.forEach(a -> {
 			WitnessCapsule witnessCapsule = manager.getWitnessStore().get(a.toByteArray());
 			builder.append("\n").append(" witness:").append(witnessCapsule.createReadableString())
-					.append(",").
-					append("latestBlockNum:").append(witnessCapsule.getLatestBlockNum()).append(",").
-					append("LatestSlotNum:").append(witnessCapsule.getLatestSlotNum()).append(".");
+				.append(",").
+				append("latestBlockNum:").append(witnessCapsule.getLatestBlockNum()).append(",").
+				append("LatestSlotNum:").append(witnessCapsule.getLatestSlotNum()).append(".");
 		});
 		logger.debug(builder.toString());
 	}
@@ -466,8 +466,8 @@ public class WitnessController {
 
 	private void sortWitness(List<ByteString> list) {
 		list.sort(Comparator.comparingLong((ByteString b) -> getWitnessByAddress(b).getVoteCount())
-				.reversed()
-				.thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
+			.reversed()
+			.thenComparing(Comparator.comparingInt(ByteString::hashCode).reversed()));
 	}
 
 	public boolean isGeneratingBlock() {

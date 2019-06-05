@@ -16,12 +16,12 @@
 package io.midasprotocol.core.config.args;
 
 import com.google.protobuf.ByteString;
-import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Protocol.AccountType;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -51,7 +51,7 @@ public class Account implements Serializable {
 	public void setAddress(final byte[] address) {
 		if (!Wallet.addressValid(address)) {
 			throw new IllegalArgumentException(
-					"The address(" + StringUtil.createReadableString(address) + ") must be a 21 bytes.");
+				"The address(" + StringUtil.createReadableString(address) + ") must be a 21 bytes.");
 		}
 		this.address = address;
 	}

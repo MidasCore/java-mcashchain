@@ -24,11 +24,11 @@ import io.midasprotocol.common.runtime.vm.program.listener.ProgramListenerAware;
 import java.util.LinkedList;
 import java.util.List;
 
+import static io.midasprotocol.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
+import static io.midasprotocol.common.utils.ByteUtil.oneByteToHexString;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static io.midasprotocol.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
-import static io.midasprotocol.common.utils.ByteUtil.oneByteToHexString;
 
 public class Memory implements ProgramListenerAware {
 
@@ -167,7 +167,7 @@ public class Memory implements ProgramListenerAware {
 
 			// Check if value is ASCII
 			String character =
-					((byte) 0x20 <= value && value <= (byte) 0x7e) ? new String(new byte[]{value}) : "?";
+				((byte) 0x20 <= value && value <= (byte) 0x7e) ? new String(new byte[]{value}) : "?";
 			firstLine.append(character).append("");
 			secondLine.append(oneByteToHexString(value)).append(" ");
 

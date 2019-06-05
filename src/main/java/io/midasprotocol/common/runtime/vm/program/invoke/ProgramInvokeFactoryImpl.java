@@ -17,9 +17,6 @@
  */
 package io.midasprotocol.common.runtime.vm.program.invoke;
 
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.Arrays;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.program.InternalTransaction;
 import io.midasprotocol.common.runtime.vm.program.InternalTransaction.ExecutorType;
@@ -33,6 +30,9 @@ import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.CreateSmartContract;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.Arrays;
+import org.springframework.stereotype.Component;
 
 import static io.midasprotocol.common.runtime.vm.program.InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE;
 import static io.midasprotocol.common.runtime.vm.program.InternalTransaction.TrxType.TRX_CONTRACT_CREATION_TYPE;
@@ -74,7 +74,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 					if (null != block) {
 						lastHash = block.getBlockHeader().getRawDataOrBuilder().getParentHash().toByteArray();
 						coinbase = block.getBlockHeader().getRawDataOrBuilder().getWitnessAddress()
-								.toByteArray();
+							.toByteArray();
 						timestamp = block.getBlockHeader().getRawDataOrBuilder().getTimestamp() / 1000;
 						number = block.getBlockHeader().getRawDataOrBuilder().getNumber();
 					}
@@ -84,12 +84,12 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 			}
 
 			return new ProgramInvokeImpl(contractAddress, ownerAddress, ownerAddress, balance, callValue,
-					tokenValue, tokenId, data, lastHash, coinbase, timestamp, number, deposit, vmStartInUs,
-					vmShouldEndInUs, energyLimit);
+				tokenValue, tokenId, data, lastHash, coinbase, timestamp, number, deposit, vmStartInUs,
+				vmShouldEndInUs, energyLimit);
 
 		} else if (trxType == TRX_CONTRACT_CALL_TYPE) {
 			Contract.TriggerSmartContract contract = ContractCapsule
-					.getTriggerContractFromTransaction(tx);
+				.getTriggerContractFromTransaction(tx);
 			/***         ADDRESS op       ***/
 			// YP: Get address of currently executing account.
 			byte[] address = contract.getContractAddress().toByteArray();
@@ -123,7 +123,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 						lastHash = block.getBlockHeader().getRawDataOrBuilder().getParentHash().toByteArray();
 						/***   COINBASE  op ***/
 						coinbase = block.getBlockHeader().getRawDataOrBuilder().getWitnessAddress()
-								.toByteArray();
+							.toByteArray();
 						/*** TIMESTAMP  op  ***/
 						timestamp = block.getBlockHeader().getRawDataOrBuilder().getTimestamp() / 1000;
 						/*** NUMBER  op  ***/
@@ -135,9 +135,9 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 			}
 
 			return new ProgramInvokeImpl(address, origin, caller, balance, callValue, tokenValue, tokenId,
-					data,
-					lastHash, coinbase, timestamp, number, deposit, vmStartInUs, vmShouldEndInUs,
-					energyLimit);
+				data,
+				lastHash, coinbase, timestamp, number, deposit, vmStartInUs, vmShouldEndInUs,
+				energyLimit);
 		}
 		throw new ContractValidateException("Unknown contract type");
 	}
@@ -166,9 +166,9 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 		DataWord difficulty = program.getDifficulty();
 
 		return new ProgramInvokeImpl(address, origin, caller, balance, callValue, tokenValue, tokenId,
-				data, lastHash, coinbase, timestamp, number, difficulty,
-				deposit, program.getCallDeep() + 1, isStaticCall, byTestingSuite, vmStartInUs,
-				vmShouldEndInUs, energyLimit);
+			data, lastHash, coinbase, timestamp, number, difficulty,
+			deposit, program.getCallDeep() + 1, isStaticCall, byTestingSuite, vmStartInUs,
+			vmShouldEndInUs, energyLimit);
 	}
 
 }

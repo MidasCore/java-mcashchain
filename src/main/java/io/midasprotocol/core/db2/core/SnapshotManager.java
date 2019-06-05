@@ -4,10 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import io.midasprotocol.common.storage.WriteOptionsWrapper;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.CheckTmpStore;
@@ -18,6 +14,10 @@ import io.midasprotocol.core.db2.common.IRevokingDB;
 import io.midasprotocol.core.db2.common.Key;
 import io.midasprotocol.core.db2.common.Value;
 import io.midasprotocol.core.exception.RevokingStoreIllegalStateException;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -102,9 +102,9 @@ public class SnapshotManager implements RevokingDatabase {
 		RevokingDBWithCachingNewValue revokingDB = (RevokingDBWithCachingNewValue) db;
 		dbs.add(revokingDB);
 		flushServices.put(revokingDB.getDbName(), MoreExecutors.listeningDecorator(
-				Executors.newSingleThreadExecutor(
-						new ThreadFactoryBuilder().setNameFormat(revokingDB.getDbName()).build()
-				)));
+			Executors.newSingleThreadExecutor(
+				new ThreadFactoryBuilder().setNameFormat(revokingDB.getDbName()).build()
+			)));
 	}
 
 	private void advance() {
@@ -289,9 +289,9 @@ public class SnapshotManager implements RevokingDatabase {
 			refresh();
 			flushCount = 0;
 			logger.info("flush cost:{}, create checkpoint cost:{}, refresh cost:{}",
-					System.currentTimeMillis() - start,
-					checkPointEnd - start,
-					System.currentTimeMillis() - checkPointEnd
+				System.currentTimeMillis() - start,
+				checkPointEnd - start,
+				System.currentTimeMillis() - checkPointEnd
 			);
 		}
 	}
@@ -314,15 +314,15 @@ public class SnapshotManager implements RevokingDatabase {
 					Key k = e.getKey();
 					Value v = e.getValue();
 					batch.put(WrappedByteArray.of(Bytes.concat(simpleEncode(dbName), k.getBytes())),
-							WrappedByteArray.of(v.encode()));
+						WrappedByteArray.of(v.encode()));
 				}
 			}
 		}
 
 		checkTmpStore.getDbSource().updateByBatch(batch.entrySet().stream()
-						.map(e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes()))
-						.collect(HashMap::new, (m, k) -> m.put(k.getKey(), k.getValue()), HashMap::putAll),
-				WriteOptionsWrapper.getInstance().sync(Args.getInstance().getStorage().isDbSync()));
+				.map(e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes()))
+				.collect(HashMap::new, (m, k) -> m.put(k.getKey(), k.getValue()), HashMap::putAll),
+			WriteOptionsWrapper.getInstance().sync(Args.getInstance().getStorage().isDbSync()));
 	}
 
 	private void deleteCheckPoint() {
@@ -334,7 +334,7 @@ public class SnapshotManager implements RevokingDatabase {
 		}
 
 		checkTmpStore.getDbSource().updateByBatch(hmap, WriteOptionsWrapper.getInstance()
-				.sync(Args.getInstance().getStorage().isDbSync()));
+			.sync(Args.getInstance().getStorage().isDbSync()));
 	}
 
 	// ensure run this method first after process start.
@@ -348,8 +348,8 @@ public class SnapshotManager implements RevokingDatabase {
 
 		if (!checkTmpStore.getDbSource().allKeys().isEmpty()) {
 			Map<String, RevokingDBWithCachingNewValue> dbMap = dbs.stream()
-					.map(db -> Maps.immutableEntry(db.getDbName(), db))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.map(db -> Maps.immutableEntry(db.getDbName(), db))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			advance();
 			for (Map.Entry<byte[], byte[]> e : checkTmpStore.getDbSource()) {
 				byte[] key = e.getKey();

@@ -17,10 +17,11 @@
  */
 package io.midasprotocol.common.runtime.config;
 
+import io.midasprotocol.core.config.args.Args;
 import lombok.Setter;
+
 //import io.midasprotocol.common.utils.ForkController;
 //import io.midasprotocol.core.config.Parameter.ForkBlockVersionConsts;
-import io.midasprotocol.core.config.args.Args;
 
 /**
  * For developer only
@@ -38,7 +39,7 @@ public class VMConfig {
 	@Setter
 	private static boolean ALLOW_MULTI_SIGN = false;
 
-//  @Getter
+	//  @Getter
 //  @Setter
 //  private static boolean VERSION_3_5_HARD_FORK = false;
 	private boolean vmTraceCompressed = false;

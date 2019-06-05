@@ -2,10 +2,10 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Protocol.Vote;
 import io.midasprotocol.protos.Protocol.VoteChange;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class VoteChangeCapsule implements ProtoCapsule<VoteChange> {
@@ -53,12 +53,12 @@ public class VoteChangeCapsule implements ProtoCapsule<VoteChange> {
 	public void setOldVote(Vote oldVote) {
 		if (oldVote != null) {
 			this.voteChange = this.voteChange.toBuilder()
-					.setOldVote(oldVote)
-					.build();
+				.setOldVote(oldVote)
+				.build();
 		} else {
 			this.voteChange = this.voteChange.toBuilder()
-					.clearOldVote()
-					.build();
+				.clearOldVote()
+				.build();
 		}
 	}
 
@@ -68,14 +68,14 @@ public class VoteChangeCapsule implements ProtoCapsule<VoteChange> {
 
 	public void clearNewVote() {
 		this.voteChange = this.voteChange.toBuilder()
-				.clearNewVote()
-				.build();
+			.clearNewVote()
+			.build();
 	}
 
 	public void setNewVote(ByteString voteAddress, long voteCount) {
 		this.voteChange = this.voteChange.toBuilder()
-				.setNewVote(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteCount).build())
-				.build();
+			.setNewVote(Vote.newBuilder().setVoteAddress(voteAddress).setVoteCount(voteCount).build())
+			.build();
 	}
 
 	public boolean hasOldVote() {

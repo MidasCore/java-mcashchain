@@ -2,12 +2,11 @@ package io.midasprotocol.core.db;
 
 import com.google.common.collect.Streams;
 import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.ByteUtil;
+import io.midasprotocol.core.capsule.AssetIssueCapsule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.AssetIssueCapsule;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -55,8 +54,8 @@ public class AssetIssueStore extends TronStoreWithRevoking<AssetIssueCapsule> {
 	 */
 	public List<AssetIssueCapsule> getAllAssetIssues() {
 		return Streams.stream(iterator())
-				.map(Entry::getValue)
-				.collect(Collectors.toList());
+			.map(Entry::getValue)
+			.collect(Collectors.toList());
 	}
 
 	private List<AssetIssueCapsule> getAssetIssuesPaginated(List<AssetIssueCapsule> assetIssueList,

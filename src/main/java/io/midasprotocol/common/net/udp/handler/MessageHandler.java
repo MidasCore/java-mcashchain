@@ -23,15 +23,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j(topic = "net")
 public class MessageHandler extends SimpleChannelInboundHandler<UdpEvent>
-		implements Consumer<UdpEvent> {
+	implements Consumer<UdpEvent> {
 
 	private Channel channel;
 
@@ -50,18 +49,18 @@ public class MessageHandler extends SimpleChannelInboundHandler<UdpEvent>
 	@Override
 	public void channelRead0(ChannelHandlerContext ctx, UdpEvent udpEvent) {
 		logger.debug("rcv udp msg type {}, len {} from {} ",
-				udpEvent.getMessage().getType(),
-				udpEvent.getMessage().getSendData().length,
-				udpEvent.getAddress());
+			udpEvent.getMessage().getType(),
+			udpEvent.getMessage().getSendData().length,
+			udpEvent.getAddress());
 		eventHandler.handleEvent(udpEvent);
 	}
 
 	@Override
 	public void accept(UdpEvent udpEvent) {
 		logger.debug("send udp msg type {}, len {} to {} ",
-				udpEvent.getMessage().getType(),
-				udpEvent.getMessage().getSendData().length,
-				udpEvent.getAddress());
+			udpEvent.getMessage().getType(),
+			udpEvent.getMessage().getSendData().length,
+			udpEvent.getAddress());
 		InetSocketAddress address = udpEvent.getAddress();
 		sendPacket(udpEvent.getMessage().getSendData(), address);
 	}

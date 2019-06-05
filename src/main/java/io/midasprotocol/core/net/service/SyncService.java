@@ -2,11 +2,6 @@ package io.midasprotocol.core.net.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.server.Channel.TronState;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
@@ -20,6 +15,11 @@ import io.midasprotocol.core.net.message.SyncBlockChainMessage;
 import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,13 +41,13 @@ public class SyncService {
 	private Map<BlockMessage, PeerConnection> blockJustReceived = new ConcurrentHashMap<>();
 
 	private Cache<BlockId, Long> requestBlockIds = CacheBuilder.newBuilder().maximumSize(10_000)
-			.expireAfterWrite(1, TimeUnit.HOURS).initialCapacity(10_000)
-			.recordStats().build();
+		.expireAfterWrite(1, TimeUnit.HOURS).initialCapacity(10_000)
+		.recordStats().build();
 
 	private ScheduledExecutorService fetchExecutor = Executors.newSingleThreadScheduledExecutor();
 
 	private ScheduledExecutorService blockHandleExecutor = Executors
-			.newSingleThreadScheduledExecutor();
+		.newSingleThreadScheduledExecutor();
 
 	private volatile boolean handleFlag = false;
 
@@ -114,7 +114,7 @@ public class SyncService {
 		handleFlag = true;
 		if (peer.isIdle()) {
 			if (peer.getRemainNum() > 0
-					&& peer.getSyncBlockToFetch().size() <= NodeConstant.SYNC_FETCH_BATCH_NUM) {
+				&& peer.getSyncBlockToFetch().size() <= NodeConstant.SYNC_FETCH_BATCH_NUM) {
 				syncNext(peer);
 			} else {
 				fetchFlag = true;
@@ -153,7 +153,7 @@ public class SyncService {
 				forkList = tronNetDelegate.getBlockChainHashesOnFork(beginBlockId);
 				if (forkList.isEmpty()) {
 					throw new P2pException(TypeEnum.SYNC_FAILED,
-							"can't find blockId: " + beginBlockId.getString());
+						"can't find blockId: " + beginBlockId.getString());
 				}
 				highNoFork = forkList.peekLast().getNum();
 				forkList.pollLast();
@@ -169,7 +169,7 @@ public class SyncService {
 		long realHigh = high + blockIds.size();
 
 		logger.info("Get block chain summary, low: {}, highNoFork: {}, high: {}, realHigh: {}",
-				low, highNoFork, high, realHigh);
+			low, highNoFork, high, realHigh);
 
 		while (low <= realHigh) {
 			if (low <= highNoFork) {
@@ -189,22 +189,22 @@ public class SyncService {
 		HashMap<PeerConnection, List<BlockId>> send = new HashMap<>();
 
 		tronNetDelegate.getActivePeer().stream()
-				.filter(peer -> peer.isNeedSyncFromPeer() && peer.isIdle())
-				.forEach(peer -> {
-					if (!send.containsKey(peer)) {
-						send.put(peer, new LinkedList<>());
-					}
-					for (BlockId blockId : peer.getSyncBlockToFetch()) {
-						if (requestBlockIds.getIfPresent(blockId) == null) {
-							requestBlockIds.put(blockId, System.currentTimeMillis());
-							peer.getSyncBlockRequested().put(blockId, System.currentTimeMillis());
-							send.get(peer).add(blockId);
-							if (send.get(peer).size() >= MAX_BLOCK_FETCH_PER_PEER) {
-								break;
-							}
+			.filter(peer -> peer.isNeedSyncFromPeer() && peer.isIdle())
+			.forEach(peer -> {
+				if (!send.containsKey(peer)) {
+					send.put(peer, new LinkedList<>());
+				}
+				for (BlockId blockId : peer.getSyncBlockToFetch()) {
+					if (requestBlockIds.getIfPresent(blockId) == null) {
+						requestBlockIds.put(blockId, System.currentTimeMillis());
+						peer.getSyncBlockRequested().put(blockId, System.currentTimeMillis());
+						send.get(peer).add(blockId);
+						if (send.get(peer).size() >= MAX_BLOCK_FETCH_PER_PEER) {
+							break;
 						}
 					}
-				});
+				}
+			});
 
 		send.forEach((peer, blockIds) -> {
 			if (!blockIds.isEmpty()) {
@@ -234,12 +234,12 @@ public class SyncService {
 				}
 				final boolean[] isFound = {false};
 				tronNetDelegate.getActivePeer().stream()
-						.filter(peer -> msg.getBlockId().equals(peer.getSyncBlockToFetch().peek()))
-						.forEach(peer -> {
-							peer.getSyncBlockToFetch().pop();
-							peer.getSyncBlockInProcess().add(msg.getBlockId());
-							isFound[0] = true;
-						});
+					.filter(peer -> msg.getBlockId().equals(peer.getSyncBlockToFetch().peek()))
+					.forEach(peer -> {
+						peer.getSyncBlockToFetch().pop();
+						peer.getSyncBlockInProcess().add(msg.getBlockId());
+						isFound[0] = true;
+					});
 				if (isFound[0]) {
 					blockWaitToProcess.remove(msg);
 					isProcessed[0] = true;

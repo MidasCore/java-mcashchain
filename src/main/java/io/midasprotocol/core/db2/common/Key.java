@@ -1,7 +1,7 @@
 package io.midasprotocol.core.db2.common;
 
-import lombok.EqualsAndHashCode;
 import io.midasprotocol.core.db.common.WrappedByteArray;
+import lombok.EqualsAndHashCode;
 
 import java.util.Arrays;
 

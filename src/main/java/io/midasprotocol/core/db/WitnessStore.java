@@ -1,12 +1,12 @@
 package io.midasprotocol.core.db;
 
 import com.google.common.collect.Streams;
+import io.midasprotocol.core.capsule.WitnessCapsule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.WitnessCapsule;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -26,8 +26,8 @@ public class WitnessStore extends TronStoreWithRevoking<WitnessCapsule> {
 	 */
 	public List<WitnessCapsule> getAllWitnesses() {
 		return Streams.stream(iterator())
-				.map(Entry::getValue)
-				.collect(Collectors.toList());
+			.map(Entry::getValue)
+			.collect(Collectors.toList());
 	}
 
 	@Override

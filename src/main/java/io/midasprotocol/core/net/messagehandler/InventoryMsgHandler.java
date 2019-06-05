@@ -1,8 +1,5 @@
 package io.midasprotocol.core.net.messagehandler;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.net.TronNetDelegate;
@@ -12,6 +9,9 @@ import io.midasprotocol.core.net.peer.Item;
 import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.core.net.service.AdvService;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -60,7 +60,7 @@ public class InventoryMsgHandler implements TronMsgHandler {
 
 		if (peer.isNeedSyncFromPeer() || peer.isNeedSyncFromUs()) {
 			logger.warn("Drop inv: {} size: {} from Peer {}, syncFromUs: {}, syncFromPeer: {}.",
-					type, size, peer.getInetAddress(), peer.isNeedSyncFromUs(), peer.isNeedSyncFromPeer());
+				type, size, peer.getInetAddress(), peer.isNeedSyncFromUs(), peer.isNeedSyncFromPeer());
 			return false;
 		}
 
@@ -68,13 +68,13 @@ public class InventoryMsgHandler implements TronMsgHandler {
 			int count = peer.getNodeStatistics().messageStatistics.tronInTrxInventoryElement.getCount(10);
 			if (count > maxCountIn10s) {
 				logger.warn("Drop inv: {} size: {} from Peer {}, Inv count: {} is overload.",
-						type, size, peer.getInetAddress(), count);
+					type, size, peer.getInetAddress(), count);
 				return false;
 			}
 
 			if (transactionsMsgHandler.isBusy()) {
 				logger.warn("Drop inv: {} size: {} from Peer {}, transactionsMsgHandler is busy.",
-						type, size, peer.getInetAddress());
+					type, size, peer.getInetAddress());
 				return false;
 			}
 		}

@@ -5,7 +5,6 @@ import com.google.protobuf.ByteString;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.program.Storage;
 import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.ByteUtil;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.capsule.*;
 import io.midasprotocol.core.db.*;
@@ -26,7 +25,7 @@ public class DepositImpl implements Deposit {
 
 	private static final byte[] LATEST_PROPOSAL_NUM = "LATEST_PROPOSAL_NUM".getBytes();
 	private static final byte[] WITNESS_ALLOWANCE_FROZEN_TIME = "WITNESS_ALLOWANCE_FROZEN_TIME"
-			.getBytes();
+		.getBytes();
 	private static final byte[] MAINTENANCE_TIME_INTERVAL = "MAINTENANCE_TIME_INTERVAL".getBytes();
 	private static final byte[] NEXT_MAINTENANCE_TIME = "NEXT_MAINTENANCE_TIME".getBytes();
 
@@ -131,8 +130,8 @@ public class DepositImpl implements Deposit {
 	public AccountCapsule createAccount(byte[] address, String accountName, AccountType type) {
 		Key key = new Key(address);
 		AccountCapsule account = new AccountCapsule(ByteString.copyFrom(address),
-				ByteString.copyFromUtf8(accountName),
-				type);
+			ByteString.copyFromUtf8(accountName),
+			type);
 
 		accountCache.put(key, new Value(account.getData(), Type.VALUE_TYPE_CREATE));
 		return account;
@@ -388,8 +387,8 @@ public class DepositImpl implements Deposit {
 
 		if (value < 0 && balance < -value) {
 			throw new RuntimeException(
-					StringUtil.createReadableString(accountCapsule.createDbKey())
-							+ " insufficient balance");
+				StringUtil.createReadableString(accountCapsule.createDbKey())
+					+ " insufficient balance");
 		}
 		if (value >= 0) {
 			accountCapsule.addAssetAmountV2(tokenId, value);
@@ -398,7 +397,7 @@ public class DepositImpl implements Deposit {
 		}
 		Key key = Key.create(address);
 		Value V = Value.create(accountCapsule.getData(),
-				Type.VALUE_TYPE_DIRTY | accountCache.get(key).getType().getType());
+			Type.VALUE_TYPE_DIRTY | accountCache.get(key).getType().getType());
 		accountCache.put(key, V);
 		return accountCapsule.getAssetMapV2().get(tokenId);
 	}
@@ -417,13 +416,13 @@ public class DepositImpl implements Deposit {
 
 		if (value < 0 && balance < -value) {
 			throw new RuntimeException(
-					StringUtil.createReadableString(accountCapsule.createDbKey())
-							+ " insufficient balance");
+				StringUtil.createReadableString(accountCapsule.createDbKey())
+					+ " insufficient balance");
 		}
 		accountCapsule.setBalance(Math.addExact(balance, value));
 		Key key = Key.create(address);
 		Value val = Value.create(accountCapsule.getData(),
-				Type.VALUE_TYPE_DIRTY | accountCache.get(key).getType().getType());
+			Type.VALUE_TYPE_DIRTY | accountCache.get(key).getType().getType());
 		accountCache.put(key, val);
 		return accountCapsule.getBalance();
 	}
@@ -821,7 +820,7 @@ public class DepositImpl implements Deposit {
 	public void putDynamicPropertiesWithLatestProposalNum(long num) {
 		Key key = new Key(LATEST_PROPOSAL_NUM);
 		dynamicPropertiesCache.put(key,
-				new Value(new BytesCapsule(ByteArray.fromLong(num)).getData(), Type.VALUE_TYPE_CREATE));
+			new Value(new BytesCapsule(ByteArray.fromLong(num)).getData(), Type.VALUE_TYPE_CREATE));
 	}
 
 	@Override

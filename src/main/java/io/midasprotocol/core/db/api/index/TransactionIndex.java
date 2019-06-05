@@ -4,15 +4,15 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Objects;
@@ -31,7 +31,7 @@ public class TransactionIndex extends AbstractIndex<TransactionCapsule, Transact
 
 	@Autowired
 	public TransactionIndex(
-			@Qualifier("transactionStore") final ITronChainBase<TransactionCapsule> database) {
+		@Qualifier("transactionStore") final ITronChainBase<TransactionCapsule> database) {
 		super(database);
 	}
 
@@ -47,23 +47,23 @@ public class TransactionIndex extends AbstractIndex<TransactionCapsule, Transact
 	@Override
 	protected void setAttribute() {
 		Transaction_ID =
-				attribute("transaction id",
-						bytes -> new TransactionCapsule(getObject(bytes)).getTransactionId().toString());
+			attribute("transaction id",
+				bytes -> new TransactionCapsule(getObject(bytes)).getTransactionId().toString());
 		OWNERS =
-				attribute(String.class, "owner address",
-						bytes -> getObject(bytes).getRawData().getContractList().stream()
-								.map(TransactionCapsule::getOwner)
-								.filter(Objects::nonNull)
-								.map(ByteArray::toHexString)
-								.collect(Collectors.toList()));
+			attribute(String.class, "owner address",
+				bytes -> getObject(bytes).getRawData().getContractList().stream()
+					.map(TransactionCapsule::getOwner)
+					.filter(Objects::nonNull)
+					.map(ByteArray::toHexString)
+					.collect(Collectors.toList()));
 		TOS =
-				attribute(String.class, "to address",
-						bytes -> getObject(bytes).getRawData().getContractList().stream()
-								.map(TransactionCapsule::getToAddress)
-								.filter(Objects::nonNull)
-								.map(ByteArray::toHexString)
-								.collect(Collectors.toList()));
+			attribute(String.class, "to address",
+				bytes -> getObject(bytes).getRawData().getContractList().stream()
+					.map(TransactionCapsule::getToAddress)
+					.filter(Objects::nonNull)
+					.map(ByteArray::toHexString)
+					.collect(Collectors.toList()));
 		TIMESTAMP =
-				attribute("timestamp", bytes -> getObject(bytes).getRawData().getTimestamp());
+			attribute("timestamp", bytes -> getObject(bytes).getRawData().getTimestamp());
 	}
 }

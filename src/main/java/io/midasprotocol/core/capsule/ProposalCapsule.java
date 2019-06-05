@@ -3,12 +3,12 @@ package io.midasprotocol.core.capsule;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.config.Parameter.ChainConstant;
 import io.midasprotocol.protos.Protocol.Proposal;
 import io.midasprotocol.protos.Protocol.Proposal.State;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -33,9 +33,9 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public ProposalCapsule(ByteString address, final long id) {
 		this.proposal = Proposal.newBuilder()
-				.setProposerAddress(address)
-				.setProposalId(id)
-				.build();
+			.setProposerAddress(address)
+			.setProposalId(id)
+			.build();
 	}
 
 	public static byte[] calculateDbKey(long number) {
@@ -48,8 +48,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void setID(long id) {
 		this.proposal = this.proposal.toBuilder()
-				.setProposalId(id)
-				.build();
+			.setProposalId(id)
+			.build();
 	}
 
 	public ByteString getProposalAddress() {
@@ -58,8 +58,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void setProposalAddress(ByteString address) {
 		this.proposal = this.proposal.toBuilder()
-				.setProposerAddress(address)
-				.build();
+			.setProposerAddress(address)
+			.build();
 	}
 
 	public Map<Long, Long> getParameters() {
@@ -68,8 +68,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void setParameters(Map<Long, Long> parameters) {
 		this.proposal = this.proposal.toBuilder()
-				.putAllParameters(parameters)
-				.build();
+			.putAllParameters(parameters)
+			.build();
 	}
 
 	public long getExpirationTime() {
@@ -78,8 +78,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void setExpirationTime(long time) {
 		this.proposal = this.proposal.toBuilder()
-				.setExpirationTime(time)
-				.build();
+			.setExpirationTime(time)
+			.build();
 	}
 
 	public long getCreateTime() {
@@ -88,8 +88,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void setCreateTime(long time) {
 		this.proposal = this.proposal.toBuilder()
-				.setCreateTime(time)
-				.build();
+			.setCreateTime(time)
+			.build();
 	}
 
 	public List<ByteString> getApprovals() {
@@ -101,9 +101,9 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 		approvals.addAll(getApprovals());
 		approvals.remove(address);
 		this.proposal = this.proposal.toBuilder()
-				.clearApprovals()
-				.addAllApprovals(approvals)
-				.build();
+			.clearApprovals()
+			.addAllApprovals(approvals)
+			.build();
 	}
 
 	public void clearApproval() {
@@ -112,8 +112,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void addApproval(ByteString committeeAddress) {
 		this.proposal = this.proposal.toBuilder()
-				.addApprovals(committeeAddress)
-				.build();
+			.addApprovals(committeeAddress)
+			.build();
 	}
 
 	public State getState() {
@@ -122,8 +122,8 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public void setState(State state) {
 		this.proposal = this.proposal.toBuilder()
-				.setState(state)
-				.build();
+			.setState(state)
+			.build();
 	}
 
 	public boolean hasProcessed() {
@@ -154,10 +154,10 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 
 	public boolean hasMostApprovals(List<ByteString> activeWitnesses) {
 		long count = this.proposal.getApprovalsList().stream()
-				.filter(activeWitnesses::contains).count();
+			.filter(activeWitnesses::contains).count();
 		if (count != this.proposal.getApprovalsCount()) {
 			List<ByteString> InvalidApprovalList = this.proposal.getApprovalsList().stream()
-					.filter(witness -> !activeWitnesses.contains(witness)).collect(Collectors.toList());
+				.filter(witness -> !activeWitnesses.contains(witness)).collect(Collectors.toList());
 			logger.info("InvalidApprovalList: " + StringUtil.getAddressStringList(InvalidApprovalList));
 		}
 		if (activeWitnesses.size() != ChainConstant.MAX_ACTIVE_WITNESS_NUM) {

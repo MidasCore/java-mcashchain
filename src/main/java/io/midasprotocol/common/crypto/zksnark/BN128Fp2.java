@@ -38,26 +38,6 @@ public class BN128Fp2 extends BN128<Fp2> {
 		super(x, y, z);
 	}
 
-	@Override
-	protected BN128<Fp2> zero() {
-		return ZERO;
-	}
-
-	@Override
-	protected BN128<Fp2> instance(Fp2 x, Fp2 y, Fp2 z) {
-		return new BN128Fp2(x, y, z);
-	}
-
-	@Override
-	protected Fp2 b() {
-		return B_Fp2;
-	}
-
-	@Override
-	protected Fp2 one() {
-		return Fp2._1;
-	}
-
 	protected BN128Fp2(BigInteger a, BigInteger b, BigInteger c, BigInteger d) {
 		super(Fp2.create(a, b), Fp2.create(c, d), Fp2._1);
 	}
@@ -85,5 +65,25 @@ public class BN128Fp2 extends BN128<Fp2> {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	protected BN128<Fp2> zero() {
+		return ZERO;
+	}
+
+	@Override
+	protected BN128<Fp2> instance(Fp2 x, Fp2 y, Fp2 z) {
+		return new BN128Fp2(x, y, z);
+	}
+
+	@Override
+	protected Fp2 b() {
+		return B_Fp2;
+	}
+
+	@Override
+	protected Fp2 one() {
+		return Fp2._1;
 	}
 }

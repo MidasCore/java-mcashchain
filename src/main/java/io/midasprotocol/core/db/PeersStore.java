@@ -1,9 +1,9 @@
 package io.midasprotocol.core.db;
 
+import io.midasprotocol.common.overlay.discover.node.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.common.overlay.discover.node.Node;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +21,7 @@ public class PeersStore extends TronDatabase<Set<Node>> {
 	public void put(byte[] key, Set<Node> nodes) {
 		StringBuilder sb = new StringBuilder();
 		nodes.forEach(node -> sb.append(node.getEnodeURL()).append("&").append(node.getReputation())
-				.append("||"));
+			.append("||"));
 		dbSource.putData(key, sb.toString().getBytes());
 	}
 

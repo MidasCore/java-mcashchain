@@ -3,8 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
@@ -18,6 +16,8 @@ import io.midasprotocol.protos.Protocol.Key;
 import io.midasprotocol.protos.Protocol.Permission;
 import io.midasprotocol.protos.Protocol.Permission.PermissionType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -42,8 +42,8 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
 			AccountStore accountStore = dbManager.getAccountStore();
 			AccountCapsule account = accountStore.get(ownerAddress);
 			account.updatePermissions(accountPermissionUpdateContract.getOwner(),
-					accountPermissionUpdateContract.getWitness(),
-					accountPermissionUpdateContract.getActivesList());
+				accountPermissionUpdateContract.getWitness(),
+				accountPermissionUpdateContract.getActivesList());
 			accountStore.put(ownerAddress, account);
 
 			dbManager.adjustBalance(ownerAddress, -fee);
@@ -66,7 +66,7 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
 	private boolean checkPermission(Permission permission) throws ContractValidateException {
 		if (permission.getKeysCount() > dbManager.getDynamicPropertiesStore().getTotalSignNum()) {
 			throw new ContractValidateException("number of keys in permission should not be greater "
-					+ "than " + dbManager.getDynamicPropertiesStore().getTotalSignNum());
+				+ "than " + dbManager.getDynamicPropertiesStore().getTotalSignNum());
 		}
 		if (permission.getKeysCount() == 0) {
 			throw new ContractValidateException("key's count should be greater than 0");
@@ -88,13 +88,13 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
 
 		long weightSum = 0;
 		List<ByteString> addressList = permission.getKeysList()
-				.stream()
-				.map(x -> x.getAddress())
-				.distinct()
-				.collect(toList());
+			.stream()
+			.map(x -> x.getAddress())
+			.distinct()
+			.collect(toList());
 		if (addressList.size() != permission.getKeysList().size()) {
 			throw new ContractValidateException(
-					"address should be distinct in permission " + permission.getType());
+				"address should be distinct in permission " + permission.getType());
 		}
 		for (Key key : permission.getKeysList()) {
 			if (!Wallet.addressValid(key.getAddress().toByteArray())) {
@@ -111,15 +111,15 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
 		}
 		if (weightSum < permission.getThreshold()) {
 			throw new ContractValidateException(
-					"sum of all key's weight should not be less than threshold in permission " + permission
-							.getType());
+				"sum of all key's weight should not be less than threshold in permission " + permission
+					.getType());
 		}
 
 		ByteString operations = permission.getOperations();
 		if (permission.getType() != PermissionType.Active) {
 			if (!operations.isEmpty()) {
 				throw new ContractValidateException(
-						permission.getType() + " permission needn't operations");
+					permission.getType() + " permission needn't operations");
 			}
 			return true;
 		}
@@ -149,13 +149,13 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
 		}
 		if (this.dbManager.getDynamicPropertiesStore().getAllowMultiSign() != 1) {
 			throw new ContractValidateException("multi sign is not allowed, "
-					+ "need to be opened by the committee");
+				+ "need to be opened by the committee");
 		}
 		if (!this.contract.is(AccountPermissionUpdateContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [AccountPermissionUpdateContract],real type["
-							+ contract
-							.getClass() + "]");
+				"contract type error,expected type [AccountPermissionUpdateContract],real type["
+					+ contract
+					.getClass() + "]");
 		}
 		final AccountPermissionUpdateContract accountPermissionUpdateContract;
 		try {

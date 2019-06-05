@@ -1,7 +1,7 @@
 package io.midasprotocol.common.overlay.message;
 
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.core.net.message.MessageTypes;
+import org.spongycastle.util.encoders.Hex;
 
 public class PingMessage extends P2pMessage {
 

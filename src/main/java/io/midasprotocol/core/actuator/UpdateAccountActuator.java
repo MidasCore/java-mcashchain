@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
@@ -15,6 +14,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AccountUpdateContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class UpdateAccountActuator extends AbstractActuator {
@@ -59,8 +59,8 @@ public class UpdateAccountActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(AccountUpdateContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [AccountUpdateContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [AccountUpdateContract],real type[" + contract
+					.getClass() + "]");
 		}
 		final AccountUpdateContract accountUpdateContract;
 		try {
@@ -84,12 +84,12 @@ public class UpdateAccountActuator extends AbstractActuator {
 		}
 
 		if (account.getAccountName() != null && !account.getAccountName().isEmpty()
-				&& dbManager.getDynamicPropertiesStore().getAllowUpdateAccountName() == 0) {
+			&& dbManager.getDynamicPropertiesStore().getAllowUpdateAccountName() == 0) {
 			throw new ContractValidateException("This account name already exist");
 		}
 
 		if (dbManager.getAccountIndexStore().has(accountName)
-				&& dbManager.getDynamicPropertiesStore().getAllowUpdateAccountName() == 0) {
+			&& dbManager.getDynamicPropertiesStore().getAllowUpdateAccountName() == 0) {
 			throw new ContractValidateException("This name has existed");
 		}
 

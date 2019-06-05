@@ -48,7 +48,7 @@ public interface Parameter {
 
 	enum ForkBlockVersionEnum {
 		GENESIS(0);
-//		ENERGY_LIMIT(5),
+		//		ENERGY_LIMIT(5),
 //		VERSION_3_2_2(6),
 //		VERSION_3_5(7);
 		@Getter
@@ -103,11 +103,11 @@ public interface Parameter {
 		long MAJOR_PENALTY_EPOCH = 24;
 
 		List<NodeTier> NODE_TIERS = new ArrayList<>(Arrays.asList(
-				new NodeTier("Master Node", 5000000L * ChainConstant.TEN_POW_DECIMALS, 20000, 20),
-				new NodeTier("Jedi Node", 500000L * ChainConstant.TEN_POW_DECIMALS, 1800, 15),
-				new NodeTier("Guardian Node", 50000L * ChainConstant.TEN_POW_DECIMALS, 150, 10),
-				new NodeTier("Warrior Node", 10000L * ChainConstant.TEN_POW_DECIMALS, 25, 5),
-				new NodeTier("Apprentice Node", 5000L * ChainConstant.TEN_POW_DECIMALS, 10, 0)
+			new NodeTier("Master Node", 5000000L * ChainConstant.TEN_POW_DECIMALS, 20000, 20),
+			new NodeTier("Jedi Node", 500000L * ChainConstant.TEN_POW_DECIMALS, 1800, 15),
+			new NodeTier("Guardian Node", 50000L * ChainConstant.TEN_POW_DECIMALS, 150, 10),
+			new NodeTier("Warrior Node", 10000L * ChainConstant.TEN_POW_DECIMALS, 25, 5),
+			new NodeTier("Apprentice Node", 5000L * ChainConstant.TEN_POW_DECIMALS, 10, 0)
 		));
 		long SUPER_NODE_STAKE_AMOUNT = 5000000L * ChainConstant.TEN_POW_DECIMALS;
 	}
@@ -133,7 +133,6 @@ public interface Parameter {
 		int ASSET_ISSUE_COUNT_LIMIT_MAX = 1000;
 		int PROPOSAL_COUNT_LIMIT_MAX = 1000;
 		int EXCHANGE_COUNT_LIMIT_MAX = 1000;
-		int STAKE_COUNT_LIMIT_MAX = 100;
 	}
 
 	interface AdaptiveResourceLimitConstants {

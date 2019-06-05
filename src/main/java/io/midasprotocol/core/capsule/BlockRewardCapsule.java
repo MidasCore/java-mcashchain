@@ -32,11 +32,11 @@ public class BlockRewardCapsule implements ProtoCapsule<Protocol.BlockReward> {
 
 	public void addReward(ByteString address, long amount, Protocol.BlockReward.RewardType rewardType) {
 		this.blockReward = this.blockReward.toBuilder()
-				.addRewards(
-						Protocol.BlockReward.Reward.newBuilder()
-								.setAddress(address)
-								.setAmount(amount)
-								.setType(rewardType).build()).build();
+			.addRewards(
+				Protocol.BlockReward.Reward.newBuilder()
+					.setAddress(address)
+					.setAmount(amount)
+					.setType(rewardType).build()).build();
 	}
 
 	public void clearReward() {

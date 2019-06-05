@@ -1,11 +1,11 @@
 package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.exception.BadItemException;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
 import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result> {
@@ -42,8 +42,8 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 	public void setStatus(long fee, Transaction.Result.code code) {
 		long oldValue = transactionResult.getFee();
 		this.transactionResult = this.transactionResult.toBuilder()
-				.setFee(oldValue + fee)
-				.setRet(code).build();
+			.setFee(oldValue + fee)
+			.setRet(code).build();
 	}
 
 	public long getFee() {
@@ -84,7 +84,7 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 
 	public void setExchangeReceivedAmount(long amount) {
 		this.transactionResult = this.transactionResult.toBuilder().setExchangeReceivedAmount(amount)
-				.build();
+			.build();
 	}
 
 	public long getExchangeWithdrawAnotherAmount() {
@@ -93,8 +93,8 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 
 	public void setExchangeWithdrawAnotherAmount(long amount) {
 		this.transactionResult = this.transactionResult.toBuilder()
-				.setExchangeWithdrawAnotherAmount(amount)
-				.build();
+			.setExchangeWithdrawAnotherAmount(amount)
+			.build();
 	}
 
 	public long getExchangeId() {
@@ -103,8 +103,8 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 
 	public void setExchangeId(long id) {
 		this.transactionResult = this.transactionResult.toBuilder()
-				.setExchangeId(id)
-				.build();
+			.setExchangeId(id)
+			.build();
 	}
 
 	public long getExchangeInjectAnotherAmount() {
@@ -113,13 +113,13 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 
 	public void setExchangeInjectAnotherAmount(long amount) {
 		this.transactionResult = this.transactionResult.toBuilder()
-				.setExchangeInjectAnotherAmount(amount)
-				.build();
+			.setExchangeInjectAnotherAmount(amount)
+			.build();
 	}
 
 	public void addFee(long fee) {
 		this.transactionResult = this.transactionResult.toBuilder()
-				.setFee(this.transactionResult.getFee() + fee).build();
+			.setFee(this.transactionResult.getFee() + fee).build();
 	}
 
 	public void setErrorCode(Transaction.Result.code code) {
@@ -132,8 +132,8 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 
 	public void setUnstakeAmount(long amount) {
 		this.transactionResult = this.transactionResult.toBuilder()
-				.setUnstakeAmount(amount)
-				.build();
+			.setUnstakeAmount(amount)
+			.build();
 	}
 
 	@Override

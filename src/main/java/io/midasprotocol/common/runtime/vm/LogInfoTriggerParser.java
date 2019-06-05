@@ -1,8 +1,5 @@
 package io.midasprotocol.common.runtime.vm;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.common.logsfilter.trigger.ContractLogTrigger;
 import io.midasprotocol.common.logsfilter.trigger.ContractTrigger;
@@ -11,6 +8,9 @@ import io.midasprotocol.common.storage.Deposit;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.ContractCapsule;
 import io.midasprotocol.protos.Protocol.SmartContract.ABI;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.util.encoders.Hex;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,7 +32,7 @@ public class LogInfoTriggerParser {
 		this.blockTimestamp = blockTimestamp;
 		this.txId = ArrayUtils.isEmpty(txId) ? "" : Hex.toHexString(txId);
 		this.originAddress =
-				ArrayUtils.isEmpty(originAddress) ? "" : Wallet.encodeBase58Check(originAddress);
+			ArrayUtils.isEmpty(originAddress) ? "" : Wallet.encodeBase58Check(originAddress);
 
 	}
 
@@ -63,7 +63,7 @@ public class LogInfoTriggerParser {
 
 			byte[] contractAddress = MUtil.convertToTronAddress(logInfo.getAddress());
 			String strContractAddr =
-					ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encodeBase58Check(contractAddress);
+				ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encodeBase58Check(contractAddress);
 			if (signMap.get(strContractAddr) != null) {
 				continue;
 			}
@@ -74,7 +74,7 @@ public class LogInfoTriggerParser {
 			}
 			ABI abi = contract.getInstance().getAbi();
 			String creatorAddr = Wallet.encodeBase58Check(
-					MUtil.convertToTronAddress(contract.getInstance().getOriginAddress().toByteArray()));
+				MUtil.convertToTronAddress(contract.getInstance().getOriginAddress().toByteArray()));
 			signMap.put(strContractAddr, creatorAddr); // mark as found.
 
 			// calculate the sha3 of the event signature first.
@@ -96,13 +96,13 @@ public class LogInfoTriggerParser {
 
 			byte[] contractAddress = MUtil.convertToTronAddress(logInfo.getAddress());
 			String strContractAddr =
-					ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encodeBase58Check(contractAddress);
+				ArrayUtils.isEmpty(contractAddress) ? "" : Wallet.encodeBase58Check(contractAddress);
 
 			List<DataWord> topics = logInfo.getTopics();
 			ABI.Entry entry = null;
 			String signature = "";
 			if (topics != null && topics.size() > 0 && !ArrayUtils.isEmpty(topics.get(0).getData())
-					&& fullMap.size() > 0) {
+				&& fullMap.size() > 0) {
 				String firstTopic = topics.get(0).toString();
 				entry = fullMap.get(strContractAddr + "_" + firstTopic);
 				signature = signMap.get(strContractAddr + "_" + firstTopic);

@@ -2,11 +2,11 @@ package io.midasprotocol.core.services.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Constant;
 import io.midasprotocol.core.Wallet;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +71,7 @@ public class ValidateAddressServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			JSONObject jsonAddress = JSON.parseObject(input);
 			response.getWriter().println(validAddress(jsonAddress.getString("address")));

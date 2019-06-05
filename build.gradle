@@ -54,7 +54,7 @@ repositories {
 	maven { url 'http://central.maven.org/maven2/' }
 }
 def versions = [
-		checkstyle: '8.7',
+		checkstyle: '8.21',
 ]
 
 jacoco {
@@ -183,7 +183,7 @@ dependencies {
 	compile group: 'org.pf4j', name: 'pf4j', version: '2.5.0'
 }
 
-//check.dependsOn 'lint'
+check.dependsOn 'lint'
 
 //checkstyle {
 //    toolVersion = "${versions.checkstyle}"

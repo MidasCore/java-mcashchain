@@ -1,9 +1,9 @@
 package io.midasprotocol.common.storage;
 
-import org.apache.commons.lang3.ArrayUtils;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.core.capsule.*;
 import io.midasprotocol.core.exception.BadItemException;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 

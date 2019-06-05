@@ -1,10 +1,5 @@
 package io.midasprotocol.core.db.backup;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.rocksdb.RocksDBException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.PropUtil;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.config.args.Args;
@@ -12,6 +7,11 @@ import io.midasprotocol.core.db.RevokingDatabase;
 import io.midasprotocol.core.db2.core.RevokingDBWithCachingNewValue;
 import io.midasprotocol.core.db2.core.SnapshotManager;
 import io.midasprotocol.core.db2.core.SnapshotRoot;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.rocksdb.RocksDBException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class BackupDbUtil {
 	private int getBackupState() {
 		try {
 			return Integer.valueOf(PropUtil
-					.readProperty(args.getDbBackupConfig().getPropPath(), BackupDbUtil.DB_BACKUP_STATE)
+				.readProperty(args.getDbBackupConfig().getPropPath(), BackupDbUtil.DB_BACKUP_STATE)
 			);
 		} catch (NumberFormatException ignore) {
 			return DB_BACKUP_STATE_DEFAULT;  //get default state if prop file is newly created
@@ -42,7 +42,7 @@ public class BackupDbUtil {
 
 	private void setBackupState(int status) {
 		PropUtil.writeProperty(args.getDbBackupConfig().getPropPath(), BackupDbUtil.DB_BACKUP_STATE,
-				String.valueOf(status));
+			String.valueOf(status));
 	}
 
 	private void switchBackupState() {
@@ -100,7 +100,7 @@ public class BackupDbUtil {
 		}
 		long timeUsed = System.currentTimeMillis() - t1;
 		logger
-				.info("current block number is {}, backup all store use {} ms!", block.getNum(), timeUsed);
+			.info("current block number is {}, backup all store use {} ms!", block.getNum(), timeUsed);
 		if (timeUsed >= 3000) {
 			logger.warn("backup db use too much time.");
 		}
@@ -118,9 +118,9 @@ public class BackupDbUtil {
 		List<RevokingDBWithCachingNewValue> stores = ((SnapshotManager) db).getDbs();
 		for (RevokingDBWithCachingNewValue store : stores) {
 			if (((SnapshotRoot) (store.getHead().getRoot())).getDb().getClass()
-					== io.midasprotocol.core.db2.common.RocksDB.class) {
+				== io.midasprotocol.core.db2.common.RocksDB.class) {
 				((io.midasprotocol.core.db2.common.RocksDB) ((SnapshotRoot) (store.getHead().getRoot())).getDb())
-						.getDb().backup(path);
+					.getDb().backup(path);
 			}
 		}
 	}
@@ -137,9 +137,9 @@ public class BackupDbUtil {
 		List<RevokingDBWithCachingNewValue> stores = ((SnapshotManager) db).getDbs();
 		for (RevokingDBWithCachingNewValue store : stores) {
 			if (((SnapshotRoot) (store.getHead().getRoot())).getDb().getClass()
-					== io.midasprotocol.core.db2.common.RocksDB.class) {
+				== io.midasprotocol.core.db2.common.RocksDB.class) {
 				((io.midasprotocol.core.db2.common.RocksDB) (((SnapshotRoot) (store.getHead().getRoot())).getDb()))
-						.getDb().deleteDbBakPath(path);
+					.getDb().deleteDbBakPath(path);
 			}
 		}
 	}

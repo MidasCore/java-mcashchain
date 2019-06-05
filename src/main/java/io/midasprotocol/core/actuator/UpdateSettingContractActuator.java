@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -15,6 +14,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UpdateSettingContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 
@@ -30,14 +30,14 @@ public class UpdateSettingContractActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			UpdateSettingContract usContract = contract
-					.unpack(UpdateSettingContract.class);
+				.unpack(UpdateSettingContract.class);
 			long newPercent = usContract.getConsumeUserResourcePercent();
 			byte[] contractAddress = usContract.getContractAddress().toByteArray();
 			ContractCapsule deployedContract = dbManager.getContractStore().get(contractAddress);
 
 			dbManager.getContractStore().put(contractAddress, new ContractCapsule(
-					deployedContract.getInstance().toBuilder().setConsumeUserResourcePercent(newPercent)
-							.build()));
+				deployedContract.getInstance().toBuilder().setConsumeUserResourcePercent(newPercent)
+					.build()));
 
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (InvalidProtocolBufferException e) {
@@ -58,7 +58,7 @@ public class UpdateSettingContractActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(UpdateSettingContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected UpdateSettingContract, actual" + contract.getClass());
+				"Contract type error, expected UpdateSettingContract, actual" + contract.getClass());
 		}
 		final UpdateSettingContract contract;
 		try {
@@ -93,7 +93,7 @@ public class UpdateSettingContractActuator extends AbstractActuator {
 		}
 
 		byte[] deployedContractOwnerAddress = deployedContract.getInstance().getOriginAddress()
-				.toByteArray();
+			.toByteArray();
 
 		if (!Arrays.equals(ownerAddress, deployedContractOwnerAddress)) {
 			throw new ContractValidateException("Account " + readableOwnerAddress + " is not the owner of the contract");

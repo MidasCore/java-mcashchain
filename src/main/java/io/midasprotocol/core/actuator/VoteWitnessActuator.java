@@ -4,7 +4,6 @@ import com.google.common.math.LongMath;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.storage.Deposit;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
@@ -21,6 +20,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.VoteWitnessContract;
 import io.midasprotocol.protos.Contract.VoteWitnessContract.Vote;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -59,7 +59,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(VoteWitnessContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected VoteWitnessContract, actual " + contract.getClass());
+				"Contract type error, expected VoteWitnessContract, actual " + contract.getClass());
 		}
 		final VoteWitnessContract contract;
 		try {
@@ -95,36 +95,36 @@ public class VoteWitnessActuator extends AbstractActuator {
 			if (!Objects.isNull(getDeposit())) {
 				if (Objects.isNull(getDeposit().getAccount(witnessCandidate))) {
 					throw new ContractValidateException(
-							ACCOUNT_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
+						ACCOUNT_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
 				}
 			} else if (!accountStore.has(witnessCandidate)) {
 				throw new ContractValidateException(
-						ACCOUNT_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
+					ACCOUNT_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
 			}
 			if (!Objects.isNull(getDeposit())) {
 				if (Objects.isNull(getDeposit().getWitness(witnessCandidate))) {
 					throw new ContractValidateException(
-							WITNESS_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
+						WITNESS_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
 				}
 			} else if (!witnessStore.has(witnessCandidate)) {
 				throw new ContractValidateException(
-						WITNESS_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
+					WITNESS_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
 			}
 			sum = LongMath.checkedAdd(sum, vote.getVoteCount());
 
 			AccountCapsule accountCapsule =
-					(Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
-							: getDeposit().getAccount(ownerAddress);
+				(Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
+					: getDeposit().getAccount(ownerAddress);
 			if (accountCapsule == null) {
 				throw new ContractValidateException(
-						ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
 			}
 
 			long votingPower = accountCapsule.getVotingPower();
 
 			if (sum > votingPower) {
 				throw new ContractValidateException(
-						"The total number of votes[" + sum + "] is greater than the votingPower[" + votingPower + "]");
+					"The total number of votes[" + sum + "] is greater than the votingPower[" + votingPower + "]");
 			}
 		} catch (ArithmeticException e) {
 			logger.debug(e.getMessage(), e);
@@ -142,19 +142,19 @@ public class VoteWitnessActuator extends AbstractActuator {
 		AccountStore accountStore = dbManager.getAccountStore();
 
 		AccountCapsule accountCapsule = (Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
-				: getDeposit().getAccount(ownerAddress);
+			: getDeposit().getAccount(ownerAddress);
 
 		if (!Objects.isNull(getDeposit())) {
 			VoteChangeCapsule vCapsule = getDeposit().getVoteChangeCapsule(ownerAddress);
 			if (Objects.isNull(vCapsule)) {
 				voteChangeCapsule = new VoteChangeCapsule(voteContract.getOwnerAddress(),
-						accountCapsule.getVote());
+					accountCapsule.getVote());
 			} else {
 				voteChangeCapsule = vCapsule;
 			}
 		} else if (!voteChangeStore.has(ownerAddress)) {
 			voteChangeCapsule = new VoteChangeCapsule(voteContract.getOwnerAddress(),
-					accountCapsule.getVote());
+				accountCapsule.getVote());
 		} else {
 			voteChangeCapsule = voteChangeStore.get(ownerAddress);
 		}
@@ -164,9 +164,9 @@ public class VoteWitnessActuator extends AbstractActuator {
 
 		if (voteContract.hasVote()) {
 			logger.debug("countVoteAccount,address[{}]",
-					ByteArray.toHexString(voteContract.getVote().getVoteAddress().toByteArray()));
+				ByteArray.toHexString(voteContract.getVote().getVoteAddress().toByteArray()));
 			voteChangeCapsule.setNewVote(
-					voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
+				voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
 			accountCapsule.setVote(voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
 		}
 

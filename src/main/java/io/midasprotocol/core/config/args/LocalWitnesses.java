@@ -16,14 +16,14 @@
 package io.midasprotocol.core.config.args;
 
 import com.google.common.collect.Lists;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
+import io.midasprotocol.core.config.Parameter.ChainConstant;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.midasprotocol.common.crypto.ECKey;
-import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.core.config.Parameter.ChainConstant;
 
 import java.util.List;
 
@@ -88,8 +88,8 @@ public class LocalWitnesses {
 
 		if (StringUtils.isNotBlank(privateKey) && privateKey.length() != ChainConstant.PRIVATE_KEY_LENGTH) {
 			throw new IllegalArgumentException(
-					"Private key(" + privateKey + ") must be " + ChainConstant.PRIVATE_KEY_LENGTH
-							+ "-bits hex string.");
+				"Private key(" + privateKey + ") must be " + ChainConstant.PRIVATE_KEY_LENGTH
+					+ "-bits hex string.");
 		}
 	}
 

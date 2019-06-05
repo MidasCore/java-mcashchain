@@ -1,11 +1,14 @@
 package io.midasprotocol.common.backup;
 
-import static io.midasprotocol.common.backup.BackupManager.BackupStatusEnum.INIT;
-import static io.midasprotocol.common.backup.BackupManager.BackupStatusEnum.MASTER;
-import static io.midasprotocol.common.backup.BackupManager.BackupStatusEnum.SLAVER;
-import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.BACKUP_KEEP_ALIVE;
-
+import io.midasprotocol.common.net.udp.handler.EventHandler;
+import io.midasprotocol.common.net.udp.handler.MessageHandler;
+import io.midasprotocol.common.net.udp.handler.UdpEvent;
+import io.midasprotocol.common.net.udp.message.Message;
+import io.midasprotocol.common.net.udp.message.backup.KeepAliveMessage;
+import io.midasprotocol.core.config.args.Args;
 import io.netty.util.internal.ConcurrentSet;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -14,14 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import io.midasprotocol.common.net.udp.handler.EventHandler;
-import io.midasprotocol.common.net.udp.handler.MessageHandler;
-import io.midasprotocol.common.net.udp.handler.UdpEvent;
-import io.midasprotocol.common.net.udp.message.Message;
-import io.midasprotocol.common.net.udp.message.backup.KeepAliveMessage;
-import io.midasprotocol.core.config.args.Args;
+import static io.midasprotocol.common.backup.BackupManager.BackupStatusEnum.*;
+import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.BACKUP_KEEP_ALIVE;
 
 @Slf4j(topic = "backup")
 @Component
@@ -53,19 +50,13 @@ public class BackupManager implements EventHandler {
 		this.messageHandler = messageHandler;
 	}
 
-	public enum BackupStatusEnum {
-		INIT,
-		SLAVER,
-		MASTER
+	public BackupStatusEnum getStatus() {
+		return status;
 	}
 
 	public void setStatus(BackupStatusEnum status) {
 		logger.info("Change backup status to {}", status);
 		this.status = status;
-	}
-
-	public BackupStatusEnum getStatus() {
-		return status;
 	}
 
 	public void init() {
@@ -96,7 +87,7 @@ public class BackupManager implements EventHandler {
 		executorService.scheduleWithFixedDelay(() -> {
 			try {
 				if (!status.equals(MASTER)
-						&& System.currentTimeMillis() - lastKeepAliveTime > keepAliveTimeout) {
+					&& System.currentTimeMillis() - lastKeepAliveTime > keepAliveTimeout) {
 					if (status.equals(SLAVER)) {
 						setStatus(INIT);
 						lastKeepAliveTime = System.currentTimeMillis();
@@ -108,8 +99,8 @@ public class BackupManager implements EventHandler {
 					return;
 				}
 				members.forEach(member -> messageHandler
-						.accept(new UdpEvent(new KeepAliveMessage(status.equals(MASTER), priority),
-								new InetSocketAddress(member, port))));
+					.accept(new UdpEvent(new KeepAliveMessage(status.equals(MASTER), priority),
+						new InetSocketAddress(member, port))));
 			} catch (Throwable t) {
 				logger.error("Exception in send keep alive message:{}", t.getMessage());
 			}
@@ -122,7 +113,7 @@ public class BackupManager implements EventHandler {
 		Message msg = udpEvent.getMessage();
 		if (!msg.getType().equals(BACKUP_KEEP_ALIVE)) {
 			logger.warn("Receive not keep alive message from {}, type {}", sender.getHostString(),
-					msg.getType());
+				msg.getType());
 			return;
 		}
 		if (!members.contains(sender.getHostString())) {
@@ -153,6 +144,12 @@ public class BackupManager implements EventHandler {
 	@Override
 	public void channelActivated() {
 		init();
+	}
+
+	public enum BackupStatusEnum {
+		INIT,
+		SLAVER,
+		MASTER
 	}
 
 }

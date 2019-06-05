@@ -18,12 +18,12 @@
 
 package io.midasprotocol.common.crypto.jce;
 
-import java.security.Provider;
-import java.security.Security;
-
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 import io.midasprotocol.common.crypto.cryptohash.Keccak256;
 import io.midasprotocol.common.crypto.cryptohash.Keccak512;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.Provider;
+import java.security.Security;
 
 public final class TronCastleProvider {
 

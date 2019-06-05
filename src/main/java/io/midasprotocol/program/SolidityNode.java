@@ -1,11 +1,8 @@
 package io.midasprotocol.program;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.util.StringUtils;
 import io.midasprotocol.common.application.Application;
-import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
+import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.overlay.client.DatabaseGrpcClient;
 import io.midasprotocol.common.overlay.discover.DiscoverServer;
 import io.midasprotocol.common.overlay.discover.node.NodeManager;
@@ -18,6 +15,9 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.services.RpcApiService;
 import io.midasprotocol.core.services.http.solidity.SolidityNodeHttpApiService;
 import io.midasprotocol.protos.Protocol.Block;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
@@ -58,7 +58,7 @@ public class SolidityNode {
 		Args cfgArgs = Args.getInstance();
 
 		logger.info("index switch is {}",
-				BooleanUtils.toStringOnOff(BooleanUtils.toBoolean(cfgArgs.getStorage().getIndexSwitch())));
+			BooleanUtils.toStringOnOff(BooleanUtils.toBoolean(cfgArgs.getStorage().getIndexSwitch())));
 
 		if (StringUtils.isEmpty(cfgArgs.getTrustNodeAddr())) {
 			logger.error("Trust node not set.");
@@ -105,7 +105,7 @@ public class SolidityNode {
 			new Thread(this::getBlock).start();
 			new Thread(this::processBlock).start();
 			logger.info("Success to start solid node, id: {}, remoteBlockNum: {}.", id.get(),
-					remoteBlockNum);
+				remoteBlockNum);
 		} catch (Exception e) {
 			logger.error("Failed to start solid node, address: {}.", Args.getInstance().getTrustNodeAddr());
 			System.exit(0);
@@ -167,7 +167,7 @@ public class SolidityNode {
 				long num = block.getBlockHeader().getRawData().getNumber();
 				if (num == blockNum) {
 					logger.info("Success to get block: {}, cost: {}ms.",
-							blockNum, System.currentTimeMillis() - time);
+						blockNum, System.currentTimeMillis() - time);
 					return block;
 				} else {
 					logger.warn("Get block id not the same , {}, {}.", num, blockNum);
@@ -186,11 +186,11 @@ public class SolidityNode {
 				long time = System.currentTimeMillis();
 				long blockNum = databaseGrpcClient.getDynamicProperties().getLastSolidityBlockNum();
 				logger.info("Get last remote solid blockNum: {}, remoteBlockNum: {}, cost: {}.",
-						blockNum, remoteBlockNum, System.currentTimeMillis() - time);
+					blockNum, remoteBlockNum, System.currentTimeMillis() - time);
 				return blockNum;
 			} catch (Exception e) {
 				logger.error("Failed to get last solid blockNum: {}, reason: {}.", remoteBlockNum.get(),
-						e.getMessage());
+					e.getMessage());
 				sleep(exceptionSleepTime);
 			}
 		}
@@ -207,10 +207,10 @@ public class SolidityNode {
 		long lastSolidityBlockNum = dbManager.getDynamicPropertiesStore().getLatestSolidifiedBlockNum();
 		long headBlockNum = dbManager.getHeadBlockNum();
 		logger.info("headBlockNum:{}, solidityBlockNum:{}, diff:{}",
-				headBlockNum, lastSolidityBlockNum, headBlockNum - lastSolidityBlockNum);
+			headBlockNum, lastSolidityBlockNum, headBlockNum - lastSolidityBlockNum);
 		if (lastSolidityBlockNum < headBlockNum) {
 			logger.info("use fullNode database, headBlockNum:{}, solidityBlockNum:{}, diff:{}",
-					headBlockNum, lastSolidityBlockNum, headBlockNum - lastSolidityBlockNum);
+				headBlockNum, lastSolidityBlockNum, headBlockNum - lastSolidityBlockNum);
 			dbManager.getDynamicPropertiesStore().saveLatestSolidifiedBlockNum(headBlockNum);
 		}
 	}

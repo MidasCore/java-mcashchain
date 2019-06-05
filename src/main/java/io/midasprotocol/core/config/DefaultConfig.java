@@ -1,14 +1,5 @@
 package io.midasprotocol.core.config;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
-import org.rocksdb.RocksDB;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.RevokingDatabase;
 import io.midasprotocol.core.db.RevokingStore;
@@ -19,6 +10,15 @@ import io.midasprotocol.core.db.backup.NeedBeanCondition;
 import io.midasprotocol.core.db2.core.SnapshotManager;
 import io.midasprotocol.core.services.interfaceOnSolidity.RpcApiServiceOnSolidity;
 import io.midasprotocol.core.services.interfaceOnSolidity.http.solidity.HttpApiOnSolidityService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
+import org.rocksdb.RocksDB;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Slf4j(topic = "app")
 @Configuration
@@ -42,7 +42,7 @@ public class DefaultConfig {
 	@Bean
 	public IndexHelper indexHelper() {
 		if (Args.getInstance().isSolidityNode()
-				&& BooleanUtils.toBoolean(Args.getInstance().getStorage().getIndexSwitch())) {
+			&& BooleanUtils.toBoolean(Args.getInstance().getStorage().getIndexSwitch())) {
 			return new IndexHelper();
 		}
 		return null;

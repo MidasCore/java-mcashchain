@@ -2,12 +2,12 @@ package io.midasprotocol.core.db2.core;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
-import lombok.Getter;
 import io.midasprotocol.common.utils.ByteUtil;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.common.*;
 import io.midasprotocol.core.exception.ItemNotFoundException;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -118,9 +118,9 @@ public class RevokingDBWithCachingNewValue implements IRevokingDB {
 			if (!((SnapshotImpl) snapshot).db.isEmpty()) {
 				--tmp;
 				Streams.stream(((SnapshotImpl) snapshot).db)
-						.map(Map.Entry::getValue)
-						.map(Value::getBytes)
-						.forEach(result::add);
+					.map(Map.Entry::getValue)
+					.map(Value::getBytes)
+					.forEach(result::add);
 			}
 		}
 
@@ -150,25 +150,25 @@ public class RevokingDBWithCachingNewValue implements IRevokingDB {
 
 		if (((SnapshotRoot) head.getRoot()).db.getClass() == LevelDB.class) {
 			((LevelDB) ((SnapshotRoot) head.getRoot()).db).getDb().getNext(key, limit).entrySet().stream()
-					.map(e -> Maps
-							.immutableEntry(WrappedByteArray.of(e.getKey()), WrappedByteArray.of(e.getValue())))
-					.forEach(e -> levelDBMap.put(e.getKey(), e.getValue()));
+				.map(e -> Maps
+					.immutableEntry(WrappedByteArray.of(e.getKey()), WrappedByteArray.of(e.getValue())))
+				.forEach(e -> levelDBMap.put(e.getKey(), e.getValue()));
 		} else if (((SnapshotRoot) head.getRoot()).db.getClass() == RocksDB.class) {
 			((RocksDB) ((SnapshotRoot) head.getRoot()).db).getDb().getNext(key, limit).entrySet().stream()
-					.map(e -> Maps
-							.immutableEntry(WrappedByteArray.of(e.getKey()), WrappedByteArray.of(e.getValue())))
-					.forEach(e -> levelDBMap.put(e.getKey(), e.getValue()));
+				.map(e -> Maps
+					.immutableEntry(WrappedByteArray.of(e.getKey()), WrappedByteArray.of(e.getValue())))
+				.forEach(e -> levelDBMap.put(e.getKey(), e.getValue()));
 		}
 
 		levelDBMap.putAll(collection);
 
 		return levelDBMap.entrySet().stream()
-				.sorted((e1, e2) -> ByteUtil.compare(e1.getKey().getBytes(), e2.getKey().getBytes()))
-				.filter(e -> ByteUtil.greaterOrEquals(e.getKey().getBytes(), key))
-				.limit(limit)
-				.map(Map.Entry::getValue)
-				.map(WrappedByteArray::getBytes)
-				.collect(Collectors.toSet());
+			.sorted((e1, e2) -> ByteUtil.compare(e1.getKey().getBytes(), e2.getKey().getBytes()))
+			.filter(e -> ByteUtil.greaterOrEquals(e.getKey().getBytes(), key))
+			.limit(limit)
+			.map(Map.Entry::getValue)
+			.map(WrappedByteArray::getBytes)
+			.collect(Collectors.toSet());
 	}
 
 	@Override

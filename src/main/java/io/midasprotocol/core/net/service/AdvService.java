@@ -2,10 +2,6 @@ package io.midasprotocol.core.net.service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.discover.node.statistics.MessageCount;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.utils.Sha256Hash;
@@ -20,6 +16,10 @@ import io.midasprotocol.core.net.message.TransactionMessage;
 import io.midasprotocol.core.net.peer.Item;
 import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -48,13 +48,13 @@ public class AdvService {
 	private ConcurrentHashMap<Item, Long> invToSpread = new ConcurrentHashMap<>();
 
 	private Cache<Item, Long> invToFetchCache = CacheBuilder.newBuilder()
-			.maximumSize(100_000).expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
+		.maximumSize(100_000).expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
 
 	private Cache<Item, Message> trxCache = CacheBuilder.newBuilder()
-			.maximumSize(50_000).expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
+		.maximumSize(50_000).expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
 
 	private Cache<Item, Message> blockCache = CacheBuilder.newBuilder()
-			.maximumSize(10).expireAfterWrite(1, TimeUnit.MINUTES).recordStats().build();
+		.maximumSize(10).expireAfterWrite(1, TimeUnit.MINUTES).recordStats().build();
 
 	private ScheduledExecutorService spreadExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -128,7 +128,7 @@ public class AdvService {
 				Sha256Hash tid = transactionCapsule.getTransactionId();
 				invToSpread.remove(tid);
 				trxCache.put(new Item(tid, InventoryType.TRX),
-						new TransactionMessage(transactionCapsule.getInstance()));
+					new TransactionMessage(transactionCapsule.getInstance()));
 			});
 			blockCache.put(item, msg);
 		} else if (msg instanceof TransactionMessage) {
@@ -136,7 +136,7 @@ public class AdvService {
 			item = new Item(trxMsg.getMessageId(), InventoryType.TRX);
 			trxCount.add();
 			trxCache.put(item,
-					new TransactionMessage(((TransactionMessage) msg).getTransactionCapsule().getInstance()));
+				new TransactionMessage(((TransactionMessage) msg).getTransactionCapsule().getInstance()));
 		} else {
 			logger.error("Adv item is neither block nor trx, type: {}", msg.getType());
 			return;
@@ -154,7 +154,7 @@ public class AdvService {
 		if (!peer.getAdvInvRequest().isEmpty()) {
 			peer.getAdvInvRequest().keySet().forEach(item -> {
 				if (tronNetDelegate.getActivePeer().stream()
-						.anyMatch(p -> !p.equals(peer) && p.getAdvInvReceive().getIfPresent(item) != null)) {
+					.anyMatch(p -> !p.equals(peer) && p.getAdvInvReceive().getIfPresent(item) != null)) {
 					invToFetch.put(item, System.currentTimeMillis());
 				} else {
 					invToFetchCache.invalidate(item);
@@ -165,8 +165,8 @@ public class AdvService {
 
 	private void consumerInvToFetch() {
 		Collection<PeerConnection> peers = tronNetDelegate.getActivePeer().stream()
-				.filter(peer -> peer.isIdle())
-				.collect(Collectors.toList());
+			.filter(peer -> peer.isIdle())
+			.collect(Collectors.toList());
 
 		if (invToFetch.isEmpty() || peers.isEmpty()) {
 			return;
@@ -177,16 +177,16 @@ public class AdvService {
 		invToFetch.forEach((item, time) -> {
 			if (time < now - MSG_CACHE_DURATION_IN_BLOCKS * BLOCK_PRODUCED_INTERVAL) {
 				logger.info("This obj is too late to fetch, type: {} hash: {}.", item.getType(),
-						item.getHash());
+					item.getHash());
 				invToFetch.remove(item);
 				invToFetchCache.invalidate(item);
 				return;
 			}
 			peers.stream()
-					.filter(peer -> peer.getAdvInvReceive().getIfPresent(item) != null
-							&& invSender.getSize(peer) < MAX_TRX_FETCH_PER_PEER)
-					.sorted(Comparator.comparingInt(peer -> invSender.getSize(peer)))
-					.findFirst().ifPresent(peer -> {
+				.filter(peer -> peer.getAdvInvReceive().getIfPresent(item) != null
+					&& invSender.getSize(peer) < MAX_TRX_FETCH_PER_PEER)
+				.sorted(Comparator.comparingInt(peer -> invSender.getSize(peer)))
+				.findFirst().ifPresent(peer -> {
 				invSender.add(item, peer);
 				peer.getAdvInvRequest().put(item, now);
 				invToFetch.remove(item);
@@ -209,14 +209,14 @@ public class AdvService {
 		}
 
 		tronNetDelegate.getActivePeer().stream()
-				.filter(peer -> !peer.isNeedSyncFromPeer() && !peer.isNeedSyncFromUs())
-				.forEach(peer -> spread.entrySet().stream()
-						.filter(entry -> peer.getAdvInvReceive().getIfPresent(entry.getKey()) == null
-								&& peer.getAdvInvSpread().getIfPresent(entry.getKey()) == null)
-						.forEach(entry -> {
-							peer.getAdvInvSpread().put(entry.getKey(), Time.getCurrentMillis());
-							invSender.add(entry.getKey(), peer);
-						}));
+			.filter(peer -> !peer.isNeedSyncFromPeer() && !peer.isNeedSyncFromUs())
+			.forEach(peer -> spread.entrySet().stream()
+				.filter(entry -> peer.getAdvInvReceive().getIfPresent(entry.getKey()) == null
+					&& peer.getAdvInvSpread().getIfPresent(entry.getKey()) == null)
+				.forEach(entry -> {
+					peer.getAdvInvSpread().put(entry.getKey(), Time.getCurrentMillis());
+					invSender.add(entry.getKey(), peer);
+				}));
 
 		invSender.sendInv();
 	}

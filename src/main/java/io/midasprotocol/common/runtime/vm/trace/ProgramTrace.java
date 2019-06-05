@@ -17,19 +17,19 @@
  */
 package io.midasprotocol.common.runtime.vm.trace;
 
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.OpCode;
 import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvoke;
+import org.spongycastle.util.encoders.Hex;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.String.format;
 import static io.midasprotocol.common.runtime.utils.MUtil.convertToTronAddress;
 import static io.midasprotocol.common.runtime.vm.trace.Serializers.serializeFieldsOnly;
 import static io.midasprotocol.common.utils.ByteUtil.toHexString;
+import static java.lang.String.format;
 
 public class ProgramTrace {
 
@@ -45,7 +45,7 @@ public class ProgramTrace {
 	public ProgramTrace(VMConfig config, ProgramInvoke programInvoke) {
 		if (programInvoke != null && config.vmTrace()) {
 			contractAddress = Hex
-					.toHexString(convertToTronAddress(programInvoke.getContractAddress().getLast20Bytes()));
+				.toHexString(convertToTronAddress(programInvoke.getContractAddress().getLast20Bytes()));
 		}
 	}
 

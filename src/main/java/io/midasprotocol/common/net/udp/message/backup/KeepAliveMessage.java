@@ -1,10 +1,10 @@
 package io.midasprotocol.common.net.udp.message.backup;
 
-import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.BACKUP_KEEP_ALIVE;
-
 import io.midasprotocol.common.net.udp.message.Message;
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.protos.Discover;
+
+import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.BACKUP_KEEP_ALIVE;
 
 public class KeepAliveMessage extends Message {
 

@@ -17,22 +17,6 @@
  */
 package io.midasprotocol.common.overlay.server;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import io.netty.handler.timeout.ReadTimeoutException;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.concurrent.TimeUnit;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.discover.node.NodeManager;
 import io.midasprotocol.common.overlay.discover.node.statistics.NodeStatistics;
@@ -44,6 +28,21 @@ import io.midasprotocol.core.db.ByteArrayWrapper;
 import io.midasprotocol.core.exception.P2pException;
 import io.midasprotocol.core.net.TronNetHandler;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "net")
 @Component
@@ -52,42 +51,27 @@ public class Channel {
 
 	@Autowired
 	protected MessageQueue msgQueue;
-
+	protected NodeStatistics nodeStatistics;
 	@Autowired
 	private MessageCodec messageCodec;
-
 	@Autowired
 	private NodeManager nodeManager;
-
 	@Autowired
 	private StaticMessages staticMessages;
-
 	@Autowired
 	private WireTrafficStats stats;
-
 	@Autowired
 	private HandshakeHandler handshakeHandler;
-
 	@Autowired
 	private P2pHandler p2pHandler;
-
 	@Autowired
 	private TronNetHandler tronNetHandler;
-
 	private ChannelManager channelManager;
-
 	private ChannelHandlerContext ctx;
-
 	private InetSocketAddress inetSocketAddress;
-
 	private Node node;
-
 	private long startTime;
-
 	private TronState tronState = TronState.INIT;
-
-	protected NodeStatistics nodeStatistics;
-
 	private boolean isActive;
 
 	private volatile boolean isDisconnect;
@@ -158,9 +142,9 @@ public class Channel {
 		channelManager.processDisconnect(this, reason);
 		DisconnectMessage msg = new DisconnectMessage(reason);
 		logger.info("Send to {} online-time {}s, {}",
-				ctx.channel().remoteAddress(),
-				(System.currentTimeMillis() - startTime) / 1000,
-				msg);
+			ctx.channel().remoteAddress(),
+			(System.currentTimeMillis() - startTime) / 1000,
+			msg);
 		getNodeStatistics().nodeDisconnectedLocal(reason);
 		ctx.writeAndFlush(msg.getSendData()).addListener(future -> close());
 	}
@@ -172,11 +156,11 @@ public class Channel {
 		}
 		SocketAddress address = ctx.channel().remoteAddress();
 		if (throwable instanceof ReadTimeoutException ||
-				throwable instanceof IOException) {
+			throwable instanceof IOException) {
 			logger.warn("Close peer {}, reason: {}", address, throwable.getMessage());
 		} else if (baseThrowable instanceof P2pException) {
 			logger.warn("Close peer {}, type: {}, info: {}",
-					address, ((P2pException) baseThrowable).getType(), baseThrowable.getMessage());
+				address, ((P2pException) baseThrowable).getType(), baseThrowable.getMessage());
 		} else {
 			logger.error("Close peer {}, exception caught", address, throwable);
 		}
@@ -188,15 +172,6 @@ public class Channel {
 		p2pHandler.close();
 		msgQueue.close();
 		ctx.close();
-	}
-
-	public enum TronState {
-		INIT,
-		HANDSHAKE_FINISHED,
-		START_TO_SYNC,
-		SYNCING,
-		SYNC_COMPLETED,
-		SYNC_FAILED
 	}
 
 	public PeerStatistics getPeerStats() {
@@ -232,12 +207,12 @@ public class Channel {
 		return nodeStatistics;
 	}
 
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-
 	public long getStartTime() {
 		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
 	}
 
 	public void setTronState(TronState tronState) {
@@ -261,7 +236,6 @@ public class Channel {
 		return isFastForwardPeer;
 	}
 
-
 	@Override
 	public boolean equals(Object o) {
 
@@ -273,7 +247,7 @@ public class Channel {
 		}
 		Channel channel = (Channel) o;
 		if (inetSocketAddress != null ? !inetSocketAddress.equals(channel.inetSocketAddress)
-				: channel.inetSocketAddress != null) {
+			: channel.inetSocketAddress != null) {
 			return false;
 		}
 		if (node != null ? !node.equals(channel.node) : channel.node != null) {
@@ -292,6 +266,15 @@ public class Channel {
 	@Override
 	public String toString() {
 		return String.format("%s | %s", inetSocketAddress, getPeerId());
+	}
+
+	public enum TronState {
+		INIT,
+		HANDSHAKE_FINISHED,
+		START_TO_SYNC,
+		SYNCING,
+		SYNC_COMPLETED,
+		SYNC_FAILED
 	}
 
 }

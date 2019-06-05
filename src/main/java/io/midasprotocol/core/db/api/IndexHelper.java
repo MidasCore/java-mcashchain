@@ -1,7 +1,5 @@
 package io.midasprotocol.core.db.api;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.capsule.*;
 import io.midasprotocol.core.db.api.index.Index;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
@@ -9,6 +7,8 @@ import io.midasprotocol.protos.Protocol.Account;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Witness;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 

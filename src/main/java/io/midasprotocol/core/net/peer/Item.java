@@ -1,8 +1,8 @@
 package io.midasprotocol.core.net.peer;
 
-import lombok.Getter;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
+import lombok.Getter;
 
 @Getter
 public class Item {
@@ -31,7 +31,7 @@ public class Item {
 		}
 		Item item = (Item) o;
 		return hash.equals(item.getHash()) &&
-				type.equals(item.getType());
+			type.equals(item.getType());
 	}
 
 	@Override

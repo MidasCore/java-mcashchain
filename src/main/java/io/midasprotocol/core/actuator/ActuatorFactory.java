@@ -2,11 +2,11 @@ package io.midasprotocol.core.actuator;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class ActuatorFactory {
 		Preconditions.checkNotNull(manager, "manager is null");
 		Protocol.Transaction.raw rawData = transactionCapsule.getInstance().getRawData();
 		rawData.getContractList()
-				.forEach(contract -> actuatorList.add(getActuatorByContract(contract, manager)));
+			.forEach(contract -> actuatorList.add(getActuatorByContract(contract, manager)));
 		return actuatorList;
 	}
 

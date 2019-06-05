@@ -18,13 +18,7 @@
 
 package io.midasprotocol.common.crypto.jce;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
-import java.security.SecureRandom;
+import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 
 public final class ECKeyPairGenerator {
@@ -33,13 +27,13 @@ public final class ECKeyPairGenerator {
 	public static final String CURVE_NAME = "secp256k1";
 
 	private static final String algorithmAssertionMsg =
-			"Assumed JRE supports EC key pair generation";
+		"Assumed JRE supports EC key pair generation";
 
 	private static final String keySpecAssertionMsg =
-			"Assumed correct key spec statically";
+		"Assumed correct key spec statically";
 
 	private static final ECGenParameterSpec SECP256K1_CURVE
-			= new ECGenParameterSpec(CURVE_NAME);
+		= new ECGenParameterSpec(CURVE_NAME);
 
 	private ECKeyPairGenerator() {
 	}
@@ -52,7 +46,7 @@ public final class ECKeyPairGenerator {
 	SecureRandom random) throws NoSuchProviderException {
 		try {
 			final KeyPairGenerator gen = KeyPairGenerator.getInstance
-					(ALGORITHM, provider);
+				(ALGORITHM, provider);
 			gen.initialize(SECP256K1_CURVE, random);
 			return gen;
 		} catch (NoSuchAlgorithmException ex) {
@@ -66,7 +60,7 @@ public final class ECKeyPairGenerator {
 	SecureRandom random) {
 		try {
 			final KeyPairGenerator gen = KeyPairGenerator.getInstance
-					(ALGORITHM, provider);
+				(ALGORITHM, provider);
 			gen.initialize(SECP256K1_CURVE, random);
 			return gen;
 		} catch (NoSuchAlgorithmException ex) {

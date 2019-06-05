@@ -31,7 +31,7 @@ public class InventoryMessage extends TronMessage {
 		Inventory.Builder invBuilder = Inventory.newBuilder();
 
 		for (Sha256Hash hash :
-				hashList) {
+			hashList) {
 			invBuilder.addIds(hash.getByteString());
 		}
 		invBuilder.setType(type);
@@ -63,8 +63,8 @@ public class InventoryMessage extends TronMessage {
 		Deque<Sha256Hash> hashes = new LinkedList<>(getHashList());
 		StringBuilder builder = new StringBuilder();
 		builder.append(super.toString()).append("invType: ").append(getInvMessageType())
-				.append(", size: ").append(hashes.size())
-				.append(", First hash: ").append(hashes.peekFirst());
+			.append(", size: ").append(hashes.size())
+			.append(", First hash: ").append(hashes.peekFirst());
 		if (hashes.size() > 1) {
 			builder.append(", End hash: ").append(hashes.peekLast());
 		}
@@ -73,8 +73,8 @@ public class InventoryMessage extends TronMessage {
 
 	public List<Sha256Hash> getHashList() {
 		return getInventory().getIdsList().stream()
-				.map(hash -> Sha256Hash.wrap(hash.toByteArray()))
-				.collect(Collectors.toList());
+			.map(hash -> Sha256Hash.wrap(hash.toByteArray()))
+			.collect(Collectors.toList());
 	}
 
 }

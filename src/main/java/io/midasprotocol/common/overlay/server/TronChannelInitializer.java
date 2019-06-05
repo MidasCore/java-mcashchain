@@ -17,6 +17,7 @@
  */
 package io.midasprotocol.common.overlay.server;
 
+import io.midasprotocol.core.net.peer.PeerConnection;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -27,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.net.peer.PeerConnection;
 
 /**
  * @author Roman Mandeleil
@@ -39,11 +39,9 @@ import io.midasprotocol.core.net.peer.PeerConnection;
 public class TronChannelInitializer extends ChannelInitializer<NioSocketChannel> {
 
 	@Autowired
-	private ApplicationContext ctx;
-
-	@Autowired
 	ChannelManager channelManager;
-
+	@Autowired
+	private ApplicationContext ctx;
 	private String remoteId;
 
 	private boolean peerDiscoveryMode = false;

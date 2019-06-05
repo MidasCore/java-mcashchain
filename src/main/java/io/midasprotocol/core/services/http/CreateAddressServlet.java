@@ -1,12 +1,12 @@
 package io.midasprotocol.core.services.http;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.api.GrpcAPI.BytesMessage;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +49,7 @@ public class CreateAddressServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			BytesMessage.Builder build = BytesMessage.newBuilder();
 			JsonFormat.merge(input, build);

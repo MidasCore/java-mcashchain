@@ -2,12 +2,12 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.protos.Protocol;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class BannedWitnessCapsule implements ProtoCapsule<Protocol.BannedWitness>,
-		Comparable<BannedWitnessCapsule> {
+	Comparable<BannedWitnessCapsule> {
 	private Protocol.BannedWitness bannedWitness;
 
 	public BannedWitnessCapsule(byte[] data) {
@@ -20,9 +20,9 @@ public class BannedWitnessCapsule implements ProtoCapsule<Protocol.BannedWitness
 
 	public BannedWitnessCapsule(ByteString address, long expirationTime) {
 		this.bannedWitness = Protocol.BannedWitness.newBuilder()
-				.setWitnessAddress(address)
-				.setExpirationTime(expirationTime)
-				.build();
+			.setWitnessAddress(address)
+			.setExpirationTime(expirationTime)
+			.build();
 	}
 
 	public BannedWitnessCapsule(ByteString address) {

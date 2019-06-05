@@ -4,7 +4,6 @@ import com.google.common.math.LongMath;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -16,6 +15,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.WithdrawBalanceContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -43,17 +43,17 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 		}
 
 		AccountCapsule accountCapsule = (Objects.isNull(getDeposit())) ? dbManager.getAccountStore().
-				get(withdrawBalanceContract.getOwnerAddress().toByteArray())
-				: getDeposit().getAccount(withdrawBalanceContract.getOwnerAddress().toByteArray());
+			get(withdrawBalanceContract.getOwnerAddress().toByteArray())
+			: getDeposit().getAccount(withdrawBalanceContract.getOwnerAddress().toByteArray());
 		long oldBalance = accountCapsule.getBalance();
 		long allowance = accountCapsule.getAllowance();
 
 		long now = dbManager.getHeadBlockTimeStamp();
 		accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-				.setBalance(oldBalance + allowance)
-				.setAllowance(0L)
-				.setLatestWithdrawTime(now)
-				.build());
+			.setBalance(oldBalance + allowance)
+			.setAllowance(0L)
+			.setLatestWithdrawTime(now)
+			.build());
 		if (Objects.isNull(getDeposit())) {
 			dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		} else {
@@ -77,7 +77,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(WithdrawBalanceContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected WithdrawBalanceContract, actual " + contract.getClass());
+				"Contract type error, expected WithdrawBalanceContract, actual " + contract.getClass());
 		}
 		final WithdrawBalanceContract withdrawBalanceContract;
 		try {
@@ -92,38 +92,38 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 		}
 
 		AccountCapsule accountCapsule =
-				Objects.isNull(getDeposit()) ? dbManager.getAccountStore().get(ownerAddress)
-						: getDeposit().getAccount(ownerAddress);
+			Objects.isNull(getDeposit()) ? dbManager.getAccountStore().get(ownerAddress)
+				: getDeposit().getAccount(ownerAddress);
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
 		}
 
 		String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 		if (!dbManager.getStakeAccountStore().has(ownerAddress)) {
 			throw new ContractValidateException(
-					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " is not a stakeAccount");
+				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " is not a stakeAccount");
 		}
 
 		// todo: remove???
 		boolean isGP = Args.getInstance().getGenesisBlock().getWitnesses().stream().anyMatch(witness ->
-				Arrays.equals(ownerAddress, witness.getAddress()));
+			Arrays.equals(ownerAddress, witness.getAddress()));
 		if (isGP) {
 			throw new ContractValidateException(
-					ACCOUNT_EXCEPTION_STR + readableOwnerAddress
-							+ " is a guard representative and is not allowed to withdraw Balance");
+				ACCOUNT_EXCEPTION_STR + readableOwnerAddress
+					+ " is a guard representative and is not allowed to withdraw Balance");
 		}
 
 		long latestWithdrawTime = accountCapsule.getLatestWithdrawTime();
 		long now = dbManager.getHeadBlockTimeStamp();
 		long witnessAllowanceFrozenTime = Objects.isNull(getDeposit()) ?
-				dbManager.getDynamicPropertiesStore().getWitnessAllowanceFrozenTime() * Parameter.TimeConstant.MS_PER_DAY :
-				getDeposit().getWitnessAllowanceFrozenTime() * Parameter.TimeConstant.MS_PER_DAY;
+			dbManager.getDynamicPropertiesStore().getWitnessAllowanceFrozenTime() * Parameter.TimeConstant.MS_PER_DAY :
+			getDeposit().getWitnessAllowanceFrozenTime() * Parameter.TimeConstant.MS_PER_DAY;
 
 		if (now - latestWithdrawTime < witnessAllowanceFrozenTime) {
 			throw new ContractValidateException("The last withdraw time is "
-					+ latestWithdrawTime + ", less than 24 hours");
+				+ latestWithdrawTime + ", less than 24 hours");
 		}
 
 		if (accountCapsule.getAllowance() <= 0) {

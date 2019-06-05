@@ -17,11 +17,10 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.midasprotocol.common.utils.ByteUtil;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Contract.AssetIssueContract.FrozenSupply;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -69,8 +68,8 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setId(long id) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setId(id)
-				.build();
+			.setId(id)
+			.build();
 	}
 
 	public int getPrecision() {
@@ -79,8 +78,8 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setPrecision(int precision) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setPrecision(precision)
-				.build();
+			.setPrecision(precision)
+			.build();
 	}
 
 	public long getOrder() {
@@ -89,8 +88,8 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setOrder(long order) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setOrder(order)
-				.build();
+			.setOrder(order)
+			.build();
 	}
 
 	public byte[] createDbKey() {
@@ -129,7 +128,7 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 		List<FrozenSupply> frozenList = getFrozenSupplyList();
 		final long[] frozenBalance = {0};
 		frozenList.forEach(frozen -> frozenBalance[0] = Long.sum(frozenBalance[0],
-				frozen.getFrozenAmount()));
+			frozen.getFrozenAmount()));
 		return frozenBalance[0];
 	}
 
@@ -139,7 +138,7 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setFreeAssetNetLimit(long newLimit) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setFreeAssetNetLimit(newLimit).build();
+			.setFreeAssetNetLimit(newLimit).build();
 	}
 
 	public long getPublicFreeAssetNetLimit() {
@@ -148,7 +147,7 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setPublicFreeAssetNetLimit(long newPublicLimit) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setPublicFreeAssetNetLimit(newPublicLimit).build();
+			.setPublicFreeAssetNetLimit(newPublicLimit).build();
 	}
 
 	public long getPublicFreeAssetNetUsage() {
@@ -157,7 +156,7 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setPublicFreeAssetNetUsage(long value) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setPublicFreeAssetNetUsage(value).build();
+			.setPublicFreeAssetNetUsage(value).build();
 	}
 
 	public long getPublicLatestFreeNetTime() {
@@ -166,16 +165,16 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 
 	public void setPublicLatestFreeNetTime(long time) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setPublicLatestFreeNetTime(time).build();
+			.setPublicLatestFreeNetTime(time).build();
 	}
 
 	public void setUrl(ByteString newUrl) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setUrl(newUrl).build();
+			.setUrl(newUrl).build();
 	}
 
 	public void setDescription(ByteString description) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-				.setDescription(description).build();
+			.setDescription(description).build();
 	}
 }

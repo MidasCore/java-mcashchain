@@ -1,9 +1,6 @@
 package io.midasprotocol.core.net.messagehandler;
 
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.discover.node.statistics.MessageCount;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.utils.Sha256Hash;
@@ -21,6 +18,9 @@ import io.midasprotocol.core.net.service.SyncService;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
 import io.midasprotocol.protos.Protocol.ReasonCode;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class FetchInvDataMsgHandler implements TronMsgHandler {
 			} else {
 				transactions.add(((TransactionMessage) message).getTransactionCapsule().getInstance());
 				size += ((TransactionMessage) message).getTransactionCapsule().getInstance()
-						.getSerializedSize();
+					.getSerializedSize();
 				if (size > MAX_SIZE) {
 					peer.sendMessage(new TransactionsMessage(transactions));
 					transactions = Lists.newArrayList();
@@ -96,11 +96,11 @@ public class FetchInvDataMsgHandler implements TronMsgHandler {
 				}
 			}
 			int fetchCount = peer.getNodeStatistics().messageStatistics.tronInTrxFetchInvDataElement
-					.getCount(10);
+				.getCount(10);
 			int maxCount = advService.getTrxCount().getCount(60);
 			if (fetchCount > maxCount) {
 				throw new P2pException(TypeEnum.BAD_MESSAGE,
-						"maxCount: " + maxCount + ", fetchCount: " + fetchCount);
+					"maxCount: " + maxCount + ", fetchCount: " + fetchCount);
 			}
 		} else {
 			boolean isAdv = true;
@@ -117,7 +117,7 @@ public class FetchInvDataMsgHandler implements TronMsgHandler {
 				int producedBlockIn2min = 120_000 / ChainConstant.BLOCK_PRODUCED_INTERVAL;
 				if (outBlockCountIn1min > producedBlockIn2min) {
 					throw new P2pException(TypeEnum.BAD_MESSAGE, "producedBlockIn2min: " + producedBlockIn2min
-							+ ", outBlockCountIn1min: " + outBlockCountIn1min);
+						+ ", outBlockCountIn1min: " + outBlockCountIn1min);
 				}
 			} else {
 				if (!peer.isNeedSyncFromUs()) {
@@ -126,14 +126,14 @@ public class FetchInvDataMsgHandler implements TronMsgHandler {
 				for (Sha256Hash hash : fetchInvDataMsg.getHashList()) {
 					long blockNum = new BlockId(hash).getNum();
 					long minBlockNum =
-							peer.getLastSyncBlockId().getNum() - 2 * NodeConstant.SYNC_FETCH_BATCH_NUM;
+						peer.getLastSyncBlockId().getNum() - 2 * NodeConstant.SYNC_FETCH_BATCH_NUM;
 					if (blockNum < minBlockNum) {
 						throw new P2pException(TypeEnum.BAD_MESSAGE,
-								"minBlockNum: " + minBlockNum + ", blockNum: " + blockNum);
+							"minBlockNum: " + minBlockNum + ", blockNum: " + blockNum);
 					}
 					if (peer.getSyncBlockIdCache().getIfPresent(hash) != null) {
 						throw new P2pException(TypeEnum.BAD_MESSAGE,
-								new BlockId(hash).getString() + " is exist");
+							new BlockId(hash).getString() + " is exist");
 					}
 					peer.getSyncBlockIdCache().put(hash, System.currentTimeMillis());
 				}

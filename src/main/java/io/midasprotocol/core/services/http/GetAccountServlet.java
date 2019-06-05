@@ -2,13 +2,13 @@ package io.midasprotocol.core.services.http;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol.Account;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class GetAccountServlet extends HttpServlet {
 			JSONObject accountJson = JSONObject.parseObject(JsonFormat.printToString(account));
 			String assetId = accountJson.get("asset_issued_ID").toString();
 			accountJson.put(
-					"asset_issued_ID", ByteString.copyFrom(ByteArray.fromHexString(assetId)).toStringUtf8());
+				"asset_issued_ID", ByteString.copyFrom(ByteArray.fromHexString(assetId)).toStringUtf8());
 			return accountJson.toJSONString();
 		}
 
@@ -68,7 +68,7 @@ public class GetAccountServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String account = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(account);
 			Account.Builder build = Account.newBuilder();
 			JsonFormat.merge(account, build);

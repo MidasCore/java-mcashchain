@@ -16,15 +16,15 @@
 package io.midasprotocol.common.storage.leveldb;
 
 import com.google.common.collect.Sets;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.iq80.leveldb.*;
 import io.midasprotocol.common.storage.DbSourceInter;
 import io.midasprotocol.common.storage.WriteOptionsWrapper;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.common.utils.PropUtil;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.common.iterator.StoreIterator;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.iq80.leveldb.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import static org.fusesource.leveldbjni.JniDBFactory.factory;
 @Slf4j(topic = "DB")
 @NoArgsConstructor
 public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
-		Iterable<Map.Entry<byte[], byte[]>> {
+	Iterable<Map.Entry<byte[], byte[]>> {
 
 	String dataBaseName;
 	DB database;
@@ -57,15 +57,15 @@ public class LevelDbDataSourceImpl implements DbSourceInter<byte[]>,
 	public LevelDbDataSourceImpl(String parentName, String name) {
 		this.dataBaseName = name;
 		this.parentName = Paths.get(
-				parentName,
-				Args.getInstance().getStorage().getDbDirectory()
+			parentName,
+			Args.getInstance().getStorage().getDbDirectory()
 		).toString();
 	}
 
 	public boolean checkOrInitEngine() {
 		String dir =
-				Args.getInstance().getOutputDirectory() + Args.getInstance().getStorage().getDbDirectory()
-						+ File.separator + dataBaseName;
+			Args.getInstance().getOutputDirectory() + Args.getInstance().getStorage().getDbDirectory()
+				+ File.separator + dataBaseName;
 		String enginePath = dir + File.separator + "engine.properties";
 
 		if (FileUtil.createDirIfNotExists(dir)) {

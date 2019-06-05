@@ -3,9 +3,9 @@ package io.midasprotocol.keystore;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.Utils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Console;
 import java.io.File;
@@ -31,31 +31,31 @@ public class WalletUtils {
 	}
 
 	public static String generateFullNewWalletFile(String password, File destinationDirectory)
-			throws NoSuchAlgorithmException, NoSuchProviderException,
-			InvalidAlgorithmParameterException, CipherException, IOException {
+		throws NoSuchAlgorithmException, NoSuchProviderException,
+		InvalidAlgorithmParameterException, CipherException, IOException {
 
 		return generateNewWalletFile(password, destinationDirectory, true);
 	}
 
 	public static String generateLightNewWalletFile(String password, File destinationDirectory)
-			throws NoSuchAlgorithmException, NoSuchProviderException,
-			InvalidAlgorithmParameterException, CipherException, IOException {
+		throws NoSuchAlgorithmException, NoSuchProviderException,
+		InvalidAlgorithmParameterException, CipherException, IOException {
 
 		return generateNewWalletFile(password, destinationDirectory, false);
 	}
 
 	public static String generateNewWalletFile(
-			String password, File destinationDirectory, boolean useFullScrypt)
-			throws CipherException, IOException, InvalidAlgorithmParameterException,
-			NoSuchAlgorithmException, NoSuchProviderException {
+		String password, File destinationDirectory, boolean useFullScrypt)
+		throws CipherException, IOException, InvalidAlgorithmParameterException,
+		NoSuchAlgorithmException, NoSuchProviderException {
 
 		ECKey ecKeyPair = new ECKey(Utils.getRandom());
 		return generateWalletFile(password, ecKeyPair, destinationDirectory, useFullScrypt);
 	}
 
 	public static String generateWalletFile(
-			String password, ECKey ecKeyPair, File destinationDirectory, boolean useFullScrypt)
-			throws CipherException, IOException {
+		String password, ECKey ecKeyPair, File destinationDirectory, boolean useFullScrypt)
+		throws CipherException, IOException {
 
 		WalletFile walletFile;
 		if (useFullScrypt) {
@@ -73,8 +73,8 @@ public class WalletUtils {
 	}
 
 	public static void updateWalletFile(
-			String password, ECKey ecKeyPair, File source, boolean useFullScrypt)
-			throws CipherException, IOException {
+		String password, ECKey ecKeyPair, File source, boolean useFullScrypt)
+		throws CipherException, IOException {
 
 		WalletFile walletFile = objectMapper.readValue(source, WalletFile.class);
 		if (useFullScrypt) {
@@ -119,7 +119,7 @@ public class WalletUtils {
 //    }
 //
 	public static Credentials loadCredentials(String password, File source)
-			throws IOException, CipherException {
+		throws IOException, CipherException {
 		WalletFile walletFile = objectMapper.readValue(source, WalletFile.class);
 		return Credentials.create(Wallet.decrypt(password, walletFile));
 	}
@@ -131,7 +131,7 @@ public class WalletUtils {
 
 	private static String getWalletFileName(WalletFile walletFile) {
 		DateTimeFormatter format = DateTimeFormatter.ofPattern(
-				"'UTC--'yyyy-MM-dd'T'HH-mm-ss.nVV'--'");
+			"'UTC--'yyyy-MM-dd'T'HH-mm-ss.nVV'--'");
 		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
 		return now.format(format) + walletFile.getAddress() + ".json";
@@ -146,8 +146,8 @@ public class WalletUtils {
 
 		if (osName.startsWith("mac")) {
 			return String.format(
-					"%s%sLibrary%sEthereum", System.getProperty("user.home"), File.separator,
-					File.separator);
+				"%s%sLibrary%sEthereum", System.getProperty("user.home"), File.separator,
+				File.separator);
 		} else if (osName.startsWith("win")) {
 			return String.format("%s%sEthereum", System.getenv("APPDATA"), File.separator);
 		} else {
@@ -157,7 +157,7 @@ public class WalletUtils {
 
 	public static String getTestnetKeyDirectory() {
 		return String.format(
-				"%s%stestnet%skeystore", getDefaultKeyDirectory(), File.separator, File.separator);
+			"%s%stestnet%skeystore", getDefaultKeyDirectory(), File.separator, File.separator);
 	}
 
 	public static String getMainnetKeyDirectory() {

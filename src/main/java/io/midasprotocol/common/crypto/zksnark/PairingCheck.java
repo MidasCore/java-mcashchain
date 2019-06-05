@@ -59,30 +59,6 @@ public class PairingCheck {
 		return new PairingCheck();
 	}
 
-	public void addPair(BN128G1 g1, BN128G2 g2) {
-		pairs.add(Pair.of(g1, g2));
-	}
-
-	public void run() {
-
-		for (Pair pair : pairs) {
-
-			Fp12 miller = pair.millerLoop();
-
-			if (!miller.equals(Fp12._1))    // run mul code only if necessary
-			{
-				product = product.mul(miller);
-			}
-		}
-
-		// finalize
-		product = finalExponentiation(product);
-	}
-
-	public int result() {
-		return product.equals(Fp12._1) ? 1 : 0;
-	}
-
 	private static Fp12 millerLoop(BN128G1 g1, BN128G2 g2) {
 
 		// convert to affine coordinates
@@ -176,8 +152,8 @@ public class PairingCheck {
 		Fp2 ellVW = d;                                      // ell_VW = d
 
 		return Precomputed.of(
-				new BN128G2(x3, y3, z3),
-				new EllCoeffs(ell0, ellVW, ellVV)
+			new BN128G2(x3, y3, z3),
+			new EllCoeffs(ell0, ellVW, ellVV)
 		);
 	}
 
@@ -206,8 +182,8 @@ public class PairingCheck {
 		Fp2 ellVV = j.add(j).add(j);    // ell_VV = 3 * j
 
 		return Precomputed.of(
-				new BN128G2(rx, ry, rz),
-				new EllCoeffs(ell0, ellVW, ellVV)
+			new BN128G2(rx, ry, rz),
+			new EllCoeffs(ell0, ellVW, ellVV)
 		);
 	}
 
@@ -247,18 +223,42 @@ public class PairingCheck {
 		return v;
 	}
 
+	public void addPair(BN128G1 g1, BN128G2 g2) {
+		pairs.add(Pair.of(g1, g2));
+	}
+
+	public void run() {
+
+		for (Pair pair : pairs) {
+
+			Fp12 miller = pair.millerLoop();
+
+			if (!miller.equals(Fp12._1))    // run mul code only if necessary
+			{
+				product = product.mul(miller);
+			}
+		}
+
+		// finalize
+		product = finalExponentiation(product);
+	}
+
+	public int result() {
+		return product.equals(Fp12._1) ? 1 : 0;
+	}
+
 	static class Precomputed {
 
 		BN128G2 g2;
 		EllCoeffs coeffs;
 
-		static Precomputed of(BN128G2 g2, EllCoeffs coeffs) {
-			return new Precomputed(g2, coeffs);
-		}
-
 		Precomputed(BN128G2 g2, EllCoeffs coeffs) {
 			this.g2 = g2;
 			this.coeffs = coeffs;
+		}
+
+		static Precomputed of(BN128G2 g2, EllCoeffs coeffs) {
+			return new Precomputed(g2, coeffs);
 		}
 	}
 
@@ -267,13 +267,13 @@ public class PairingCheck {
 		BN128G1 g1;
 		BN128G2 g2;
 
-		static Pair of(BN128G1 g1, BN128G2 g2) {
-			return new Pair(g1, g2);
-		}
-
 		Pair(BN128G1 g1, BN128G2 g2) {
 			this.g1 = g1;
 			this.g2 = g2;
+		}
+
+		static Pair of(BN128G1 g1, BN128G2 g2) {
+			return new Pair(g1, g2);
 		}
 
 		Fp12 millerLoop() {

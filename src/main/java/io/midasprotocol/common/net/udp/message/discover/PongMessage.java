@@ -1,7 +1,5 @@
 package io.midasprotocol.common.net.udp.message.discover;
 
-import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.DISCOVER_PONG;
-
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.net.udp.message.Message;
 import io.midasprotocol.common.overlay.discover.node.Node;
@@ -9,6 +7,8 @@ import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.protos.Discover;
 import io.midasprotocol.protos.Discover.Endpoint;
+
+import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.DISCOVER_PONG;
 
 public class PongMessage extends Message {
 
@@ -22,15 +22,15 @@ public class PongMessage extends Message {
 	public PongMessage(Node from) {
 		super(DISCOVER_PONG, null);
 		Endpoint toEndpoint = Endpoint.newBuilder()
-				.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
-				.setPort(from.getPort())
-				.setNodeId(ByteString.copyFrom(from.getId()))
-				.build();
+			.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
+			.setPort(from.getPort())
+			.setNodeId(ByteString.copyFrom(from.getId()))
+			.build();
 		this.pongMessage = Discover.PongMessage.newBuilder()
-				.setFrom(toEndpoint)
-				.setEcho(Args.getInstance().getNodeP2pVersion())
-				.setTimestamp(System.currentTimeMillis())
-				.build();
+			.setFrom(toEndpoint)
+			.setEcho(Args.getInstance().getNodeP2pVersion())
+			.setTimestamp(System.currentTimeMillis())
+			.build();
 		this.data = this.pongMessage.toByteArray();
 	}
 

@@ -1,14 +1,14 @@
 package io.midasprotocol.core.net;
 
+import io.midasprotocol.common.overlay.server.Channel;
+import io.midasprotocol.common.overlay.server.MessageQueue;
+import io.midasprotocol.core.net.message.TronMessage;
+import io.midasprotocol.core.net.peer.PeerConnection;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.common.overlay.server.Channel;
-import io.midasprotocol.common.overlay.server.MessageQueue;
-import io.midasprotocol.core.net.message.TronMessage;
-import io.midasprotocol.core.net.peer.PeerConnection;
 
 @Component
 @Scope("prototype")

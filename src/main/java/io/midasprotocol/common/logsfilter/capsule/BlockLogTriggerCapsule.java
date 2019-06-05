@@ -1,10 +1,10 @@
 package io.midasprotocol.common.logsfilter.capsule;
 
-import lombok.Getter;
-import lombok.Setter;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.common.logsfilter.trigger.BlockLogTrigger;
 import io.midasprotocol.core.capsule.BlockCapsule;
+import lombok.Getter;
+import lombok.Setter;
 
 public class BlockLogTriggerCapsule extends TriggerCapsule {
 
@@ -19,7 +19,7 @@ public class BlockLogTriggerCapsule extends TriggerCapsule {
 		blockLogTrigger.setBlockNumber(block.getNum());
 		blockLogTrigger.setTransactionSize(block.getTransactions().size());
 		block.getTransactions().forEach(trx ->
-				blockLogTrigger.getTransactionList().add(trx.getTransactionId().toString())
+			blockLogTrigger.getTransactionList().add(trx.getTransactionId().toString())
 		);
 	}
 

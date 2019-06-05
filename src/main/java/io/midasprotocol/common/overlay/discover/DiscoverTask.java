@@ -18,14 +18,14 @@
 
 package io.midasprotocol.common.overlay.discover;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.discover.node.NodeManager;
 import io.midasprotocol.common.overlay.discover.table.KademliaOptions;
 import io.midasprotocol.common.overlay.discover.table.NodeEntry;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j(topic = "discover")
 public class DiscoverTask implements Runnable {
@@ -50,10 +50,10 @@ public class DiscoverTask implements Runnable {
 			if (round == KademliaOptions.MAX_STEPS) {
 				logger.debug("Node table contains [{}] peers", nodeManager.getTable().getNodesCount());
 				logger.debug("{}", String
-						.format("(KademliaOptions.MAX_STEPS) Terminating discover after %d rounds.", round));
+					.format("(KademliaOptions.MAX_STEPS) Terminating discover after %d rounds.", round));
 				logger.trace("{}\n{}",
-						String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
-						dumpNodes());
+					String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
+					dumpNodes());
 				return;
 			}
 
@@ -77,10 +77,10 @@ public class DiscoverTask implements Runnable {
 
 			if (tried.isEmpty()) {
 				logger.debug("{}",
-						String.format("(tried.isEmpty()) Terminating discover after %d rounds.", round));
+					String.format("(tried.isEmpty()) Terminating discover after %d rounds.", round));
 				logger.trace("{}\n{}",
-						String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
-						dumpNodes());
+					String.format("Nodes discovered %d ", nodeManager.getTable().getNodesCount()),
+					dumpNodes());
 				return;
 			}
 

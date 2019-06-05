@@ -1,26 +1,21 @@
 package io.midasprotocol.common.overlay.client;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.DefaultMessageSizeEstimator;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.discover.node.NodeHandler;
 import io.midasprotocol.common.overlay.server.TronChannelInitializer;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j(topic = "net")
 @Component
@@ -48,22 +43,22 @@ public class PeerClient {
 			f.sync().channel().closeFuture().sync();
 		} catch (Exception e) {
 			logger
-					.info("PeerClient: Can't connect to " + host + ":" + port + " (" + e.getMessage() + ")");
+				.info("PeerClient: Can't connect to " + host + ":" + port + " (" + e.getMessage() + ")");
 		}
 	}
 
 	public ChannelFuture connectAsync(NodeHandler nodeHandler, boolean discoveryMode) {
 		Node node = nodeHandler.getNode();
 		return connectAsync(node.getHost(), node.getPort(), node.getHexId(), discoveryMode)
-				.addListener((ChannelFutureListener) future -> {
-					if (!future.isSuccess()) {
-						logger.warn("connect to {}:{} fail,cause:{}", node.getHost(), node.getPort(),
-								future.cause().getMessage());
-						nodeHandler.getNodeStatistics().nodeDisconnectedLocal(ReasonCode.CONNECT_FAIL);
-						nodeHandler.getNodeStatistics().notifyDisconnect();
-						future.channel().close();
-					}
-				});
+			.addListener((ChannelFutureListener) future -> {
+				if (!future.isSuccess()) {
+					logger.warn("connect to {}:{} fail,cause:{}", node.getHost(), node.getPort(),
+						future.cause().getMessage());
+					nodeHandler.getNodeStatistics().nodeDisconnectedLocal(ReasonCode.CONNECT_FAIL);
+					nodeHandler.getNodeStatistics().notifyDisconnect();
+					future.channel().close();
+				}
+			});
 	}
 
 	private ChannelFuture connectAsync(String host, int port, String remoteId,
@@ -72,7 +67,7 @@ public class PeerClient {
 		logger.info("connect peer {} {} {}", host, port, remoteId);
 
 		TronChannelInitializer tronChannelInitializer = ctx
-				.getBean(TronChannelInitializer.class, remoteId);
+			.getBean(TronChannelInitializer.class, remoteId);
 		tronChannelInitializer.setPeerDiscoveryMode(discoveryMode);
 
 		Bootstrap b = new Bootstrap();

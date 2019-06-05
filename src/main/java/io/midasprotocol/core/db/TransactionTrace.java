@@ -1,12 +1,6 @@
 package io.midasprotocol.core.db;
 
 import com.google.protobuf.ByteString;
-import io.midasprotocol.common.utils.ByteArray;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.encoders.Hex;
-import org.springframework.util.StringUtils;
 import io.midasprotocol.common.runtime.Runtime;
 import io.midasprotocol.common.runtime.RuntimeImpl;
 import io.midasprotocol.common.runtime.vm.program.InternalTransaction;
@@ -14,6 +8,7 @@ import io.midasprotocol.common.runtime.vm.program.Program.*;
 import io.midasprotocol.common.runtime.vm.program.ProgramResult;
 import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvokeFactoryImpl;
 import io.midasprotocol.common.storage.DepositImpl;
+import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.Constant;
 import io.midasprotocol.core.capsule.*;
@@ -23,6 +18,11 @@ import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -51,7 +51,7 @@ public class TransactionTrace {
 	public TransactionTrace(TransactionCapsule trx, Manager dbManager) {
 		this.trx = trx;
 		Transaction.Contract.ContractType contractType = this.trx.getInstance().getRawData()
-				.getContract(0).getType();
+			.getContract(0).getType();
 		switch (contractType.getNumber()) {
 			case ContractType.TriggerSmartContract_VALUE:
 				trxType = TRX_CONTRACT_CALL_TYPE;
@@ -114,17 +114,17 @@ public class TransactionTrace {
 	}
 
 	public void exec()
-			throws ContractExeException, ContractValidateException, VMIllegalException {
+		throws ContractExeException, ContractValidateException, VMIllegalException {
 		/*  VM execute  */
 		runtime.execute();
 		runtime.go();
 
 		if (TRX_PRECOMPILED_TYPE != runtime.getTrxType()) {
 			if (contractResult.OUT_OF_TIME
-					.equals(receipt.getResult())) {
+				.equals(receipt.getResult())) {
 				setTimeResultType(TimeResultType.OUT_OF_TIME);
 			} else if (System.currentTimeMillis() - txStartTimeInMs
-					> Args.getInstance().getLongRunningTime()) {
+				> Args.getInstance().getLongRunningTime()) {
 				setTimeResultType(TimeResultType.LONG_RUNNING);
 			}
 		}
@@ -155,12 +155,12 @@ public class TransactionTrace {
 			case TRX_CONTRACT_CALL_TYPE:
 				// todo: check
 				TriggerSmartContract callContract = ContractCapsule
-						.getTriggerContractFromTransaction(trx.getInstance());
+					.getTriggerContractFromTransaction(trx.getInstance());
 				if (callContract.getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
 					receipt.setEnergyUsageTotal(0);
 				}
 				ContractCapsule contractCapsule =
-						dbManager.getContractStore().get(callContract.getContractAddress().toByteArray());
+					dbManager.getContractStore().get(callContract.getContractAddress().toByteArray());
 
 				callerAccount = callContract.getOwnerAddress().toByteArray();
 				originAccount = contractCapsule.getOriginAddress();
@@ -176,12 +176,12 @@ public class TransactionTrace {
 		AccountCapsule origin = dbManager.getAccountStore().get(originAccount);
 		AccountCapsule caller = dbManager.getAccountStore().get(callerAccount);
 		receipt.payEnergyBill(
-				dbManager,
-				origin,
-				caller,
-				percent, originEnergyLimit,
-				energyProcessor,
-				dbManager.getWitnessController().getHeadSlot());
+			dbManager,
+			origin,
+			caller,
+			percent, originEnergyLimit,
+			energyProcessor,
+			dbManager.getWitnessController().getHeadSlot());
 	}
 
 	public boolean checkNeedRetry() {
@@ -189,7 +189,7 @@ public class TransactionTrace {
 			return false;
 		}
 		return trx.getContractRet() != contractResult.OUT_OF_TIME && receipt.getResult()
-				== contractResult.OUT_OF_TIME;
+			== contractResult.OUT_OF_TIME;
 	}
 
 	public void check() throws ReceiptCheckErrException {
@@ -201,9 +201,9 @@ public class TransactionTrace {
 		}
 		if (!trx.getContractRet().equals(receipt.getResult())) {
 			logger.info(
-					"this tx id: {}, the resultCode in received block: {}, the resultCode in self: {}",
-					Hex.toHexString(trx.getTransactionId().getBytes()), trx.getContractRet(),
-					receipt.getResult());
+				"this tx id: {}, the resultCode in received block: {}, the resultCode in self: {}",
+				Hex.toHexString(trx.getTransactionId().getBytes()), trx.getContractRet(),
+				receipt.getResult());
 			throw new ReceiptCheckErrException("Different resultCode");
 		}
 	}
@@ -218,7 +218,7 @@ public class TransactionTrace {
 		}
 		RuntimeException exception = runtime.getResult().getException();
 		if (Objects.isNull(exception) && StringUtils
-				.isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
+			.isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
 			receipt.setResult(contractResult.OK);
 			return;
 		}

@@ -1,10 +1,6 @@
 package io.midasprotocol.core.services;
 
 import com.sun.management.OperatingSystemMXBean;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.entity.NodeInfo;
 import io.midasprotocol.common.entity.NodeInfo.ConfigNodeInfo;
 import io.midasprotocol.common.entity.NodeInfo.MachineInfo;
@@ -19,6 +15,10 @@ import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.core.services.WitnessProductBlockService.CheatWitnessInfo;
 import io.midasprotocol.program.Version;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.management.*;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class NodeInfoService {
 	private RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 	private ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 	private OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory
-			.getOperatingSystemMXBean();
+		.getOperatingSystemMXBean();
 	private Args args = Args.getInstance();
 
 	@Autowired
@@ -67,10 +67,10 @@ public class NodeInfoService {
 		machineInfo.setCpuRate(operatingSystemMXBean.getSystemCpuLoad());
 		machineInfo.setJavaVersion(runtimeMXBean.getSystemProperties().get("java.version"));
 		machineInfo
-				.setOsName(operatingSystemMXBean.getName() + " " + operatingSystemMXBean.getVersion());
+			.setOsName(operatingSystemMXBean.getName() + " " + operatingSystemMXBean.getVersion());
 		machineInfo.setJvmTotalMemoery(memoryMXBean.getHeapMemoryUsage().getMax());
 		machineInfo.setJvmFreeMemory(
-				memoryMXBean.getHeapMemoryUsage().getMax() - memoryMXBean.getHeapMemoryUsage().getUsed());
+			memoryMXBean.getHeapMemoryUsage().getMax() - memoryMXBean.getHeapMemoryUsage().getUsed());
 		machineInfo.setProcessCpuRate(operatingSystemMXBean.getProcessCpuLoad());
 		List<MemoryDescInfo> memoryDescInfoList = new ArrayList<>();
 		List<MemoryPoolMXBean> pools = ManagementFactory.getMemoryPoolMXBeans();
@@ -85,7 +85,7 @@ public class NodeInfoService {
 					memoryDescInfo.setUseRate((double) pool.getUsage().getUsed() / pool.getUsage().getMax());
 				} else {
 					memoryDescInfo
-							.setUseRate((double) pool.getUsage().getUsed() / pool.getUsage().getCommitted());
+						.setUseRate((double) pool.getUsage().getUsed() / pool.getUsage().getCommitted());
 				}
 				memoryDescInfoList.add(memoryDescInfo);
 			}
@@ -132,9 +132,9 @@ public class NodeInfoService {
 			peerInfo.setInFlow(peerConnection.getNodeStatistics().tcpFlow.getTotalCount());
 			peerInfo.setLastBlockUpdateTime(peerConnection.getBlockBothHaveUpdateTime());
 			peerInfo.setLastSyncBlock(peerConnection.getLastSyncBlockId() == null ? ""
-					: peerConnection.getLastSyncBlockId().getString());
+				: peerConnection.getLastSyncBlockId().getString());
 			ReasonCode reasonCode = peerConnection.getNodeStatistics()
-					.getTronLastLocalDisconnectReason();
+				.getTronLastLocalDisconnectReason();
 			peerInfo.setLocalDisconnectReason(reasonCode == null ? "" : reasonCode.toString());
 			reasonCode = peerConnection.getNodeStatistics().getTronLastRemoteDisconnectReason();
 			peerInfo.setRemoteDisconnectReason(reasonCode == null ? "" : reasonCode.toString());
@@ -149,7 +149,7 @@ public class NodeInfoService {
 			peerInfo.setSyncFlag(peerConnection.isDisconnect());
 			peerInfo.setSyncToFetchSize(peerConnection.getSyncBlockToFetch().size());
 			peerInfo.setSyncToFetchSizePeekNum(peerConnection.getSyncBlockToFetch().size() > 0
-					? peerConnection.getSyncBlockToFetch().peek().getNum() : -1);
+				? peerConnection.getSyncBlockToFetch().peek().getNum() : -1);
 			peerInfo.setUnFetchSynNum(peerConnection.getRemainNum());
 			totalFlow += peerConnection.getNodeStatistics().tcpFlow.getTotalCount();
 			peerInfoList.add(peerInfo);
@@ -192,7 +192,7 @@ public class NodeInfoService {
 
 	protected void setCheatWitnessInfo(NodeInfo nodeInfo) {
 		for (Entry<String, CheatWitnessInfo> entry : witnessProductBlockService.queryCheatWitnessInfo()
-				.entrySet()) {
+			.entrySet()) {
 			nodeInfo.getCheatWitnessInfoMap().put(entry.getKey(), entry.getValue().toString());
 		}
 	}

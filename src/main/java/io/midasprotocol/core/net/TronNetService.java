@@ -1,8 +1,5 @@
 package io.midasprotocol.core.net;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.overlay.server.ChannelManager;
 import io.midasprotocol.core.exception.P2pException;
@@ -14,6 +11,9 @@ import io.midasprotocol.core.net.peer.PeerStatusCheck;
 import io.midasprotocol.core.net.service.AdvService;
 import io.midasprotocol.core.net.service.SyncService;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -129,11 +129,11 @@ public class TronNetService {
 					break;
 			}
 			logger.error("Message from {} process failed, {} \n type: {}, detail: {}.",
-					peer.getInetAddress(), msg, type, ex.getMessage());
+				peer.getInetAddress(), msg, type, ex.getMessage());
 		} else {
 			code = ReasonCode.UNKNOWN;
 			logger.error("Message from {} process failed, {}",
-					peer.getInetAddress(), msg, ex);
+				peer.getInetAddress(), msg, ex);
 		}
 
 		peer.disconnect(code);

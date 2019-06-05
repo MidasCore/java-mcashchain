@@ -1,11 +1,11 @@
 package io.midasprotocol.core.services.http;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.api.GrpcAPI.BlockList;
 import io.midasprotocol.api.GrpcAPI.NumberMessage;
 import io.midasprotocol.core.Wallet;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class GetBlockByLatestNumServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			NumberMessage.Builder build = NumberMessage.newBuilder();
 			JsonFormat.merge(input, build);

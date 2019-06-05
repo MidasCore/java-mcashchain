@@ -22,12 +22,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
 
@@ -36,8 +36,8 @@ import java.util.concurrent.*;
 public class WalletOnSolidity {
 
 	private ListeningExecutorService executorService = MoreExecutors.listeningDecorator(
-			Executors.newFixedThreadPool(Args.getInstance().getSolidityThreads(),
-					new ThreadFactoryBuilder().setNameFormat("WalletOnSolidity-%d").build()));
+		Executors.newFixedThreadPool(Args.getInstance().getSolidityThreads(),
+			new ThreadFactoryBuilder().setNameFormat("WalletOnSolidity-%d").build()));
 
 	@Autowired
 	private Manager dbManager;

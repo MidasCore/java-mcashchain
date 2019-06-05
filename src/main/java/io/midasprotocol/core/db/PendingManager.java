@@ -1,9 +1,9 @@
 package io.midasprotocol.core.db;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.db.TransactionTrace.TimeResultType;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class PendingManager implements AutoCloseable {
 		for (TransactionCapsule tx : PendingManager.tmpTransactions) {
 			try {
 				if (tx.getTrxTrace() != null &&
-						tx.getTrxTrace().getTimeResultType().equals(TimeResultType.NORMAL)) {
+					tx.getTrxTrace().getTimeResultType().equals(TimeResultType.NORMAL)) {
 					dbManager.getRepushTransactions().put(tx);
 				}
 			} catch (InterruptedException e) {
@@ -42,7 +42,7 @@ public class PendingManager implements AutoCloseable {
 		for (TransactionCapsule tx : dbManager.getPoppedTransactions()) {
 			try {
 				if (tx.getTrxTrace() != null &&
-						tx.getTrxTrace().getTimeResultType().equals(TimeResultType.NORMAL)) {
+					tx.getTrxTrace().getTimeResultType().equals(TimeResultType.NORMAL)) {
 					dbManager.getRepushTransactions().put(tx);
 				}
 			} catch (InterruptedException e) {

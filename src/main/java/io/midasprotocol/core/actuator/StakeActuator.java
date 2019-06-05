@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -20,6 +19,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -42,7 +42,7 @@ public class StakeActuator extends AbstractActuator {
 			throw new ContractExeException(e.getMessage());
 		}
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(stakeContract.getOwnerAddress().toByteArray());
+			.get(stakeContract.getOwnerAddress().toByteArray());
 
 		long now = dbManager.getHeadBlockTimeStamp();
 		long duration = stakeContract.getStakeDuration() * Parameter.TimeConstant.MS_PER_DAY;
@@ -78,7 +78,7 @@ public class StakeActuator extends AbstractActuator {
 		}
 		if (!contract.is(Contract.StakeContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type StakeContract, real type " + contract.getClass());
+				"contract type error,expected type StakeContract, real type " + contract.getClass());
 		}
 
 		final Contract.StakeContract stakeContract;
@@ -97,7 +97,7 @@ public class StakeActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account [" + readableOwnerAddress + "] not exists");
+				"Account [" + readableOwnerAddress + "] not exists");
 		}
 		long stakeAmount = stakeContract.getStakeAmount();
 
@@ -118,7 +118,7 @@ public class StakeActuator extends AbstractActuator {
 		boolean needCheckTime = Args.getInstance().getCheckStakeTime() == 1;//for test
 		if (needCheckTime && stakeDuration != stakeTime) {
 			throw new ContractValidateException(
-					"Stake duration must be " + stakeTime + " days");
+				"Stake duration must be " + stakeTime + " days");
 		}
 
 		return true;
@@ -155,14 +155,14 @@ public class StakeActuator extends AbstractActuator {
 			StakeChangeCapsule sCapsule = getDeposit().getStakeChangeCapsule(address);
 			if (Objects.isNull(sCapsule)) {
 				stakeChangeCapsule = new StakeChangeCapsule(ByteString.copyFrom(address),
-						accountCapsule.getNormalStakeAmount());
+					accountCapsule.getNormalStakeAmount());
 			} else {
 				stakeChangeCapsule = sCapsule;
 			}
 		} else if (!stakeChangeStore.has(address)) {
 			if (stakeAccountCapsule != null)
 				stakeChangeCapsule = new StakeChangeCapsule(ByteString.copyFrom(address),
-						stakeAccountCapsule.getStakeAmount());
+					stakeAccountCapsule.getStakeAmount());
 			else
 				stakeChangeCapsule = new StakeChangeCapsule(ByteString.copyFrom(address));
 		} else {

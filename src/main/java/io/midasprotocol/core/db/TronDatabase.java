@@ -31,12 +31,12 @@ public abstract class TronDatabase<T> implements ITronChainBase<T> {
 
 		if ("LEVELDB".equals(Args.getInstance().getStorage().getDbEngine().toUpperCase())) {
 			dbSource =
-					new LevelDbDataSourceImpl(Args.getInstance().getOutputDirectoryByDbName(dbName), dbName);
+				new LevelDbDataSourceImpl(Args.getInstance().getOutputDirectoryByDbName(dbName), dbName);
 		} else if ("ROCKSDB".equals(Args.getInstance().getStorage().getDbEngine().toUpperCase())) {
 			String parentName = Paths.get(Args.getInstance().getOutputDirectoryByDbName(dbName),
-					Args.getInstance().getStorage().getDbDirectory()).toString();
+				Args.getInstance().getStorage().getDbDirectory()).toString();
 			dbSource =
-					new RocksDbDataSourceImpl(parentName, dbName);
+				new RocksDbDataSourceImpl(parentName, dbName);
 		}
 
 		dbSource.initDB();
@@ -69,7 +69,7 @@ public abstract class TronDatabase<T> implements ITronChainBase<T> {
 	public abstract void delete(byte[] key);
 
 	public abstract T get(byte[] key)
-			throws InvalidProtocolBufferException, ItemNotFoundException, BadItemException;
+		throws InvalidProtocolBufferException, ItemNotFoundException, BadItemException;
 
 	public T getUnchecked(byte[] key) {
 		return null;

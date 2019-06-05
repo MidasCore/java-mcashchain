@@ -1,10 +1,10 @@
 package io.midasprotocol.core.services.http;
 
+import io.midasprotocol.api.GrpcAPI.WitnessList;
+import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.api.GrpcAPI.WitnessList;
-import io.midasprotocol.core.Wallet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

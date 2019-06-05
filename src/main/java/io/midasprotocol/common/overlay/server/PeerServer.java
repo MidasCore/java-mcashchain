@@ -17,6 +17,7 @@
  */
 package io.midasprotocol.common.overlay.server;
 
+import io.midasprotocol.core.config.args.Args;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -29,18 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.config.args.Args;
 
 @Slf4j(topic = "net")
 @Component
 public class PeerServer {
 
-	private Args args = Args.getInstance();
-
-	private ApplicationContext ctx;
-
 	public TronChannelInitializer tronChannelInitializer;
-
+	private Args args = Args.getInstance();
+	private ApplicationContext ctx;
 	private boolean listening;
 
 	private EventLoopGroup bossGroup;

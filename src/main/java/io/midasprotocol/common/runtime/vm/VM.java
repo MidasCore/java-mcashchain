@@ -1,14 +1,14 @@
 package io.midasprotocol.common.runtime.vm;
 
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.encoders.Hex;
-import org.springframework.util.StringUtils;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.program.Program;
 import io.midasprotocol.common.runtime.vm.program.Program.JVMStackOverFlowException;
 import io.midasprotocol.common.runtime.vm.program.Program.OutOfEnergyException;
 import io.midasprotocol.common.runtime.vm.program.Program.OutOfTimeException;
 import io.midasprotocol.common.runtime.vm.program.Stack;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class VM {
 			long memWordsOld = (oldMemSize / 32);
 			//TODO #POC9 c_quadCoeffDiv = 512, this should be a constant, not magic number
 			long memEnergy = (energyCosts.getMEMORY() * memWords + memWords * memWords / 512)
-					- (energyCosts.getMEMORY() * memWordsOld + memWordsOld * memWordsOld / 512);
+				- (energyCosts.getMEMORY() * memWordsOld + memWordsOld * memWordsOld / 512);
 			energyCost += memEnergy;
 		}
 
@@ -118,7 +118,7 @@ public class VM {
 					energyCost = energyCosts.getSUICIDE();
 					DataWord suicideAddressWord = stack.get(stack.size() - 1);
 					if (isDeadAccount(program, suicideAddressWord) &&
-							!program.getBalance(program.getContractAddress()).isZero()) {
+						!program.getBalance(program.getContractAddress()).isZero()) {
 						energyCost += energyCosts.getNEW_ACCT_SUICIDE();
 					}
 					break;
@@ -151,27 +151,27 @@ public class VM {
 				// These all operate on memory and therefore potentially expand it:
 				case MSTORE:
 					energyCost = calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), new DataWord(32)),
-							0, op);
+						memNeeded(stack.peek(), new DataWord(32)),
+						0, op);
 					break;
 				case MSTORE8:
 					energyCost = calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), new DataWord(1)),
-							0, op);
+						memNeeded(stack.peek(), new DataWord(1)),
+						0, op);
 					break;
 				case MLOAD:
 					energyCost = calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), new DataWord(32)),
-							0, op);
+						memNeeded(stack.peek(), new DataWord(32)),
+						0, op);
 					break;
 				case RETURN:
 				case REVERT:
 					energyCost = energyCosts.getSTOP() + calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
+						memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
 					break;
 				case SHA3:
 					energyCost = energyCosts.getSHA3() + calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
+						memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
 					DataWord size = stack.get(stack.size() - 2);
 					long chunkUsed = (size.longValueSafe() + 31) / 32;
 					energyCost += chunkUsed * energyCosts.getSHA3_WORD();
@@ -179,21 +179,21 @@ public class VM {
 				case CALLDATACOPY:
 				case RETURNDATACOPY:
 					energyCost = calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), stack.get(stack.size() - 3)),
-							stack.get(stack.size() - 3).longValueSafe(), op);
+						memNeeded(stack.peek(), stack.get(stack.size() - 3)),
+						stack.get(stack.size() - 3).longValueSafe(), op);
 					break;
 				case CODECOPY:
 					energyCost = calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), stack.get(stack.size() - 3)),
-							stack.get(stack.size() - 3).longValueSafe(), op);
+						memNeeded(stack.peek(), stack.get(stack.size() - 3)),
+						stack.get(stack.size() - 3).longValueSafe(), op);
 					break;
 				case EXTCODESIZE:
 					energyCost = energyCosts.getEXT_CODE_SIZE();
 					break;
 				case EXTCODECOPY:
 					energyCost = energyCosts.getEXT_CODE_COPY() + calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 4)),
-							stack.get(stack.size() - 4).longValueSafe(), op);
+						memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 4)),
+						stack.get(stack.size() - 4).longValueSafe(), op);
 					break;
 				case CALL:
 				case CALLCODE:
@@ -223,17 +223,17 @@ public class VM {
 						opOff++;
 					}
 					BigInteger in = memNeeded(stack.get(stack.size() - opOff),
-							stack.get(stack.size() - opOff - 1)); // in offset+size
+						stack.get(stack.size() - opOff - 1)); // in offset+size
 					BigInteger out = memNeeded(stack.get(stack.size() - opOff - 2),
-							stack.get(stack.size() - opOff - 3)); // out offset+size
+						stack.get(stack.size() - opOff - 3)); // out offset+size
 					energyCost += calcMemEnergy(energyCosts, oldMemSize, in.max(out), 0, op);
 					checkMemorySize(op, in.max(out));
 
 					if (energyCost > program.getEnergyLimitLeft().longValueSafe()) {
 						throw new OutOfEnergyException(
-								"Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d]",
-								op.name(),
-								energyCost, program.getEnergyLimitLeft().longValueSafe());
+							"Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d]",
+							op.name(),
+							energyCost, program.getEnergyLimitLeft().longValueSafe());
 					}
 					DataWord getEnergyLimitLeft = program.getEnergyLimitLeft().clone();
 					getEnergyLimitLeft.sub(new DataWord(energyCost));
@@ -243,7 +243,7 @@ public class VM {
 					break;
 				case CREATE:
 					energyCost = energyCosts.getCREATE() + calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0, op);
+						memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0, op);
 					break;
 				case LOG0:
 				case LOG1:
@@ -253,18 +253,18 @@ public class VM {
 					int nTopics = op.val() - OpCode.LOG0.val();
 					BigInteger dataSize = stack.get(stack.size() - 2).value();
 					BigInteger dataCost = dataSize
-							.multiply(BigInteger.valueOf(energyCosts.getLOG_DATA_ENERGY()));
+						.multiply(BigInteger.valueOf(energyCosts.getLOG_DATA_ENERGY()));
 					if (program.getEnergyLimitLeft().value().compareTo(dataCost) < 0) {
 						throw new OutOfEnergyException(
-								"Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d]",
-								op.name(),
-								dataCost.longValueExact(), program.getEnergyLimitLeft().longValueSafe());
+							"Not enough energy for '%s' operation executing: opEnergy[%d], programEnergy[%d]",
+							op.name(),
+							dataCost.longValueExact(), program.getEnergyLimitLeft().longValueSafe());
 					}
 					energyCost = energyCosts.getLOG_ENERGY()
-							+ energyCosts.getLOG_TOPIC_ENERGY() * nTopics
-							+ energyCosts.getLOG_DATA_ENERGY() * stack.get(stack.size() - 2).longValue()
-							+ calcMemEnergy(energyCosts, oldMemSize,
-							memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
+						+ energyCosts.getLOG_TOPIC_ENERGY() * nTopics
+						+ energyCosts.getLOG_DATA_ENERGY() * stack.get(stack.size() - 2).longValue()
+						+ calcMemEnergy(energyCosts, oldMemSize,
+						memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0, op);
 
 					checkMemorySize(op, memNeeded(stack.peek(), stack.get(stack.size() - 2)));
 					break;
@@ -273,7 +273,7 @@ public class VM {
 					DataWord exp = stack.get(stack.size() - 2);
 					int bytesOccupied = exp.bytesOccupied();
 					energyCost =
-							(long) energyCosts.getEXP_ENERGY() + energyCosts.getEXP_BYTE_ENERGY() * bytesOccupied;
+						(long) energyCosts.getEXP_ENERGY() + energyCosts.getEXP_BYTE_ENERGY() * bytesOccupied;
 					break;
 				default:
 					break;
@@ -624,7 +624,7 @@ public class VM {
 					DataWord memOffsetData = program.stackPop();
 					DataWord lengthData = program.stackPop();
 					byte[] buffer = program
-							.memoryChunk(memOffsetData.intValueSafe(), lengthData.intValueSafe());
+						.memoryChunk(memOffsetData.intValueSafe(), lengthData.intValueSafe());
 
 					byte[] encoded = sha3(buffer);
 					DataWord word = new DataWord(encoded);
@@ -661,8 +661,8 @@ public class VM {
 
 					if (logger.isDebugEnabled()) {
 						hint = ADDRESS_LOG
-								+ Hex.toHexString(address.getLast20Bytes())
-								+ " balance: " + balance.toString();
+							+ Hex.toHexString(address.getLast20Bytes())
+							+ " balance: " + balance.toString();
 					}
 
 					program.stackPush(balance);
@@ -788,7 +788,7 @@ public class VM {
 
 					if (msgData == null) {
 						throw new Program.ReturnDataCopyIllegalBoundsException(dataOffsetData, lengthData,
-								program.getReturnDataBufferSize().longValueSafe());
+							program.getReturnDataBufferSize().longValueSafe());
 					}
 
 					if (logger.isDebugEnabled()) {
@@ -837,9 +837,9 @@ public class VM {
 					int lengthData = program.stackPop().intValueSafe();
 
 					int sizeToBeCopied =
-							(long) codeOffset + lengthData > fullCode.length
-									? (fullCode.length < codeOffset ? 0 : fullCode.length - codeOffset)
-									: lengthData;
+						(long) codeOffset + lengthData > fullCode.length
+							? (fullCode.length < codeOffset ? 0 : fullCode.length - codeOffset)
+							: lengthData;
 
 					byte[] codeCopy = new byte[lengthData];
 
@@ -1016,7 +1016,7 @@ public class VM {
 					byte[] data = program.memoryChunk(memStart.intValueSafe(), memOffset.intValueSafe());
 
 					LogInfo logInfo =
-							new LogInfo(address.getLast20Bytes(), topics, data);
+						new LogInfo(address.getLast20Bytes(), topics, data);
 
 					if (logger.isDebugEnabled()) {
 						hint = logInfo.toString();
@@ -1084,8 +1084,8 @@ public class VM {
 
 					if (logger.isDebugEnabled()) {
 						hint =
-								"[" + program.getContractAddress().toPrefixString() + "] key: " + addr + " value: "
-										+ value;
+							"[" + program.getContractAddress().toPrefixString() + "] key: " + addr + " value: "
+								+ value;
 					}
 
 					program.storageSave(addr, value);
@@ -1266,23 +1266,23 @@ public class VM {
 
 					if (logger.isDebugEnabled()) {
 						hint = "addr: " + Hex.toHexString(codeAddress.getLast20Bytes())
-								+ " energy: " + adjustedCallEnergy.shortHex()
-								+ " inOff: " + inDataOffs.shortHex()
-								+ " inSize: " + inDataSize.shortHex();
+							+ " energy: " + adjustedCallEnergy.shortHex()
+							+ " inOff: " + inDataOffs.shortHex()
+							+ " inSize: " + inDataSize.shortHex();
 						logger.debug(ENERGY_LOG_FORMATE, String.format("%5s", "[" + program.getPC() + "]"),
-								String.format("%-12s", op.name()),
-								program.getEnergyLimitLeft().value(),
-								program.getCallDeep(), hint);
+							String.format("%-12s", op.name()),
+							program.getEnergyLimitLeft().value(),
+							program.getCallDeep(), hint);
 					}
 
 					program.memoryExpand(outDataOffs, outDataSize);
 
 					MessageCall msg = new MessageCall(
-							op, adjustedCallEnergy, codeAddress, value, inDataOffs, inDataSize,
-							outDataOffs, outDataSize, tokenId, isTokenTransferMsg);
+						op, adjustedCallEnergy, codeAddress, value, inDataOffs, inDataSize,
+						outDataOffs, outDataSize, tokenId, isTokenTransferMsg);
 
 					PrecompiledContracts.PrecompiledContract contract =
-							PrecompiledContracts.getContractForAddress(codeAddress);
+						PrecompiledContracts.getContractForAddress(codeAddress);
 
 					if (!op.callIsStateless()) {
 						program.getResult().addTouchAccount(codeAddress.getLast20Bytes());
@@ -1307,8 +1307,8 @@ public class VM {
 
 					if (logger.isDebugEnabled()) {
 						hint = "data: " + Hex.toHexString(hReturn)
-								+ " offset: " + offset.value()
-								+ " size: " + size.value();
+							+ " offset: " + offset.value()
+							+ " size: " + size.value();
 					}
 
 					program.step();
@@ -1366,20 +1366,20 @@ public class VM {
 		} catch (RuntimeException e) {
 			if (StringUtils.isEmpty(e.getMessage())) {
 				logger.warn("Unknown Exception occurred, tx id: {}",
-						Hex.toHexString(program.getRootTransactionId()), e);
+					Hex.toHexString(program.getRootTransactionId()), e);
 				program.setRuntimeFailure(new RuntimeException("Unknown Exception"));
 			} else {
 				program.setRuntimeFailure(e);
 			}
 		} catch (StackOverflowError soe) {
 			logger
-					.info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
+				.info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
 			throw new JVMStackOverFlowException();
 		}
 	}
 
 	private boolean isDeadAccount(Program program, DataWord address) {
 		return program.getContractState().getAccount(convertToTronAddress(address.getLast20Bytes()))
-				== null;
+			== null;
 	}
 }

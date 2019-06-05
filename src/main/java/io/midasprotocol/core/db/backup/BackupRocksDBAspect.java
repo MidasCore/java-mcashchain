@@ -1,15 +1,15 @@
 package io.midasprotocol.core.db.backup;
 
+import io.midasprotocol.common.backup.BackupManager;
+import io.midasprotocol.common.backup.BackupManager.BackupStatusEnum;
+import io.midasprotocol.core.capsule.BlockCapsule;
+import io.midasprotocol.core.config.args.Args;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import io.midasprotocol.common.backup.BackupManager;
-import io.midasprotocol.common.backup.BackupManager.BackupStatusEnum;
-import io.midasprotocol.core.capsule.BlockCapsule;
-import io.midasprotocol.core.config.args.Args;
 
 @Slf4j
 @Aspect

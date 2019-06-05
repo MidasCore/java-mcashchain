@@ -18,12 +18,12 @@
 
 package io.midasprotocol.common.overlay.discover;
 
+import io.midasprotocol.common.overlay.discover.node.NodeManager;
+import io.midasprotocol.common.overlay.discover.table.KademliaOptions;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import io.midasprotocol.common.overlay.discover.node.NodeManager;
-import io.midasprotocol.common.overlay.discover.table.KademliaOptions;
 
 public class DiscoveryExecutor {
 
@@ -38,12 +38,12 @@ public class DiscoveryExecutor {
 
 	public void start() {
 		discoverer.scheduleWithFixedDelay(
-				new DiscoverTask(nodeManager),
-				1, KademliaOptions.DISCOVER_CYCLE, TimeUnit.SECONDS);
+			new DiscoverTask(nodeManager),
+			1, KademliaOptions.DISCOVER_CYCLE, TimeUnit.SECONDS);
 
 		refresher.scheduleWithFixedDelay(
-				new RefreshTask(nodeManager),
-				1, KademliaOptions.BUCKET_REFRESH, TimeUnit.MILLISECONDS);
+			new RefreshTask(nodeManager),
+			1, KademliaOptions.BUCKET_REFRESH, TimeUnit.MILLISECONDS);
 	}
 
 	public void close() {

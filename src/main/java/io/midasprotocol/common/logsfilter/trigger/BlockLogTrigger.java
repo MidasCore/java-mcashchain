@@ -1,10 +1,10 @@
 package io.midasprotocol.common.logsfilter.trigger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockLogTrigger extends Trigger {
 
@@ -35,17 +35,17 @@ public class BlockLogTrigger extends Trigger {
 	@Override
 	public String toString() {
 		return new StringBuilder().append("triggerName: ").append(getTriggerName())
-				.append("timestamp: ")
-				.append(timeStamp)
-				.append(", blockNumber: ")
-				.append(blockNumber)
-				.append(", blockhash: ")
-				.append(blockHash)
-				.append(", transactionSize: ")
-				.append(transactionSize)
-				.append(", latestSolidifiedBlockNumber: ")
-				.append(latestSolidifiedBlockNumber)
-				.append(", transactionList: ")
-				.append(transactionList).toString();
+			.append("timestamp: ")
+			.append(timeStamp)
+			.append(", blockNumber: ")
+			.append(blockNumber)
+			.append(", blockhash: ")
+			.append(blockHash)
+			.append(", transactionSize: ")
+			.append(transactionSize)
+			.append(", latestSolidifiedBlockNumber: ")
+			.append(latestSolidifiedBlockNumber)
+			.append(", transactionList: ")
+			.append(transactionList).toString();
 	}
 }

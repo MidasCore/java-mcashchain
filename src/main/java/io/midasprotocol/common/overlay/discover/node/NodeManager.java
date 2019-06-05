@@ -18,26 +18,6 @@
 
 package io.midasprotocol.common.overlay.discover.node;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.net.udp.handler.EventHandler;
 import io.midasprotocol.common.net.udp.handler.UdpEvent;
 import io.midasprotocol.common.net.udp.message.Message;
@@ -53,20 +33,29 @@ import io.midasprotocol.common.overlay.discover.table.NodeTable;
 import io.midasprotocol.common.utils.CollectionUtils;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @Slf4j(topic = "discover")
 @Component
 public class NodeManager implements EventHandler {
 
-	private Args args = Args.getInstance();
-
-	private Manager dbManager;
-
 	private static final long LISTENER_REFRESH_RATE = 1000L;
 	private static final long DB_COMMIT_RATE = 1 * 60 * 1000L;
 	private static final int MAX_NODES = 2000;
 	private static final int NODES_TRIM_THRESHOLD = 3000;
-
+	private Args args = Args.getInstance();
+	private Manager dbManager;
 	private Consumer<UdpEvent> messageSender;
 
 	private NodeTable table;
@@ -91,7 +80,7 @@ public class NodeManager implements EventHandler {
 		discoveryEnabled = args.isNodeDiscoveryEnable();
 
 		homeNode = new Node(RefreshTask.getNodeId(), args.getNodeExternalIp(),
-				args.getNodeListenPort());
+			args.getNodeListenPort());
 
 		for (String boot : args.getSeedNode().getIpList()) {
 			bootNodes.add(Node.instanceOf(boot));
@@ -138,15 +127,15 @@ public class NodeManager implements EventHandler {
 
 	public boolean isNodeAlive(NodeHandler nodeHandler) {
 		return nodeHandler.getState().equals(State.Alive)
-				|| nodeHandler.getState().equals(State.Active)
-				|| nodeHandler.getState().equals(State.EvictCandidate);
+			|| nodeHandler.getState().equals(State.Active)
+			|| nodeHandler.getState().equals(State.EvictCandidate);
 	}
 
 	private void dbRead() {
 		Set<Node> nodes = this.dbManager.readNeighbours();
 		logger.info("Reading Node statistics from PeersStore: " + nodes.size() + " nodes.");
 		nodes.forEach(node -> getNodeHandler(node).getNodeStatistics()
-				.setPersistedReputation(node.getReputation()));
+			.setPersistedReputation(node.getReputation()));
 	}
 
 	private void dbWrite() {
@@ -173,7 +162,7 @@ public class NodeManager implements EventHandler {
 	private String getKey(InetSocketAddress address) {
 		InetAddress addr = address.getAddress();
 		return (addr == null ? address.getHostString() : addr.getHostAddress()) + ":" + address
-				.getPort();
+			.getPort();
 	}
 
 	public synchronized NodeHandler getNodeHandler(Node n) {
@@ -274,11 +263,11 @@ public class NodeManager implements EventHandler {
 		}
 
 		logger.debug("nodeHandlerMap size {} filter peer  size {}", nodeHandlerMap.size(),
-				filtered.size());
+			filtered.size());
 
 		//TODO: here can use head num sort.
 		filtered.sort(Comparator.comparingInt((NodeHandler o) -> o.getNodeStatistics().getReputation())
-				.reversed());
+			.reversed());
 
 		return CollectionUtils.truncate(filtered, limit);
 	}
@@ -286,7 +275,7 @@ public class NodeManager implements EventHandler {
 	public List<NodeHandler> dumpActiveNodes() {
 		List<NodeHandler> handlers = new ArrayList<>();
 		for (NodeHandler handler :
-				this.nodeHandlerMap.values()) {
+			this.nodeHandlerMap.values()) {
 			if (isNodeAlive(handler)) {
 				handlers.add(handler);
 			}

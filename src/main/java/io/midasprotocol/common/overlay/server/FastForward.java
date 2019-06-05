@@ -1,16 +1,5 @@
 package io.midasprotocol.common.overlay.server;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.backup.BackupManager;
 import io.midasprotocol.common.backup.BackupManager.BackupStatusEnum;
 import io.midasprotocol.common.overlay.discover.node.Node;
@@ -20,6 +9,17 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.db.WitnessStore;
 import io.midasprotocol.core.services.WitnessService;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "net")
 @Component
@@ -48,7 +48,7 @@ public class FastForward {
 	public void init() {
 
 		logger.info("Fast forward config, isWitness: {}, keySize: {}, fastForwardNodes: {}",
-				args.isWitness(), keySize, fastForwardNodes.size());
+			args.isWitness(), keySize, fastForwardNodes.size());
 
 		if (!args.isWitness() || keySize == 0 || fastForwardNodes.size() == 0) {
 			return;
@@ -67,8 +67,8 @@ public class FastForward {
 		executorService.scheduleWithFixedDelay(() -> {
 			try {
 				if (witnessStore.get(witnessAddress) != null &&
-						backupManager.getStatus().equals(BackupStatusEnum.MASTER) &&
-						!WitnessService.isNeedSyncCheck()) {
+					backupManager.getStatus().equals(BackupStatusEnum.MASTER) &&
+					!WitnessService.isNeedSyncCheck()) {
 					connect();
 				} else {
 					disconnect();

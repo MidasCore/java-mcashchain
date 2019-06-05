@@ -1,8 +1,5 @@
 package io.midasprotocol.core.net.messagehandler;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
 import io.midasprotocol.core.config.args.Args;
@@ -17,6 +14,9 @@ import io.midasprotocol.core.net.service.AdvService;
 import io.midasprotocol.core.net.service.SyncService;
 import io.midasprotocol.core.services.WitnessProductBlockService;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static io.midasprotocol.core.config.Parameter.ChainConstant.BLOCK_PRODUCED_INTERVAL;
 import static io.midasprotocol.core.config.Parameter.ChainConstant.BLOCK_SIZE;
@@ -62,7 +62,7 @@ public class BlockMsgHandler implements TronMsgHandler {
 	private void check(PeerConnection peer, BlockMessage msg) throws P2pException {
 		Item item = new Item(msg.getBlockId(), InventoryType.BLOCK);
 		if (!peer.getSyncBlockRequested().containsKey(msg.getBlockId()) && !peer.getAdvInvRequest()
-				.containsKey(item)) {
+			.containsKey(item)) {
 			throw new P2pException(TypeEnum.BAD_MESSAGE, "no request");
 		}
 		BlockCapsule blockCapsule = msg.getBlockCapsule();
@@ -79,8 +79,8 @@ public class BlockMsgHandler implements TronMsgHandler {
 		BlockId blockId = block.getBlockId();
 		if (!tronNetDelegate.containBlock(block.getParentBlockId())) {
 			logger.warn("Get unlink block {} from {}, head is {}.", blockId.getString(),
-					peer.getInetAddress(), tronNetDelegate
-							.getHeadBlockId().getString());
+				peer.getInetAddress(), tronNetDelegate
+					.getHeadBlockId().getString());
 			syncService.startSync(peer);
 			return;
 		}

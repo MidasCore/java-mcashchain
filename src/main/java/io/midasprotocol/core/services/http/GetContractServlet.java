@@ -32,7 +32,7 @@ public class GetContractServlet extends HttpServlet {
 			SmartContract smartContract = wallet.getContract(build.build());
 			if (smartContract != null) {
 				JSONObject jsonSmartContract = JSONObject
-						.parseObject(JsonFormat.printToString(smartContract));
+					.parseObject(JsonFormat.printToString(smartContract));
 				response.getWriter().println(jsonSmartContract.toJSONString());
 			} else {
 				response.getWriter().println("{}");
@@ -50,14 +50,14 @@ public class GetContractServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			BytesMessage.Builder build = BytesMessage.newBuilder();
 			JsonFormat.merge(input, build);
 			SmartContract smartContract = wallet.getContract(build.build());
 			if (smartContract != null) {
 				JSONObject jsonSmartContract = JSONObject
-						.parseObject(JsonFormat.printToString(smartContract));
+					.parseObject(JsonFormat.printToString(smartContract));
 				response.getWriter().println(jsonSmartContract.toJSONString());
 			} else {
 				response.getWriter().println("{}");

@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -14,6 +13,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AccountCreateContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class CreateAccountActuator extends AbstractActuator {
@@ -24,17 +24,17 @@ public class CreateAccountActuator extends AbstractActuator {
 
 	@Override
 	public boolean execute(TransactionResultCapsule ret)
-			throws ContractExeException {
+		throws ContractExeException {
 		long fee = calcFee();
 		try {
 			AccountCreateContract accountCreateContract = contract.unpack(AccountCreateContract.class);
 			boolean withDefaultPermission =
-					dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1;
+				dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1;
 			AccountCapsule accountCapsule = new AccountCapsule(accountCreateContract,
-					dbManager.getHeadBlockTimeStamp(), withDefaultPermission, dbManager);
+				dbManager.getHeadBlockTimeStamp(), withDefaultPermission, dbManager);
 
 			dbManager.getAccountStore()
-					.put(accountCreateContract.getAccountAddress().toByteArray(), accountCapsule);
+				.put(accountCreateContract.getAccountAddress().toByteArray(), accountCapsule);
 
 			dbManager.adjustBalance(accountCreateContract.getOwnerAddress().toByteArray(), -fee);
 			// Add to blackhole address
@@ -60,8 +60,8 @@ public class CreateAccountActuator extends AbstractActuator {
 		}
 		if (!contract.is(AccountCreateContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [AccountCreateContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [AccountCreateContract],real type[" + contract
+					.getClass() + "]");
 		}
 		final AccountCreateContract contract;
 		try {
@@ -82,13 +82,13 @@ public class CreateAccountActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account [" + readableOwnerAddress + "] not exists");
+				"Account [" + readableOwnerAddress + "] not exists");
 		}
 
 		final long fee = calcFee();
 		if (accountCapsule.getBalance() < fee) {
 			throw new ContractValidateException(
-					"Validate CreateAccountActuator error, insufficient fee.");
+				"Validate CreateAccountActuator error, insufficient fee.");
 		}
 
 		byte[] accountAddress = contract.getAccountAddress().toByteArray();

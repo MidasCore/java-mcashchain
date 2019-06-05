@@ -32,7 +32,7 @@ public class Fp implements Field<Fp> {
 	static final Fp ZERO = new Fp(BigInteger.ZERO);
 	static final Fp _1 = new Fp(BigInteger.ONE);
 	static final Fp NON_RESIDUE = new Fp(new BigInteger(
-			"21888242871839275222246405745257275088696311157297823662689037894645226208582"));
+		"21888242871839275222246405745257275088696311157297823662689037894645226208582"));
 
 	static final Fp _2_INV = new Fp(BigInteger.valueOf(2).modInverse(P));
 
@@ -40,6 +40,14 @@ public class Fp implements Field<Fp> {
 
 	Fp(BigInteger v) {
 		this.v = v;
+	}
+
+	static Fp create(byte[] v) {
+		return new Fp(new BigInteger(1, v));
+	}
+
+	static Fp create(BigInteger v) {
+		return new Fp(v);
 	}
 
 	@Override
@@ -92,14 +100,6 @@ public class Fp implements Field<Fp> {
 
 	Fp2 mul(Fp2 o) {
 		return new Fp2(o.a.mul(this), o.b.mul(this));
-	}
-
-	static Fp create(byte[] v) {
-		return new Fp(new BigInteger(1, v));
-	}
-
-	static Fp create(BigInteger v) {
-		return new Fp(v);
 	}
 
 	public byte[] bytes() {

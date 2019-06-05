@@ -1,17 +1,16 @@
 package io.midasprotocol.common.overlay.message;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
-
-import java.util.List;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.server.Channel;
 import io.midasprotocol.core.exception.P2pException;
 import io.midasprotocol.core.net.message.MessageTypes;
 import io.midasprotocol.core.net.message.TronMessageFactory;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @Scope("prototype")
@@ -23,7 +22,7 @@ public class MessageCodec extends ByteToMessageDecoder {
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out)
-			throws Exception {
+		throws Exception {
 		int length = buffer.readableBytes();
 		byte[] encoded = new byte[length];
 		buffer.readBytes(encoded);

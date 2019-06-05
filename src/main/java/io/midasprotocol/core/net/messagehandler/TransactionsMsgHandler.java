@@ -1,9 +1,5 @@
 package io.midasprotocol.core.net.messagehandler;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.exception.P2pException;
 import io.midasprotocol.core.exception.P2pException.TypeEnum;
@@ -18,6 +14,10 @@ import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
 import io.midasprotocol.protos.Protocol.ReasonCode;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
 
@@ -32,17 +32,17 @@ public class TransactionsMsgHandler implements TronMsgHandler {
 	@Autowired
 	private AdvService advService;
 
-//  private static int TIME_OUT = 10 * 60 * 1000;
+	//  private static int TIME_OUT = 10 * 60 * 1000;
 	private BlockingQueue<TrxEvent> smartContractQueue = new LinkedBlockingQueue(MAX_TRX_SIZE);
 
 	private BlockingQueue<Runnable> queue = new LinkedBlockingQueue();
 
 	private int threadNum = Args.getInstance().getValidateSignThreadNum();
 	private ExecutorService trxHandlePool = new ThreadPoolExecutor(threadNum, threadNum, 0L,
-			TimeUnit.MILLISECONDS, queue);
+		TimeUnit.MILLISECONDS, queue);
 
 	private ScheduledExecutorService smartContractExecutor = Executors
-			.newSingleThreadScheduledExecutor();
+		.newSingleThreadScheduledExecutor();
 
 	public void init() {
 		handleSmartContract();
@@ -63,10 +63,10 @@ public class TransactionsMsgHandler implements TronMsgHandler {
 		for (Transaction trx : transactionsMessage.getTransactions().getTransactionsList()) {
 			int type = trx.getRawData().getContract(0).getType().getNumber();
 			if (type == ContractType.TriggerSmartContract_VALUE
-					|| type == ContractType.CreateSmartContract_VALUE) {
+				|| type == ContractType.CreateSmartContract_VALUE) {
 				if (!smartContractQueue.offer(new TrxEvent(peer, new TransactionMessage(trx)))) {
 					logger.warn("Add smart contract failed, queueSize {}:{}", smartContractQueue.size(),
-							queue.size());
+						queue.size());
 				}
 			} else {
 				trxHandlePool.submit(() -> handleTransaction(peer, new TransactionMessage(trx)));
@@ -79,7 +79,7 @@ public class TransactionsMsgHandler implements TronMsgHandler {
 			Item item = new Item(new TransactionMessage(trx).getMessageId(), InventoryType.TRX);
 			if (!peer.getAdvInvRequest().containsKey(item)) {
 				throw new P2pException(TypeEnum.BAD_MESSAGE,
-						"trx: " + msg.getMessageId() + " without request.");
+					"trx: " + msg.getMessageId() + " without request.");
 			}
 			peer.getAdvInvRequest().remove(item);
 		}
@@ -101,7 +101,7 @@ public class TransactionsMsgHandler implements TronMsgHandler {
 	private void handleTransaction(PeerConnection peer, TransactionMessage trx) {
 		if (peer.isDisconnect()) {
 			logger.warn("Drop trx {} from {}, peer is disconnect.", trx.getMessageId(),
-					peer.getInetAddress());
+				peer.getInetAddress());
 			return;
 		}
 
@@ -114,13 +114,13 @@ public class TransactionsMsgHandler implements TronMsgHandler {
 			advService.broadcast(trx);
 		} catch (P2pException e) {
 			logger.warn("Trx {} from peer {} process failed. type: {}, reason: {}",
-					trx.getMessageId(), peer.getInetAddress(), e.getType(), e.getMessage());
+				trx.getMessageId(), peer.getInetAddress(), e.getType(), e.getMessage());
 			if (e.getType().equals(TypeEnum.BAD_TRX)) {
 				peer.disconnect(ReasonCode.BAD_TX);
 			}
 		} catch (Exception e) {
 			logger.error("Trx {} from peer {} process failed.", trx.getMessageId(), peer.getInetAddress(),
-					e);
+				e);
 		}
 	}
 

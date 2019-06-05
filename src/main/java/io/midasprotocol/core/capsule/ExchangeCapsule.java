@@ -2,13 +2,10 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.capsule.utils.ExchangeProcessor;
-import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol.Exchange;
-
-import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class ExchangeCapsule implements ProtoCapsule<Exchange> {
@@ -30,12 +27,12 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 	public ExchangeCapsule(ByteString address, final long id, long createTime,
 						   long firstTokenID, long secondTokenID) {
 		this.exchange = Exchange.newBuilder()
-				.setExchangeId(id)
-				.setCreatorAddress(address)
-				.setCreateTime(createTime)
-				.setFirstTokenId(firstTokenID)
-				.setSecondTokenId(secondTokenID)
-				.build();
+			.setExchangeId(id)
+			.setCreatorAddress(address)
+			.setCreateTime(createTime)
+			.setFirstTokenId(firstTokenID)
+			.setSecondTokenId(secondTokenID)
+			.build();
 	}
 
 	public static byte[] calculateDbKey(long number) {
@@ -48,8 +45,8 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 
 	public void setID(long id) {
 		this.exchange = this.exchange.toBuilder()
-				.setExchangeId(id)
-				.build();
+			.setExchangeId(id)
+			.build();
 	}
 
 	public ByteString getCreatorAddress() {
@@ -58,15 +55,15 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 
 	public void setExchangeAddress(ByteString address) {
 		this.exchange = this.exchange.toBuilder()
-				.setCreatorAddress(address)
-				.build();
+			.setCreatorAddress(address)
+			.build();
 	}
 
 	public void setBalance(long firstTokenBalance, long secondTokenBalance) {
 		this.exchange = this.exchange.toBuilder()
-				.setFirstTokenBalance(firstTokenBalance)
-				.setSecondTokenBalance(secondTokenBalance)
-				.build();
+			.setFirstTokenBalance(firstTokenBalance)
+			.setSecondTokenBalance(secondTokenBalance)
+			.build();
 	}
 
 	public long getCreateTime() {
@@ -75,8 +72,8 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 
 	public void setCreateTime(long time) {
 		this.exchange = this.exchange.toBuilder()
-				.setCreateTime(time)
-				.build();
+			.setCreateTime(time)
+			.build();
 	}
 
 	public long getFirstTokenId() {
@@ -85,8 +82,8 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 
 	public void setFirstTokenId(long id) {
 		this.exchange = this.exchange.toBuilder()
-				.setFirstTokenId(id)
-				.build();
+			.setFirstTokenId(id)
+			.build();
 	}
 
 	public long getSecondTokenId() {
@@ -95,8 +92,8 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 
 	public void setSecondTokenId(long id) {
 		this.exchange = this.exchange.toBuilder()
-				.setSecondTokenId(id)
-				.build();
+			.setSecondTokenId(id)
+			.build();
 	}
 
 	public long getFirstTokenBalance() {
@@ -121,20 +118,20 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 
 		if (this.exchange.getFirstTokenId() == sellTokenID) {
 			buyTokenQuant = processor.exchange(firstTokenBalance,
-					secondTokenBalance,
-					sellTokenQuant);
+				secondTokenBalance,
+				sellTokenQuant);
 			this.exchange = this.exchange.toBuilder()
-					.setFirstTokenBalance(firstTokenBalance + sellTokenQuant)
-					.setSecondTokenBalance(secondTokenBalance - buyTokenQuant)
-					.build();
+				.setFirstTokenBalance(firstTokenBalance + sellTokenQuant)
+				.setSecondTokenBalance(secondTokenBalance - buyTokenQuant)
+				.build();
 		} else {
 			buyTokenQuant = processor.exchange(secondTokenBalance,
-					firstTokenBalance,
-					sellTokenQuant);
+				firstTokenBalance,
+				sellTokenQuant);
 			this.exchange = this.exchange.toBuilder()
-					.setFirstTokenBalance(firstTokenBalance - buyTokenQuant)
-					.setSecondTokenBalance(secondTokenBalance + sellTokenQuant)
-					.build();
+				.setFirstTokenBalance(firstTokenBalance - buyTokenQuant)
+				.setSecondTokenBalance(secondTokenBalance + sellTokenQuant)
+				.build();
 		}
 
 		return buyTokenQuant;

@@ -3,8 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
-import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
 import io.midasprotocol.core.capsule.WitnessCapsule;
@@ -14,6 +12,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.WitnessUpdateContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class WitnessUpdateActuator extends AbstractActuator {
@@ -24,7 +23,7 @@ public class WitnessUpdateActuator extends AbstractActuator {
 
 	private void updateWitness(final WitnessUpdateContract contract) {
 		WitnessCapsule witnessCapsule = this.dbManager.getWitnessStore()
-				.get(contract.getWitnessAddress().toByteArray());
+			.get(contract.getWitnessAddress().toByteArray());
 		witnessCapsule.setUrl(contract.getUpdateUrl().toStringUtf8());
 		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 	}
@@ -34,7 +33,7 @@ public class WitnessUpdateActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final WitnessUpdateContract witnessUpdateContract = this.contract
-					.unpack(WitnessUpdateContract.class);
+				.unpack(WitnessUpdateContract.class);
 			this.updateWitness(witnessUpdateContract);
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (final InvalidProtocolBufferException e) {
@@ -55,7 +54,7 @@ public class WitnessUpdateActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(WitnessUpdateContract.class)) {
 			throw new ContractValidateException(
-					"contract type error, expected WitnessUpdateContract, actual " + contract.getClass());
+				"contract type error, expected WitnessUpdateContract, actual " + contract.getClass());
 		}
 		final WitnessUpdateContract contract;
 		try {

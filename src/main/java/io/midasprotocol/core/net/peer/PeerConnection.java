@@ -2,13 +2,6 @@ package io.midasprotocol.core.net.peer;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.message.HelloMessage;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.overlay.server.Channel;
@@ -18,6 +11,13 @@ import io.midasprotocol.core.config.Parameter.NodeConstant;
 import io.midasprotocol.core.net.TronNetDelegate;
 import io.midasprotocol.core.net.service.AdvService;
 import io.midasprotocol.core.net.service.SyncService;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Deque;
 import java.util.HashSet;
@@ -54,12 +54,12 @@ public class PeerConnection extends Channel {
 	@Setter
 	@Getter
 	private Cache<Item, Long> advInvReceive = CacheBuilder.newBuilder().maximumSize(invCacheSize)
-			.expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
+		.expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
 
 	@Setter
 	@Getter
 	private Cache<Item, Long> advInvSpread = CacheBuilder.newBuilder().maximumSize(invCacheSize)
-			.expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
+		.expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
 
 	@Setter
 	@Getter
@@ -77,7 +77,7 @@ public class PeerConnection extends Channel {
 	private long remainNum;
 	@Getter
 	private Cache<Sha256Hash, Long> syncBlockIdCache = CacheBuilder.newBuilder()
-			.maximumSize(2 * NodeConstant.SYNC_FETCH_BATCH_NUM).recordStats().build();
+		.maximumSize(2 * NodeConstant.SYNC_FETCH_BATCH_NUM).recordStats().build();
 	@Setter
 	@Getter
 	private Deque<BlockId> syncBlockToFetch = new ConcurrentLinkedDeque<>();
@@ -161,31 +161,31 @@ public class PeerConnection extends Channel {
 //        nodeStatistics.toString());
 ////
 		return String.format(
-				"Peer %s: [ %18s, ping %6s ms]-----------\n"
-						+ "connect time: %ds\n"
-						+ "last know block num: %s\n"
-						+ "needSyncFromPeer:%b\n"
-						+ "needSyncFromUs:%b\n"
-						+ "syncToFetchSize:%d\n"
-						+ "syncToFetchSizePeekNum:%d\n"
-						+ "syncBlockRequestedSize:%d\n"
-						+ "remainNum:%d\n"
-						+ "syncChainRequested:%d\n"
-						+ "blockInProcess:%d\n",
-				this.getNode().getHost() + ":" + this.getNode().getPort(),
-				this.getNode().getHexIdShort(),
-				(int) this.getPeerStats().getAvgLatency(),
-				(now - super.getStartTime()) / 1000,
-				blockBothHave.getNum(),
-				isNeedSyncFromPeer(),
-				isNeedSyncFromUs(),
-				syncBlockToFetch.size(),
-				syncBlockToFetch.size() > 0 ? syncBlockToFetch.peek().getNum() : -1,
-				syncBlockRequested.size(),
-				remainNum,
-				syncChainRequested == null ? 0 : (now - syncChainRequested.getValue()) / 1000,
-				syncBlockInProcess.size())
-				+ nodeStatistics.toString() + "\n";
+			"Peer %s: [ %18s, ping %6s ms]-----------\n"
+				+ "connect time: %ds\n"
+				+ "last know block num: %s\n"
+				+ "needSyncFromPeer:%b\n"
+				+ "needSyncFromUs:%b\n"
+				+ "syncToFetchSize:%d\n"
+				+ "syncToFetchSizePeekNum:%d\n"
+				+ "syncBlockRequestedSize:%d\n"
+				+ "remainNum:%d\n"
+				+ "syncChainRequested:%d\n"
+				+ "blockInProcess:%d\n",
+			this.getNode().getHost() + ":" + this.getNode().getPort(),
+			this.getNode().getHexIdShort(),
+			(int) this.getPeerStats().getAvgLatency(),
+			(now - super.getStartTime()) / 1000,
+			blockBothHave.getNum(),
+			isNeedSyncFromPeer(),
+			isNeedSyncFromUs(),
+			syncBlockToFetch.size(),
+			syncBlockToFetch.size() > 0 ? syncBlockToFetch.peek().getNum() : -1,
+			syncBlockRequested.size(),
+			remainNum,
+			syncChainRequested == null ? 0 : (now - syncChainRequested.getValue()) / 1000,
+			syncBlockInProcess.size())
+			+ nodeStatistics.toString() + "\n";
 	}
 
 }

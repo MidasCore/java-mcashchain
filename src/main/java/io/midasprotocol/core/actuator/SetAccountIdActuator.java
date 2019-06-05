@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
@@ -15,6 +14,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.SetAccountIdContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class SetAccountIdActuator extends AbstractActuator {
@@ -58,8 +58,8 @@ public class SetAccountIdActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(SetAccountIdContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [SetAccountIdContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [SetAccountIdContract],real type[" + contract
+					.getClass() + "]");
 		}
 		final SetAccountIdContract setAccountIdContract;
 		try {

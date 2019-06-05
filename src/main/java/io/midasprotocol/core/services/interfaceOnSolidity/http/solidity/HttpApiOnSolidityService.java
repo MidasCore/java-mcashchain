@@ -1,13 +1,13 @@
 package io.midasprotocol.core.services.interfaceOnSolidity.http.solidity;
 
+import io.midasprotocol.common.application.Service;
+import io.midasprotocol.core.config.args.Args;
+import io.midasprotocol.core.services.interfaceOnSolidity.http.*;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import io.midasprotocol.common.application.Service;
-import io.midasprotocol.core.config.args.Args;
-import io.midasprotocol.core.services.interfaceOnSolidity.http.*;
 
 @Slf4j(topic = "API")
 public class HttpApiOnSolidityService implements Service {
@@ -77,39 +77,39 @@ public class HttpApiOnSolidityService implements Service {
 			// same as FullNode
 			context.addServlet(new ServletHolder(accountOnSolidityServlet), "/walletsolidity/getaccount");
 			context.addServlet(new ServletHolder(listWitnessesOnSolidityServlet),
-					"/walletsolidity/listwitnesses");
+				"/walletsolidity/listwitnesses");
 			context.addServlet(new ServletHolder(getAssetIssueListOnSolidityServlet),
-					"/walletsolidity/getassetissuelist");
+				"/walletsolidity/getassetissuelist");
 			context.addServlet(new ServletHolder(getPaginatedAssetIssueListOnSolidityServlet),
-					"/walletsolidity/getpaginatedassetissuelist");
+				"/walletsolidity/getpaginatedassetissuelist");
 			context.addServlet(new ServletHolder(getAssetIssueByNameOnSolidityServlet),
-					"/walletsolidity/getassetissuebyname");
+				"/walletsolidity/getassetissuebyname");
 			context.addServlet(new ServletHolder(getAssetIssueByIdOnSolidityServlet),
-					"/walletsolidity/getassetissuebyid");
+				"/walletsolidity/getassetissuebyid");
 			context.addServlet(new ServletHolder(getAssetIssueListByNameOnSolidityServlet),
-					"/walletsolidity/getassetissuelistbyname");
+				"/walletsolidity/getassetissuelistbyname");
 			context.addServlet(new ServletHolder(getNowBlockOnSolidityServlet),
-					"/walletsolidity/getnowblock");
+				"/walletsolidity/getnowblock");
 			context.addServlet(new ServletHolder(getBlockByNumOnSolidityServlet),
-					"/walletsolidity/getblockbynum");
+				"/walletsolidity/getblockbynum");
 			context.addServlet(new ServletHolder(getDelegatedResourceOnSolidityServlet),
-					"/walletsolidity/getdelegatedresource");
+				"/walletsolidity/getdelegatedresource");
 			context.addServlet(new ServletHolder(getDelegatedResourceAccountIndexOnSolidityServlet),
-					"/walletsolidity/getdelegatedresourceaccountindex");
+				"/walletsolidity/getdelegatedresourceaccountindex");
 			context.addServlet(new ServletHolder(getExchangeByIdOnSolidityServlet),
-					"/walletsolidity/getexchangebyid");
+				"/walletsolidity/getexchangebyid");
 			context.addServlet(new ServletHolder(listExchangesOnSolidityServlet),
-					"/walletsolidity/listexchanges");
+				"/walletsolidity/listexchanges");
 
 			// only for SolidityNode
 			context.addServlet(new ServletHolder(getTransactionByIdOnSolidityServlet),
-					"/walletsolidity/gettransactionbyid");
+				"/walletsolidity/gettransactionbyid");
 			context
-					.addServlet(new ServletHolder(getTransactionInfoByIdOnSolidityServlet),
-							"/walletsolidity/gettransactioninfobyid");
+				.addServlet(new ServletHolder(getTransactionInfoByIdOnSolidityServlet),
+					"/walletsolidity/gettransactioninfobyid");
 			context
-					.addServlet(new ServletHolder(getTransactionCountByBlockNumOnSolidityServlet),
-							"/walletsolidity/gettransactioncountbyblocknum");
+				.addServlet(new ServletHolder(getTransactionCountByBlockNumOnSolidityServlet),
+					"/walletsolidity/gettransactioncountbyblocknum");
 
 			context.addServlet(new ServletHolder(getNodeInfoOnSolidityServlet), "/wallet/getnodeinfo");
 

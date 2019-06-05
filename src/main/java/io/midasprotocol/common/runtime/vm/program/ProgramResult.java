@@ -1,18 +1,18 @@
 package io.midasprotocol.common.runtime.vm.program;
 
-import lombok.Setter;
 import io.midasprotocol.common.logsfilter.trigger.ContractTrigger;
 import io.midasprotocol.common.runtime.vm.CallCreate;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.LogInfo;
 import io.midasprotocol.common.utils.ByteArraySet;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
+import lombok.Setter;
 
 import java.util.*;
 
+import static io.midasprotocol.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.size;
-import static io.midasprotocol.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
 
 public class ProgramResult {
 
@@ -174,8 +174,8 @@ public class ProgramResult {
 													  byte[] senderAddress, byte[] transferAddress, long value, byte[] data, String note,
 													  long nonce, Map<Long, Long> token) {
 		InternalTransaction transaction = new InternalTransaction(parentHash, deep,
-				size(internalTransactions), senderAddress, transferAddress, value, data, note, nonce,
-				token);
+			size(internalTransactions), senderAddress, transferAddress, value, data, note, nonce,
+			token);
 		getInternalTransactions().add(transaction);
 		return transaction;
 	}

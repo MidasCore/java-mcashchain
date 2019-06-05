@@ -1,10 +1,10 @@
 package io.midasprotocol.core.db;
 
+import io.midasprotocol.core.capsule.DelegatedResourceCapsule;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.DelegatedResourceCapsule;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,9 +28,9 @@ public class DelegatedResourceStore extends TronStoreWithRevoking<DelegatedResou
 	@Deprecated
 	public List<DelegatedResourceCapsule> getByFrom(byte[] key) {
 		return revokingDB.getValuesNext(key, Long.MAX_VALUE).stream()
-				.map(DelegatedResourceCapsule::new)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+			.map(DelegatedResourceCapsule::new)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
 	}
 
 }

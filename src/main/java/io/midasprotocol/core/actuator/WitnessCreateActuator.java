@@ -3,14 +3,12 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
 import io.midasprotocol.core.capsule.VoteChangeCapsule;
 import io.midasprotocol.core.capsule.WitnessCapsule;
-import io.midasprotocol.core.util.StakeUtil;
 import io.midasprotocol.core.capsule.utils.TransactionUtil;
 import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.db.AccountStore;
@@ -19,8 +17,10 @@ import io.midasprotocol.core.db.VoteChangeStore;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
+import io.midasprotocol.core.util.StakeUtil;
 import io.midasprotocol.protos.Contract.WitnessCreateContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -36,7 +36,7 @@ public class WitnessCreateActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final WitnessCreateContract witnessCreateContract = this.contract
-					.unpack(WitnessCreateContract.class);
+				.unpack(WitnessCreateContract.class);
 			this.createWitness(witnessCreateContract);
 			this.updateVote(witnessCreateContract);
 			ret.setStatus(fee, code.SUCCESS);
@@ -58,7 +58,7 @@ public class WitnessCreateActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(WitnessCreateContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected WitnessCreateContract, actual" + contract.getClass());
+				"Contract type error, expected WitnessCreateContract, actual" + contract.getClass());
 		}
 		final WitnessCreateContract contract;
 		try {
@@ -92,17 +92,17 @@ public class WitnessCreateActuator extends AbstractActuator {
 		AccountCapsule nodeAccountCapsule = this.dbManager.getAccountStore().get(supernodeAddress);
 		if (nodeAccountCapsule == null) {
 			throw new ContractValidateException("Account " + StringUtil.createReadableString(supernodeAddress)
-					+ " does not exist");
+				+ " does not exist");
 		}
 
 		if (this.dbManager.getWitnessStore().has(supernodeAddress)) {
 			throw new ContractValidateException("Witness " + StringUtil.createReadableString(supernodeAddress)
-					+ " has existed");
+				+ " has existed");
 		}
 
 		if (ownerAccountCapsule.hasWitnessStake()) {
 			throw new ContractValidateException("Account " + StringUtil.createReadableString(ownerAddress)
-					+ " owns other supernode");
+				+ " owns other supernode");
 		}
 
 		if (ownerAccountCapsule.getBalance() < dbManager.getDynamicPropertiesStore().getAccountUpgradeCost()) {
@@ -111,8 +111,8 @@ public class WitnessCreateActuator extends AbstractActuator {
 
 		if (ownerAccountCapsule.getNormalStakeAmount() < Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT) {
 			throw new ContractValidateException(String.format("Owner stake amount %d < required stake amount %d",
-					ownerAccountCapsule.getNormalStakeAmount() / Parameter.ChainConstant.TEN_POW_DECIMALS,
-					Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT / Parameter.ChainConstant.TEN_POW_DECIMALS));
+				ownerAccountCapsule.getNormalStakeAmount() / Parameter.ChainConstant.TEN_POW_DECIMALS,
+				Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT / Parameter.ChainConstant.TEN_POW_DECIMALS));
 		}
 
 		return true;
@@ -130,19 +130,19 @@ public class WitnessCreateActuator extends AbstractActuator {
 
 	// Create Witness by witnessCreateContract
 	private void createWitness(final WitnessCreateContract witnessCreateContract)
-			throws BalanceInsufficientException {
+		throws BalanceInsufficientException {
 		final WitnessCapsule witnessCapsule = new WitnessCapsule(
-				witnessCreateContract.getWitnessAddress(),
-				witnessCreateContract.getOwnerAddress(),
-				0,
-				witnessCreateContract.getUrl().toStringUtf8());
+			witnessCreateContract.getWitnessAddress(),
+			witnessCreateContract.getOwnerAddress(),
+			0,
+			witnessCreateContract.getUrl().toStringUtf8());
 
 		logger.debug("Create supernode, address {}, ownerAddress: {}",
-				StringUtil.createReadableString(witnessCapsule.getAddress()),
-				StringUtil.createReadableString(witnessCapsule.getOwnerAddress()));
+			StringUtil.createReadableString(witnessCapsule.getAddress()),
+			StringUtil.createReadableString(witnessCapsule.getOwnerAddress()));
 		this.dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 		AccountCapsule witnessAccountCapsule = this.dbManager.getAccountStore()
-				.get(witnessCapsule.createDbKey());
+			.get(witnessCapsule.createDbKey());
 		witnessAccountCapsule.setIsWitness(true);
 		if (dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1) {
 			witnessAccountCapsule.setDefaultWitnessPermission(dbManager);
@@ -150,7 +150,7 @@ public class WitnessCreateActuator extends AbstractActuator {
 		this.dbManager.getAccountStore().put(witnessAccountCapsule.createDbKey(), witnessAccountCapsule);
 
 		AccountCapsule ownerAccountCapsule = this.dbManager.getAccountStore()
-				.get(witnessCreateContract.getOwnerAddress().toByteArray());
+			.get(witnessCreateContract.getOwnerAddress().toByteArray());
 
 		long newStake = ownerAccountCapsule.getNormalStakeAmount() - Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT;
 		long now = dbManager.getHeadBlockTimeStamp();
@@ -177,19 +177,19 @@ public class WitnessCreateActuator extends AbstractActuator {
 		AccountStore accountStore = dbManager.getAccountStore();
 
 		AccountCapsule accountCapsule = (Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
-				: getDeposit().getAccount(ownerAddress);
+			: getDeposit().getAccount(ownerAddress);
 
 		if (!Objects.isNull(getDeposit())) {
 			VoteChangeCapsule vCapsule = getDeposit().getVoteChangeCapsule(ownerAddress);
 			if (Objects.isNull(vCapsule)) {
 				voteChangeCapsule = new VoteChangeCapsule(witnessCreateContract.getOwnerAddress(),
-						accountCapsule.getVote());
+					accountCapsule.getVote());
 			} else {
 				voteChangeCapsule = vCapsule;
 			}
 		} else if (!voteChangeStore.has(ownerAddress)) {
 			voteChangeCapsule = new VoteChangeCapsule(witnessCreateContract.getOwnerAddress(),
-					accountCapsule.getVote());
+				accountCapsule.getVote());
 		} else {
 			voteChangeCapsule = voteChangeStore.get(ownerAddress);
 		}
@@ -201,9 +201,9 @@ public class WitnessCreateActuator extends AbstractActuator {
 		long voteCount = StakeUtil.getVotingPowerFromStakeAmount(accountCapsule.getTotalStakeAmount());
 
 		logger.info("address: {}, supernode: {}, voteCount: {}",
-				StringUtil.createReadableString(ownerAddress),
-				StringUtil.createReadableString(supernodeAddress),
-				voteCount);
+			StringUtil.createReadableString(ownerAddress),
+			StringUtil.createReadableString(supernodeAddress),
+			voteCount);
 
 		voteChangeCapsule.setNewVote(supernodeAddress, voteCount);
 		accountCapsule.setVote(supernodeAddress, voteCount);

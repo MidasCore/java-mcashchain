@@ -1,20 +1,5 @@
 package io.midasprotocol.common.overlay.server;
 
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.overlay.message.PingMessage;
 import io.midasprotocol.common.overlay.message.PongMessage;
@@ -22,29 +7,29 @@ import io.midasprotocol.core.net.message.InventoryMessage;
 import io.midasprotocol.core.net.message.TransactionsMessage;
 import io.midasprotocol.protos.Protocol.Inventory.InventoryType;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.util.Queue;
+import java.util.concurrent.*;
 
 @Slf4j(topic = "net")
 @Component
 @Scope("prototype")
 public class MessageQueue {
 
-	private volatile boolean sendMsgFlag = false;
-
-	private volatile long sendTime;
-
-	private Thread sendMsgThread;
-
-	private Channel channel;
-
-	private ChannelHandlerContext ctx = null;
-
-	private Queue<MessageRoundtrip> requestQueue = new ConcurrentLinkedQueue<>();
-
-	private BlockingQueue<Message> msgQueue = new LinkedBlockingQueue<>();
-
 	private static ScheduledExecutorService sendTimer = Executors.
-			newSingleThreadScheduledExecutor(r -> new Thread(r, "sendTimer"));
-
+		newSingleThreadScheduledExecutor(r -> new Thread(r, "sendTimer"));
+	private volatile boolean sendMsgFlag = false;
+	private volatile long sendTime;
+	private Thread sendMsgThread;
+	private Channel channel;
+	private ChannelHandlerContext ctx = null;
+	private Queue<MessageRoundtrip> requestQueue = new ConcurrentLinkedQueue<>();
+	private BlockingQueue<Message> msgQueue = new LinkedBlockingQueue<>();
 	private ScheduledFuture<?> sendTask;
 
 
@@ -79,7 +64,7 @@ public class MessageQueue {
 					});
 				} catch (Exception e) {
 					logger.error("Fail send to {}, error info: {}", ctx.channel().remoteAddress(),
-							e.getMessage());
+						e.getMessage());
 				}
 			}
 		});
@@ -115,7 +100,7 @@ public class MessageQueue {
 		channel.getNodeStatistics().messageStatistics.addTcpInMessage(msg);
 		MessageRoundtrip messageRoundtrip = requestQueue.peek();
 		if (messageRoundtrip != null && messageRoundtrip.getMsg().getAnswerMessage() == msg
-				.getClass()) {
+			.getClass()) {
 			requestQueue.remove();
 		}
 	}
@@ -138,13 +123,13 @@ public class MessageQueue {
 
 	private boolean needToLog(Message msg) {
 		if (msg instanceof PingMessage ||
-				msg instanceof PongMessage ||
-				msg instanceof TransactionsMessage) {
+			msg instanceof PongMessage ||
+			msg instanceof TransactionsMessage) {
 			return false;
 		}
 
 		if (msg instanceof InventoryMessage &&
-				((InventoryMessage) msg).getInventoryType().equals(InventoryType.TRX)) {
+			((InventoryMessage) msg).getInventoryType().equals(InventoryType.TRX)) {
 			return false;
 		}
 
@@ -162,8 +147,8 @@ public class MessageQueue {
 		if (messageRoundtrip.getRetryTimes() > 0) {
 			channel.getNodeStatistics().nodeDisconnectedLocal(ReasonCode.PING_TIMEOUT);
 			logger
-					.warn("Wait {} timeout. close channel {}.", messageRoundtrip.getMsg().getAnswerMessage(),
-							ctx.channel().remoteAddress());
+				.warn("Wait {} timeout. close channel {}.", messageRoundtrip.getMsg().getAnswerMessage(),
+					ctx.channel().remoteAddress());
 			channel.close();
 			return;
 		}

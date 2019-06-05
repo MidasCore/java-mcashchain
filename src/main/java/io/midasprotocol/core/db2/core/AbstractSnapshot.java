@@ -1,8 +1,8 @@
 package io.midasprotocol.core.db2.core;
 
+import io.midasprotocol.core.db2.common.DB;
 import lombok.Getter;
 import lombok.Setter;
-import io.midasprotocol.core.db2.common.DB;
 
 import java.lang.ref.WeakReference;
 

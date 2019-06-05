@@ -3,21 +3,21 @@ package io.midasprotocol.core.controller;
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.core.capsule.BlockRewardCapsule;
-import io.midasprotocol.core.config.Parameter;
-import io.midasprotocol.core.util.RewardUtil;
-import io.midasprotocol.protos.Protocol;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
+import io.midasprotocol.core.capsule.BlockRewardCapsule;
 import io.midasprotocol.core.capsule.StakeAccountCapsule;
 import io.midasprotocol.core.capsule.StakeChangeCapsule;
-import io.midasprotocol.core.util.StakeUtil;
+import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.db.StakeAccountStore;
 import io.midasprotocol.core.db.StakeChangeStore;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
+import io.midasprotocol.core.util.RewardUtil;
+import io.midasprotocol.core.util.StakeUtil;
+import io.midasprotocol.protos.Protocol;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.List;
@@ -74,7 +74,7 @@ public class StakeAccountController {
 
 	private void payStakeAccount(Map<ByteString, Long> stakes, long stakeSum) {
 		long totalPay = RewardUtil.rewardInflation(manager.getDynamicPropertiesStore().getStakingRewardPerEpoch(),
-				manager.getHeadBlockNum(), Parameter.ChainConstant.BLOCKS_PER_YEAR);
+			manager.getHeadBlockNum(), Parameter.ChainConstant.BLOCKS_PER_YEAR);
 
 		long blockNumber = manager.getHeadBlockNum();
 		BlockRewardCapsule blockRewardCapsule = manager.getBlockRewardStore().get(ByteArray.fromLong(blockNumber));

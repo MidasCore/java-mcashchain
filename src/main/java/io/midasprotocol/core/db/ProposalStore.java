@@ -1,11 +1,11 @@
 package io.midasprotocol.core.db;
 
 import com.google.common.collect.Streams;
+import io.midasprotocol.core.capsule.ProposalCapsule;
+import io.midasprotocol.core.exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.ProposalCapsule;
-import io.midasprotocol.core.exception.ItemNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -30,10 +30,10 @@ public class ProposalStore extends TronStoreWithRevoking<ProposalCapsule> {
 	 */
 	public List<ProposalCapsule> getAllProposals() {
 		return Streams.stream(iterator())
-				.map(Map.Entry::getValue)
-				.sorted(
-						(ProposalCapsule a, ProposalCapsule b) -> a.getCreateTime() <= b.getCreateTime() ? 1
-								: -1)
-				.collect(Collectors.toList());
+			.map(Map.Entry::getValue)
+			.sorted(
+				(ProposalCapsule a, ProposalCapsule b) -> a.getCreateTime() <= b.getCreateTime() ? 1
+					: -1)
+			.collect(Collectors.toList());
 	}
 }

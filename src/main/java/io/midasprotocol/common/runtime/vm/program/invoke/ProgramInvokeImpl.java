@@ -17,12 +17,12 @@
  */
 package io.midasprotocol.common.runtime.vm.program.invoke;
 
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.program.Program.IllegalOperationException;
 import io.midasprotocol.common.storage.Deposit;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.exception.StoreException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -98,8 +98,8 @@ public class ProgramInvokeImpl implements ProgramInvoke {
 							 byte[] lastHash, byte[] coinbase, long timestamp, long number, Deposit deposit,
 							 long vmStartInUs, long vmShouldEndInUs, boolean byTestingSuite, long energyLimit) {
 		this(address, origin, caller, balance, callValue, tokenValue, tokenId, msgData, lastHash,
-				coinbase,
-				timestamp, number, deposit, vmStartInUs, vmShouldEndInUs, energyLimit);
+			coinbase,
+			timestamp, number, deposit, vmStartInUs, vmShouldEndInUs, energyLimit);
 		this.byTestingSuite = byTestingSuite;
 	}
 
@@ -177,7 +177,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
 		int size = 32; // maximum datavalue size
 
 		if (msgData == null || index >= msgData.length
-				|| tempIndex.compareTo(MAX_MSG_DATA) > 0) {
+			|| tempIndex.compareTo(MAX_MSG_DATA) > 0) {
 			return new DataWord();
 		}
 		if (index + size > msgData.length) {
@@ -330,38 +330,38 @@ public class ProgramInvokeImpl implements ProgramInvoke {
 	@Override
 	public int hashCode() {
 		return new Integer(Boolean.valueOf(byTestingSuite).hashCode()
-				+ Boolean.valueOf(byTransaction).hashCode()
-				+ address.hashCode()
-				+ balance.hashCode()
-				+ callValue.hashCode()
-				+ caller.hashCode()
-				+ coinbase.hashCode()
-				+ Arrays.hashCode(msgData)
-				+ number.hashCode()
-				+ origin.hashCode()
-				+ prevHash.hashCode()
-				+ deposit.hashCode()
-				+ timestamp.hashCode()
+			+ Boolean.valueOf(byTransaction).hashCode()
+			+ address.hashCode()
+			+ balance.hashCode()
+			+ callValue.hashCode()
+			+ caller.hashCode()
+			+ coinbase.hashCode()
+			+ Arrays.hashCode(msgData)
+			+ number.hashCode()
+			+ origin.hashCode()
+			+ prevHash.hashCode()
+			+ deposit.hashCode()
+			+ timestamp.hashCode()
 		).hashCode();
 	}
 
 	@Override
 	public String toString() {
 		return "ProgramInvokeImpl{" +
-				"address=" + address +
-				", origin=" + origin +
-				", caller=" + caller +
-				", balance=" + balance +
-				", callValue=" + callValue +
-				", msgData=" + Arrays.toString(msgData) +
-				", prevHash=" + prevHash +
-				", coinbase=" + coinbase +
-				", timestamp=" + timestamp +
-				", number=" + number +
-				", byTransaction=" + byTransaction +
-				", byTestingSuite=" + byTestingSuite +
-				", callDeep=" + callDeep +
-				'}';
+			"address=" + address +
+			", origin=" + origin +
+			", caller=" + caller +
+			", balance=" + balance +
+			", callValue=" + callValue +
+			", msgData=" + Arrays.toString(msgData) +
+			", prevHash=" + prevHash +
+			", coinbase=" + coinbase +
+			", timestamp=" + timestamp +
+			", number=" + number +
+			", byTransaction=" + byTransaction +
+			", byTestingSuite=" + byTestingSuite +
+			", callDeep=" + callDeep +
+			'}';
 	}
 
 	public long getEnergyLimit() {

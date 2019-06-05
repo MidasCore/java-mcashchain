@@ -18,7 +18,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -31,6 +30,7 @@ import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.ParticipateAssetIssueContract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 
@@ -46,7 +46,7 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final ParticipateAssetIssueContract participateAssetIssueContract =
-					contract.unpack(Contract.ParticipateAssetIssueContract.class);
+				contract.unpack(Contract.ParticipateAssetIssueContract.class);
 			long cost = participateAssetIssueContract.getAmount();
 
 			//subtract from owner address
@@ -96,13 +96,13 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(ParticipateAssetIssueContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected ParticipateAssetIssueContract, actual " + contract.getClass());
+				"Contract type error, expected ParticipateAssetIssueContract, actual " + contract.getClass());
 		}
 
 		final ParticipateAssetIssueContract participateAssetIssueContract;
 		try {
 			participateAssetIssueContract =
-					this.contract.unpack(ParticipateAssetIssueContract.class);
+				this.contract.unpack(ParticipateAssetIssueContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
 			throw new ContractValidateException(e.getMessage());
@@ -151,7 +151,7 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 
 			if (!Arrays.equals(toAddress, assetIssueCapsule.getOwnerAddress().toByteArray())) {
 				throw new ContractValidateException(
-						"The asset is not issued by " + ByteArray.toHexString(toAddress));
+					"The asset is not issued by " + ByteArray.toHexString(toAddress));
 			}
 			//Whether the exchange can be processed: to see if the exchange can be the exact int
 			long now = dbManager.getDynamicPropertiesStore().getLatestBlockHeaderTimestamp();

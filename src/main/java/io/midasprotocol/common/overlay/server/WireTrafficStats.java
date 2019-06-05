@@ -24,27 +24,26 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.socket.DatagramPacket;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.PreDestroy;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j(topic = "net")
 @Component
 public class WireTrafficStats implements Runnable {
 
-	private ScheduledExecutorService executor;
 	public final TrafficStatHandler tcp = new TrafficStatHandler();
 	public final TrafficStatHandler udp = new TrafficStatHandler();
+	private ScheduledExecutorService executor;
 
 	public WireTrafficStats() {
 		executor = Executors.newSingleThreadScheduledExecutor(
-				new ThreadFactoryBuilder().setNameFormat("WireTrafficStats-%d").build());
+			new ThreadFactoryBuilder().setNameFormat("WireTrafficStats-%d").build());
 		executor.scheduleAtFixedRate(this, 10, 10, TimeUnit.SECONDS);
 	}
 
@@ -97,7 +96,7 @@ public class WireTrafficStats implements Runnable {
 
 		@Override
 		public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)
-				throws Exception {
+			throws Exception {
 			outPackets.incrementAndGet();
 			if (msg instanceof ByteBuf) {
 				outSize.addAndGet(((ByteBuf) msg).readableBytes());

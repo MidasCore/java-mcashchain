@@ -1,9 +1,9 @@
 package io.midasprotocol.core.db.backup;
 
+import io.midasprotocol.common.utils.FileUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import io.midasprotocol.common.utils.FileUtil;
 
 import java.io.File;
 
@@ -76,9 +76,9 @@ public class DbBackupConfig {
 			setBak2path(bak2path);
 			setFrequency(frequency);
 			logger.info(
-					"success to enable the db backup plugin. bak1path:{}, bak2path:{}, "
-							+ "backup once every {} blocks handled",
-					bak1path, bak2path, frequency);
+				"success to enable the db backup plugin. bak1path:{}, bak2path:{}, "
+					+ "backup once every {} blocks handled",
+				bak1path, bak2path, frequency);
 		}
 
 		return this;

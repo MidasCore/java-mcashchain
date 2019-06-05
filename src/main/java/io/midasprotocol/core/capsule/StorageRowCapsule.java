@@ -15,11 +15,11 @@
 
 package io.midasprotocol.core.capsule;
 
+import io.midasprotocol.common.runtime.vm.DataWord;
+import io.midasprotocol.common.utils.Sha256Hash;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import io.midasprotocol.common.runtime.vm.DataWord;
-import io.midasprotocol.common.utils.Sha256Hash;
 
 import java.util.Arrays;
 

@@ -1,13 +1,13 @@
 package io.midasprotocol.core.db;
 
-import io.midasprotocol.core.config.Parameter;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionCapsule;
+import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.config.Parameter.AdaptiveResourceLimitConstants;
 import io.midasprotocol.core.exception.AccountResourceInsufficientException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Protocol.Account.AccountResource;
+import lombok.extern.slf4j.Slf4j;
 
 import static java.lang.Long.max;
 
@@ -37,11 +37,11 @@ public class EnergyProcessor extends ResourceProcessor {
 		long now = dbManager.getWitnessController().getHeadSlot();
 		long blockEnergyUsage = dbManager.getDynamicPropertiesStore().getBlockEnergyUsage();
 		long totalEnergyAverageUsage = dbManager.getDynamicPropertiesStore()
-				.getTotalEnergyAverageUsage();
+			.getTotalEnergyAverageUsage();
 		long totalEnergyAverageTime = dbManager.getDynamicPropertiesStore().getTotalEnergyAverageTime();
 
 		long newPublicEnergyAverageUsage = increase(totalEnergyAverageUsage, blockEnergyUsage,
-				totalEnergyAverageTime, now, averageWindowSize);
+			totalEnergyAverageTime, now, averageWindowSize);
 
 		dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageUsage(newPublicEnergyAverageUsage);
 		dbManager.getDynamicPropertiesStore().saveTotalEnergyAverageTime(now);
@@ -49,38 +49,38 @@ public class EnergyProcessor extends ResourceProcessor {
 
 	public void updateAdaptiveTotalEnergyLimit() {
 		long totalEnergyAverageUsage = dbManager.getDynamicPropertiesStore()
-				.getTotalEnergyAverageUsage();
+			.getTotalEnergyAverageUsage();
 		long targetTotalEnergyLimit = dbManager.getDynamicPropertiesStore().getTotalEnergyTargetLimit();
 		long totalEnergyCurrentLimit = dbManager.getDynamicPropertiesStore()
-				.getTotalEnergyCurrentLimit();
+			.getTotalEnergyCurrentLimit();
 		long totalEnergyLimit = dbManager.getDynamicPropertiesStore().getTotalEnergyLimit();
 
 		long result;
 		if (totalEnergyAverageUsage > targetTotalEnergyLimit) {
 			result = totalEnergyCurrentLimit * AdaptiveResourceLimitConstants.CONTRACT_RATE_NUMERATOR
-					/ AdaptiveResourceLimitConstants.CONTRACT_RATE_DENOMINATOR;
+				/ AdaptiveResourceLimitConstants.CONTRACT_RATE_DENOMINATOR;
 			// logger.info(totalEnergyAverageUsage + ">" + targetTotalEnergyLimit + "\n" + result);
 		} else {
 			result = totalEnergyCurrentLimit * AdaptiveResourceLimitConstants.EXPAND_RATE_NUMERATOR
-					/ AdaptiveResourceLimitConstants.EXPAND_RATE_DENOMINATOR;
+				/ AdaptiveResourceLimitConstants.EXPAND_RATE_DENOMINATOR;
 			// logger.info(totalEnergyAverageUsage + "<" + targetTotalEnergyLimit + "\n" + result);
 		}
 
 		result = Math.min(
-				Math.max(result, totalEnergyLimit),
-				totalEnergyLimit * AdaptiveResourceLimitConstants.LIMIT_MULTIPLIER
+			Math.max(result, totalEnergyLimit),
+			totalEnergyLimit * AdaptiveResourceLimitConstants.LIMIT_MULTIPLIER
 		);
 
 		dbManager.getDynamicPropertiesStore().saveTotalEnergyCurrentLimit(result);
 		logger.debug(
-				"adjust totalEnergyCurrentLimit, old[" + totalEnergyCurrentLimit + "], new[" + result
-						+ "]");
+			"adjust totalEnergyCurrentLimit, old[" + totalEnergyCurrentLimit + "], new[" + result
+				+ "]");
 	}
 
 	@Override
 	public void consume(TransactionCapsule trx,
 						TransactionTrace trace)
-			throws ContractValidateException, AccountResourceInsufficientException {
+		throws ContractValidateException, AccountResourceInsufficientException {
 		throw new RuntimeException("Not support");
 	}
 

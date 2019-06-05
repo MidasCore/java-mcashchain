@@ -1,37 +1,26 @@
 package io.midasprotocol.common.logsfilter;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
+import io.midasprotocol.common.runtime.utils.MUtil;
+import io.midasprotocol.common.runtime.vm.DataWord;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.protos.Protocol.SmartContract.ABI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.util.StringUtils;
 import org.spongycastle.crypto.OutputLengthException;
 import org.spongycastle.util.Arrays;
 import org.spongycastle.util.encoders.Hex;
-import io.midasprotocol.common.runtime.utils.MUtil;
-import io.midasprotocol.common.runtime.vm.DataWord;
-import io.midasprotocol.core.Wallet;
-import io.midasprotocol.protos.Protocol.SmartContract.ABI;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 @Slf4j(topic = "Parser")
 public class ContractEventParser {
 
 	private static final int DATAWORD_UNIT_SIZE = 32;
-
-	private enum Type {
-		UNKNOWN,
-		INT_NUMBER,
-		BOOL,
-		FLOAT_NUMBER,
-		FIXED_BYTES,
-		ADDRESS,
-		STRING,
-		BYTES,
-	}
 
 	/**
 	 * parse Event Topic into map NOTICE: In solidity, Indexed Dynamic types's topic is just
@@ -221,5 +210,16 @@ public class ContractEventParser {
 			return Wallet.encodeBase58Check(MUtil.convertToTronAddress(last20Bytes));
 		}
 		return Hex.toHexString(bytes);
+	}
+
+	private enum Type {
+		UNKNOWN,
+		INT_NUMBER,
+		BOOL,
+		FLOAT_NUMBER,
+		FIXED_BYTES,
+		ADDRESS,
+		STRING,
+		BYTES,
 	}
 }

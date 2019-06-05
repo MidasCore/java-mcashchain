@@ -18,8 +18,6 @@
 package io.midasprotocol.common.runtime.vm.program;
 
 import com.google.common.primitives.Longs;
-import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
 import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.ContractCapsule;
@@ -28,13 +26,15 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.CreateSmartContract;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.Getter;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static io.midasprotocol.common.utils.ByteUtil.EMPTY_BYTE_ARRAY;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 
 public class InternalTransaction {
 
@@ -72,7 +72,7 @@ public class InternalTransaction {
 	 * Construct a root InternalTransaction
 	 */
 	public InternalTransaction(Transaction trx, InternalTransaction.TrxType trxType)
-			throws ContractValidateException {
+		throws ContractValidateException {
 		this.transaction = trx;
 		TransactionCapsule trxCap = new TransactionCapsule(trx);
 		this.protoEncoded = trxCap.getData();
@@ -233,15 +233,15 @@ public class InternalTransaction {
 		}
 		byte[] valueByte = Longs.toByteArray(this.value);
 		byte[] raw = new byte[parentHashArray.length + this.receiveAddress.length + this.data.length
-				+ valueByte.length];
+			+ valueByte.length];
 		System.arraycopy(parentHashArray, 0, raw, 0, parentHashArray.length);
 		System
-				.arraycopy(this.receiveAddress, 0, raw, parentHashArray.length, this.receiveAddress.length);
+			.arraycopy(this.receiveAddress, 0, raw, parentHashArray.length, this.receiveAddress.length);
 		System.arraycopy(this.data, 0, raw, parentHashArray.length + this.receiveAddress.length,
-				this.data.length);
+			this.data.length);
 		System.arraycopy(valueByte, 0, raw,
-				parentHashArray.length + this.receiveAddress.length + this.data.length,
-				valueByte.length);
+			parentHashArray.length + this.receiveAddress.length + this.data.length,
+			valueByte.length);
 		this.protoEncoded = raw;
 		return protoEncoded.clone();
 	}

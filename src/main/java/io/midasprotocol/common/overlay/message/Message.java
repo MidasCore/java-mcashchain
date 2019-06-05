@@ -1,15 +1,14 @@
 package io.midasprotocol.common.overlay.message;
 
+import io.midasprotocol.common.utils.Sha256Hash;
+import io.midasprotocol.core.net.message.MessageTypes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-
-import java.util.Arrays;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.midasprotocol.common.utils.Sha256Hash;
-import io.midasprotocol.core.net.message.MessageTypes;
+
+import java.util.Arrays;
 
 public abstract class Message {
 

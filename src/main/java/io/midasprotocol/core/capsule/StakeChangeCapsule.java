@@ -2,9 +2,9 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Protocol.StakeChange;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
@@ -15,10 +15,10 @@ public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
 	 */
 	public StakeChangeCapsule(final ByteString address) {
 		this.stakeChange = StakeChange.newBuilder()
-				.setAddress(address)
-				.setOldStakeAmount(-1)
-				.setNewStakeAmount(-1)
-				.build();
+			.setAddress(address)
+			.setOldStakeAmount(-1)
+			.setNewStakeAmount(-1)
+			.build();
 	}
 
 	public StakeChangeCapsule(final byte[] data) {
@@ -63,8 +63,8 @@ public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
 
 	public void setNewStakeAmount(long stakeAmount) {
 		this.stakeChange = this.stakeChange.toBuilder()
-				.setNewStakeAmount(stakeAmount)
-				.build();
+			.setNewStakeAmount(stakeAmount)
+			.build();
 	}
 
 	public long getOldStakeAmount() {
@@ -73,8 +73,8 @@ public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
 
 	public void setOldStakeAmount(long oldStakeAmount) {
 		this.stakeChange = this.stakeChange.toBuilder()
-				.setOldStakeAmount(oldStakeAmount)
-				.build();
+			.setOldStakeAmount(oldStakeAmount)
+			.build();
 	}
 
 	public boolean hasOldStakeAmount() {
@@ -87,8 +87,8 @@ public class StakeChangeCapsule implements ProtoCapsule<StakeChange> {
 
 	public void clearNewStakeAmount() {
 		this.stakeChange = this.stakeChange.toBuilder()
-				.setNewStakeAmount(-1)
-				.build();
+			.setNewStakeAmount(-1)
+			.build();
 	}
 
 }

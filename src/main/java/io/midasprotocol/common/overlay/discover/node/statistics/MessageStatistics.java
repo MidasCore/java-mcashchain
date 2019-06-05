@@ -1,12 +1,12 @@
 package io.midasprotocol.common.overlay.discover.node.statistics;
 
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum;
 import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.core.net.message.FetchInvDataMessage;
 import io.midasprotocol.core.net.message.InventoryMessage;
 import io.midasprotocol.core.net.message.MessageTypes;
 import io.midasprotocol.core.net.message.TransactionsMessage;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MessageStatistics {

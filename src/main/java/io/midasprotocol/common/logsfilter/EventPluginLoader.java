@@ -2,22 +2,17 @@ package io.midasprotocol.common.logsfilter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
-
+import io.midasprotocol.common.logsfilter.trigger.*;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.CompoundPluginDescriptorFinder;
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.ManifestPluginDescriptorFinder;
 import org.pf4j.PluginManager;
 import org.springframework.util.StringUtils;
-import io.midasprotocol.common.logsfilter.trigger.BlockLogTrigger;
-import io.midasprotocol.common.logsfilter.trigger.ContractEventTrigger;
-import io.midasprotocol.common.logsfilter.trigger.ContractLogTrigger;
-import io.midasprotocol.common.logsfilter.trigger.TransactionLogTrigger;
-import io.midasprotocol.common.logsfilter.trigger.Trigger;
+
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class EventPluginLoader {
@@ -105,7 +100,7 @@ public class EventPluginLoader {
 				}
 				setPluginTopic(Trigger.BLOCK_TRIGGER, triggerConfig.getTopic());
 			} else if (EventPluginConfig.TRANSACTION_TRIGGER_NAME
-					.equalsIgnoreCase(triggerConfig.getTriggerName())) {
+				.equalsIgnoreCase(triggerConfig.getTriggerName())) {
 				if (triggerConfig.isEnabled()) {
 					transactionLogTriggerEnable = true;
 				} else {
@@ -113,7 +108,7 @@ public class EventPluginLoader {
 				}
 				setPluginTopic(Trigger.TRANSACTION_TRIGGER, triggerConfig.getTopic());
 			} else if (EventPluginConfig.CONTRACTEVENT_TRIGGER_NAME
-					.equalsIgnoreCase(triggerConfig.getTriggerName())) {
+				.equalsIgnoreCase(triggerConfig.getTriggerName())) {
 				if (triggerConfig.isEnabled()) {
 					contractEventTriggerEnable = true;
 				} else {
@@ -121,7 +116,7 @@ public class EventPluginLoader {
 				}
 				setPluginTopic(Trigger.CONTRACTEVENT_TRIGGER, triggerConfig.getTopic());
 			} else if (EventPluginConfig.CONTRACTLOG_TRIGGER_NAME
-					.equalsIgnoreCase(triggerConfig.getTriggerName())) {
+				.equalsIgnoreCase(triggerConfig.getTriggerName())) {
 				if (triggerConfig.isEnabled()) {
 					contractLogTriggerEnable = true;
 				} else {
@@ -168,7 +163,7 @@ public class EventPluginLoader {
 				@Override
 				protected CompoundPluginDescriptorFinder createPluginDescriptorFinder() {
 					return new CompoundPluginDescriptorFinder()
-							.add(new ManifestPluginDescriptorFinder());
+						.add(new ManifestPluginDescriptorFinder());
 				}
 			};
 		}
@@ -207,7 +202,7 @@ public class EventPluginLoader {
 
 	public void postBlockTrigger(BlockLogTrigger trigger) {
 		eventListeners.forEach(listener ->
-				listener.handleBlockEvent(toJsonString(trigger)));
+			listener.handleBlockEvent(toJsonString(trigger)));
 	}
 
 	public void postTransactionTrigger(TransactionLogTrigger trigger) {
@@ -216,12 +211,12 @@ public class EventPluginLoader {
 
 	public void postContractLogTrigger(ContractLogTrigger trigger) {
 		eventListeners.forEach(listener ->
-				listener.handleContractLogTrigger(toJsonString(trigger)));
+			listener.handleContractLogTrigger(toJsonString(trigger)));
 	}
 
 	public void postContractEventTrigger(ContractEventTrigger trigger) {
 		eventListeners.forEach(listener ->
-				listener.handleContractEventTrigger(toJsonString(trigger)));
+			listener.handleContractEventTrigger(toJsonString(trigger)));
 	}
 
 	private String toJsonString(Object data) {
@@ -236,12 +231,12 @@ public class EventPluginLoader {
 		return jsonData;
 	}
 
-	public synchronized void setFilterQuery(FilterQuery filterQuery) {
-		this.filterQuery = filterQuery;
-	}
-
 	public synchronized FilterQuery getFilterQuery() {
 		return filterQuery;
+	}
+
+	public synchronized void setFilterQuery(FilterQuery filterQuery) {
+		this.filterQuery = filterQuery;
 	}
 
 

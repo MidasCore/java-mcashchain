@@ -1,11 +1,6 @@
 package io.midasprotocol.common.runtime;
 
 import com.google.protobuf.ByteString;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.common.logsfilter.trigger.ContractTrigger;
 import io.midasprotocol.common.runtime.config.VMConfig;
@@ -46,17 +41,22 @@ import io.midasprotocol.protos.Protocol.SmartContract.ABI;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static io.midasprotocol.common.runtime.utils.MUtil.*;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.apache.commons.lang3.ArrayUtils.getLength;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
-import static io.midasprotocol.common.runtime.utils.MUtil.*;
 
 @Slf4j(topic = "VM")
 public class RuntimeImpl implements Runtime {
@@ -159,13 +159,13 @@ public class RuntimeImpl implements Runtime {
 			return 0;
 		}
 		return BigInteger.valueOf(callerEnergyFrozen).multiply(BigInteger.valueOf(callerEnergyUsage))
-				.divide(BigInteger.valueOf(callerEnergyTotal)).longValueExact();
+			.divide(BigInteger.valueOf(callerEnergyTotal)).longValueExact();
 	}
 
 	private void precompiled() throws ContractValidateException, ContractExeException {
 		TransactionCapsule trxCap = new TransactionCapsule(trx);
 		final List<Actuator> actuatorList = ActuatorFactory
-				.createActuator(trxCap, deposit.getDbManager());
+			.createActuator(trxCap, deposit.getDbManager());
 
 		for (Actuator act : actuatorList) {
 			act.validate();
@@ -174,7 +174,7 @@ public class RuntimeImpl implements Runtime {
 	}
 
 	public void execute()
-			throws ContractValidateException, ContractExeException, VMIllegalException {
+		throws ContractValidateException, ContractExeException, VMIllegalException {
 		switch (trxType) {
 			case TRX_PRECOMPILED_TYPE:
 				precompiled();
@@ -219,28 +219,28 @@ public class RuntimeImpl implements Runtime {
 		long leftEnergyFromFreeze = energyProcessor.getAccountLeftEnergyFromFreeze(account);
 		callValue = max(callValue, 0);
 		long energyFromBalance = Math
-				.floorDiv(max(account.getBalance() - callValue, 0), matoshiPerEnergy);
+			.floorDiv(max(account.getBalance() - callValue, 0), matoshiPerEnergy);
 
 		long energyFromFeeLimit;
 		long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEnergy();
 		if (0 == totalBalanceForEnergyFreeze) {
 			energyFromFeeLimit =
-					feeLimit / matoshiPerEnergy;
+				feeLimit / matoshiPerEnergy;
 		} else {
 			long totalEnergyFromFreeze = energyProcessor
-					.calculateGlobalEnergyLimit(account);
+				.calculateGlobalEnergyLimit(account);
 			long leftBalanceForEnergyFreeze = getEnergyFee(totalBalanceForEnergyFreeze,
-					leftEnergyFromFreeze,
-					totalEnergyFromFreeze);
+				leftEnergyFromFreeze,
+				totalEnergyFromFreeze);
 
 			if (leftBalanceForEnergyFreeze >= feeLimit) {
 				energyFromFeeLimit = BigInteger.valueOf(totalEnergyFromFreeze)
-						.multiply(BigInteger.valueOf(feeLimit))
-						.divide(BigInteger.valueOf(totalBalanceForEnergyFreeze)).longValueExact();
+					.multiply(BigInteger.valueOf(feeLimit))
+					.divide(BigInteger.valueOf(totalBalanceForEnergyFreeze)).longValueExact();
 			} else {
 				energyFromFeeLimit = Math
-						.addExact(leftEnergyFromFreeze,
-								(feeLimit - leftBalanceForEnergyFreeze) / matoshiPerEnergy);
+					.addExact(leftEnergyFromFreeze,
+						(feeLimit - leftBalanceForEnergyFreeze) / matoshiPerEnergy);
 			}
 		}
 
@@ -259,11 +259,11 @@ public class RuntimeImpl implements Runtime {
 		long creatorEnergyLimit = energyProcessor.getAccountLeftEnergyFromFreeze(creator);
 
 		ContractCapsule contractCapsule = this.deposit
-				.getContract(contract.getContractAddress().toByteArray());
+			.getContract(contract.getContractAddress().toByteArray());
 		long consumeUserResourcePercent = contractCapsule.getConsumeUserResourcePercent();
 
 		if (creatorEnergyLimit * consumeUserResourcePercent
-				> (Constant.ONE_HUNDRED - consumeUserResourcePercent) * callerEnergyLimit) {
+			> (Constant.ONE_HUNDRED - consumeUserResourcePercent) * callerEnergyLimit) {
 			return Math.floorDiv(callerEnergyLimit * Constant.ONE_HUNDRED, consumeUserResourcePercent);
 		} else {
 			return Math.addExact(callerEnergyLimit, creatorEnergyLimit);
@@ -272,7 +272,7 @@ public class RuntimeImpl implements Runtime {
 
 	public long getTotalEnergyLimitWithFixRatio(AccountCapsule creator, AccountCapsule caller,
 												TriggerSmartContract contract, long feeLimit, long callValue)
-			throws ContractValidateException {
+		throws ContractValidateException {
 
 		long callerEnergyLimit = getAccountEnergyLimitWithFixRatio(caller, feeLimit, callValue);
 		if (Arrays.equals(creator.getAddress().toByteArray(), caller.getAddress().toByteArray())) {
@@ -284,7 +284,7 @@ public class RuntimeImpl implements Runtime {
 
 		long creatorEnergyLimit = 0;
 		ContractCapsule contractCapsule = this.deposit
-				.getContract(contract.getContractAddress().toByteArray());
+			.getContract(contract.getContractAddress().toByteArray());
 		long consumeUserResourcePercent = contractCapsule.getConsumeUserResourcePercent();
 
 		long originEnergyLimit = contractCapsule.getOriginEnergyLimit();
@@ -294,17 +294,17 @@ public class RuntimeImpl implements Runtime {
 
 		if (consumeUserResourcePercent <= 0) {
 			creatorEnergyLimit = min(energyProcessor.getAccountLeftEnergyFromFreeze(creator),
-					originEnergyLimit);
+				originEnergyLimit);
 		} else {
 			if (consumeUserResourcePercent < Constant.ONE_HUNDRED) {
 				// creatorEnergyLimit =
 				// min(callerEnergyLimit * (100 - percent) / percent, creatorLeftFrozenEnergy, originEnergyLimit)
 
 				creatorEnergyLimit = min(
-						BigInteger.valueOf(callerEnergyLimit)
-								.multiply(BigInteger.valueOf(Constant.ONE_HUNDRED - consumeUserResourcePercent))
-								.divide(BigInteger.valueOf(consumeUserResourcePercent)).longValueExact(),
-						min(energyProcessor.getAccountLeftEnergyFromFreeze(creator), originEnergyLimit)
+					BigInteger.valueOf(callerEnergyLimit)
+						.multiply(BigInteger.valueOf(Constant.ONE_HUNDRED - consumeUserResourcePercent))
+						.divide(BigInteger.valueOf(consumeUserResourcePercent)).longValueExact(),
+					min(energyProcessor.getAccountLeftEnergyFromFreeze(creator), originEnergyLimit)
 				);
 			}
 		}
@@ -313,10 +313,10 @@ public class RuntimeImpl implements Runtime {
 
 	public long getTotalEnergyLimit(AccountCapsule creator, AccountCapsule caller,
 									TriggerSmartContract contract, long feeLimit, long callValue)
-			throws ContractValidateException {
+		throws ContractValidateException {
 		//  according to version
 //		if (VMConfig.getEnergyLimitHardFork()) {
-			return getTotalEnergyLimitWithFixRatio(creator, caller, contract, feeLimit, callValue);
+		return getTotalEnergyLimitWithFixRatio(creator, caller, contract, feeLimit, callValue);
 //		} else {
 //			return getTotalEnergyLimitWithFloatRatio(creator, caller, contract, feeLimit, callValue);
 //		}
@@ -324,7 +324,7 @@ public class RuntimeImpl implements Runtime {
 
 	private boolean isCheckTransaction() {
 		return this.blockCap != null && !this.blockCap.getInstance().getBlockHeader()
-				.getWitnessSignature().isEmpty();
+			.getWitnessSignature().isEmpty();
 	}
 
 	private double getCpuLimitInUsRatio() {
@@ -334,7 +334,7 @@ public class RuntimeImpl implements Runtime {
 		if (ExecutorType.ET_NORMAL_TYPE == executorType) {
 			// self witness generates block
 			if (this.blockCap != null && blockCap.generatedByMyself &&
-					this.blockCap.getInstance().getBlockHeader().getWitnessSignature().isEmpty()) {
+				this.blockCap.getInstance().getBlockHeader().getWitnessSignature().isEmpty()) {
 				cpuLimitRatio = 1.0;
 			} else {
 				// self witness or other witness or fullnode verifies block
@@ -355,7 +355,7 @@ public class RuntimeImpl implements Runtime {
 	/*
 	 **/
 	private void create()
-			throws ContractValidateException, VMIllegalException {
+		throws ContractValidateException, VMIllegalException {
 		if (!deposit.getDbManager().getDynamicPropertiesStore().supportVM()) {
 			throw new ContractValidateException("vm work is off, need to be opened by the committee");
 		}
@@ -385,12 +385,12 @@ public class RuntimeImpl implements Runtime {
 		// insure the new contract address haven't exist
 		if (deposit.getAccount(contractAddress) != null) {
 			throw new ContractValidateException(
-					"Trying to create a contract with existing contract address: " + Wallet
-							.encodeBase58Check(contractAddress));
+				"Trying to create a contract with existing contract address: " + Wallet
+					.encodeBase58Check(contractAddress));
 		}
 
 		newSmartContract = newSmartContract.toBuilder()
-				.setContractAddress(ByteString.copyFrom(contractAddress)).build();
+			.setContractAddress(ByteString.copyFrom(contractAddress)).build();
 		long callValue = newSmartContract.getCallValue();
 		long tokenValue = 0;
 		long tokenId = 0;
@@ -405,25 +405,25 @@ public class RuntimeImpl implements Runtime {
 			if (feeLimit < 0 || feeLimit > VMConfig.MAX_FEE_LIMIT) {
 				logger.info("invalid feeLimit {}", feeLimit);
 				throw new ContractValidateException(
-						"feeLimit must be >= 0 and <= " + VMConfig.MAX_FEE_LIMIT);
+					"feeLimit must be >= 0 and <= " + VMConfig.MAX_FEE_LIMIT);
 			}
 			AccountCapsule creator = this.deposit
-					.getAccount(newSmartContract.getOriginAddress().toByteArray());
+				.getAccount(newSmartContract.getOriginAddress().toByteArray());
 
 			long energyLimit;
 			// according to version
 
 //			if (VMConfig.getEnergyLimitHardFork()) {
-				if (callValue < 0) {
-					throw new ContractValidateException("callValue must >= 0");
-				}
-				if (tokenValue < 0) {
-					throw new ContractValidateException("tokenValue must >= 0");
-				}
-				if (newSmartContract.getOriginEnergyLimit() <= 0) {
-					throw new ContractValidateException("The originEnergyLimit must be > 0");
-				}
-				energyLimit = getAccountEnergyLimitWithFixRatio(creator, feeLimit, callValue);
+			if (callValue < 0) {
+				throw new ContractValidateException("callValue must >= 0");
+			}
+			if (tokenValue < 0) {
+				throw new ContractValidateException("tokenValue must >= 0");
+			}
+			if (newSmartContract.getOriginEnergyLimit() <= 0) {
+				throw new ContractValidateException("The originEnergyLimit must be > 0");
+			}
+			energyLimit = getAccountEnergyLimitWithFixRatio(creator, feeLimit, callValue);
 //			} else {
 //				energyLimit = getAccountEnergyLimitWithFloatRatio(creator, feeLimit, callValue);
 //			}
@@ -434,26 +434,26 @@ public class RuntimeImpl implements Runtime {
 			rootInternalTransaction = new InternalTransaction(trx, trxType);
 
 			long maxCpuTimeOfOneTx = deposit.getDbManager().getDynamicPropertiesStore()
-					.getMaxCpuTimeOfOneTx() * Constant.ONE_THOUSAND;
+				.getMaxCpuTimeOfOneTx() * Constant.ONE_THOUSAND;
 			long thisTxCPULimitInUs = (long) (maxCpuTimeOfOneTx * getCpuLimitInUsRatio());
 			long vmStartInUs = System.nanoTime() / Constant.ONE_THOUSAND;
 			long vmShouldEndInUs = vmStartInUs + thisTxCPULimitInUs;
 			ProgramInvoke programInvoke = programInvokeFactory
-					.createProgramInvoke(TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
-							tokenValue, tokenId, blockCap.getInstance(), deposit, vmStartInUs,
-							vmShouldEndInUs, energyLimit);
+				.createProgramInvoke(TrxType.TRX_CONTRACT_CREATION_TYPE, executorType, trx,
+					tokenValue, tokenId, blockCap.getInstance(), deposit, vmStartInUs,
+					vmShouldEndInUs, energyLimit);
 			this.vm = new VM(config);
 			this.program = new Program(ops, programInvoke, rootInternalTransaction, config,
-					this.blockCap);
+				this.blockCap);
 			byte[] txId = new TransactionCapsule(trx).getTransactionId().getBytes();
 			this.program.setRootTransactionId(txId);
 			this.program.setRootCallConstant(isCallConstant());
 			if (enableEventLinstener &&
-					(EventPluginLoader.getInstance().isContractEventTriggerEnable()
-							|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
-					&& isCheckTransaction()) {
+				(EventPluginLoader.getInstance().isContractEventTriggerEnable()
+					|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
+				&& isCheckTransaction()) {
 				logInfoTriggerParser = new LogInfoTriggerParser(blockCap.getNum(), blockCap.getTimeStamp(),
-						txId, callerAddress);
+					txId, callerAddress);
 
 			}
 		} catch (Exception e) {
@@ -463,7 +463,7 @@ public class RuntimeImpl implements Runtime {
 		program.getResult().setContractAddress(contractAddress);
 
 		deposit.createAccount(contractAddress, newSmartContract.getName(),
-				Protocol.AccountType.Contract);
+			Protocol.AccountType.Contract);
 
 		deposit.createContract(contractAddress, new ContractCapsule(newSmartContract));
 		byte[] code = newSmartContract.getBytecode().toByteArray();
@@ -486,7 +486,7 @@ public class RuntimeImpl implements Runtime {
 	 */
 
 	private void call()
-			throws ContractValidateException {
+		throws ContractValidateException {
 
 		if (!deposit.getDbManager().getDynamicPropertiesStore().supportVM()) {
 			logger.info("vm work is off, need to be opened by the committee");
@@ -519,12 +519,12 @@ public class RuntimeImpl implements Runtime {
 		}
 
 //		if (VMConfig.getEnergyLimitHardFork()) {
-			if (callValue < 0) {
-				throw new ContractValidateException("callValue must >= 0");
-			}
-			if (tokenValue < 0) {
-				throw new ContractValidateException("tokenValue must >= 0");
-			}
+		if (callValue < 0) {
+			throw new ContractValidateException("callValue must >= 0");
+		}
+		if (tokenValue < 0) {
+			throw new ContractValidateException("tokenValue must >= 0");
+		}
 //		}
 
 		byte[] callerAddress = contract.getOwnerAddress().toByteArray();
@@ -537,7 +537,7 @@ public class RuntimeImpl implements Runtime {
 			if (feeLimit < 0 || feeLimit > VMConfig.MAX_FEE_LIMIT) {
 				logger.info("invalid feeLimit {}", feeLimit);
 				throw new ContractValidateException(
-						"feeLimit must be >= 0 and <= " + VMConfig.MAX_FEE_LIMIT);
+					"feeLimit must be >= 0 and <= " + VMConfig.MAX_FEE_LIMIT);
 			}
 			AccountCapsule caller = this.deposit.getAccount(callerAddress);
 			long energyLimit;
@@ -546,36 +546,36 @@ public class RuntimeImpl implements Runtime {
 				energyLimit = Constant.ENERGY_LIMIT_IN_CONSTANT_TX;
 			} else {
 				AccountCapsule creator = this.deposit
-						.getAccount(deployedContract.getInstance().getOriginAddress().toByteArray());
+					.getAccount(deployedContract.getInstance().getOriginAddress().toByteArray());
 				energyLimit = getTotalEnergyLimit(creator, caller, contract, feeLimit, callValue);
 			}
 			long maxCpuTimeOfOneTx = deposit.getDbManager().getDynamicPropertiesStore()
-					.getMaxCpuTimeOfOneTx() * Constant.ONE_THOUSAND;
+				.getMaxCpuTimeOfOneTx() * Constant.ONE_THOUSAND;
 			long thisTxCPULimitInUs =
-					(long) (maxCpuTimeOfOneTx * getCpuLimitInUsRatio());
+				(long) (maxCpuTimeOfOneTx * getCpuLimitInUsRatio());
 			long vmStartInUs = System.nanoTime() / Constant.ONE_THOUSAND;
 			long vmShouldEndInUs = vmStartInUs + thisTxCPULimitInUs;
 			ProgramInvoke programInvoke = programInvokeFactory
-					.createProgramInvoke(TrxType.TRX_CONTRACT_CALL_TYPE, executorType, trx,
-							tokenValue, tokenId, blockCap.getInstance(), deposit, vmStartInUs,
-							vmShouldEndInUs, energyLimit);
+				.createProgramInvoke(TrxType.TRX_CONTRACT_CALL_TYPE, executorType, trx,
+					tokenValue, tokenId, blockCap.getInstance(), deposit, vmStartInUs,
+					vmShouldEndInUs, energyLimit);
 			if (isStaticCall) {
 				programInvoke.setStaticCall();
 			}
 			this.vm = new VM(config);
 			rootInternalTransaction = new InternalTransaction(trx, trxType);
 			this.program = new Program(code, programInvoke, rootInternalTransaction, config,
-					this.blockCap);
+				this.blockCap);
 			byte[] txId = new TransactionCapsule(trx).getTransactionId().getBytes();
 			this.program.setRootTransactionId(txId);
 			this.program.setRootCallConstant(isCallConstant());
 
 			if (enableEventLinstener &&
-					(EventPluginLoader.getInstance().isContractEventTriggerEnable()
-							|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
-					&& isCheckTransaction()) {
+				(EventPluginLoader.getInstance().isContractEventTriggerEnable()
+					|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
+				&& isCheckTransaction()) {
 				logInfoTriggerParser = new LogInfoTriggerParser(blockCap.getNum(), blockCap.getTimeStamp(),
-						txId, callerAddress);
+					txId, callerAddress);
 			}
 		}
 
@@ -598,7 +598,7 @@ public class RuntimeImpl implements Runtime {
 			if (vm != null) {
 				TransactionCapsule trxCap = new TransactionCapsule(trx);
 				if (null != blockCap && blockCap.generatedByMyself && null != trxCap.getContractRet()
-						&& contractResult.OUT_OF_TIME == trxCap.getContractRet()) {
+					&& contractResult.OUT_OF_TIME == trxCap.getContractRet()) {
 					result = program.getResult();
 					program.spendAllEnergy();
 
@@ -614,7 +614,7 @@ public class RuntimeImpl implements Runtime {
 				if (isCallConstant()) {
 					long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
 					long callTokenValue = TransactionCapsule
-							.getCallTokenValue(trx.getRawData().getContract(0));
+						.getCallTokenValue(trx.getRawData().getContract(0));
 					if (callValue > 0 || callTokenValue > 0) {
 						runtimeError = "constant cannot set call value or call token value.";
 						result.rejectInternalTransactions();
@@ -629,8 +629,8 @@ public class RuntimeImpl implements Runtime {
 					if (afterSpend < 0) {
 						if (null == result.getException()) {
 							result.setException(Program.Exception
-									.notEnoughSpendEnergy("save just created contract code",
-											saveCodeEnergy, program.getEnergyLimitLeft().longValue()));
+								.notEnoughSpendEnergy("save just created contract code",
+									saveCodeEnergy, program.getEnergyLimitLeft().longValue()));
 						}
 					} else {
 						result.spendEnergy(saveCodeEnergy);
@@ -655,7 +655,7 @@ public class RuntimeImpl implements Runtime {
 
 					if (logInfoTriggerParser != null) {
 						List<ContractTrigger> triggers = logInfoTriggerParser
-								.parseLogInfos(program.getResult().getLogInfoList(), this.deposit);
+							.parseLogInfos(program.getResult().getLogInfoList(), this.deposit);
 						program.getResult().setTriggerList(triggers);
 					}
 
@@ -698,17 +698,17 @@ public class RuntimeImpl implements Runtime {
 	public boolean isCallConstant() throws ContractValidateException {
 
 		TriggerSmartContract triggerContractFromTransaction = ContractCapsule
-				.getTriggerContractFromTransaction(trx);
+			.getTriggerContractFromTransaction(trx);
 		if (TrxType.TRX_CONTRACT_CALL_TYPE == trxType) {
 
 			ContractCapsule contract = deposit
-					.getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
+				.getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
 			if (contract == null) {
 				logger.info("contract: {} is not in contract store", Wallet
-						.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray()));
+					.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray()));
 				throw new ContractValidateException("contract: " + Wallet
-						.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray())
-						+ " is not in contract store");
+					.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray())
+					+ " is not in contract store");
 			}
 			ABI abi = contract.getInstance().getAbi();
 			if (Wallet.isConstant(abi, triggerContractFromTransaction)) {
@@ -738,9 +738,9 @@ public class RuntimeImpl implements Runtime {
 
 		if (config.vmTrace() && program != null) {
 			String traceContent = program.getTrace()
-					.result(result.getHReturn())
-					.error(result.getException())
-					.toString();
+				.result(result.getHReturn())
+				.error(result.getException())
+				.toString();
 
 			if (config.vmTraceCompressed()) {
 				traceContent = VMUtils.zipAndEncode(traceContent);
@@ -764,7 +764,7 @@ public class RuntimeImpl implements Runtime {
 				// or (MIN_TOKEN_ID, Long.Max]
 				if (tokenValue > 0 && tokenId == 0) {
 					throw new ContractValidateException("invalid arguments with tokenValue = " + tokenValue +
-							", tokenId = " + tokenId);
+						", tokenId = " + tokenId);
 				}
 			}
 		}

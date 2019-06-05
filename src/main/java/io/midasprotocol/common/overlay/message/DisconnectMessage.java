@@ -15,9 +15,9 @@ public class DisconnectMessage extends P2pMessage {
 
 	public DisconnectMessage(ReasonCode reasonCode) {
 		this.disconnectMessage = Protocol.DisconnectMessage
-				.newBuilder()
-				.setReason(reasonCode)
-				.build();
+			.newBuilder()
+			.setReason(reasonCode)
+			.build();
 		this.type = MessageTypes.P2P_DISCONNECT.asByte();
 		this.data = this.disconnectMessage.toByteArray();
 	}
@@ -33,7 +33,7 @@ public class DisconnectMessage extends P2pMessage {
 	@Override
 	public String toString() {
 		return super.toString() + "reason: " +
-				this.disconnectMessage.getReason();
+			this.disconnectMessage.getReason();
 	}
 
 	@Override

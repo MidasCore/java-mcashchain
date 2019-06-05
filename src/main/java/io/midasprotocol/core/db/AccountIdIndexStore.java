@@ -1,12 +1,12 @@
 package io.midasprotocol.core.db;
 
 import com.google.protobuf.ByteString;
+import io.midasprotocol.core.capsule.AccountCapsule;
+import io.midasprotocol.core.capsule.BytesCapsule;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.AccountCapsule;
-import io.midasprotocol.core.capsule.BytesCapsule;
 
 import java.util.Objects;
 
@@ -21,7 +21,7 @@ public class AccountIdIndexStore extends TronStoreWithRevoking<BytesCapsule> {
 
 	private static byte[] getLowerCaseAccountId(byte[] bsAccountId) {
 		return ByteString
-				.copyFromUtf8(ByteString.copyFrom(bsAccountId).toStringUtf8().toLowerCase()).toByteArray();
+			.copyFromUtf8(ByteString.copyFrom(bsAccountId).toStringUtf8().toLowerCase()).toByteArray();
 	}
 
 	public void put(AccountCapsule accountCapsule) {

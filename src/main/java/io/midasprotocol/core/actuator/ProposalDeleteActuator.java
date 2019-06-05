@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
@@ -16,6 +15,7 @@ import io.midasprotocol.core.exception.ItemNotFoundException;
 import io.midasprotocol.protos.Contract.ProposalDeleteContract;
 import io.midasprotocol.protos.Protocol.Proposal.State;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -33,10 +33,10 @@ public class ProposalDeleteActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final ProposalDeleteContract proposalDeleteContract = this.contract
-					.unpack(ProposalDeleteContract.class);
+				.unpack(ProposalDeleteContract.class);
 			ProposalCapsule proposalCapsule = (Objects.isNull(deposit)) ? dbManager.getProposalStore().
-					get(ByteArray.fromLong(proposalDeleteContract.getProposalId())) :
-					deposit.getProposalCapsule(ByteArray.fromLong(proposalDeleteContract.getProposalId()));
+				get(ByteArray.fromLong(proposalDeleteContract.getProposalId())) :
+				deposit.getProposalCapsule(ByteArray.fromLong(proposalDeleteContract.getProposalId()));
 
 			proposalCapsule.setState(State.CANCELED);
 			if (Objects.isNull(deposit)) {
@@ -64,7 +64,7 @@ public class ProposalDeleteActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(ProposalDeleteContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected ProposalDeleteContract, actual " + contract.getClass());
+				"Contract type error, expected ProposalDeleteContract, actual " + contract.getClass());
 		}
 		final ProposalDeleteContract contract;
 		try {
@@ -83,42 +83,42 @@ public class ProposalDeleteActuator extends AbstractActuator {
 		if (!Objects.isNull(deposit)) {
 			if (Objects.isNull(deposit.getAccount(ownerAddress))) {
 				throw new ContractValidateException(
-						ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
 			}
 		} else if (!dbManager.getAccountStore().has(ownerAddress)) {
 			throw new ContractValidateException(ACCOUNT_EXCEPTION_STR + readableOwnerAddress
-					+ NOT_EXIST_STR);
+				+ NOT_EXIST_STR);
 		}
 
 		long latestProposalNum = Objects.isNull(deposit) ? dbManager.getDynamicPropertiesStore()
-				.getLatestProposalNum() : deposit.getLatestProposalNum();
+			.getLatestProposalNum() : deposit.getLatestProposalNum();
 		if (contract.getProposalId() > latestProposalNum) {
 			throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-					+ NOT_EXIST_STR);
+				+ NOT_EXIST_STR);
 		}
 
 		ProposalCapsule proposalCapsule;
 		try {
 			proposalCapsule = Objects.isNull(getDeposit()) ? dbManager.getProposalStore().
-					get(ByteArray.fromLong(contract.getProposalId())) :
-					deposit.getProposalCapsule(ByteArray.fromLong(contract.getProposalId()));
+				get(ByteArray.fromLong(contract.getProposalId())) :
+				deposit.getProposalCapsule(ByteArray.fromLong(contract.getProposalId()));
 		} catch (ItemNotFoundException ex) {
 			throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-					+ NOT_EXIST_STR);
+				+ NOT_EXIST_STR);
 		}
 
 		long now = dbManager.getHeadBlockTimeStamp();
 		if (!proposalCapsule.getProposalAddress().equals(contract.getOwnerAddress())) {
 			throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-					+ " is not proposed by " + readableOwnerAddress);
+				+ " is not proposed by " + readableOwnerAddress);
 		}
 		if (now >= proposalCapsule.getExpirationTime()) {
 			throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-					+ " expired");
+				+ " expired");
 		}
 		if (proposalCapsule.getState() == State.CANCELED) {
 			throw new ContractValidateException(PROPOSAL_EXCEPTION_STR + contract.getProposalId()
-					+ " canceled");
+				+ " canceled");
 		}
 
 		return true;

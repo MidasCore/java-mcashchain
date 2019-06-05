@@ -1,14 +1,14 @@
 package io.midasprotocol.core.db;
 
+import io.midasprotocol.core.capsule.DelegatedResourceAccountIndexCapsule;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.DelegatedResourceAccountIndexCapsule;
 
 @Component
 public class DelegatedResourceAccountIndexStore extends
-		TronStoreWithRevoking<DelegatedResourceAccountIndexCapsule> {
+	TronStoreWithRevoking<DelegatedResourceAccountIndexCapsule> {
 
 	@Autowired
 	public DelegatedResourceAccountIndexStore(@Value("DelegatedResourceAccountIndex") String dbName) {

@@ -1,12 +1,12 @@
 package io.midasprotocol.program;
 
+import io.midasprotocol.common.utils.FileUtil;
+import io.midasprotocol.common.utils.PropUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
 import org.rocksdb.*;
-import io.midasprotocol.common.utils.FileUtil;
-import io.midasprotocol.common.utils.PropUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,10 +86,10 @@ public class DBConvert {
 				DBConvert convert = new DBConvert(dbSrc, dbDst, file.getName());
 				if (convert.doConvert()) {
 					System.out.println(String
-							.format(
-									"Convert database %s successful with %s key-value. keySum: %d, valueSum: %d",
-									convert.dbName,
-									convert.srcDbKeyCount, convert.dstDbKeySum, convert.dstDbValueSum));
+						.format(
+							"Convert database %s successful with %s key-value. keySum: %d, valueSum: %d",
+							convert.dbName,
+							convert.srcDbKeyCount, convert.dstDbKeySum, convert.dstDbValueSum));
 				} else {
 					System.out.println(String.format("Convert database %s failure", convert.dbName));
 				}
@@ -99,8 +99,8 @@ public class DBConvert {
 			}
 		}
 		System.out.println(String
-				.format("database convert use %d seconds total.",
-						(System.currentTimeMillis() - time) / 1000));
+			.format("database convert use %d seconds total.",
+				(System.currentTimeMillis() - time) / 1000));
 	}
 
 	public DB newLevelDb(Path db) throws IOException {
@@ -187,7 +187,7 @@ public class DBConvert {
 		}
 
 		return dstDbKeyCount == srcDbKeyCount && dstDbKeySum == srcDbKeySum
-				&& dstDbValueSum == srcDbValueSum;
+			&& dstDbValueSum == srcDbValueSum;
 	}
 
 	public boolean createEngine(String dir) {

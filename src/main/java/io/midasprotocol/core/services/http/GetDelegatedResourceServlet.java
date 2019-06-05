@@ -1,13 +1,13 @@
 package io.midasprotocol.core.services.http;
 
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.api.GrpcAPI.DelegatedResourceList;
 import io.midasprotocol.api.GrpcAPI.DelegatedResourceMessage;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,9 +28,9 @@ public class GetDelegatedResourceServlet extends HttpServlet {
 			String toAddress = request.getParameter("toAddress");
 
 			DelegatedResourceList reply =
-					wallet.getDelegatedResource(
-							ByteString.copyFrom(ByteArray.fromHexString(fromAddress)),
-							ByteString.copyFrom(ByteArray.fromHexString(toAddress)));
+				wallet.getDelegatedResource(
+					ByteString.copyFrom(ByteArray.fromHexString(fromAddress)),
+					ByteString.copyFrom(ByteArray.fromHexString(toAddress)));
 			if (reply != null) {
 				response.getWriter().println(JsonFormat.printToString(reply));
 			} else {
@@ -49,12 +49,12 @@ public class GetDelegatedResourceServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input =
-					request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+				request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			DelegatedResourceMessage.Builder build = DelegatedResourceMessage.newBuilder();
 			JsonFormat.merge(input, build);
 			DelegatedResourceList reply =
-					wallet.getDelegatedResource(build.getFromAddress(), build.getToAddress());
+				wallet.getDelegatedResource(build.getFromAddress(), build.getToAddress());
 			if (reply != null) {
 				response.getWriter().println(JsonFormat.printToString(reply));
 			} else {

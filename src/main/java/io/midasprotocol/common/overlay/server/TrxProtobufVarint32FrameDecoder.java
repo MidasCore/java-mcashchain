@@ -4,16 +4,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
-
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class TrxProtobufVarint32FrameDecoder extends ByteToMessageDecoder {
 
 	private final static Logger logger = LoggerFactory
-			.getLogger(TrxProtobufVarint32FrameDecoder.class);
+		.getLogger(TrxProtobufVarint32FrameDecoder.class);
 
 	private final static int maxMsgLength = 5 * 1024 * 1024;//5M
 
@@ -21,32 +20,6 @@ public class TrxProtobufVarint32FrameDecoder extends ByteToMessageDecoder {
 
 	public TrxProtobufVarint32FrameDecoder(Channel channel) {
 		this.channel = channel;
-	}
-
-	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-		in.markReaderIndex();
-		int preIndex = in.readerIndex();
-		int length = readRawVarint32(in);
-		if (length >= maxMsgLength) {
-			logger.error("recv a big msg, host : {}, msg length is : {}", ctx.channel().remoteAddress(),
-					length);
-			in.clear();
-			channel.close();
-			return;
-		}
-		if (preIndex == in.readerIndex()) {
-			return;
-		}
-		if (length < 0) {
-			throw new CorruptedFrameException("negative length: " + length);
-		}
-
-		if (in.readableBytes() < length) {
-			in.resetReaderIndex();
-		} else {
-			out.add(in.readRetainedSlice(length));
-		}
 	}
 
 	private static int readRawVarint32(ByteBuf buffer) {
@@ -95,6 +68,32 @@ public class TrxProtobufVarint32FrameDecoder extends ByteToMessageDecoder {
 				}
 			}
 			return result;
+		}
+	}
+
+	@Override
+	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+		in.markReaderIndex();
+		int preIndex = in.readerIndex();
+		int length = readRawVarint32(in);
+		if (length >= maxMsgLength) {
+			logger.error("recv a big msg, host : {}, msg length is : {}", ctx.channel().remoteAddress(),
+				length);
+			in.clear();
+			channel.close();
+			return;
+		}
+		if (preIndex == in.readerIndex()) {
+			return;
+		}
+		if (length < 0) {
+			throw new CorruptedFrameException("negative length: " + length);
+		}
+
+		if (in.readableBytes() < length) {
+			in.resetReaderIndex();
+		} else {
+			out.add(in.readRetainedSlice(length));
 		}
 	}
 }

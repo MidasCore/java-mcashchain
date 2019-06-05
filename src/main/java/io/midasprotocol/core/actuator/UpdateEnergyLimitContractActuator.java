@@ -3,8 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
-import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -16,6 +14,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UpdateEnergyLimitContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 
@@ -31,14 +30,14 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			UpdateEnergyLimitContract usContract = contract
-					.unpack(UpdateEnergyLimitContract.class);
+				.unpack(UpdateEnergyLimitContract.class);
 			long newOriginEnergyLimit = usContract.getOriginEnergyLimit();
 			byte[] contractAddress = usContract.getContractAddress().toByteArray();
 			ContractCapsule deployedContract = dbManager.getContractStore().get(contractAddress);
 
 			dbManager.getContractStore().put(contractAddress, new ContractCapsule(
-					deployedContract.getInstance().toBuilder().setOriginEnergyLimit(newOriginEnergyLimit)
-							.build()));
+				deployedContract.getInstance().toBuilder().setOriginEnergyLimit(newOriginEnergyLimit)
+					.build()));
 
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (InvalidProtocolBufferException e) {
@@ -63,7 +62,7 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(UpdateEnergyLimitContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected UpdateEnergyLimitContract, actual " + contract.getClass());
+				"Contract type error, expected UpdateEnergyLimitContract, actual " + contract.getClass());
 		}
 		final UpdateEnergyLimitContract contract;
 		try {
@@ -98,11 +97,11 @@ public class UpdateEnergyLimitContractActuator extends AbstractActuator {
 		}
 
 		byte[] deployedContractOwnerAddress = deployedContract.getInstance().getOriginAddress()
-				.toByteArray();
+			.toByteArray();
 
 		if (!Arrays.equals(ownerAddress, deployedContractOwnerAddress)) {
 			throw new ContractValidateException(
-					"Account " + readableOwnerAddress + " is not the owner of the contract");
+				"Account " + readableOwnerAddress + " is not the owner of the contract");
 		}
 
 		return true;

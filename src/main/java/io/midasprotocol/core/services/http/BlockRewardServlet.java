@@ -25,7 +25,7 @@ public class BlockRewardServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String input = request.getReader().lines()
-					.collect(Collectors.joining(System.lineSeparator()));
+				.collect(Collectors.joining(System.lineSeparator()));
 			Util.checkBodySize(input);
 			GrpcAPI.NumberMessage.Builder builder = GrpcAPI.NumberMessage.newBuilder();
 			JsonFormat.merge(input, builder);

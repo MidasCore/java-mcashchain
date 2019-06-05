@@ -1,7 +1,5 @@
 package io.midasprotocol.core.capsule;
 
-import lombok.Getter;
-import lombok.Setter;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Constant;
@@ -10,6 +8,8 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
 import io.midasprotocol.protos.Protocol.ResourceReceipt;
 import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ReceiptCapsule {
 
@@ -103,7 +103,7 @@ public class ReceiptCapsule {
 	 */
 	public void payEnergyBill(Manager manager, AccountCapsule origin, AccountCapsule caller,
 							  long percent, long originEnergyLimit, EnergyProcessor energyProcessor, long now)
-			throws BalanceInsufficientException {
+		throws BalanceInsufficientException {
 		if (receipt.getEnergyUsageTotal() <= 0) {
 			return;
 		}
@@ -113,7 +113,7 @@ public class ReceiptCapsule {
 		} else {
 			long originUsage = Math.multiplyExact(receipt.getEnergyUsageTotal(), percent) / 100;
 			originUsage = getOriginUsage(manager, origin, originEnergyLimit, energyProcessor,
-					originUsage);
+				originUsage);
 
 			long callerUsage = receipt.getEnergyUsageTotal() - originUsage;
 			energyProcessor.useEnergy(origin, originUsage, now);
@@ -127,18 +127,18 @@ public class ReceiptCapsule {
 								EnergyProcessor energyProcessor, long originUsage) {
 
 //		if (VMConfig.getEnergyLimitHardFork()) {
-			return Math.min(originUsage,
-					Math.min(energyProcessor.getAccountLeftEnergyFromFreeze(origin), originEnergyLimit));
+		return Math.min(originUsage,
+			Math.min(energyProcessor.getAccountLeftEnergyFromFreeze(origin), originEnergyLimit));
 //		}
 //		return Math.min(originUsage, energyProcessor.getAccountLeftEnergyFromFreeze(origin));
 	}
 
 	private void payEnergyBill(
-			Manager manager,
-			AccountCapsule account,
-			long usage,
-			EnergyProcessor energyProcessor,
-			long now) throws BalanceInsufficientException {
+		Manager manager,
+		AccountCapsule account,
+		long usage,
+		EnergyProcessor energyProcessor,
+		long now) throws BalanceInsufficientException {
 		long accountEnergyLeft = energyProcessor.getAccountLeftEnergyFromFreeze(account);
 		if (accountEnergyLeft >= usage) {
 			energyProcessor.useEnergy(account, usage, now);
@@ -151,19 +151,19 @@ public class ReceiptCapsule {
 				sunPerEnergy = dynamicEnergyFee;
 			}
 			long energyFee =
-					(usage - accountEnergyLeft) * sunPerEnergy;
+				(usage - accountEnergyLeft) * sunPerEnergy;
 			this.setEnergyUsage(accountEnergyLeft);
 			this.setEnergyFee(energyFee);
 			long balance = account.getBalance();
 			if (balance < energyFee) {
 				throw new BalanceInsufficientException(
-						StringUtil.createReadableString(account.createDbKey()) + " insufficient balance");
+					StringUtil.createReadableString(account.createDbKey()) + " insufficient balance");
 			}
 			account.setBalance(balance - energyFee);
 
 			//send to blackHole
 			manager.adjustBalance(manager.getAccountStore().getBlackhole().getAddress().toByteArray(),
-					energyFee);
+				energyFee);
 		}
 
 		manager.getAccountStore().put(account.getAddress().toByteArray(), account);

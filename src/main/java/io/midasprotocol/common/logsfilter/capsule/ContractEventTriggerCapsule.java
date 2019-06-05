@@ -1,37 +1,30 @@
 package io.midasprotocol.common.logsfilter.capsule;
 
-import java.util.List;
-
-import lombok.Getter;
-import lombok.Setter;
 import io.midasprotocol.common.logsfilter.ContractEventParser;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.common.logsfilter.FilterQuery;
 import io.midasprotocol.common.logsfilter.trigger.ContractEventTrigger;
 import io.midasprotocol.common.runtime.vm.LogEventWrapper;
 import io.midasprotocol.protos.Protocol.SmartContract.ABI.Entry;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 public class ContractEventTriggerCapsule extends TriggerCapsule {
 
 	@Getter
 	@Setter
+	ContractEventTrigger contractEventTrigger;
+	@Getter
+	@Setter
 	private List<byte[]> topicList;
-
 	@Getter
 	@Setter
 	private byte[] data;
-
-	@Getter
-	@Setter
-	ContractEventTrigger contractEventTrigger;
-
 	@Getter
 	@Setter
 	private Entry abiEntry;
-
-	public void setLatestSolidifiedBlockNumber(long latestSolidifiedBlockNumber) {
-		contractEventTrigger.setLatestSolidifiedBlockNumber(latestSolidifiedBlockNumber);
-	}
 
 	public ContractEventTriggerCapsule(LogEventWrapper log) {
 		this.contractEventTrigger = new ContractEventTrigger();
@@ -51,6 +44,10 @@ public class ContractEventTriggerCapsule extends TriggerCapsule {
 		this.contractEventTrigger.setEventSignatureFull(log.getEventSignatureFull());
 		this.contractEventTrigger.setEventName(log.getAbiEntry().getName());
 		this.abiEntry = log.getAbiEntry();
+	}
+
+	public void setLatestSolidifiedBlockNumber(long latestSolidifiedBlockNumber) {
+		contractEventTrigger.setLatestSolidifiedBlockNumber(latestSolidifiedBlockNumber);
 	}
 
 	@Override

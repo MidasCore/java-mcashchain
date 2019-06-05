@@ -1,12 +1,6 @@
 package io.midasprotocol.common.net.udp.message.discover;
 
-import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.DISCOVER_NEIGHBORS;
-
 import com.google.protobuf.ByteString;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import io.midasprotocol.common.net.udp.message.Message;
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.utils.ByteArray;
@@ -14,6 +8,11 @@ import io.midasprotocol.protos.Discover;
 import io.midasprotocol.protos.Discover.Endpoint;
 import io.midasprotocol.protos.Discover.Neighbours;
 import io.midasprotocol.protos.Discover.Neighbours.Builder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.DISCOVER_NEIGHBORS;
 
 public class NeighborsMessage extends Message {
 
@@ -27,23 +26,23 @@ public class NeighborsMessage extends Message {
 	public NeighborsMessage(Node from, List<Node> neighbours) {
 		super(DISCOVER_NEIGHBORS, null);
 		Builder builder = Neighbours.newBuilder()
-				.setTimestamp(System.currentTimeMillis());
+			.setTimestamp(System.currentTimeMillis());
 
 		neighbours.forEach(neighbour -> {
 			Endpoint endpoint = Endpoint.newBuilder()
-					.setAddress(ByteString.copyFrom(ByteArray.fromString(neighbour.getHost())))
-					.setPort(neighbour.getPort())
-					.setNodeId(ByteString.copyFrom(neighbour.getId()))
-					.build();
+				.setAddress(ByteString.copyFrom(ByteArray.fromString(neighbour.getHost())))
+				.setPort(neighbour.getPort())
+				.setNodeId(ByteString.copyFrom(neighbour.getId()))
+				.build();
 
 			builder.addNeighbours(endpoint);
 		});
 
 		Endpoint fromEndpoint = Endpoint.newBuilder()
-				.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
-				.setPort(from.getPort())
-				.setNodeId(ByteString.copyFrom(from.getId()))
-				.build();
+			.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
+			.setPort(from.getPort())
+			.setNodeId(ByteString.copyFrom(from.getId()))
+			.build();
 
 		builder.setFrom(fromEndpoint);
 
@@ -55,9 +54,9 @@ public class NeighborsMessage extends Message {
 	public List<Node> getNodes() {
 		List<Node> nodes = new ArrayList<>();
 		neighbours.getNeighboursList().forEach(neighbour -> nodes.add(
-				new Node(neighbour.getNodeId().toByteArray(),
-						ByteArray.toStr(neighbour.getAddress().toByteArray()),
-						neighbour.getPort())));
+			new Node(neighbour.getNodeId().toByteArray(),
+				ByteArray.toStr(neighbour.getAddress().toByteArray()),
+				neighbour.getPort())));
 		return nodes;
 	}
 

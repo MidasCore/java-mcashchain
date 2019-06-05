@@ -17,13 +17,13 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.Constant;
 import io.midasprotocol.protos.Contract.CreateSmartContract;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.SmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

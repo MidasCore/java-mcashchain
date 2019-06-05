@@ -1,7 +1,6 @@
 package io.midasprotocol.common.runtime.utils;
 
 import io.midasprotocol.common.storage.Deposit;
-import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.actuator.TransferActuator;
 import io.midasprotocol.core.actuator.TransferAssetActuator;
@@ -15,7 +14,7 @@ public class MUtil {
 	}
 
 	public static void transfer(Deposit deposit, byte[] fromAddress, byte[] toAddress, long amount)
-			throws ContractValidateException {
+		throws ContractValidateException {
 		if (0 == amount) {
 			return;
 		}
@@ -39,7 +38,7 @@ public class MUtil {
 
 	public static void transferToken(Deposit deposit, byte[] fromAddress, byte[] toAddress,
 									 long tokenId, long amount)
-			throws ContractValidateException {
+		throws ContractValidateException {
 		if (0 == amount) {
 			return;
 		}

@@ -1,10 +1,10 @@
 package io.midasprotocol.core.db;
 
+import io.midasprotocol.core.capsule.StorageRowCapsule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.capsule.StorageRowCapsule;
 
 @Slf4j(topic = "DB")
 @Component

@@ -574,7 +574,7 @@ public enum OpCode {
 	 * address
 	 */
 	CALLCODE(0xf2, 7, 1, OpCode.Tier.SpecialTier, CallFlags.Call, CallFlags.HasValue,
-			CallFlags.Stateless),
+		CallFlags.Stateless),
 	/**
 	 * (0xf3) Halt execution returning output data
 	 */
@@ -586,7 +586,7 @@ public enum OpCode {
 	 * original call. also the Value parameter is omitted for this opCode
 	 */
 	DELEGATECALL(0xf4, 6, 1, OpCode.Tier.SpecialTier, CallFlags.Call, CallFlags.Stateless,
-			CallFlags.Delegate),
+		CallFlags.Delegate),
 
 	/**
 	 * opcode that can be used to call another contract (or itself) while disallowing any
@@ -631,7 +631,7 @@ public enum OpCode {
 		this.tier = tier;
 		this.ret = ret;
 		this.callFlags = callFlags.length == 0 ? EnumSet.noneOf(CallFlags.class) :
-				EnumSet.copyOf(Arrays.asList(callFlags));
+			EnumSet.copyOf(Arrays.asList(callFlags));
 	}
 
 	public static boolean contains(String code) {

@@ -18,11 +18,11 @@
 
 package io.midasprotocol.common.overlay.discover.dht;
 
-import java.math.BigInteger;
-
+import io.midasprotocol.common.utils.Utils;
 import org.spongycastle.util.BigIntegers;
 import org.spongycastle.util.encoders.Hex;
-import io.midasprotocol.common.utils.Utils;
+
+import java.math.BigInteger;
 
 public class Peer {
 
@@ -38,6 +38,20 @@ public class Peer {
 
 	public Peer(byte[] ip) {
 		this.id = ip;
+	}
+
+	public static byte[] randomPeerId() {
+
+		byte[] peerIdBytes = new BigInteger(512, Utils.getRandom()).toByteArray();
+
+		final String peerId;
+		if (peerIdBytes.length > 64) {
+			peerId = Hex.toHexString(peerIdBytes, 1, 64);
+		} else {
+			peerId = Hex.toHexString(peerIdBytes);
+		}
+
+		return Hex.decode(peerId);
 	}
 
 	public byte nextBit(String startPattern) {
@@ -58,7 +72,6 @@ public class Peer {
 		return BigIntegers.asUnsignedByteArray(distance);
 	}
 
-
 	public byte[] getId() {
 		return id;
 	}
@@ -70,7 +83,7 @@ public class Peer {
 	@Override
 	public String toString() {
 		return String
-				.format("Peer {\n id=%s, \n host=%s, \n port=%d\n}", Hex.toHexString(id), host, port);
+			.format("Peer {\n id=%s, \n host=%s, \n port=%d\n}", Hex.toHexString(id), host, port);
 	}
 
 	public String toBinaryString() {
@@ -80,20 +93,6 @@ public class Peer {
 		out = out.replace(' ', '0');
 
 		return out;
-	}
-
-	public static byte[] randomPeerId() {
-
-		byte[] peerIdBytes = new BigInteger(512, Utils.getRandom()).toByteArray();
-
-		final String peerId;
-		if (peerIdBytes.length > 64) {
-			peerId = Hex.toHexString(peerIdBytes, 1, 64);
-		} else {
-			peerId = Hex.toHexString(peerIdBytes);
-		}
-
-		return Hex.decode(peerId);
 	}
 
 }

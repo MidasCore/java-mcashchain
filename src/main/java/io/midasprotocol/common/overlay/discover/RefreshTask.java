@@ -18,11 +18,11 @@
 
 package io.midasprotocol.common.overlay.discover;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.discover.node.NodeManager;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class RefreshTask extends DiscoverTask {
 

@@ -1,11 +1,6 @@
 package io.midasprotocol.core.db;
 
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.storage.SourceInter;
 import io.midasprotocol.common.storage.WriteOptionsWrapper;
 import io.midasprotocol.common.storage.leveldb.LevelDbDataSourceImpl;
@@ -16,6 +11,11 @@ import io.midasprotocol.core.db2.common.IRevokingDB;
 import io.midasprotocol.core.db2.core.ISession;
 import io.midasprotocol.core.db2.core.RevokingDBWithCachingOldValue;
 import io.midasprotocol.core.exception.RevokingStoreIllegalStateException;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,7 +34,7 @@ public abstract class AbstractRevokingStore implements RevokingDatabase {
 	private int activeDialog = 0;
 	private AtomicInteger maxSize = new AtomicInteger(DEFAULT_STACK_MAX_SIZE);
 	private WriteOptionsWrapper writeOptionsWrapper = WriteOptionsWrapper.getInstance()
-			.sync(Args.getInstance().getStorage().isDbSync());
+		.sync(Args.getInstance().getStorage().isDbSync());
 	private List<LevelDbDataSourceImpl> dbs = new ArrayList<>();
 
 	@Override
@@ -70,13 +70,13 @@ public abstract class AbstractRevokingStore implements RevokingDatabase {
 	@Override
 	public synchronized void check() {
 		LevelDbDataSourceImpl check =
-				new LevelDbDataSourceImpl(Args.getInstance().getOutputDirectoryByDbName("tmp"), "tmp");
+			new LevelDbDataSourceImpl(Args.getInstance().getOutputDirectoryByDbName("tmp"), "tmp");
 		check.initDB();
 
 		if (!check.allKeys().isEmpty()) {
 			Map<String, LevelDbDataSourceImpl> dbMap = dbs.stream()
-					.map(db -> Maps.immutableEntry(db.getDBName(), db))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.map(db -> Maps.immutableEntry(db.getDBName(), db))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 			for (Map.Entry<byte[], byte[]> e : check) {
 				byte[] key = e.getKey();
@@ -90,10 +90,10 @@ public abstract class AbstractRevokingStore implements RevokingDatabase {
 				byte[] realValue = value.length == 1 ? null : Arrays.copyOfRange(value, 1, value.length);
 				if (realValue != null) {
 					dbMap.get(db).putData(realKey, realValue, WriteOptionsWrapper.getInstance()
-							.sync(Args.getInstance().getStorage().isDbSync()));
+						.sync(Args.getInstance().getStorage().isDbSync()));
 				} else {
 					dbMap.get(db).deleteData(realKey, WriteOptionsWrapper.getInstance()
-							.sync(Args.getInstance().getStorage().isDbSync()));
+						.sync(Args.getInstance().getStorage().isDbSync()));
 				}
 			}
 		}
@@ -178,31 +178,31 @@ public abstract class AbstractRevokingStore implements RevokingDatabase {
 		RevokingState prevState = list.get(stack.size() - 2);
 
 		state.oldValues.entrySet().stream()
-				.filter(e -> !prevState.newIds.contains(e.getKey()))
-				.filter(e -> !prevState.oldValues.containsKey(e.getKey()))
-				.forEach(e -> prevState.oldValues.put(e.getKey(), e.getValue()));
+			.filter(e -> !prevState.newIds.contains(e.getKey()))
+			.filter(e -> !prevState.oldValues.containsKey(e.getKey()))
+			.forEach(e -> prevState.oldValues.put(e.getKey(), e.getValue()));
 
 		prevState.newIds.addAll(state.newIds);
 
 		state.removed.entrySet().stream()
-				.filter(e -> {
-					boolean has = prevState.newIds.contains(e.getKey());
-					if (has) {
-						prevState.newIds.remove(e.getKey());
-					}
+			.filter(e -> {
+				boolean has = prevState.newIds.contains(e.getKey());
+				if (has) {
+					prevState.newIds.remove(e.getKey());
+				}
 
-					return !has;
-				})
-				.filter(e -> {
-					boolean has = prevState.oldValues.containsKey(e.getKey());
-					if (has) {
-						prevState.removed.put(e.getKey(), prevState.oldValues.get(e.getKey()));
-						prevState.oldValues.remove(e.getKey());
-					}
+				return !has;
+			})
+			.filter(e -> {
+				boolean has = prevState.oldValues.containsKey(e.getKey());
+				if (has) {
+					prevState.removed.put(e.getKey(), prevState.oldValues.get(e.getKey()));
+					prevState.oldValues.remove(e.getKey());
+				}
 
-					return !has;
-				})
-				.forEach(e -> prevState.removed.put(e.getKey(), e.getValue()));
+				return !has;
+			})
+			.forEach(e -> prevState.removed.put(e.getKey(), e.getValue()));
 
 		stack.pollLast();
 		--activeDialog;

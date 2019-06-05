@@ -17,9 +17,9 @@
  */
 package io.midasprotocol.common.net.udp.handler;
 
-import java.net.InetSocketAddress;
-
 import io.midasprotocol.common.net.udp.message.Message;
+
+import java.net.InetSocketAddress;
 
 public class UdpEvent {
 

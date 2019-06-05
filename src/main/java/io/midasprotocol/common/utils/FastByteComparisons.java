@@ -43,7 +43,7 @@ public abstract class FastByteComparisons {
 
 	public static boolean isEqual(byte[] b1, byte[] b2) {
 		return b1.length == b2.length && compareTo(b1, 0, b1.length, b2, 0,
-				b2.length) == 0;
+			b2.length) == 0;
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class FastByteComparisons {
 	public static int compareTo(byte[] b1, int s1, int l1, byte[] b2, int s2,
 								int l2) {
 		return LexicographicalComparerHolder.BEST_COMPARER.compareTo(
-				b1, s1, l1, b2, s2, l2);
+			b1, s1, l1, b2, s2, l2);
 	}
 
 	private static Comparer<byte[]> lexicographicalComparerJavaImpl() {
@@ -80,8 +80,8 @@ public abstract class FastByteComparisons {
 	private static class LexicographicalComparerHolder {
 
 		static final String UNSAFE_COMPARER_NAME =
-				LexicographicalComparerHolder.class.getName() +
-						"$UnsafeComparer";
+			LexicographicalComparerHolder.class.getName() +
+				"$UnsafeComparer";
 
 		static final Comparer<byte[]> BEST_COMPARER = getBestComparer();
 
@@ -96,7 +96,7 @@ public abstract class FastByteComparisons {
 				// yes, UnsafeComparer does implement Comparer<byte[]>
 				@SuppressWarnings("unchecked")
 				Comparer<byte[]> comparer =
-						(Comparer<byte[]>) theClass.getEnumConstants()[0];
+					(Comparer<byte[]>) theClass.getEnumConstants()[0];
 				return comparer;
 			} catch (Throwable t) { // ensure we really catch *everything*
 				return lexicographicalComparerJavaImpl();
@@ -111,14 +111,14 @@ public abstract class FastByteComparisons {
 								 byte[] buffer2, int offset2, int length2) {
 				// Short circuit equal case
 				if (buffer1 == buffer2 &&
-						offset1 == offset2 &&
-						length1 == length2) {
+					offset1 == offset2 &&
+					length1 == length2) {
 					return 0;
 				}
 				int end1 = offset1 + length1;
 				int end2 = offset2 + length2;
 				for (int i = offset1, j = offset2; i < end1 && j < end2; i++,
-						j++) {
+					j++) {
 					int a = (buffer1[i] & 0xff);
 					int b = (buffer2[j] & 0xff);
 					if (a != b) {

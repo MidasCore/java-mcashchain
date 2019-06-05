@@ -20,24 +20,6 @@ package io.midasprotocol.common.overlay.server;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.overlay.client.PeerClient;
 import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.discover.node.NodeHandler;
@@ -45,21 +27,31 @@ import io.midasprotocol.common.overlay.discover.node.NodeManager;
 import io.midasprotocol.common.overlay.discover.node.statistics.NodeStatistics;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.net.peer.PeerConnection;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 @Slf4j(topic = "net")
 @Component
 public class SyncPool {
 
-	private double factor = Args.getInstance().getConnectFactor();
-	private double activeFactor = Args.getInstance().getActiveConnectFactor();
-
 	private final List<PeerConnection> activePeers = Collections
-			.synchronizedList(new ArrayList<PeerConnection>());
+		.synchronizedList(new ArrayList<PeerConnection>());
 	private final AtomicInteger passivePeersCount = new AtomicInteger(0);
 	private final AtomicInteger activePeersCount = new AtomicInteger(0);
-
+	private double factor = Args.getInstance().getConnectFactor();
+	private double activeFactor = Args.getInstance().getActiveConnectFactor();
 	private Cache<NodeHandler, Long> nodeHandlerCache = CacheBuilder.newBuilder()
-			.maximumSize(1000).expireAfterWrite(180, TimeUnit.SECONDS).recordStats().build();
+		.maximumSize(1000).expireAfterWrite(180, TimeUnit.SECONDS).recordStats().build();
 
 	@Autowired
 	private NodeManager nodeManager;
@@ -120,7 +112,7 @@ public class SyncPool {
 		});
 
 		int size = Math.max((int) (maxActiveNodes * factor) - activePeers.size(),
-				(int) (maxActiveNodes * activeFactor - activePeersCount.get()));
+			(int) (maxActiveNodes * activeFactor - activePeersCount.get()));
 		int lackSize = size - connectNodes.size();
 		if (lackSize > 0) {
 			nodesInUse.add(nodeManager.getPublicHomeNode().getHexId());
@@ -236,7 +228,7 @@ public class SyncPool {
 		public boolean test(NodeHandler handler) {
 
 			if (handler.getNode().getHost().equals(nodeManager.getPublicHomeNode().getHost()) &&
-					handler.getNode().getPort() == nodeManager.getPublicHomeNode().getPort()) {
+				handler.getNode().getPort() == nodeManager.getPublicHomeNode().getPort()) {
 				return false;
 			}
 

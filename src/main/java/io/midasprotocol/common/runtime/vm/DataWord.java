@@ -19,11 +19,11 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.spongycastle.util.Arrays;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.utils.ByteUtil;
 import io.midasprotocol.common.utils.FastByteComparisons;
 import io.midasprotocol.core.db.ByteArrayWrapper;
+import org.spongycastle.util.Arrays;
+import org.spongycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -42,9 +42,9 @@ public class DataWord implements Comparable<DataWord> {
 	public static final BigInteger _2_256 = BigInteger.valueOf(2).pow(256);
 	public static final BigInteger MAX_VALUE = _2_256.subtract(BigInteger.ONE);
 	public static final DataWord ZERO = new DataWord(
-			new byte[32]);      // don't push it in to the stack
+		new byte[32]);      // don't push it in to the stack
 	public static final DataWord ZERO_EMPTY_ARRAY = new DataWord(
-			new byte[0]);      // don't push it in to the stack
+		new byte[0]);      // don't push it in to the stack
 
 	private byte[] data = new byte[32];
 
@@ -432,8 +432,8 @@ public class DataWord implements Comparable<DataWord> {
 			return -1;
 		}
 		int result = FastByteComparisons.compareTo(
-				data, 0, data.length,
-				o.getData(), 0, o.getData().length);
+			data, 0, data.length,
+			o.getData(), 0, o.getData().length);
 		// Convert result into -1, 0 or 1 as is the convention
 		return (int) Math.signum(result);
 	}

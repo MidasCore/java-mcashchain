@@ -1,10 +1,10 @@
 package io.midasprotocol.common.runtime.vm.program;
 
-import lombok.Getter;
 import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.core.capsule.StorageRowCapsule;
 import io.midasprotocol.core.db.StorageRowStore;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;

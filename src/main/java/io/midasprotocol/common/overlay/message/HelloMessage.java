@@ -23,25 +23,25 @@ public class HelloMessage extends P2pMessage {
 						BlockCapsule.BlockId solidBlockId, BlockCapsule.BlockId headBlockId) {
 
 		Endpoint fromEndpoint = Endpoint.newBuilder()
-				.setNodeId(ByteString.copyFrom(from.getId()))
-				.setPort(from.getPort())
-				.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
-				.build();
+			.setNodeId(ByteString.copyFrom(from.getId()))
+			.setPort(from.getPort())
+			.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
+			.build();
 
 		Protocol.HelloMessage.BlockId gBlockId = Protocol.HelloMessage.BlockId.newBuilder()
-				.setHash(genesisBlockId.getByteString())
-				.setNumber(genesisBlockId.getNum())
-				.build();
+			.setHash(genesisBlockId.getByteString())
+			.setNumber(genesisBlockId.getNum())
+			.build();
 
 		Protocol.HelloMessage.BlockId sBlockId = Protocol.HelloMessage.BlockId.newBuilder()
-				.setHash(solidBlockId.getByteString())
-				.setNumber(solidBlockId.getNum())
-				.build();
+			.setHash(solidBlockId.getByteString())
+			.setNumber(solidBlockId.getNum())
+			.build();
 
 		Protocol.HelloMessage.BlockId hBlockId = Protocol.HelloMessage.BlockId.newBuilder()
-				.setHash(headBlockId.getByteString())
-				.setNumber(headBlockId.getNum())
-				.build();
+			.setHash(headBlockId.getByteString())
+			.setNumber(headBlockId.getNum())
+			.build();
 
 		Builder builder = Protocol.HelloMessage.newBuilder();
 
@@ -68,22 +68,22 @@ public class HelloMessage extends P2pMessage {
 	public Node getFrom() {
 		Endpoint from = this.helloMessage.getFrom();
 		return new Node(from.getNodeId().toByteArray(),
-				ByteArray.toStr(from.getAddress().toByteArray()), from.getPort());
+			ByteArray.toStr(from.getAddress().toByteArray()), from.getPort());
 	}
 
 	public BlockCapsule.BlockId getGenesisBlockId() {
 		return new BlockCapsule.BlockId(this.helloMessage.getGenesisBlockId().getHash(),
-				this.helloMessage.getGenesisBlockId().getNumber());
+			this.helloMessage.getGenesisBlockId().getNumber());
 	}
 
 	public BlockCapsule.BlockId getSolidBlockId() {
 		return new BlockCapsule.BlockId(this.helloMessage.getSolidBlockId().getHash(),
-				this.helloMessage.getSolidBlockId().getNumber());
+			this.helloMessage.getSolidBlockId().getNumber());
 	}
 
 	public BlockCapsule.BlockId getHeadBlockId() {
 		return new BlockCapsule.BlockId(this.helloMessage.getHeadBlockId().getHash(),
-				this.helloMessage.getHeadBlockId().getNumber());
+			this.helloMessage.getHeadBlockId().getNumber());
 	}
 
 	@Override

@@ -15,14 +15,10 @@
 
 package io.midasprotocol.core.actuator;
 
-import com.google.common.primitives.Longs;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.storage.Deposit;
-import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.ByteUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
@@ -34,6 +30,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.TransferAssetContract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -109,7 +106,7 @@ public class TransferAssetActuator extends AbstractActuator {
 			}
 		} else {
 			throw new ContractValidateException(
-					"Validate InternalTransfer error, no ToAccount. And not allowed to create account in smart contract.");
+				"Validate InternalTransfer error, no ToAccount. And not allowed to create account in smart contract.");
 		}
 
 		return true;
@@ -120,16 +117,16 @@ public class TransferAssetActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			TransferAssetContract transferAssetContract = this.contract
-					.unpack(TransferAssetContract.class);
+				.unpack(TransferAssetContract.class);
 			AccountStore accountStore = this.dbManager.getAccountStore();
 			byte[] ownerAddress = transferAssetContract.getOwnerAddress().toByteArray();
 			byte[] toAddress = transferAssetContract.getToAddress().toByteArray();
 			AccountCapsule toAccountCapsule = accountStore.get(toAddress);
 			if (toAccountCapsule == null) {
 				boolean withDefaultPermission =
-						dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1;
+					dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1;
 				toAccountCapsule = new AccountCapsule(ByteString.copyFrom(toAddress), AccountType.Normal,
-						dbManager.getHeadBlockTimeStamp(), withDefaultPermission, dbManager);
+					dbManager.getHeadBlockTimeStamp(), withDefaultPermission, dbManager);
 				dbManager.getAccountStore().put(toAddress, toAccountCapsule);
 
 				fee = fee + dbManager.getDynamicPropertiesStore().getCreateNewAccountFeeInSystemContract();
@@ -175,8 +172,8 @@ public class TransferAssetActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(TransferAssetContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [TransferAssetContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [TransferAssetContract],real type[" + contract
+					.getClass() + "]");
 		}
 		final TransferAssetContract transferAssetContract;
 		try {
@@ -246,7 +243,7 @@ public class TransferAssetActuator extends AbstractActuator {
 			fee = fee + dbManager.getDynamicPropertiesStore().getCreateNewAccountFeeInSystemContract();
 			if (ownerAccount.getBalance() < fee) {
 				throw new ContractValidateException(
-						"Validate TransferAssetActuator error, insufficient fee.");
+					"Validate TransferAssetActuator error, insufficient fee.");
 			}
 		}
 

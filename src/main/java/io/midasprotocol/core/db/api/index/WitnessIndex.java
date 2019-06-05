@@ -4,15 +4,15 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.capsule.WitnessCapsule;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.protos.Protocol.Witness;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -28,7 +28,7 @@ public class WitnessIndex extends AbstractIndex<WitnessCapsule, Witness> {
 
 	@Autowired
 	public WitnessIndex(
-			@Qualifier("witnessStore") final ITronChainBase<WitnessCapsule> database) {
+		@Qualifier("witnessStore") final ITronChainBase<WitnessCapsule> database) {
 		super(database);
 	}
 
@@ -43,13 +43,13 @@ public class WitnessIndex extends AbstractIndex<WitnessCapsule, Witness> {
 	@Override
 	public void setAttribute() {
 		Witness_ADDRESS =
-				attribute("witness address",
-						bytes -> ByteArray.toHexString(getObject(bytes).getAddress().toByteArray()));
+			attribute("witness address",
+				bytes -> ByteArray.toHexString(getObject(bytes).getAddress().toByteArray()));
 		PUBLIC_KEY =
-				attribute("public key",
-						bytes -> ByteArray.toHexString(getObject(bytes).getPubKey().toByteArray()));
+			attribute("public key",
+				bytes -> ByteArray.toHexString(getObject(bytes).getPubKey().toByteArray()));
 		Witness_URL =
-				attribute("witness url", bytes -> getObject(bytes).getUrl());
+			attribute("witness url", bytes -> getObject(bytes).getUrl());
 
 	}
 

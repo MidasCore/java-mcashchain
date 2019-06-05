@@ -18,17 +18,17 @@
 
 package io.midasprotocol.common.overlay.discover.node;
 
-import static io.midasprotocol.common.crypto.Hash.sha3;
+import io.midasprotocol.common.crypto.ECKey;
+import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.Utils;
+import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.util.encoders.Hex;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.lang3.StringUtils;
-import org.spongycastle.util.encoders.Hex;
-import io.midasprotocol.common.crypto.ECKey;
-import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.Utils;
+import static io.midasprotocol.common.crypto.Hash.sha3;
 
 public class Node implements Serializable {
 
@@ -41,40 +41,7 @@ public class Node implements Serializable {
 	private int port;
 
 	private boolean isFakeNodeId = false;
-
-	public int getReputation() {
-		return reputation;
-	}
-
-	public void setReputation(int reputation) {
-		this.reputation = reputation;
-	}
-
 	private int reputation = 0;
-
-	public static Node instanceOf(String addressOrEnode) {
-		try {
-			URI uri = new URI(addressOrEnode);
-			if (uri.getScheme().equals("enode")) {
-				return new Node(addressOrEnode);
-			}
-		} catch (URISyntaxException e) {
-			// continue
-		}
-
-		final ECKey generatedNodeKey = ECKey.fromPrivate(sha3(addressOrEnode.getBytes()));
-		final String generatedNodeId = Hex.toHexString(generatedNodeKey.getNodeId());
-		final Node node = new Node("enode://" + generatedNodeId + "@" + addressOrEnode);
-		node.isFakeNodeId = true;
-		return node;
-	}
-
-	public String getEnodeURL() {
-		return new StringBuilder("enode://")
-				.append(ByteArray.toHexString(id)).append("@")
-				.append(host).append(":")
-				.append(port).toString();
-	}
 
 	public Node(String enodeURL) {
 		try {
@@ -96,6 +63,38 @@ public class Node implements Serializable {
 		}
 		this.host = host;
 		this.port = port;
+	}
+
+	public static Node instanceOf(String addressOrEnode) {
+		try {
+			URI uri = new URI(addressOrEnode);
+			if (uri.getScheme().equals("enode")) {
+				return new Node(addressOrEnode);
+			}
+		} catch (URISyntaxException e) {
+			// continue
+		}
+
+		final ECKey generatedNodeKey = ECKey.fromPrivate(sha3(addressOrEnode.getBytes()));
+		final String generatedNodeId = Hex.toHexString(generatedNodeKey.getNodeId());
+		final Node node = new Node("enode://" + generatedNodeId + "@" + addressOrEnode);
+		node.isFakeNodeId = true;
+		return node;
+	}
+
+	public int getReputation() {
+		return reputation;
+	}
+
+	public void setReputation(int reputation) {
+		this.reputation = reputation;
+	}
+
+	public String getEnodeURL() {
+		return new StringBuilder("enode://")
+			.append(ByteArray.toHexString(id)).append("@")
+			.append(host).append(":")
+			.append(port).toString();
 	}
 
 	public String getHexId() {
@@ -140,7 +139,7 @@ public class Node implements Serializable {
 	@Override
 	public String toString() {
 		return "Node{" + " host='" + host + '\'' + ", port=" + port
-				+ ", id=" + ByteArray.toHexString(id) + '}';
+			+ ", id=" + ByteArray.toHexString(id) + '}';
 	}
 
 	@Override

@@ -2,15 +2,15 @@ package io.midasprotocol.core.db.api.index;
 
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.protos.Protocol.Account;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -36,6 +36,6 @@ public class AccountIndex extends AbstractIndex<AccountCapsule, Account> {
 	@Override
 	protected void setAttribute() {
 		Account_ADDRESS = attribute("account address",
-				bytes -> ByteArray.toHexString(bytes.getBytes()));
+			bytes -> ByteArray.toHexString(bytes.getBytes()));
 	}
 }

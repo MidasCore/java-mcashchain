@@ -1,10 +1,5 @@
 package io.midasprotocol.core.db;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.capsule.BlockCapsule;
@@ -12,6 +7,11 @@ import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.db.KhaosDatabase.KhaosBlock;
 import io.midasprotocol.core.exception.BadItemException;
 import io.midasprotocol.core.exception.StoreException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;

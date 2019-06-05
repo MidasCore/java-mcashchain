@@ -1,11 +1,11 @@
 package io.midasprotocol.common.application;
 
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import io.midasprotocol.common.overlay.discover.DiscoverServer;
 import io.midasprotocol.common.overlay.discover.node.NodeManager;
 import io.midasprotocol.common.overlay.server.ChannelManager;
 import io.midasprotocol.core.db.Manager;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class ApplicationContext extends AnnotationConfigApplicationContext {
 

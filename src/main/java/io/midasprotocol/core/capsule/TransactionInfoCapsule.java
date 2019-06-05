@@ -2,8 +2,6 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import io.midasprotocol.common.runtime.vm.LogInfo;
 import io.midasprotocol.common.runtime.vm.program.InternalTransaction;
 import io.midasprotocol.common.runtime.vm.program.ProgramResult;
@@ -14,6 +12,8 @@ import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.TransactionInfo;
 import io.midasprotocol.protos.Protocol.TransactionInfo.Log;
 import io.midasprotocol.protos.Protocol.TransactionInfo.code;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,15 +50,15 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		ReceiptCapsule traceReceipt = trace.getReceipt();
 		builder.setResult(code.SUCCESS);
 		if (StringUtils.isNoneEmpty(trace.getRuntimeError()) || Objects
-				.nonNull(trace.getRuntimeResult().getException())) {
+			.nonNull(trace.getRuntimeResult().getException())) {
 			builder.setResult(code.FAILED);
 			builder.setResMessage(ByteString.copyFromUtf8(trace.getRuntimeError()));
 		}
 		builder.setId(ByteString.copyFrom(trxCap.getTransactionId().getBytes()));
 		ProgramResult programResult = trace.getRuntimeResult();
 		long fee =
-				programResult.getRet().getFee() + traceReceipt.getEnergyFee()
-						+ traceReceipt.getNetFee() + traceReceipt.getMultiSignFee();
+			programResult.getRet().getFee() + traceReceipt.getEnergyFee()
+				+ traceReceipt.getNetFee() + traceReceipt.getMultiSignFee();
 		ByteString contractResult = ByteString.copyFrom(programResult.getHReturn());
 		ByteString ContractAddress = ByteString.copyFrom(programResult.getContractAddress());
 
@@ -73,13 +73,13 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		builder.setExchangeReceivedAmount(programResult.getRet().getExchangeReceivedAmount());
 		builder.setExchangeInjectAnotherAmount(programResult.getRet().getExchangeInjectAnotherAmount());
 		builder.setExchangeWithdrawAnotherAmount(
-				programResult.getRet().getExchangeWithdrawAnotherAmount());
+			programResult.getRet().getExchangeWithdrawAnotherAmount());
 
 		List<Log> logList = new ArrayList<>();
 		programResult.getLogInfoList().forEach(
-				logInfo -> {
-					logList.add(LogInfo.buildLog(logInfo));
-				}
+			logInfo -> {
+				logList.add(LogInfo.buildLog(logInfo));
+			}
 		);
 		builder.addAllLog(logList);
 
@@ -93,24 +93,24 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		if (Args.getInstance().isSaveInternalTx() && null != programResult.getInternalTransactions()) {
 			for (InternalTransaction internalTransaction : programResult.getInternalTransactions()) {
 				Protocol.InternalTransaction.Builder internalTrxBuilder = Protocol.InternalTransaction
-						.newBuilder();
+					.newBuilder();
 				// set hash
 				internalTrxBuilder.setHash(ByteString.copyFrom(internalTransaction.getHash()));
 				// set caller
 				internalTrxBuilder.setCallerAddress(ByteString.copyFrom(internalTransaction.getSender()));
 				// set TransferTo
 				internalTrxBuilder
-						.setTransferToAddress(ByteString.copyFrom(internalTransaction.getTransferToAddress()));
+					.setTransferToAddress(ByteString.copyFrom(internalTransaction.getTransferToAddress()));
 				//TODO: "for loop" below in future for multiple token case, we only have one for now.
 				Protocol.InternalTransaction.CallValueInfo.Builder callValueInfoBuilder =
-						Protocol.InternalTransaction.CallValueInfo.newBuilder();
+					Protocol.InternalTransaction.CallValueInfo.newBuilder();
 				// trx will not be set token name
 				callValueInfoBuilder.setCallValue(internalTransaction.getValue());
 				// Just one transferBuilder for now.
 				internalTrxBuilder.addCallValueInfo(callValueInfoBuilder);
 				internalTransaction.getTokenInfo().forEach((tokenId, amount) -> {
 					Protocol.InternalTransaction.CallValueInfo.Builder tokenInfoBuilder =
-							Protocol.InternalTransaction.CallValueInfo.newBuilder();
+						Protocol.InternalTransaction.CallValueInfo.newBuilder();
 					tokenInfoBuilder.setTokenId(tokenId);
 					tokenInfoBuilder.setCallValue(amount);
 					internalTrxBuilder.addCallValueInfo(tokenInfoBuilder);
@@ -139,7 +139,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
 	public void setId(byte[] id) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.setId(ByteString.copyFrom(id)).build();
+			.setId(ByteString.copyFrom(id)).build();
 	}
 
 	public long getUnfreezeAmount() {
@@ -172,12 +172,12 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
 	public void setResMessage(String message) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.setResMessage(ByteString.copyFromUtf8(message)).build();
+			.setResMessage(ByteString.copyFromUtf8(message)).build();
 	}
 
 	public void addFee(long fee) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.setFee(this.transactionInfo.getFee() + fee).build();
+			.setFee(this.transactionInfo.getFee() + fee).build();
 	}
 
 	public long getBlockNumber() {
@@ -186,7 +186,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
 	public void setBlockNumber(long num) {
 		this.transactionInfo = this.transactionInfo.toBuilder().setBlockNumber(num)
-				.build();
+			.build();
 	}
 
 	public long getBlockTimeStamp() {
@@ -195,31 +195,31 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
 	public void setBlockTimeStamp(long time) {
 		this.transactionInfo = this.transactionInfo.toBuilder().setBlockTimeStamp(time)
-				.build();
+			.build();
 	}
 
 	public void setContractResult(byte[] ret) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.addContractResult(ByteString.copyFrom(ret))
-				.build();
+			.addContractResult(ByteString.copyFrom(ret))
+			.build();
 	}
 
 	public void setContractAddress(byte[] contractAddress) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.setContractAddress(ByteString.copyFrom(contractAddress))
-				.build();
+			.setContractAddress(ByteString.copyFrom(contractAddress))
+			.build();
 	}
 
 	public void setReceipt(ReceiptCapsule receipt) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.setReceipt(receipt.getReceipt())
-				.build();
+			.setReceipt(receipt.getReceipt())
+			.build();
 	}
 
 	public void addAllLog(List<Log> logs) {
 		this.transactionInfo = this.transactionInfo.toBuilder()
-				.addAllLog(logs)
-				.build();
+			.addAllLog(logs)
+			.build();
 	}
 
 	@Override

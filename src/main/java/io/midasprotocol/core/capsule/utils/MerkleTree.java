@@ -1,7 +1,7 @@
 package io.midasprotocol.core.capsule.utils;
 
-import lombok.Getter;
 import io.midasprotocol.common.utils.Sha256Hash;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,24 +44,24 @@ public class MerkleTree {
 		int step = 2;
 		int len = leaves.size();
 		return IntStream.iterate(0, i -> i + step)
-				.limit(len)
-				.filter(i -> i < len)
-				.mapToObj(i -> {
-					Leaf right = i + 1 < len ? leaves.get(i + 1) : null;
-					return createLeaf(leaves.get(i), right);
-				}).collect(Collectors.toList());
+			.limit(len)
+			.filter(i -> i < len)
+			.mapToObj(i -> {
+				Leaf right = i + 1 < len ? leaves.get(i + 1) : null;
+				return createLeaf(leaves.get(i), right);
+			}).collect(Collectors.toList());
 	}
 
 	private List<Leaf> createLeaves(List<Sha256Hash> hashList) {
 		int step = 2;
 		int len = hashList.size();
 		return IntStream.iterate(0, i -> i + step)
-				.limit(len)
-				.filter(i -> i < len)
-				.mapToObj(i -> {
-					Leaf right = i + 1 < len ? createLeaf(hashList.get(i + 1)) : null;
-					return createLeaf(createLeaf(hashList.get(i)), right);
-				}).collect(Collectors.toList());
+			.limit(len)
+			.filter(i -> i < len)
+			.mapToObj(i -> {
+				Leaf right = i + 1 < len ? createLeaf(hashList.get(i + 1)) : null;
+				return createLeaf(createLeaf(hashList.get(i)), right);
+			}).collect(Collectors.toList());
 	}
 
 	private Leaf createLeaf(Leaf left, Leaf right) {

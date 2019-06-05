@@ -17,8 +17,8 @@
  */
 package io.midasprotocol.common.runtime.vm;
 
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.runtime.config.VMConfig;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.util.zip.Deflater;

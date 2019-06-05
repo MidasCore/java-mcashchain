@@ -1,11 +1,11 @@
 package io.midasprotocol.core.services.interfaceOnSolidity.http;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.services.http.GetDelegatedResourceServlet;
 import io.midasprotocol.core.services.interfaceOnSolidity.WalletOnSolidity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -4,15 +4,15 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.capsule.AssetIssueCapsule;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -29,7 +29,7 @@ public class AssetIssueIndex extends AbstractIndex<AssetIssueCapsule, AssetIssue
 
 	@Autowired
 	public AssetIssueIndex(
-			@Qualifier("assetIssueStore") final ITronChainBase<AssetIssueCapsule> database) {
+		@Qualifier("assetIssueStore") final ITronChainBase<AssetIssueCapsule> database) {
 		super(database);
 	}
 
@@ -45,30 +45,30 @@ public class AssetIssueIndex extends AbstractIndex<AssetIssueCapsule, AssetIssue
 	@Override
 	protected void setAttribute() {
 		AssetIssue_OWNER_ADDRESS =
-				attribute(
-						"assetIssue owner address",
-						bytes -> {
-							AssetIssueContract assetIssue = getObject(bytes);
-							return ByteArray.toHexString(assetIssue.getOwnerAddress().toByteArray());
-						});
+			attribute(
+				"assetIssue owner address",
+				bytes -> {
+					AssetIssueContract assetIssue = getObject(bytes);
+					return ByteArray.toHexString(assetIssue.getOwnerAddress().toByteArray());
+				});
 
 		AssetIssue_NAME =
-				attribute("assetIssue name", bytes -> {
-					AssetIssueContract assetIssue = getObject(bytes);
-					return assetIssue.getName().toStringUtf8();
-				});
+			attribute("assetIssue name", bytes -> {
+				AssetIssueContract assetIssue = getObject(bytes);
+				return assetIssue.getName().toStringUtf8();
+			});
 
 		AssetIssue_START =
-				attribute("assetIssue start time", bytes -> {
-					AssetIssueContract assetIssue = getObject(bytes);
-					return assetIssue.getStartTime();
-				});
+			attribute("assetIssue start time", bytes -> {
+				AssetIssueContract assetIssue = getObject(bytes);
+				return assetIssue.getStartTime();
+			});
 
 		AssetIssue_END =
-				attribute("assetIssue end time", bytes -> {
-					AssetIssueContract assetIssue = getObject(bytes);
-					return assetIssue.getEndTime();
-				});
+			attribute("assetIssue end time", bytes -> {
+				AssetIssueContract assetIssue = getObject(bytes);
+				return assetIssue.getEndTime();
+			});
 
 	}
 }

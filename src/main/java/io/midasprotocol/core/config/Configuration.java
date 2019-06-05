@@ -58,11 +58,11 @@ public class Configuration {
 		if (confFile.exists()) {
 			config = ConfigFactory.parseFile(confFile);
 		} else if (Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)
-				!= null) {
+			!= null) {
 			config = ConfigFactory.load(fileName);
 		} else {
 			throw new IllegalArgumentException(
-					"Configuration path is required! No Such file " + fileName);
+				"Configuration path is required! No Such file " + fileName);
 		}
 	}
 }

@@ -2,12 +2,9 @@ package io.midasprotocol.program;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import io.midasprotocol.common.application.Application;
-import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
+import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.core.Constant;
 import io.midasprotocol.core.config.DefaultConfig;
 import io.midasprotocol.core.config.args.Args;
@@ -16,6 +13,9 @@ import io.midasprotocol.core.services.WitnessService;
 import io.midasprotocol.core.services.http.FullNodeHttpApiService;
 import io.midasprotocol.core.services.interfaceOnSolidity.RpcApiServiceOnSolidity;
 import io.midasprotocol.core.services.interfaceOnSolidity.http.solidity.HttpApiOnSolidityService;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.io.File;
 
@@ -62,7 +62,7 @@ public class FullNode {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowCircularReferences(false);
 		ApplicationContext context =
-				new ApplicationContext(beanFactory);
+			new ApplicationContext(beanFactory);
 		context.register(DefaultConfig.class);
 
 		context.refresh();
@@ -83,10 +83,10 @@ public class FullNode {
 		// fullnode and soliditynode fuse together, provide solidity rpc and http server on the fullnode.
 		if (Args.getInstance().getStorage().getDbVersion() == 2) {
 			RpcApiServiceOnSolidity rpcApiServiceOnSolidity = context
-					.getBean(RpcApiServiceOnSolidity.class);
+				.getBean(RpcApiServiceOnSolidity.class);
 			appT.addService(rpcApiServiceOnSolidity);
 			HttpApiOnSolidityService httpApiOnSolidityService = context
-					.getBean(HttpApiOnSolidityService.class);
+				.getBean(HttpApiOnSolidityService.class);
 			appT.addService(httpApiOnSolidityService);
 		}
 

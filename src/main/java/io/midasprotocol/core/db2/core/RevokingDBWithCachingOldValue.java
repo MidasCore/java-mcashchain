@@ -1,13 +1,13 @@
 package io.midasprotocol.core.db2.core;
 
-import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
 import io.midasprotocol.common.storage.leveldb.LevelDbDataSourceImpl;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.AbstractRevokingStore;
 import io.midasprotocol.core.db.RevokingStore;
 import io.midasprotocol.core.db2.common.IRevokingDB;
 import io.midasprotocol.core.exception.ItemNotFoundException;
+import lombok.Getter;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class RevokingDBWithCachingOldValue implements IRevokingDB {
 	// only for unit test
 	public RevokingDBWithCachingOldValue(String dbName, AbstractRevokingStore revokingDatabase) {
 		dbSource = new LevelDbDataSourceImpl(Args.getInstance().getOutputDirectoryByDbName(dbName),
-				dbName);
+			dbName);
 		dbSource.initDB();
 		this.revokingDatabase = revokingDatabase;
 	}

@@ -21,13 +21,13 @@ abstract class ResourceProcessor {
 		this.precision = ChainConstant.PRECISION;
 		this.windowSize = ChainConstant.WINDOW_SIZE_MS / ChainConstant.BLOCK_PRODUCED_INTERVAL;
 		this.averageWindowSize =
-				AdaptiveResourceLimitConstants.PERIODS_MS / ChainConstant.BLOCK_PRODUCED_INTERVAL;
+			AdaptiveResourceLimitConstants.PERIODS_MS / ChainConstant.BLOCK_PRODUCED_INTERVAL;
 	}
 
 	abstract void updateUsage(AccountCapsule accountCapsule);
 
 	abstract void consume(TransactionCapsule trx, TransactionTrace trace)
-			throws ContractValidateException, AccountResourceInsufficientException, TooBigTransactionResultException;
+		throws ContractValidateException, AccountResourceInsufficientException, TooBigTransactionResultException;
 
 	protected long increase(long lastUsage, long usage, long lastTime, long now) {
 		return increase(lastUsage, usage, lastTime, now, windowSize);

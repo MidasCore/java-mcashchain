@@ -4,11 +4,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
-import lombok.Getter;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.common.HashDB;
 import io.midasprotocol.core.db2.common.Key;
 import io.midasprotocol.core.db2.common.Value;
+import lombok.Getter;
 
 import java.util.*;
 
@@ -96,48 +96,48 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
 		SnapshotImpl fromImpl = (SnapshotImpl) from;
 
 		Streams.stream(fromImpl.db)
-				.filter(e -> e.getValue().getOperator() == Value.Operator.CREATE)
-				.forEach(e -> {
-					Key k = e.getKey();
-					Value v = e.getValue();
-					Value value = db.get(k);
-					if (value == null) {
-						db.put(k, v);
-					} else if (value.getOperator() == Value.Operator.DELETE) {
-						db.put(k, Value.copyOf(Value.Operator.MODIFY, v.getBytes()));
-					} else {
-						throw new IllegalStateException();
-					}
-				});
+			.filter(e -> e.getValue().getOperator() == Value.Operator.CREATE)
+			.forEach(e -> {
+				Key k = e.getKey();
+				Value v = e.getValue();
+				Value value = db.get(k);
+				if (value == null) {
+					db.put(k, v);
+				} else if (value.getOperator() == Value.Operator.DELETE) {
+					db.put(k, Value.copyOf(Value.Operator.MODIFY, v.getBytes()));
+				} else {
+					throw new IllegalStateException();
+				}
+			});
 
 		Streams.stream(fromImpl.db)
-				.filter(e -> e.getValue().getOperator() == Value.Operator.MODIFY)
-				.forEach(e -> {
-					Key k = e.getKey();
-					Value v = e.getValue();
-					Value value = db.get(k);
-					if (value == null || value.getOperator() == Value.Operator.MODIFY) {
-						db.put(k, v);
-					} else if (value.getOperator() == Value.Operator.CREATE) {
-						db.put(k, Value.copyOf(Value.Operator.CREATE, v.getBytes()));
-					} else {
-						throw new IllegalStateException();
-					}
-				});
+			.filter(e -> e.getValue().getOperator() == Value.Operator.MODIFY)
+			.forEach(e -> {
+				Key k = e.getKey();
+				Value v = e.getValue();
+				Value value = db.get(k);
+				if (value == null || value.getOperator() == Value.Operator.MODIFY) {
+					db.put(k, v);
+				} else if (value.getOperator() == Value.Operator.CREATE) {
+					db.put(k, Value.copyOf(Value.Operator.CREATE, v.getBytes()));
+				} else {
+					throw new IllegalStateException();
+				}
+			});
 
 		Streams.stream(fromImpl.db)
-				.filter(e -> e.getValue().getOperator() == Value.Operator.DELETE)
-				.map(Map.Entry::getKey)
-				.forEach(k -> {
-					Value value = db.get(k);
-					if (value == null || value.getOperator() == Value.Operator.MODIFY) {
-						db.put(k, Value.of(Value.Operator.DELETE, null));
-					} else if (value.getOperator() == Value.Operator.CREATE) {
-						db.remove(k);
-					} else {
-						throw new IllegalStateException();
-					}
-				});
+			.filter(e -> e.getValue().getOperator() == Value.Operator.DELETE)
+			.map(Map.Entry::getKey)
+			.forEach(k -> {
+				Value value = db.get(k);
+				if (value == null || value.getOperator() == Value.Operator.MODIFY) {
+					db.put(k, Value.of(Value.Operator.DELETE, null));
+				} else if (value.getOperator() == Value.Operator.CREATE) {
+					db.remove(k);
+				} else {
+					throw new IllegalStateException();
+				}
+			});
 	}
 
 	@Override
@@ -156,20 +156,20 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
 		collect(all);
 		Set<WrappedByteArray> keys = new HashSet<>(all.keySet());
 		all.entrySet()
-				.removeIf(entry -> entry.getValue() == null || entry.getValue().getBytes() == null);
+			.removeIf(entry -> entry.getValue() == null || entry.getValue().getBytes() == null);
 		return Iterators.concat(
-				Iterators.transform(all.entrySet().iterator(),
-						e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes())),
-				Iterators.filter(getRoot().iterator(),
-						e -> !keys.contains(WrappedByteArray.of(e.getKey()))));
+			Iterators.transform(all.entrySet().iterator(),
+				e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes())),
+			Iterators.filter(getRoot().iterator(),
+				e -> !keys.contains(WrappedByteArray.of(e.getKey()))));
 	}
 
 	synchronized void collect(Map<WrappedByteArray, WrappedByteArray> all) {
 		Snapshot next = getRoot().getNext();
 		while (next != null) {
 			Streams.stream(((SnapshotImpl) next).db)
-					.forEach(e -> all.put(WrappedByteArray.of(e.getKey().getBytes()),
-							WrappedByteArray.of(e.getValue().getBytes())));
+				.forEach(e -> all.put(WrappedByteArray.of(e.getKey().getBytes()),
+					WrappedByteArray.of(e.getValue().getBytes())));
 			next = next.getNext();
 		}
 	}

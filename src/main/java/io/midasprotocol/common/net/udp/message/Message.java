@@ -1,6 +1,5 @@
 package io.midasprotocol.common.net.udp.message;
 
-import org.apache.commons.lang3.ArrayUtils;
 import io.midasprotocol.common.net.udp.message.backup.KeepAliveMessage;
 import io.midasprotocol.common.net.udp.message.discover.FindNodeMessage;
 import io.midasprotocol.common.net.udp.message.discover.NeighborsMessage;
@@ -11,6 +10,7 @@ import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.exception.P2pException;
 import io.midasprotocol.protos.Discover.Endpoint;
+import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class Message {
 
@@ -20,6 +20,31 @@ public abstract class Message {
 	public Message(UdpMessageTypeEnum type, byte[] data) {
 		this.type = type;
 		this.data = data;
+	}
+
+	public static Node getNode(Endpoint endpoint) {
+		Node node = new Node(endpoint.getNodeId().toByteArray(),
+			ByteArray.toStr(endpoint.getAddress().toByteArray()), endpoint.getPort());
+		return node;
+	}
+
+	public static Message parse(byte[] encode) throws Exception {
+		byte type = encode[0];
+		byte[] data = ArrayUtils.subarray(encode, 1, encode.length);
+		switch (UdpMessageTypeEnum.fromByte(type)) {
+			case DISCOVER_PING:
+				return new PingMessage(data);
+			case DISCOVER_PONG:
+				return new PongMessage(data);
+			case DISCOVER_FIND_NODE:
+				return new FindNodeMessage(data);
+			case DISCOVER_NEIGHBORS:
+				return new NeighborsMessage(data);
+			case BACKUP_KEEP_ALIVE:
+				return new KeepAliveMessage(data);
+			default:
+				throw new P2pException(P2pException.TypeEnum.NO_SUCH_MESSAGE, "type=" + type);
+		}
 	}
 
 	public UdpMessageTypeEnum getType() {
@@ -53,30 +78,5 @@ public abstract class Message {
 	@Override
 	public int hashCode() {
 		return getMessageId().hashCode();
-	}
-
-	public static Node getNode(Endpoint endpoint) {
-		Node node = new Node(endpoint.getNodeId().toByteArray(),
-				ByteArray.toStr(endpoint.getAddress().toByteArray()), endpoint.getPort());
-		return node;
-	}
-
-	public static Message parse(byte[] encode) throws Exception {
-		byte type = encode[0];
-		byte[] data = ArrayUtils.subarray(encode, 1, encode.length);
-		switch (UdpMessageTypeEnum.fromByte(type)) {
-			case DISCOVER_PING:
-				return new PingMessage(data);
-			case DISCOVER_PONG:
-				return new PongMessage(data);
-			case DISCOVER_FIND_NODE:
-				return new FindNodeMessage(data);
-			case DISCOVER_NEIGHBORS:
-				return new NeighborsMessage(data);
-			case BACKUP_KEEP_ALIVE:
-				return new KeepAliveMessage(data);
-			default:
-				throw new P2pException(P2pException.TypeEnum.NO_SUCH_MESSAGE, "type=" + type);
-		}
 	}
 }

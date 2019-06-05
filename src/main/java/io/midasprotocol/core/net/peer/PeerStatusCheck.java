@@ -1,11 +1,11 @@
 package io.midasprotocol.core.net.peer;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.config.Parameter.NetConstants;
 import io.midasprotocol.core.net.TronNetDelegate;
 import io.midasprotocol.protos.Protocol.ReasonCode;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,7 +19,7 @@ public class PeerStatusCheck {
 	private TronNetDelegate tronNetDelegate;
 
 	private ScheduledExecutorService peerStatusCheckExecutor = Executors
-			.newSingleThreadScheduledExecutor();
+		.newSingleThreadScheduledExecutor();
 
 	private int blockUpdateTimeout = 20_000;
 
@@ -46,19 +46,19 @@ public class PeerStatusCheck {
 			boolean isDisconnected = false;
 
 			if (peer.isNeedSyncFromPeer()
-					&& peer.getBlockBothHaveUpdateTime() < now - blockUpdateTimeout) {
+				&& peer.getBlockBothHaveUpdateTime() < now - blockUpdateTimeout) {
 				logger.warn("Peer {} not sync for a long time.", peer.getInetAddress());
 				isDisconnected = true;
 			}
 
 			if (!isDisconnected) {
 				isDisconnected = peer.getAdvInvRequest().values().stream()
-						.anyMatch(time -> time < now - NetConstants.ADV_TIME_OUT);
+					.anyMatch(time -> time < now - NetConstants.ADV_TIME_OUT);
 			}
 
 			if (!isDisconnected) {
 				isDisconnected = peer.getSyncBlockRequested().values().stream()
-						.anyMatch(time -> time < now - NetConstants.SYNC_TIME_OUT);
+					.anyMatch(time -> time < now - NetConstants.SYNC_TIME_OUT);
 			}
 
 			if (isDisconnected) {

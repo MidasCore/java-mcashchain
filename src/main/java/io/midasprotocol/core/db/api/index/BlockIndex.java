@@ -4,10 +4,6 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.capsule.BlockCapsule;
@@ -15,6 +11,10 @@ import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.db.common.WrappedByteArray;
 import io.midasprotocol.core.db2.core.ITronChainBase;
 import io.midasprotocol.protos.Protocol.Block;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -37,7 +37,7 @@ public class BlockIndex extends AbstractIndex<BlockCapsule, Block> {
 
 	@Autowired
 	public BlockIndex(
-			@Qualifier("blockStore") final ITronChainBase<BlockCapsule> database) {
+		@Qualifier("blockStore") final ITronChainBase<BlockCapsule> database) {
 		super(database);
 	}
 
@@ -56,64 +56,64 @@ public class BlockIndex extends AbstractIndex<BlockCapsule, Block> {
 	@Override
 	protected void setAttribute() {
 		Block_ID =
-				attribute("block id",
-						bytes -> {
-							Block block = getObject(bytes);
-							return new BlockCapsule(block).getBlockId().toString();
-						});
+			attribute("block id",
+				bytes -> {
+					Block block = getObject(bytes);
+					return new BlockCapsule(block).getBlockId().toString();
+				});
 		Block_NUMBER =
-				attribute("block number",
-						bytes -> {
-							Block block = getObject(bytes);
-							return block.getBlockHeader().getRawData().getNumber();
-						});
+			attribute("block number",
+				bytes -> {
+					Block block = getObject(bytes);
+					return block.getBlockHeader().getRawData().getNumber();
+				});
 		TRANSACTIONS =
-				attribute(String.class, "transactions",
-						bytes -> {
-							Block block = getObject(bytes);
-							return block.getTransactionsList().stream()
-									.map(t -> Sha256Hash.of(t.getRawData().toByteArray()).toString())
-									.collect(Collectors.toList());
-						});
+			attribute(String.class, "transactions",
+				bytes -> {
+					Block block = getObject(bytes);
+					return block.getTransactionsList().stream()
+						.map(t -> Sha256Hash.of(t.getRawData().toByteArray()).toString())
+						.collect(Collectors.toList());
+				});
 		WITNESS_ID =
-				attribute("witness id",
-						bytes -> {
-							Block block = getObject(bytes);
-							return block.getBlockHeader().getRawData().getWitnessId();
-						});
+			attribute("witness id",
+				bytes -> {
+					Block block = getObject(bytes);
+					return block.getBlockHeader().getRawData().getWitnessId();
+				});
 		WITNESS_ADDRESS =
-				attribute("witness address",
-						bytes -> {
-							Block block = getObject(bytes);
-							return ByteArray.toHexString(
-									block.getBlockHeader().getRawData().getWitnessAddress().toByteArray());
-						});
+			attribute("witness address",
+				bytes -> {
+					Block block = getObject(bytes);
+					return ByteArray.toHexString(
+						block.getBlockHeader().getRawData().getWitnessAddress().toByteArray());
+				});
 
 		OWNERS =
-				attribute(String.class, "owner address",
-						bytes -> {
-							Block block = getObject(bytes);
-							return block.getTransactionsList().stream()
-									.map(transaction -> transaction.getRawData().getContractList())
-									.flatMap(List::stream)
-									.map(TransactionCapsule::getOwner)
-									.filter(Objects::nonNull)
-									.distinct()
-									.map(ByteArray::toHexString)
-									.collect(Collectors.toList());
-						});
+			attribute(String.class, "owner address",
+				bytes -> {
+					Block block = getObject(bytes);
+					return block.getTransactionsList().stream()
+						.map(transaction -> transaction.getRawData().getContractList())
+						.flatMap(List::stream)
+						.map(TransactionCapsule::getOwner)
+						.filter(Objects::nonNull)
+						.distinct()
+						.map(ByteArray::toHexString)
+						.collect(Collectors.toList());
+				});
 		TOS =
-				attribute(String.class, "to address",
-						bytes -> {
-							Block block = getObject(bytes);
-							return block.getTransactionsList().stream()
-									.map(transaction -> transaction.getRawData().getContractList())
-									.flatMap(List::stream)
-									.map(TransactionCapsule::getToAddress)
-									.filter(Objects::nonNull)
-									.distinct()
-									.map(ByteArray::toHexString)
-									.collect(Collectors.toList());
-						});
+			attribute(String.class, "to address",
+				bytes -> {
+					Block block = getObject(bytes);
+					return block.getTransactionsList().stream()
+						.map(transaction -> transaction.getRawData().getContractList())
+						.flatMap(List::stream)
+						.map(TransactionCapsule::getToAddress)
+						.filter(Objects::nonNull)
+						.distinct()
+						.map(ByteArray::toHexString)
+						.collect(Collectors.toList());
+				});
 	}
 }

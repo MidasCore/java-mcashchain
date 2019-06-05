@@ -39,7 +39,7 @@ public class ProposalController {
 		while (proposalNum > 0) {
 			try {
 				proposalCapsule = manager.getProposalStore()
-						.get(ProposalCapsule.calculateDbKey(proposalNum));
+					.get(ProposalCapsule.calculateDbKey(proposalNum));
 			} catch (Exception ex) {
 				logger.error("", ex);
 				continue;
@@ -75,18 +75,18 @@ public class ProposalController {
 		List<ByteString> activeWitnesses = this.manager.getWitnessScheduleStore().getActiveWitnesses();
 		if (proposalCapsule.hasMostApprovals(activeWitnesses)) {
 			logger.info(
-					"Processing proposal, id: {}, it has received most approvals, "
-							+ "begin to set dynamic parameter: {}, "
-							+ "and set proposal state as APPROVED",
-					proposalCapsule.getID(), proposalCapsule.getParameters());
+				"Processing proposal, id: {}, it has received most approvals, "
+					+ "begin to set dynamic parameter: {}, "
+					+ "and set proposal state as APPROVED",
+				proposalCapsule.getID(), proposalCapsule.getParameters());
 			setDynamicParameters(proposalCapsule);
 			proposalCapsule.setState(State.APPROVED);
 			manager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
 		} else {
 			logger.info(
-					"Processing proposal, id: {}, "
-							+ "it has not received enough approvals, set proposal state as DISAPPROVED",
-					proposalCapsule.getID());
+				"Processing proposal, id: {}, "
+					+ "it has not received enough approvals, set proposal state as DISAPPROVED",
+				proposalCapsule.getID());
 			proposalCapsule.setState(State.DISAPPROVED);
 			manager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
 		}
@@ -124,7 +124,7 @@ public class ProposalController {
 				}
 				case (6): {
 					manager.getDynamicPropertiesStore()
-							.saveCreateNewAccountFeeInSystemContract(entry.getValue());
+						.saveCreateNewAccountFeeInSystemContract(entry.getValue());
 					break;
 				}
 				case (7): {

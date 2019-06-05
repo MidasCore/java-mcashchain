@@ -2,9 +2,9 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol.DelegatedResource;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource> {
@@ -25,9 +25,9 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
 
 	public DelegatedResourceCapsule(ByteString from, ByteString to) {
 		this.delegatedResource = DelegatedResource.newBuilder()
-				.setFrom(from)
-				.setTo(to)
-				.build();
+			.setFrom(from)
+			.setTo(to)
+			.build();
 	}
 
 	public static byte[] createDbKey(byte[] from, byte[] to) {
@@ -51,16 +51,16 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
 
 	public void setFrozenBalanceForEnergy(long energy, long expireTime) {
 		this.delegatedResource = this.delegatedResource.toBuilder()
-				.setFrozenBalanceForEnergy(energy)
-				.setExpireTimeForEnergy(expireTime)
-				.build();
+			.setFrozenBalanceForEnergy(energy)
+			.setExpireTimeForEnergy(expireTime)
+			.build();
 	}
 
 	public void addFrozenBalanceForEnergy(long energy, long expireTime) {
 		this.delegatedResource = this.delegatedResource.toBuilder()
-				.setFrozenBalanceForEnergy(this.delegatedResource.getFrozenBalanceForEnergy() + energy)
-				.setExpireTimeForEnergy(expireTime)
-				.build();
+			.setFrozenBalanceForEnergy(this.delegatedResource.getFrozenBalanceForEnergy() + energy)
+			.setExpireTimeForEnergy(expireTime)
+			.build();
 	}
 
 	public long getFrozenBalanceForBandwidth() {
@@ -69,17 +69,17 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
 
 	public void setFrozenBalanceForBandwidth(long Bandwidth, long expireTime) {
 		this.delegatedResource = this.delegatedResource.toBuilder()
-				.setFrozenBalanceForBandwidth(Bandwidth)
-				.setExpireTimeForBandwidth(expireTime)
-				.build();
+			.setFrozenBalanceForBandwidth(Bandwidth)
+			.setExpireTimeForBandwidth(expireTime)
+			.build();
 	}
 
 	public void addFrozenBalanceForBandwidth(long Bandwidth, long expireTime) {
 		this.delegatedResource = this.delegatedResource.toBuilder()
-				.setFrozenBalanceForBandwidth(this.delegatedResource.getFrozenBalanceForBandwidth()
-						+ Bandwidth)
-				.setExpireTimeForBandwidth(expireTime)
-				.build();
+			.setFrozenBalanceForBandwidth(this.delegatedResource.getFrozenBalanceForBandwidth()
+				+ Bandwidth)
+			.setExpireTimeForBandwidth(expireTime)
+			.build();
 	}
 
 	public long getExpireTimeForBandwidth() {
@@ -88,8 +88,8 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
 
 	public void setExpireTimeForBandwidth(long ExpireTime) {
 		this.delegatedResource = this.delegatedResource.toBuilder()
-				.setExpireTimeForBandwidth(ExpireTime)
-				.build();
+			.setExpireTimeForBandwidth(ExpireTime)
+			.build();
 	}
 
 	public long getExpireTimeForEnergy(Manager manager) {
@@ -102,13 +102,13 @@ public class DelegatedResourceCapsule implements ProtoCapsule<DelegatedResource>
 
 	public void setExpireTimeForEnergy(long ExpireTime) {
 		this.delegatedResource = this.delegatedResource.toBuilder()
-				.setExpireTimeForEnergy(ExpireTime)
-				.build();
+			.setExpireTimeForEnergy(ExpireTime)
+			.build();
 	}
 
 	public byte[] createDbKey() {
 		return createDbKey(this.delegatedResource.getFrom().toByteArray(),
-				this.delegatedResource.getTo().toByteArray());
+			this.delegatedResource.getTo().toByteArray());
 	}
 
 	@Override

@@ -1,44 +1,38 @@
 package io.midasprotocol.common.logsfilter;
 
+import io.midasprotocol.common.logsfilter.trigger.ContractEventTrigger;
+import io.midasprotocol.common.logsfilter.trigger.ContractLogTrigger;
+import io.midasprotocol.common.logsfilter.trigger.ContractTrigger;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import io.midasprotocol.common.logsfilter.trigger.ContractEventTrigger;
-import io.midasprotocol.common.logsfilter.trigger.ContractLogTrigger;
-import io.midasprotocol.common.logsfilter.trigger.ContractTrigger;
-
 @Slf4j
 public class FilterQuery {
 
+	public static final int EARLIEST_BLOCK_NUM = 0;
+	public static final int LATEST_BLOCK_NUM = -1;
+	public static final String EARLIEST = "earliest";
+	public static final String LATEST = "latest";
 	@Getter
 	@Setter
 	private long fromBlock;
-
 	@Getter
 	@Setter
 	private long toBlock;
-
 	@Getter
 	@Setter
 	private List<String> contractAddressList;
-
 	@Getter
 	@Setter
 	private List<String> contractTopicList;
-
-	public static final int EARLIEST_BLOCK_NUM = 0;
-	public static final int LATEST_BLOCK_NUM = -1;
-
-	public static final String EARLIEST = "earliest";
-	public static final String LATEST = "latest";
-
 
 	public static long parseFromBlockNumber(String blockNum) {
 		long number = 0;
@@ -83,9 +77,9 @@ public class FilterQuery {
 
 		boolean matched = false;
 		if (fromBlockNumber == FilterQuery.LATEST_BLOCK_NUM
-				|| toBlockNumber == FilterQuery.EARLIEST_BLOCK_NUM) {
+			|| toBlockNumber == FilterQuery.EARLIEST_BLOCK_NUM) {
 			logger.error("invalid filter: fromBlockNumber: {}, toBlockNumber: {}",
-					fromBlockNumber, toBlockNumber);
+				fromBlockNumber, toBlockNumber);
 			return false;
 		}
 
@@ -114,12 +108,12 @@ public class FilterQuery {
 		}
 
 		return filterContractAddress(trigger, filterQuery.getContractAddressList())
-				&& filterContractTopicList(trigger, filterQuery.getContractTopicList());
+			&& filterContractTopicList(trigger, filterQuery.getContractTopicList());
 	}
 
 	private static boolean filterContractAddress(ContractTrigger trigger, List<String> addressList) {
 		addressList = addressList.stream().filter(item -> StringUtils.isNotEmpty(item))
-				.collect(Collectors.toList());
+			.collect(Collectors.toList());
 		if (Objects.isNull(addressList) || addressList.isEmpty()) {
 			return true;
 		}
@@ -139,7 +133,7 @@ public class FilterQuery {
 
 	private static boolean filterContractTopicList(ContractTrigger trigger, List<String> topList) {
 		topList = topList.stream().filter(item -> StringUtils.isNotEmpty(item))
-				.collect(Collectors.toList());
+			.collect(Collectors.toList());
 		if (Objects.isNull(topList) || topList.isEmpty()) {
 			return true;
 		}
@@ -162,12 +156,12 @@ public class FilterQuery {
 	@Override
 	public String toString() {
 		return new StringBuilder().append("fromBlock: ")
-				.append(fromBlock)
-				.append(", toBlock: ")
-				.append(toBlock)
-				.append(", contractAddress: ")
-				.append(contractAddressList)
-				.append(", contractTopics: ")
-				.append(contractTopicList).toString();
+			.append(fromBlock)
+			.append(", toBlock: ")
+			.append(toBlock)
+			.append(", contractAddress: ")
+			.append(contractAddressList)
+			.append(", contractTopics: ")
+			.append(contractTopicList).toString();
 	}
 }

@@ -1,7 +1,5 @@
 package io.midasprotocol.common.net.udp.message.discover;
 
-import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.DISCOVER_FIND_NODE;
-
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.net.udp.message.Message;
 import io.midasprotocol.common.overlay.discover.node.Node;
@@ -9,6 +7,8 @@ import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Discover;
 import io.midasprotocol.protos.Discover.Endpoint;
 import io.midasprotocol.protos.Discover.FindNeighbours;
+
+import static io.midasprotocol.common.net.udp.message.UdpMessageTypeEnum.DISCOVER_FIND_NODE;
 
 public class FindNodeMessage extends Message {
 
@@ -22,15 +22,15 @@ public class FindNodeMessage extends Message {
 	public FindNodeMessage(Node from, byte[] targetId) {
 		super(DISCOVER_FIND_NODE, null);
 		Endpoint fromEndpoint = Endpoint.newBuilder()
-				.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
-				.setPort(from.getPort())
-				.setNodeId(ByteString.copyFrom(from.getId()))
-				.build();
+			.setAddress(ByteString.copyFrom(ByteArray.fromString(from.getHost())))
+			.setPort(from.getPort())
+			.setNodeId(ByteString.copyFrom(from.getId()))
+			.build();
 		this.findNeighbours = FindNeighbours.newBuilder()
-				.setFrom(fromEndpoint)
-				.setTargetId(ByteString.copyFrom(targetId))
-				.setTimestamp(System.currentTimeMillis())
-				.build();
+			.setFrom(fromEndpoint)
+			.setTargetId(ByteString.copyFrom(targetId))
+			.setTimestamp(System.currentTimeMillis())
+			.build();
 		this.data = this.findNeighbours.toByteArray();
 	}
 

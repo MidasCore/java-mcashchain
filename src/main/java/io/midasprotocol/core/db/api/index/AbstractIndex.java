@@ -37,8 +37,8 @@ public abstract class AbstractIndex<E extends ProtoCapsule<T>, T> implements Ifa
 		this.database = database;
 		String dbName = database.getDbName();
 		File parentDir = Paths.get(
-				Args.getInstance().getOutputDirectoryByDbName(dbName),
-				Args.getInstance().getStorage().getIndexDirectory()
+			Args.getInstance().getOutputDirectoryByDbName(dbName),
+			Args.getInstance().getStorage().getIndexDirectory()
 		).toFile();
 		if (!parentDir.exists()) {
 			parentDir.mkdirs();
@@ -122,8 +122,8 @@ public abstract class AbstractIndex<E extends ProtoCapsule<T>, T> implements Ifa
 			@Override
 			public Iterator<T> iterator() {
 				return Iterables
-						.filter(Iterables.transform(resultSet, AbstractIndex.this::getObject), Objects::nonNull)
-						.iterator();
+					.filter(Iterables.transform(resultSet, AbstractIndex.this::getObject), Objects::nonNull)
+					.iterator();
 			}
 		};
 	}
@@ -135,8 +135,8 @@ public abstract class AbstractIndex<E extends ProtoCapsule<T>, T> implements Ifa
 			@Override
 			public Iterator<T> iterator() {
 				return Iterables
-						.filter(Iterables.transform(resultSet, AbstractIndex.this::getObject), Objects::nonNull)
-						.iterator();
+					.filter(Iterables.transform(resultSet, AbstractIndex.this::getObject), Objects::nonNull)
+					.iterator();
 			}
 		};
 	}
@@ -144,8 +144,8 @@ public abstract class AbstractIndex<E extends ProtoCapsule<T>, T> implements Ifa
 	@Override
 	public Iterator<T> iterator() {
 		return Iterables
-				.filter(Iterables.transform(index, AbstractIndex.this::getObject), Objects::nonNull)
-				.iterator();
+			.filter(Iterables.transform(index, AbstractIndex.this::getObject), Objects::nonNull)
+			.iterator();
 	}
 
 	protected abstract void setAttribute();

@@ -20,9 +20,6 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.crypto.zksnark.*;
 import io.midasprotocol.common.runtime.vm.program.Program;
@@ -39,6 +36,9 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.*;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.spongycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -80,25 +80,25 @@ public class PrecompiledContracts {
 
 	private static final ECKey addressCheckECKey = new ECKey();
 	private static final String addressCheckECKeyAddress = Wallet
-			.encodeBase58Check(addressCheckECKey.getAddress());
+		.encodeBase58Check(addressCheckECKey.getAddress());
 
 
 	private static final DataWord ecRecoverAddr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000001");
+		"0000000000000000000000000000000000000000000000000000000000000001");
 	private static final DataWord sha256Addr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000002");
+		"0000000000000000000000000000000000000000000000000000000000000002");
 	private static final DataWord ripempd160Addr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000003");
+		"0000000000000000000000000000000000000000000000000000000000000003");
 	private static final DataWord identityAddr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000004");
+		"0000000000000000000000000000000000000000000000000000000000000004");
 	private static final DataWord modExpAddr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000005");
+		"0000000000000000000000000000000000000000000000000000000000000005");
 	private static final DataWord altBN128AddAddr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000006");
+		"0000000000000000000000000000000000000000000000000000000000000006");
 	private static final DataWord altBN128MulAddr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000007");
+		"0000000000000000000000000000000000000000000000000000000000000007");
 	private static final DataWord altBN128PairingAddr = new DataWord(
-			"0000000000000000000000000000000000000000000000000000000000000008");
+		"0000000000000000000000000000000000000000000000000000000000000008");
 //  private static final DataWord voteContractAddr = new DataWord(
 //      "0000000000000000000000000000000000000000000000000000000000010001");
 	//  private static final DataWord freezeBalanceAddr = new DataWord(
@@ -405,11 +405,11 @@ public class PrecompiledContracts {
 
 			// use big numbers to stay safe in case of overflow
 			BigInteger energy = BigInteger.valueOf(multComplexity)
-					.multiply(BigInteger.valueOf(Math.max(adjExpLen, 1)))
-					.divide(GQUAD_DIVISOR);
+				.multiply(BigInteger.valueOf(Math.max(adjExpLen, 1)))
+				.divide(GQUAD_DIVISOR);
 
 			return isLessThan(energy, BigInteger.valueOf(Long.MAX_VALUE)) ? energy.longValueExact()
-					: Long.MAX_VALUE;
+				: Long.MAX_VALUE;
 		}
 
 		@Override
@@ -702,7 +702,7 @@ public class PrecompiledContracts {
 			builder.setOwnerAddress(ByteString.copyFrom(getCallerAddress()));
 			long count = Longs.fromByteArray(value);
 			Contract.VoteWitnessContract.Vote.Builder voteBuilder = Contract.VoteWitnessContract.Vote
-					.newBuilder();
+				.newBuilder();
 			byte[] witnessAddress20 = new byte[20];
 			System.arraycopy(witnessAddress, 12, witnessAddress20, 0, 20);
 			voteBuilder.setVoteAddress(ByteString.copyFrom(convertToTronAddress(witnessAddress20)));
@@ -711,19 +711,19 @@ public class PrecompiledContracts {
 			VoteWitnessContract contract = builder.build();
 
 			final List<Actuator> actuatorList = ActuatorFactory
-					.createActuator(new TransactionCapsule(contract), getDeposit().getDbManager());
+				.createActuator(new TransactionCapsule(contract), getDeposit().getDbManager());
 			VoteWitnessActuator voteWitnessActuator;
 			try {
 				if (Objects.isNull(actuatorList) || actuatorList.isEmpty()) {
 					throw new ContractExeException(
-							"can't initiate VoteWitnessActuator for precompiled vm method");
+						"can't initiate VoteWitnessActuator for precompiled vm method");
 				} else {
 					Optional voteOptional = actuatorList.stream().findFirst();
 					if (voteOptional.isPresent()) {
 						voteWitnessActuator = (VoteWitnessActuator) voteOptional.get();
 					} else {
 						throw new ContractExeException(
-								"can't initiate VoteWitnessActuator for precompiled vm method");
+							"can't initiate VoteWitnessActuator for precompiled vm method");
 					}
 				}
 				voteWitnessActuator.setDeposit(getDeposit());
@@ -888,28 +888,28 @@ public class PrecompiledContracts {
 			}
 
 			Contract.WithdrawBalanceContract.Builder builder = Contract.WithdrawBalanceContract
-					.newBuilder();
+				.newBuilder();
 			ByteString byteAddress = ByteString.copyFrom(getCallerAddress());
 			builder.setOwnerAddress(byteAddress);
 			WithdrawBalanceContract contract = builder.build();
 
 			TransactionCapsule trx = new TransactionCapsule(contract,
-					ContractType.WithdrawBalanceContract);
+				ContractType.WithdrawBalanceContract);
 
 			final List<Actuator> actuatorList = ActuatorFactory
-					.createActuator(trx, getDeposit().getDbManager());
+				.createActuator(trx, getDeposit().getDbManager());
 			WithdrawBalanceActuator withdrawBalanceActuator;
 			try {
 				if (Objects.isNull(actuatorList) || actuatorList.isEmpty()) {
 					throw new ContractExeException(
-							"can't initiate WithdrawBalanceActuator for precompiled vm method");
+						"can't initiate WithdrawBalanceActuator for precompiled vm method");
 				} else {
 					Optional withdrawOptional = actuatorList.stream().findFirst();
 					if (withdrawOptional.isPresent()) {
 						withdrawBalanceActuator = (WithdrawBalanceActuator) withdrawOptional.get();
 					} else {
 						throw new ContractExeException(
-								"can't initiate WithdrawBalanceActuator for precompiled vm method");
+							"can't initiate WithdrawBalanceActuator for precompiled vm method");
 					}
 				}
 
@@ -963,7 +963,7 @@ public class PrecompiledContracts {
 			System.arraycopy(data, 32, isAddApproval, 0, 32);
 
 			Contract.ProposalApproveContract.Builder builder = Contract.ProposalApproveContract
-					.newBuilder();
+				.newBuilder();
 			ByteString byteAddress = ByteString.copyFrom(getCallerAddress());
 			builder.setOwnerAddress(byteAddress);
 			builder.setProposalId(ByteArray.toLong(proposalId));
@@ -971,22 +971,22 @@ public class PrecompiledContracts {
 			ProposalApproveContract contract = builder.build();
 
 			TransactionCapsule trx = new TransactionCapsule(contract,
-					ContractType.ProposalApproveContract);
+				ContractType.ProposalApproveContract);
 
 			final List<Actuator> actuatorList = ActuatorFactory
-					.createActuator(trx, getDeposit().getDbManager());
+				.createActuator(trx, getDeposit().getDbManager());
 			ProposalApproveActuator proposalApproveActuator;
 			try {
 				if (Objects.isNull(actuatorList) || actuatorList.isEmpty()) {
 					throw new ContractExeException(
-							"can't initiate ProposalApproveActuator for precompiled vm method");
+						"can't initiate ProposalApproveActuator for precompiled vm method");
 				} else {
 					Optional proposalApproveOptional = actuatorList.stream().findFirst();
 					if (proposalApproveOptional.isPresent()) {
 						proposalApproveActuator = (ProposalApproveActuator) proposalApproveOptional.get();
 					} else {
 						throw new ContractExeException(
-								"can't initiate ProposalApproveActuator for precompiled vm method");
+							"can't initiate ProposalApproveActuator for precompiled vm method");
 					}
 				}
 				proposalApproveActuator.setDeposit(getDeposit());
@@ -1030,7 +1030,7 @@ public class PrecompiledContracts {
 			}
 
 			if (data == null || data.length == 0 || (data.length % (2 * DataWord.DATAWORD_UNIT_SIZE)
-					!= 0)) {
+				!= 0)) {
 				return Pair.of(false, new DataWord(0).getData());
 			}
 
@@ -1046,7 +1046,7 @@ public class PrecompiledContracts {
 			}
 
 			Contract.ProposalCreateContract.Builder builder = Contract.ProposalCreateContract
-					.newBuilder();
+				.newBuilder();
 			ByteString byteAddress = ByteString.copyFrom(getCallerAddress());
 			builder.setOwnerAddress(byteAddress);
 			builder.putAllParameters(parametersMap);
@@ -1055,22 +1055,22 @@ public class PrecompiledContracts {
 
 			long id = 0;
 			TransactionCapsule trx = new TransactionCapsule(contract,
-					ContractType.ProposalCreateContract);
+				ContractType.ProposalCreateContract);
 
 			final List<Actuator> actuatorList = ActuatorFactory
-					.createActuator(trx, getDeposit().getDbManager());
+				.createActuator(trx, getDeposit().getDbManager());
 			ProposalCreateActuator proposalCreateActuator;
 			try {
 				if (Objects.isNull(actuatorList) || actuatorList.isEmpty()) {
 					throw new ContractExeException(
-							"can't initiate ProposalCreateActuator for precompiled vm method");
+						"can't initiate ProposalCreateActuator for precompiled vm method");
 				} else {
 					Optional proposalCreateOptional = actuatorList.stream().findFirst();
 					if (proposalCreateOptional.isPresent()) {
 						proposalCreateActuator = (ProposalCreateActuator) proposalCreateOptional.get();
 					} else {
 						throw new ContractExeException(
-								"can't initiate ProposalCreateActuator for precompiled vm method");
+							"can't initiate ProposalCreateActuator for precompiled vm method");
 					}
 				}
 				proposalCreateActuator.setDeposit(getDeposit());
@@ -1118,29 +1118,29 @@ public class PrecompiledContracts {
 				return Pair.of(false, new DataWord(0).getData());
 			}
 			Contract.ProposalDeleteContract.Builder builder = Contract.ProposalDeleteContract
-					.newBuilder();
+				.newBuilder();
 			builder.setOwnerAddress(ByteString.copyFrom(getCallerAddress()));
 			builder.setProposalId(ByteArray.toLong(data));
 
 			ProposalDeleteContract contract = builder.build();
 
 			TransactionCapsule trx = new TransactionCapsule(contract,
-					ContractType.ProposalDeleteContract);
+				ContractType.ProposalDeleteContract);
 
 			final List<Actuator> actuatorList = ActuatorFactory
-					.createActuator(trx, getDeposit().getDbManager());
+				.createActuator(trx, getDeposit().getDbManager());
 			ProposalDeleteActuator proposalDeleteActuator;
 			try {
 				if (Objects.isNull(actuatorList) || actuatorList.isEmpty()) {
 					throw new ContractExeException(
-							"can't initiate ProposalDeleteActuator for precompiled vm method");
+						"can't initiate ProposalDeleteActuator for precompiled vm method");
 				} else {
 					Optional proposalDeleteOptional = actuatorList.stream().findFirst();
 					if (proposalDeleteOptional.isPresent()) {
 						proposalDeleteActuator = (ProposalDeleteActuator) proposalDeleteOptional.get();
 					} else {
 						throw new ContractExeException(
-								"can't initiate ProposalDeleteActuator for precompiled vm method");
+							"can't initiate ProposalDeleteActuator for precompiled vm method");
 					}
 				}
 				proposalDeleteActuator.setDeposit(getDeposit());

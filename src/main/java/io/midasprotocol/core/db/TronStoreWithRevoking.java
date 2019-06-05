@@ -4,9 +4,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
 import com.google.common.reflect.TypeToken;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import io.midasprotocol.core.capsule.ProtoCapsule;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.api.IndexHelper;
@@ -19,6 +16,9 @@ import io.midasprotocol.core.db2.core.RevokingDBWithCachingNewValue;
 import io.midasprotocol.core.db2.core.RevokingDBWithCachingOldValue;
 import io.midasprotocol.core.exception.BadItemException;
 import io.midasprotocol.core.exception.ItemNotFoundException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Constructor;
@@ -71,7 +71,7 @@ public abstract class TronStoreWithRevoking<T extends ProtoCapsule> implements I
 	// only for test
 	protected TronStoreWithRevoking(String dbName, RevokingDatabase revokingDatabase) {
 		this.revokingDB = new RevokingDBWithCachingOldValue(dbName,
-				(AbstractRevokingStore) revokingDatabase);
+			(AbstractRevokingStore) revokingDatabase);
 	}
 
 	@PostConstruct

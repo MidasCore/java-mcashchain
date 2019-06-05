@@ -17,8 +17,6 @@
  */
 package io.midasprotocol.common.runtime.vm.program.invoke;
 
-import org.spongycastle.util.Arrays;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.common.runtime.vm.DataWord;
@@ -28,6 +26,8 @@ import io.midasprotocol.common.storage.DepositImpl;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.exception.StoreException;
 import io.midasprotocol.protos.Protocol;
+import org.spongycastle.util.Arrays;
+import org.spongycastle.util.encoders.Hex;
 
 
 /**
@@ -55,11 +55,11 @@ public class ProgramInvokeMockImpl implements ProgramInvoke {
 
 		this.deposit.createAccount(contractAddress, Protocol.AccountType.Contract);
 		this.deposit.saveCode(contractAddress,
-				Hex.decode("385E60076000396000605f556014600054601e60"
-						+ "205463abcddcba6040545b51602001600a525451"
-						+ "6040016014525451606001601e52545160800160"
-						+ "28525460a052546016604860003960166000f260"
-						+ "00603f556103e75660005460005360200235"));
+			Hex.decode("385E60076000396000605f556014600054601e60"
+				+ "205463abcddcba6040545b51602001600a525451"
+				+ "6040016014525451606001601e52545160800160"
+				+ "28525460a052546016604860003960166000f260"
+				+ "00603f556103e75660005460005360200235"));
 	}
 
 	public ProgramInvokeMockImpl(boolean defaults) {
@@ -181,7 +181,7 @@ public class ProgramInvokeMockImpl implements ProgramInvoke {
 	@Override
 	public DataWord getPrevHash() {
 		byte[] prevHash = Hex
-				.decode("961CB117ABA86D1E596854015A1483323F18883C2D745B0BC03E87F146D2BB1C");
+			.decode("961CB117ABA86D1E596854015A1483323F18883C2D745B0BC03E87F146D2BB1C");
 		return new DataWord(prevHash);
 	}
 

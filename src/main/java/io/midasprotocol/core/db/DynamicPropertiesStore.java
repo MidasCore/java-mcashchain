@@ -23,13 +23,13 @@ import java.util.stream.IntStream;
 public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> {
 
 	private static final byte[] LATEST_BLOCK_HEADER_TIMESTAMP = "latest_block_header_timestamp"
-			.getBytes();
+		.getBytes();
 	private static final byte[] LATEST_BLOCK_HEADER_NUMBER = "latest_block_header_number".getBytes();
 	private static final byte[] LATEST_BLOCK_HEADER_HASH = "latest_block_header_hash".getBytes();
 	private static final byte[] STATE_FLAG = "state_flag"
-			.getBytes(); // 1 : is maintenance, 0 : is not maintenance
+		.getBytes(); // 1 : is maintenance, 0 : is not maintenance
 	private static final byte[] LATEST_SOLIDIFIED_BLOCK_NUM = "LATEST_SOLIDIFIED_BLOCK_NUM"
-			.getBytes();
+		.getBytes();
 
 	private static final byte[] LATEST_PROPOSAL_NUM = "LATEST_PROPOSAL_NUM".getBytes();
 
@@ -65,7 +65,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	//abandon
 	private static final byte[] CREATE_ACCOUNT_FEE = "CREATE_ACCOUNT_FEE".getBytes();
 	private static final byte[] CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT
-			= "CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT".getBytes();
+		= "CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT".getBytes();
 	private static final byte[] CREATE_NEW_ACCOUNT_BANDWIDTH_RATE = "CREATE_NEW_ACCOUNT_BANDWIDTH_RATE".getBytes();
 	private static final byte[] TRANSACTION_FEE = "TRANSACTION_FEE".getBytes(); // 1 byte
 	private static final byte[] ASSET_ISSUE_FEE = "ASSET_ISSUE_FEE".getBytes();
@@ -482,7 +482,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			this.getNextMaintenanceTime();
 		} catch (IllegalArgumentException e) {
 			this.saveNextMaintenanceTime(
-					Long.parseLong(Args.getInstance().getGenesisBlock().getTimestamp()));
+				Long.parseLong(Args.getInstance().getGenesisBlock().getTimestamp()));
 		}
 
 		try {
@@ -535,285 +535,285 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public void saveTokenIdNum(long num) {
 		this.put(TOKEN_ID_NUM,
-				new BytesCapsule(ByteArray.fromLong(num)));
+			new BytesCapsule(ByteArray.fromLong(num)));
 	}
 
 	public long getTokenIdNum() {
 		return Optional.ofNullable(getUnchecked(TOKEN_ID_NUM))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOKEN_ID_NUM"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOKEN_ID_NUM"));
 	}
 
 	public void saveBlockFilledSlotsIndex(int blockFilledSlotsIndex) {
 		logger.debug("blockFilledSlotsIndex:" + blockFilledSlotsIndex);
 		this.put(BLOCK_FILLED_SLOTS_INDEX,
-				new BytesCapsule(ByteArray.fromInt(blockFilledSlotsIndex)));
+			new BytesCapsule(ByteArray.fromInt(blockFilledSlotsIndex)));
 	}
 
 	public int getBlockFilledSlotsIndex() {
 		return Optional.ofNullable(getUnchecked(BLOCK_FILLED_SLOTS_INDEX))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found BLOCK_FILLED_SLOTS_INDEX"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found BLOCK_FILLED_SLOTS_INDEX"));
 	}
 
 	public void saveMaxFrozenTime(int maxFrozenTime) {
 		logger.debug("MAX_FROZEN_NUMBER:" + maxFrozenTime);
 		this.put(MAX_FROZEN_TIME,
-				new BytesCapsule(ByteArray.fromInt(maxFrozenTime)));
+			new BytesCapsule(ByteArray.fromInt(maxFrozenTime)));
 	}
 
 	public int getMaxFrozenTime() {
 		return Optional.ofNullable(getUnchecked(MAX_FROZEN_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MAX_FROZEN_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MAX_FROZEN_TIME"));
 	}
 
 	public void saveMinFrozenTime(int minFrozenTime) {
 		logger.debug("MIN_FROZEN_NUMBER:" + minFrozenTime);
 		this.put(MIN_FROZEN_TIME,
-				new BytesCapsule(ByteArray.fromInt(minFrozenTime)));
+			new BytesCapsule(ByteArray.fromInt(minFrozenTime)));
 	}
 
 	public int getMinFrozenTime() {
 		return Optional.ofNullable(getUnchecked(MIN_FROZEN_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MIN_FROZEN_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MIN_FROZEN_TIME"));
 	}
 
 	public void saveMaxFrozenSupplyNumber(int maxFrozenSupplyNumber) {
 		logger.debug("MAX_FROZEN_SUPPLY_NUMBER:" + maxFrozenSupplyNumber);
 		this.put(MAX_FROZEN_SUPPLY_NUMBER,
-				new BytesCapsule(ByteArray.fromInt(maxFrozenSupplyNumber)));
+			new BytesCapsule(ByteArray.fromInt(maxFrozenSupplyNumber)));
 	}
 
 	public int getMaxFrozenSupplyNumber() {
 		return Optional.ofNullable(getUnchecked(MAX_FROZEN_SUPPLY_NUMBER))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MAX_FROZEN_SUPPLY_NUMBER"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MAX_FROZEN_SUPPLY_NUMBER"));
 	}
 
 	public void saveMaxFrozenSupplyTime(int maxFrozenSupplyTime) {
 		logger.debug("MAX_FROZEN_SUPPLY_NUMBER:" + maxFrozenSupplyTime);
 		this.put(MAX_FROZEN_SUPPLY_TIME,
-				new BytesCapsule(ByteArray.fromInt(maxFrozenSupplyTime)));
+			new BytesCapsule(ByteArray.fromInt(maxFrozenSupplyTime)));
 	}
 
 	public int getMaxFrozenSupplyTime() {
 		return Optional.ofNullable(getUnchecked(MAX_FROZEN_SUPPLY_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MAX_FROZEN_SUPPLY_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MAX_FROZEN_SUPPLY_TIME"));
 	}
 
 	public void saveMinFrozenSupplyTime(int minFrozenSupplyTime) {
 		logger.debug("MIN_FROZEN_SUPPLY_NUMBER:" + minFrozenSupplyTime);
 		this.put(MIN_FROZEN_SUPPLY_TIME,
-				new BytesCapsule(ByteArray.fromInt(minFrozenSupplyTime)));
+			new BytesCapsule(ByteArray.fromInt(minFrozenSupplyTime)));
 	}
 
 	public int getMinFrozenSupplyTime() {
 		return Optional.ofNullable(getUnchecked(MIN_FROZEN_SUPPLY_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MIN_FROZEN_SUPPLY_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MIN_FROZEN_SUPPLY_TIME"));
 	}
 
 	public void saveWitnessAllowanceFrozenTime(int witnessAllowanceFrozenTime) {
 		logger.debug("WITNESS_ALLOWANCE_FROZEN_TIME:" + witnessAllowanceFrozenTime);
 		this.put(WITNESS_ALLOWANCE_FROZEN_TIME,
-				new BytesCapsule(ByteArray.fromInt(witnessAllowanceFrozenTime)));
+			new BytesCapsule(ByteArray.fromInt(witnessAllowanceFrozenTime)));
 	}
 
 	public int getWitnessAllowanceFrozenTime() {
 		return Optional.ofNullable(getUnchecked(WITNESS_ALLOWANCE_FROZEN_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found WITNESS_ALLOWANCE_FROZEN_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found WITNESS_ALLOWANCE_FROZEN_TIME"));
 	}
 
 	public void saveMaintenanceTimeInterval(long timeInterval) {
 		logger.debug("MAINTENANCE_TIME_INTERVAL:" + timeInterval);
 		this.put(MAINTENANCE_TIME_INTERVAL,
-				new BytesCapsule(ByteArray.fromLong(timeInterval)));
+			new BytesCapsule(ByteArray.fromLong(timeInterval)));
 	}
 
 	public long getMaintenanceTimeInterval() {
 		return Optional.ofNullable(getUnchecked(MAINTENANCE_TIME_INTERVAL))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MAINTENANCE_TIME_INTERVAL"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MAINTENANCE_TIME_INTERVAL"));
 	}
 
 	public void saveAccountUpgradeCost(long accountUpgradeCost) {
 		logger.debug("ACCOUNT_UPGRADE_COST:" + accountUpgradeCost);
 		this.put(ACCOUNT_UPGRADE_COST,
-				new BytesCapsule(ByteArray.fromLong(accountUpgradeCost)));
+			new BytesCapsule(ByteArray.fromLong(accountUpgradeCost)));
 	}
 
 	public long getAccountUpgradeCost() {
 		return Optional.ofNullable(getUnchecked(ACCOUNT_UPGRADE_COST))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ACCOUNT_UPGRADE_COST"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ACCOUNT_UPGRADE_COST"));
 	}
 
 	public void saveWitnessPayPerBlock(long pay) {
 		logger.debug("WITNESS_PAY_PER_BLOCK:" + pay);
 		this.put(WITNESS_PAY_PER_BLOCK,
-				new BytesCapsule(ByteArray.fromLong(pay)));
+			new BytesCapsule(ByteArray.fromLong(pay)));
 	}
 
 	public long getWitnessPayPerBlock() {
 		return Optional.ofNullable(getUnchecked(WITNESS_PAY_PER_BLOCK))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found WITNESS_PAY_PER_BLOCK"));
 	}
 
 	public void saveStakingRewardPerEpoch(long reward) {
 		logger.debug("STAKING_REWARD_PER_EPOCH:" + reward);
 		this.put(STAKING_REWARD_PER_EPOCH,
-				new BytesCapsule(ByteArray.fromLong(reward)));
+			new BytesCapsule(ByteArray.fromLong(reward)));
 	}
 
 	public long getStakingRewardPerEpoch() {
 		return Optional.ofNullable(getUnchecked(STAKING_REWARD_PER_EPOCH))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found STAKING_REWARD_PER_EPOCH"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found STAKING_REWARD_PER_EPOCH"));
 	}
 
 	public void saveOneDayNetLimit(long oneDayNetLimit) {
 		this.put(DynamicResourceProperties.ONE_DAY_NET_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(oneDayNetLimit)));
+			new BytesCapsule(ByteArray.fromLong(oneDayNetLimit)));
 	}
 
 	public long getOneDayNetLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ONE_DAY_NET_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ONE_DAY_NET_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ONE_DAY_NET_LIMIT"));
 	}
 
 	public void savePublicNetUsage(long publicNetUsage) {
 		this.put(DynamicResourceProperties.PUBLIC_NET_USAGE,
-				new BytesCapsule(ByteArray.fromLong(publicNetUsage)));
+			new BytesCapsule(ByteArray.fromLong(publicNetUsage)));
 	}
 
 	public long getPublicNetUsage() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_USAGE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found PUBLIC_NET_USAGE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found PUBLIC_NET_USAGE"));
 	}
 
 	public void savePublicNetLimit(long publicNetLimit) {
 		this.put(DynamicResourceProperties.PUBLIC_NET_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(publicNetLimit)));
+			new BytesCapsule(ByteArray.fromLong(publicNetLimit)));
 	}
 
 	public long getPublicNetLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found PUBLIC_NET_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found PUBLIC_NET_LIMIT"));
 	}
 
 	public void savePublicNetTime(long publicNetTime) {
 		this.put(DynamicResourceProperties.PUBLIC_NET_TIME,
-				new BytesCapsule(ByteArray.fromLong(publicNetTime)));
+			new BytesCapsule(ByteArray.fromLong(publicNetTime)));
 	}
 
 	public long getPublicNetTime() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found PUBLIC_NET_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found PUBLIC_NET_TIME"));
 	}
 
 	public void saveFreeNetLimit(long freeNetLimit) {
 		this.put(DynamicResourceProperties.FREE_NET_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(freeNetLimit)));
+			new BytesCapsule(ByteArray.fromLong(freeNetLimit)));
 	}
 
 	public long getFreeNetLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREE_NET_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found FREE_NET_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found FREE_NET_LIMIT"));
 	}
 
 	public void saveTotalNetWeight(long totalNetWeight) {
 		this.put(DynamicResourceProperties.TOTAL_NET_WEIGHT,
-				new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
+			new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
 	}
 
 	public long getTotalNetWeight() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_NET_WEIGHT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_NET_WEIGHT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_NET_WEIGHT"));
 	}
 
 	public void saveTotalEnergyWeight(long totalEnergyWeight) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_WEIGHT,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyWeight)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyWeight)));
 	}
 
 	public long getTotalEnergyWeight() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ENERGY_WEIGHT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_ENERGY_WEIGHT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_ENERGY_WEIGHT"));
 	}
 
 	public void saveTotalNetLimit(long totalNetLimit) {
 		this.put(DynamicResourceProperties.TOTAL_NET_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(totalNetLimit)));
+			new BytesCapsule(ByteArray.fromLong(totalNetLimit)));
 	}
 
 	public long getTotalNetLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_NET_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_NET_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_NET_LIMIT"));
 	}
 
 	public void saveTotalEnergyLimit(long totalEnergyLimit) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyLimit)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyLimit)));
 
 		saveTotalEnergyTargetLimit(totalEnergyLimit / 14400);
 	}
 
 	public void saveTotalEnergyLimit2(long totalEnergyLimit) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyLimit)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyLimit)));
 
 		saveTotalEnergyTargetLimit(totalEnergyLimit / 14400);
 		if (getAllowAdaptiveEnergy() == 0) {
@@ -823,310 +823,310 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getTotalEnergyLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ENERGY_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_ENERGY_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_ENERGY_LIMIT"));
 	}
 
 	public void saveTotalEnergyCurrentLimit(long totalEnergyCurrentLimit) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_CURRENT_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyCurrentLimit)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyCurrentLimit)));
 	}
 
 	public long getTotalEnergyCurrentLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ENERGY_CURRENT_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_ENERGY_CURRENT_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_ENERGY_CURRENT_LIMIT"));
 	}
 
 	public void saveTotalEnergyTargetLimit(long targetTotalEnergyLimit) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_TARGET_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(targetTotalEnergyLimit)));
+			new BytesCapsule(ByteArray.fromLong(targetTotalEnergyLimit)));
 	}
 
 	public long getTotalEnergyTargetLimit() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ENERGY_TARGET_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_ENERGY_TARGET_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_ENERGY_TARGET_LIMIT"));
 	}
 
 	public void saveTotalEnergyAverageUsage(long totalEnergyAverageUsage) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_AVERAGE_USAGE,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyAverageUsage)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyAverageUsage)));
 	}
 
 	public long getTotalEnergyAverageUsage() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ENERGY_AVERAGE_USAGE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_ENERGY_AVERAGE_USAGE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_ENERGY_AVERAGE_USAGE"));
 	}
 
 	public void saveTotalEnergyAverageTime(long totalEnergyAverageTime) {
 		this.put(DynamicResourceProperties.TOTAL_ENERGY_AVERAGE_TIME,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyAverageTime)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyAverageTime)));
 	}
 
 	public long getTotalEnergyAverageTime() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_ENERGY_AVERAGE_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_NET_AVERAGE_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_NET_AVERAGE_TIME"));
 	}
 
 	public void saveBlockEnergyUsage(long blockEnergyUsage) {
 		this.put(DynamicResourceProperties.BLOCK_ENERGY_USAGE,
-				new BytesCapsule(ByteArray.fromLong(blockEnergyUsage)));
+			new BytesCapsule(ByteArray.fromLong(blockEnergyUsage)));
 	}
 
 	public long getBlockEnergyUsage() {
 		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.BLOCK_ENERGY_USAGE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found BLOCK_ENERGY_USAGE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found BLOCK_ENERGY_USAGE"));
 	}
 
 	public void saveEnergyFee(long totalEnergyFee) {
 		this.put(ENERGY_FEE,
-				new BytesCapsule(ByteArray.fromLong(totalEnergyFee)));
+			new BytesCapsule(ByteArray.fromLong(totalEnergyFee)));
 	}
 
 	public long getEnergyFee() {
 		return Optional.ofNullable(getUnchecked(ENERGY_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ENERGY_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ENERGY_FEE"));
 	}
 
 	public void saveMaxCpuTimeOfOneTx(long time) {
 		this.put(MAX_CPU_TIME_OF_ONE_TX,
-				new BytesCapsule(ByteArray.fromLong(time)));
+			new BytesCapsule(ByteArray.fromLong(time)));
 	}
 
 	public long getMaxCpuTimeOfOneTx() {
 		return Optional.ofNullable(getUnchecked(MAX_CPU_TIME_OF_ONE_TX))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MAX_CPU_TIME_OF_ONE_TX"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MAX_CPU_TIME_OF_ONE_TX"));
 	}
 
 	public void saveCreateAccountFee(long fee) {
 		this.put(CREATE_ACCOUNT_FEE,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public long getCreateAccountFee() {
 		return Optional.ofNullable(getUnchecked(CREATE_ACCOUNT_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found CREATE_ACCOUNT_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found CREATE_ACCOUNT_FEE"));
 	}
 
 	public void saveCreateNewAccountFeeInSystemContract(long fee) {
 		this.put(CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public long getCreateNewAccountFeeInSystemContract() {
 		return Optional.ofNullable(getUnchecked(CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException(
-								"not found CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException(
+					"not found CREATE_NEW_ACCOUNT_FEE_IN_SYSTEM_CONTRACT"));
 	}
 
 	public void saveCreateNewAccountBandwidthRate(long rate) {
 		this.put(CREATE_NEW_ACCOUNT_BANDWIDTH_RATE,
-				new BytesCapsule(ByteArray.fromLong(rate)));
+			new BytesCapsule(ByteArray.fromLong(rate)));
 	}
 
 	public long getCreateNewAccountBandwidthRate() {
 		return Optional.ofNullable(getUnchecked(CREATE_NEW_ACCOUNT_BANDWIDTH_RATE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found CREATE_NsEW_ACCOUNT_BANDWIDTH_RATE2"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found CREATE_NsEW_ACCOUNT_BANDWIDTH_RATE2"));
 	}
 
 	public void saveTransactionFee(long fee) {
 		this.put(TRANSACTION_FEE,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public long getTransactionFee() {
 		return Optional.ofNullable(getUnchecked(TRANSACTION_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TRANSACTION_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TRANSACTION_FEE"));
 	}
 
 	public void saveAssetIssueFee(long fee) {
 		this.put(ASSET_ISSUE_FEE,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public void saveUpdateAccountPermissionFee(long fee) {
 		this.put(UPDATE_ACCOUNT_PERMISSION_FEE,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public void saveMultiSignFee(long fee) {
 		this.put(MULTI_SIGN_FEE,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public long getAssetIssueFee() {
 		return Optional.ofNullable(getUnchecked(ASSET_ISSUE_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ASSET_ISSUE_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ASSET_ISSUE_FEE"));
 	}
 
 	public long getUpdateAccountPermissionFee() {
 		return Optional.ofNullable(getUnchecked(UPDATE_ACCOUNT_PERMISSION_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found UPDATE_ACCOUNT_PERMISSION_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found UPDATE_ACCOUNT_PERMISSION_FEE"));
 	}
 
 	public long getMultiSignFee() {
 		return Optional.ofNullable(getUnchecked(MULTI_SIGN_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found MULTI_SIGN_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found MULTI_SIGN_FEE"));
 	}
 
 	public void saveExchangeCreateFee(long fee) {
 		this.put(EXCHANGE_CREATE_FEE,
-				new BytesCapsule(ByteArray.fromLong(fee)));
+			new BytesCapsule(ByteArray.fromLong(fee)));
 	}
 
 	public long getExchangeCreateFee() {
 		return Optional.ofNullable(getUnchecked(EXCHANGE_CREATE_FEE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found EXCHANGE_CREATE_FEE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found EXCHANGE_CREATE_FEE"));
 	}
 
 	public void saveExchangeBalanceLimit(long limit) {
 		this.put(EXCHANGE_BALANCE_LIMIT,
-				new BytesCapsule(ByteArray.fromLong(limit)));
+			new BytesCapsule(ByteArray.fromLong(limit)));
 	}
 
 	public long getExchangeBalanceLimit() {
 		return Optional.ofNullable(getUnchecked(EXCHANGE_BALANCE_LIMIT))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found EXCHANGE_BALANCE_LIMIT"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found EXCHANGE_BALANCE_LIMIT"));
 	}
 
 	public void saveTotalTransactionCost(long value) {
 		this.put(TOTAL_TRANSACTION_COST,
-				new BytesCapsule(ByteArray.fromLong(value)));
+			new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
 	public long getTotalTransactionCost() {
 		return Optional.ofNullable(getUnchecked(TOTAL_TRANSACTION_COST))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_TRANSACTION_COST"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_TRANSACTION_COST"));
 	}
 
 	public void saveTotalCreateAccountFee(long value) {
 		this.put(TOTAL_CREATE_ACCOUNT_COST,
-				new BytesCapsule(ByteArray.fromLong(value)));
+			new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
 	public long getTotalCreateAccountCost() {
 		return Optional.ofNullable(getUnchecked(TOTAL_CREATE_ACCOUNT_COST))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_CREATE_ACCOUNT_COST"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_CREATE_ACCOUNT_COST"));
 	}
 
 	public void saveTotalCreateWitnessFee(long value) {
 		this.put(TOTAL_CREATE_WITNESS_COST,
-				new BytesCapsule(ByteArray.fromLong(value)));
+			new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
 	public long getTotalCreateWitnessCost() {
 		return Optional.ofNullable(getUnchecked(TOTAL_CREATE_WITNESS_COST))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_CREATE_WITNESS_COST"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_CREATE_WITNESS_COST"));
 	}
 
 	public void saveTotalStoragePool(long trx) {
 		this.put(TOTAL_STORAGE_POOL,
-				new BytesCapsule(ByteArray.fromLong(trx)));
+			new BytesCapsule(ByteArray.fromLong(trx)));
 	}
 
 	public long getTotalStoragePool() {
 		return Optional.ofNullable(getUnchecked(TOTAL_STORAGE_POOL))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_STORAGE_POOL"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_STORAGE_POOL"));
 	}
 
 	public void saveTotalStorageTax(long trx) {
 		this.put(TOTAL_STORAGE_TAX,
-				new BytesCapsule(ByteArray.fromLong(trx)));
+			new BytesCapsule(ByteArray.fromLong(trx)));
 	}
 
 	public long getTotalStorageTax() {
 		return Optional.ofNullable(getUnchecked(TOTAL_STORAGE_TAX))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_STORAGE_TAX"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_STORAGE_TAX"));
 	}
 
 	public void saveTotalStorageReserved(long bytes) {
 		this.put(TOTAL_STORAGE_RESERVED,
-				new BytesCapsule(ByteArray.fromLong(bytes)));
+			new BytesCapsule(ByteArray.fromLong(bytes)));
 	}
 
 	public long getTotalStorageReserved() {
 		return Optional.ofNullable(getUnchecked(TOTAL_STORAGE_RESERVED))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_STORAGE_RESERVED"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_STORAGE_RESERVED"));
 	}
 
 	public void saveStorageExchangeTaxRate(long rate) {
 		this.put(STORAGE_EXCHANGE_TAX_RATE,
-				new BytesCapsule(ByteArray.fromLong(rate)));
+			new BytesCapsule(ByteArray.fromLong(rate)));
 	}
 
 	public long getStorageExchangeTaxRate() {
 		return Optional.ofNullable(getUnchecked(STORAGE_EXCHANGE_TAX_RATE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found STORAGE_EXCHANGE_TAX_RATE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found STORAGE_EXCHANGE_TAX_RATE"));
 	}
 
 	public void saveTotalStake(long value) {
@@ -1135,10 +1135,10 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getTotalStake() {
 		return Optional.ofNullable(getUnchecked(TOTAL_STAKE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_STAKE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_STAKE"));
 	}
 
 	public void saveStakeTimeInDay(long day) {
@@ -1147,9 +1147,9 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getStakeTimeInDay() {
 		return Optional.ofNullable(getUnchecked(STAKE_TIME_IN_DAY))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(() -> new IllegalArgumentException("not found STAKE_TIME_IN_DAY"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(() -> new IllegalArgumentException("not found STAKE_TIME_IN_DAY"));
 	}
 
 	public void saveResignStakeTimeInDay(long day) {
@@ -1158,85 +1158,85 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getResignStakeTimeInDay() {
 		return Optional.ofNullable(getUnchecked(RESIGN_STAKE_TIME_IN_DAY))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(() -> new IllegalArgumentException("not found RESIGN_STAKE_TIME_IN_DAY"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(() -> new IllegalArgumentException("not found RESIGN_STAKE_TIME_IN_DAY"));
 	}
 
 	public void saveRemoveThePowerOfTheGr(long rate) {
 		this.put(REMOVE_THE_POWER_OF_THE_GR,
-				new BytesCapsule(ByteArray.fromLong(rate)));
+			new BytesCapsule(ByteArray.fromLong(rate)));
 	}
 
 	public long getRemoveThePowerOfTheGr() {
 		return Optional.ofNullable(getUnchecked(REMOVE_THE_POWER_OF_THE_GR))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found REMOVE_THE_POWER_OF_THE_GR"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found REMOVE_THE_POWER_OF_THE_GR"));
 	}
 
 	public void saveAllowDelegateResource(long value) {
 		this.put(ALLOW_DELEGATE_RESOURCE,
-				new BytesCapsule(ByteArray.fromLong(value)));
+			new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
 	public long getAllowDelegateResource() {
 		return Optional.ofNullable(getUnchecked(ALLOW_DELEGATE_RESOURCE))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_DELEGATE_RESOURCE"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_DELEGATE_RESOURCE"));
 	}
 
 	public void saveAllowAdaptiveEnergy(long value) {
 		this.put(ALLOW_ADAPTIVE_ENERGY,
-				new BytesCapsule(ByteArray.fromLong(value)));
+			new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
 	public long getAllowAdaptiveEnergy() {
 		return Optional.ofNullable(getUnchecked(ALLOW_ADAPTIVE_ENERGY))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_ADAPTIVE_ENERGY"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_ADAPTIVE_ENERGY"));
 	}
 
 	public void saveAllowTvmTransferM1(long value) {
 		this.put(ALLOW_TVM_TRANSFER_M1,
-				new BytesCapsule(ByteArray.fromLong(value)));
+			new BytesCapsule(ByteArray.fromLong(value)));
 	}
 
 	public long getAllowTvmTransferM1() {
 		return Optional.ofNullable(getUnchecked(ALLOW_TVM_TRANSFER_M1))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_TVM_TRANSFER_M1"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_TVM_TRANSFER_M1"));
 	}
 
 	public void saveAvailableContractType(byte[] value) {
 		this.put(AVAILABLE_CONTRACT_TYPE,
-				new BytesCapsule(value));
+			new BytesCapsule(value));
 	}
 
 	public byte[] getAvailableContractType() {
 		return Optional.ofNullable(getUnchecked(AVAILABLE_CONTRACT_TYPE))
-				.map(BytesCapsule::getData)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found AVAILABLE_CONTRACT_TYPE"));
+			.map(BytesCapsule::getData)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found AVAILABLE_CONTRACT_TYPE"));
 	}
 
 	public void saveActiveDefaultOperations(byte[] value) {
 		this.put(ACTIVE_DEFAULT_OPERATIONS,
-				new BytesCapsule(value));
+			new BytesCapsule(value));
 	}
 
 	public byte[] getActiveDefaultOperations() {
 		return Optional.ofNullable(getUnchecked(ACTIVE_DEFAULT_OPERATIONS))
-				.map(BytesCapsule::getData)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ACTIVE_DEFAULT_OPERATIONS"));
+			.map(BytesCapsule::getData)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ACTIVE_DEFAULT_OPERATIONS"));
 	}
 
 	public boolean supportDR() {
@@ -1245,54 +1245,54 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public void saveAllowUpdateAccountName(long rate) {
 		this.put(ALLOW_UPDATE_ACCOUNT_NAME,
-				new BytesCapsule(ByteArray.fromLong(rate)));
+			new BytesCapsule(ByteArray.fromLong(rate)));
 	}
 
 	public long getAllowUpdateAccountName() {
 		return Optional.ofNullable(getUnchecked(ALLOW_UPDATE_ACCOUNT_NAME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_UPDATE_ACCOUNT_NAME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_UPDATE_ACCOUNT_NAME"));
 	}
 
 	public void saveAllowCreationOfContracts(long allowCreationOfContracts) {
 		this.put(ALLOW_CREATION_OF_CONTRACTS,
-				new BytesCapsule(ByteArray.fromLong(allowCreationOfContracts)));
+			new BytesCapsule(ByteArray.fromLong(allowCreationOfContracts)));
 	}
 
 	public void saveTotalSignNum(int num) {
 		this.put(DynamicPropertiesStore.TOTAL_SIGN_NUM,
-				new BytesCapsule(ByteArray.fromInt(num)));
+			new BytesCapsule(ByteArray.fromInt(num)));
 	}
 
 	public int getTotalSignNum() {
 		return Optional.ofNullable(getUnchecked(TOTAL_SIGN_NUM))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found TOTAL_SIGN_NUM"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found TOTAL_SIGN_NUM"));
 	}
 
 	public void saveAllowMultiSign(long allowMultiSing) {
 		this.put(ALLOW_MULTI_SIGN,
-				new BytesCapsule(ByteArray.fromLong(allowMultiSing)));
+			new BytesCapsule(ByteArray.fromLong(allowMultiSing)));
 	}
 
 	public long getAllowMultiSign() {
 		return Optional.ofNullable(getUnchecked(ALLOW_MULTI_SIGN))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_MULTI_SIGN"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_MULTI_SIGN"));
 	}
 
 	public long getAllowCreationOfContracts() {
 		return Optional.ofNullable(getUnchecked(ALLOW_CREATION_OF_CONTRACTS))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found ALLOW_CREATION_OF_CONTRACTS"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_CREATION_OF_CONTRACTS"));
 	}
 
 	public boolean supportVM() {
@@ -1302,16 +1302,16 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	public void saveBlockFilledSlots(int[] blockFilledSlots) {
 		logger.debug("blockFilledSlots:" + intArrayToString(blockFilledSlots));
 		this.put(BLOCK_FILLED_SLOTS,
-				new BytesCapsule(ByteArray.fromString(intArrayToString(blockFilledSlots))));
+			new BytesCapsule(ByteArray.fromString(intArrayToString(blockFilledSlots))));
 	}
 
 	public int[] getBlockFilledSlots() {
 		return Optional.ofNullable(getUnchecked(BLOCK_FILLED_SLOTS))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toStr)
-				.map(this::stringToIntArray)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found latest SOLIDIFIED_BLOCK_NUM timestamp"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toStr)
+			.map(this::stringToIntArray)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found latest SOLIDIFIED_BLOCK_NUM timestamp"));
 	}
 
 	public int getBlockFilledSlotsNumber() {
@@ -1337,10 +1337,10 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getLatestSolidifiedBlockNum() {
 		return Optional.ofNullable(getUnchecked(LATEST_SOLIDIFIED_BLOCK_NUM))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found latest SOLIDIFIED_BLOCK_NUM"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found latest SOLIDIFIED_BLOCK_NUM"));
 	}
 
 	public void saveLatestProposalNum(long number) {
@@ -1349,10 +1349,10 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getLatestProposalNum() {
 		return Optional.ofNullable(getUnchecked(LATEST_PROPOSAL_NUM))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found latest PROPOSAL_NUM"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found latest PROPOSAL_NUM"));
 	}
 
 	public void saveLatestExchangeNum(long number) {
@@ -1361,10 +1361,10 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getLatestExchangeNum() {
 		return Optional.ofNullable(getUnchecked(LATEST_EXCHANGE_NUM))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found latest EXCHANGE_NUM"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found latest EXCHANGE_NUM"));
 	}
 
 	/**
@@ -1372,9 +1372,9 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	 */
 	public long getLatestBlockHeaderTimestamp() {
 		return Optional.ofNullable(getUnchecked(LATEST_BLOCK_HEADER_TIMESTAMP))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(() -> new IllegalArgumentException("not found latest block header timestamp"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(() -> new IllegalArgumentException("not found latest block header timestamp"));
 	}
 
 	/**
@@ -1382,16 +1382,16 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	 */
 	public long getLatestBlockHeaderNumber() {
 		return Optional.ofNullable(getUnchecked(LATEST_BLOCK_HEADER_NUMBER))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(() -> new IllegalArgumentException("not found latest block header number"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(() -> new IllegalArgumentException("not found latest block header number"));
 	}
 
 	public int getStateFlag() {
 		return Optional.ofNullable(getUnchecked(STATE_FLAG))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toInt)
-				.orElseThrow(() -> new IllegalArgumentException("not found maintenance flag"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toInt)
+			.orElseThrow(() -> new IllegalArgumentException("not found maintenance flag"));
 	}
 
 	/**
@@ -1400,8 +1400,8 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public Sha256Hash getLatestBlockHeaderHash() {
 		byte[] blockHash = Optional.ofNullable(getUnchecked(LATEST_BLOCK_HEADER_HASH))
-				.map(BytesCapsule::getData)
-				.orElseThrow(() -> new IllegalArgumentException("not found block hash"));
+			.map(BytesCapsule::getData)
+			.orElseThrow(() -> new IllegalArgumentException("not found block hash"));
 		return Sha256Hash.wrap(blockHash);
 	}
 
@@ -1438,10 +1438,10 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public long getNextMaintenanceTime() {
 		return Optional.ofNullable(getUnchecked(NEXT_MAINTENANCE_TIME))
-				.map(BytesCapsule::getData)
-				.map(ByteArray::toLong)
-				.orElseThrow(
-						() -> new IllegalArgumentException("not found NEXT_MAINTENANCE_TIME"));
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found NEXT_MAINTENANCE_TIME"));
 	}
 
 	public long getMaintenanceSkipSlots() {
@@ -1450,7 +1450,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	public void saveNextMaintenanceTime(long nextMaintenanceTime) {
 		this.put(NEXT_MAINTENANCE_TIME,
-				new BytesCapsule(ByteArray.fromLong(nextMaintenanceTime)));
+			new BytesCapsule(ByteArray.fromLong(nextMaintenanceTime)));
 	}
 
 	public void updateNextMaintenanceTime(long blockTime) {
@@ -1462,9 +1462,9 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		saveNextMaintenanceTime(nextMaintenanceTime);
 
 		logger.info(
-				"do update nextMaintenanceTime, currentMaintenanceTime:{}, blockTime:{}, nextMaintenanceTime:{}",
-				new DateTime(currentMaintenanceTime), new DateTime(blockTime),
-				new DateTime(nextMaintenanceTime)
+			"do update nextMaintenanceTime, currentMaintenanceTime:{}, blockTime:{}, nextMaintenanceTime:{}",
+			new DateTime(currentMaintenanceTime), new DateTime(blockTime),
+			new DateTime(nextMaintenanceTime)
 		);
 	}
 
@@ -1536,9 +1536,9 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		private static final byte[] TOTAL_NET_LIMIT = "TOTAL_NET_LIMIT".getBytes();
 		private static final byte[] TOTAL_ENERGY_TARGET_LIMIT = "TOTAL_ENERGY_TARGET_LIMIT".getBytes();
 		private static final byte[] TOTAL_ENERGY_CURRENT_LIMIT = "TOTAL_ENERGY_CURRENT_LIMIT"
-				.getBytes();
+			.getBytes();
 		private static final byte[] TOTAL_ENERGY_AVERAGE_USAGE = "TOTAL_ENERGY_AVERAGE_USAGE"
-				.getBytes();
+			.getBytes();
 		private static final byte[] TOTAL_ENERGY_AVERAGE_TIME = "TOTAL_ENERGY_AVERAGE_TIME".getBytes();
 		private static final byte[] TOTAL_ENERGY_WEIGHT = "TOTAL_ENERGY_WEIGHT".getBytes();
 		private static final byte[] TOTAL_ENERGY_LIMIT = "TOTAL_ENERGY_LIMIT".getBytes();

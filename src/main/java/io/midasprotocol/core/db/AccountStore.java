@@ -1,13 +1,13 @@
 package io.midasprotocol.core.db;
 
 import com.typesafe.config.ConfigObject;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.capsule.AccountCapsule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.midasprotocol.core.Wallet;
-import io.midasprotocol.core.capsule.AccountCapsule;
 
 import java.util.HashMap;
 import java.util.List;

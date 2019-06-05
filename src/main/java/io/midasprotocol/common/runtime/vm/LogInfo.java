@@ -19,9 +19,9 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.utils.ByteUtil;
 import io.midasprotocol.protos.Protocol.TransactionInfo.Log;
+import org.spongycastle.util.encoders.Hex;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -106,10 +106,10 @@ public class LogInfo {
 		topicsStr.append("]");
 
 		return "LogInfo{"
-				+ "address=" + Hex.toHexString(address)
-				+ ", topics=" + topicsStr
-				+ ", data=" + Hex.toHexString(data)
-				+ '}';
+			+ "address=" + Hex.toHexString(address)
+			+ ", topics=" + topicsStr
+			+ ", data=" + Hex.toHexString(data)
+			+ '}';
 	}
 
 }

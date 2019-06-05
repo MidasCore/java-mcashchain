@@ -1,19 +1,7 @@
 package io.midasprotocol.common.logsfilter.capsule;
 
-import static io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType.TransferAssetContract;
-import static io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
-
 import com.google.protobuf.Any;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import com.google.protobuf.ByteString;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.common.logsfilter.trigger.InternalTransactionPojo;
 import io.midasprotocol.common.logsfilter.trigger.TransactionLogTrigger;
@@ -26,6 +14,17 @@ import io.midasprotocol.core.db.TransactionTrace;
 import io.midasprotocol.protos.Contract.TransferAssetContract;
 import io.midasprotocol.protos.Contract.TransferContract;
 import io.midasprotocol.protos.Protocol;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType.TransferAssetContract;
+import static io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType.TransferContract;
 
 @Slf4j
 public class TransactionLogTriggerCapsule extends TriggerCapsule {
@@ -33,10 +32,6 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 	@Getter
 	@Setter
 	TransactionLogTrigger transactionLogTrigger;
-
-	public void setLatestSolidifiedBlockNumber(long latestSolidifiedBlockNumber) {
-		transactionLogTrigger.setLatestSolidifiedBlockNumber(latestSolidifiedBlockNumber);
-	}
 
 	public TransactionLogTriggerCapsule(TransactionCapsule trxCasule, BlockCapsule blockCapsule) {
 		transactionLogTrigger = new TransactionLogTrigger();
@@ -82,12 +77,12 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 
 							if (Objects.nonNull(contractTransfer.getOwnerAddress())) {
 								transactionLogTrigger.setFromAddress(
-										Wallet.encodeBase58Check(contractTransfer.getOwnerAddress().toByteArray()));
+									Wallet.encodeBase58Check(contractTransfer.getOwnerAddress().toByteArray()));
 							}
 
 							if (Objects.nonNull(contractTransfer.getToAddress())) {
 								transactionLogTrigger.setToAddress(
-										Wallet.encodeBase58Check(contractTransfer.getToAddress().toByteArray()));
+									Wallet.encodeBase58Check(contractTransfer.getToAddress().toByteArray()));
 							}
 
 							transactionLogTrigger.setAssetAmount(contractTransfer.getAmount());
@@ -95,19 +90,19 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 
 					} else if (contract.getType() == TransferAssetContract) {
 						TransferAssetContract contractTransfer = contractParameter
-								.unpack(TransferAssetContract.class);
+							.unpack(TransferAssetContract.class);
 
 						if (Objects.nonNull(contractTransfer)) {
 							transactionLogTrigger.setAssetId(contractTransfer.getAssetId());
 
 							if (Objects.nonNull(contractTransfer.getOwnerAddress())) {
 								transactionLogTrigger.setFromAddress(
-										Wallet.encodeBase58Check(contractTransfer.getOwnerAddress().toByteArray()));
+									Wallet.encodeBase58Check(contractTransfer.getOwnerAddress().toByteArray()));
 							}
 
 							if (Objects.nonNull(contractTransfer.getToAddress())) {
 								transactionLogTrigger.setToAddress(
-										Wallet.encodeBase58Check(contractTransfer.getToAddress().toByteArray()));
+									Wallet.encodeBase58Check(contractTransfer.getToAddress().toByteArray()));
 							}
 							transactionLogTrigger.setAssetAmount(contractTransfer.getAmount());
 						}
@@ -140,17 +135,21 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 
 			if (Objects.nonNull(contractAddress) && contractAddress.size() > 0) {
 				transactionLogTrigger
-						.setContractAddress(Wallet.encodeBase58Check((contractAddress.toByteArray())));
+					.setContractAddress(Wallet.encodeBase58Check((contractAddress.toByteArray())));
 			}
 
 			// internal transaction
 			transactionLogTrigger.setInternalTrananctionList(
-					getInternalTransactionList(programResult.getInternalTransactions()));
+				getInternalTransactionList(programResult.getInternalTransactions()));
 		}
 	}
 
+	public void setLatestSolidifiedBlockNumber(long latestSolidifiedBlockNumber) {
+		transactionLogTrigger.setLatestSolidifiedBlockNumber(latestSolidifiedBlockNumber);
+	}
+
 	private List<InternalTransactionPojo> getInternalTransactionList(
-			List<InternalTransaction> internalTransactionList) {
+		List<InternalTransaction> internalTransactionList) {
 		List<InternalTransactionPojo> pojoList = new ArrayList<>();
 
 		internalTransactionList.forEach(internalTransaction -> {

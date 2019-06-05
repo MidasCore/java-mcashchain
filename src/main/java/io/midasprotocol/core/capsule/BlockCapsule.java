@@ -18,8 +18,6 @@ package io.midasprotocol.core.capsule;
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
 import io.midasprotocol.common.utils.ByteUtil;
@@ -33,6 +31,8 @@ import io.midasprotocol.core.exception.ValidateSignatureException;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.BlockHeader;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -55,12 +55,12 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 		// blockheader raw
 		BlockHeader.raw.Builder blockHeaderRawBuild = BlockHeader.raw.newBuilder();
 		BlockHeader.raw blockHeaderRaw = blockHeaderRawBuild
-				.setNumber(number)
-				.setParentHash(hash.getByteString())
-				.setTimestamp(when)
-				.setVersion(ChainConstant.BLOCK_VERSION)
-				.setWitnessAddress(witnessAddress)
-				.build();
+			.setNumber(number)
+			.setParentHash(hash.getByteString())
+			.setTimestamp(when)
+			.setVersion(ChainConstant.BLOCK_VERSION)
+			.setWitnessAddress(witnessAddress)
+			.build();
 
 		// block header
 		BlockHeader.Builder blockHeaderBuild = BlockHeader.newBuilder();
@@ -78,10 +78,10 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 		// blockheader raw
 		BlockHeader.raw.Builder blockHeaderRawBuild = BlockHeader.raw.newBuilder();
 		BlockHeader.raw blockHeaderRaw = blockHeaderRawBuild
-				.setTimestamp(timestamp)
-				.setParentHash(parentHash)
-				.setNumber(number)
-				.build();
+			.setTimestamp(timestamp)
+			.setParentHash(parentHash)
+			.setNumber(number)
+			.build();
 
 		// block header
 		BlockHeader.Builder blockHeaderBuild = BlockHeader.newBuilder();
@@ -119,8 +119,8 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 
 	private void initTxs() {
 		transactions = this.block.getTransactionsList().stream()
-				.map(TransactionCapsule::new)
-				.collect(Collectors.toList());
+			.map(TransactionCapsule::new)
+			.collect(Collectors.toList());
 	}
 
 	public void sign(byte[] privateKey) {
@@ -130,7 +130,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 		ByteString sig = ByteString.copyFrom(signature.toByteArray());
 
 		BlockHeader blockHeader = this.block.getBlockHeader().toBuilder().setWitnessSignature(sig)
-				.build();
+			.build();
 
 		this.block = this.block.toBuilder().setBlockHeader(blockHeader).build();
 	}
@@ -142,15 +142,15 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 	public boolean validateSignature(Manager dbManager) throws ValidateSignatureException {
 		try {
 			byte[] sigAddress = ECKey.signatureToAddress(getRawHash().getBytes(),
-					TransactionCapsule.getBase64FromByteString(block.getBlockHeader().getWitnessSignature()));
+				TransactionCapsule.getBase64FromByteString(block.getBlockHeader().getWitnessSignature()));
 			byte[] witnessAccountAddress = block.getBlockHeader().getRawData().getWitnessAddress()
-					.toByteArray();
+				.toByteArray();
 
 			if (dbManager.getDynamicPropertiesStore().getAllowMultiSign() != 1) {
 				return Arrays.equals(sigAddress, witnessAccountAddress);
 			} else {
 				byte[] witnessPermissionAddress = dbManager.getAccountStore().get(witnessAccountAddress)
-						.getWitnessPermissionAddress();
+					.getWitnessPermissionAddress();
 				return Arrays.equals(sigAddress, witnessPermissionAddress);
 			}
 
@@ -162,7 +162,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 	public BlockId getBlockId() {
 		if (blockId.equals(Sha256Hash.ZERO_HASH)) {
 			blockId = new BlockId(Sha256Hash.of(this.block.getBlockHeader().getRawData().toByteArray()),
-					getNum());
+				getNum());
 		}
 		return blockId;
 	}
@@ -175,30 +175,30 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 		}
 
 		Vector<Sha256Hash> ids = transactionsList.stream()
-				.map(TransactionCapsule::new)
-				.map(TransactionCapsule::getMerkleHash)
-				.collect(Collectors.toCollection(Vector::new));
+			.map(TransactionCapsule::new)
+			.map(TransactionCapsule::getMerkleHash)
+			.collect(Collectors.toCollection(Vector::new));
 
 		return MerkleTree.getInstance().createTree(ids).getRoot().getHash();
 	}
 
 	public void setMerkleRoot() {
 		BlockHeader.raw blockHeaderRaw =
-				this.block.getBlockHeader().getRawData().toBuilder()
-						.setTxTrieRoot(calcMerkleRoot().getByteString()).build();
+			this.block.getBlockHeader().getRawData().toBuilder()
+				.setTxTrieRoot(calcMerkleRoot().getByteString()).build();
 
 		this.block = this.block.toBuilder().setBlockHeader(
-				this.block.getBlockHeader().toBuilder().setRawData(blockHeaderRaw)).build();
+			this.block.getBlockHeader().toBuilder().setRawData(blockHeaderRaw)).build();
 	}
 
 	/* only for genesis */
 	public void setWitness(String witness) {
 		BlockHeader.raw blockHeaderRaw =
-				this.block.getBlockHeader().getRawData().toBuilder().setWitnessAddress(
-						ByteString.copyFrom(witness.getBytes())).build();
+			this.block.getBlockHeader().getRawData().toBuilder().setWitnessAddress(
+				ByteString.copyFrom(witness.getBytes())).build();
 
 		this.block = this.block.toBuilder().setBlockHeader(
-				this.block.getBlockHeader().toBuilder().setRawData(blockHeaderRaw)).build();
+			this.block.getBlockHeader().toBuilder().setRawData(blockHeaderRaw)).build();
 	}
 
 	public Sha256Hash getMerkleRoot() {
@@ -248,7 +248,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 		toStringBuff.append("number=").append(getNum()).append("\n");
 		toStringBuff.append("parentId=").append(getParentHash()).append("\n");
 		toStringBuff.append("witness address=")
-				.append(ByteUtil.toHexString(getWitnessAddress().toByteArray())).append("\n");
+			.append(ByteUtil.toHexString(getWitnessAddress().toByteArray())).append("\n");
 
 		toStringBuff.append("generated by myself=").append(generatedByMyself).append("\n");
 		toStringBuff.append("generate time=").append(Time.getTimeString(getTimeStamp())).append("\n");

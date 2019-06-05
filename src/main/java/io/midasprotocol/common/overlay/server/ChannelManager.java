@@ -1,12 +1,16 @@
 package io.midasprotocol.common.overlay.server;
 
-import static io.midasprotocol.protos.Protocol.ReasonCode.DUPLICATE_PEER;
-import static io.midasprotocol.protos.Protocol.ReasonCode.TOO_MANY_PEERS;
-import static io.midasprotocol.protos.Protocol.ReasonCode.TOO_MANY_PEERS_WITH_SAME_IP;
-import static io.midasprotocol.protos.Protocol.ReasonCode.UNKNOWN;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.midasprotocol.common.overlay.client.PeerClient;
+import io.midasprotocol.common.overlay.discover.node.Node;
+import io.midasprotocol.core.config.args.Args;
+import io.midasprotocol.core.db.ByteArrayWrapper;
+import io.midasprotocol.protos.Protocol.ReasonCode;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -15,41 +19,27 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import io.midasprotocol.common.overlay.client.PeerClient;
-import io.midasprotocol.common.overlay.discover.node.Node;
-import io.midasprotocol.core.config.args.Args;
-import io.midasprotocol.core.db.ByteArrayWrapper;
-import io.midasprotocol.protos.Protocol.ReasonCode;
+import static io.midasprotocol.protos.Protocol.ReasonCode.*;
 
 @Slf4j(topic = "net")
 @Component
 public class ChannelManager {
 
+	private final Map<ByteArrayWrapper, Channel> activePeers = new ConcurrentHashMap<>();
 	@Autowired
 	private PeerServer peerServer;
-
 	@Autowired
 	private PeerClient peerClient;
-
 	@Autowired
 	private SyncPool syncPool;
-
 	@Autowired
 	private FastForward fastForward;
-
 	private Args args = Args.getInstance();
-
-	private final Map<ByteArrayWrapper, Channel> activePeers = new ConcurrentHashMap<>();
-
 	private Cache<InetAddress, ReasonCode> badPeers = CacheBuilder.newBuilder().maximumSize(10000)
-			.expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
+		.expireAfterWrite(1, TimeUnit.HOURS).recordStats().build();
 
 	private Cache<InetAddress, ReasonCode> recentlyDisconnected = CacheBuilder.newBuilder()
-			.maximumSize(1000).expireAfterWrite(30, TimeUnit.SECONDS).recordStats().build();
+		.maximumSize(1000).expireAfterWrite(30, TimeUnit.SECONDS).recordStats().build();
 
 	@Getter
 	private Map<InetAddress, Node> trustNodes = new ConcurrentHashMap<>();
@@ -67,7 +57,7 @@ public class ChannelManager {
 	public void init() {
 		if (this.args.getNodeListenPort() > 0) {
 			new Thread(() -> peerServer.start(Args.getInstance().getNodeListenPort()),
-					"PeerServerThread").start();
+				"PeerServerThread").start();
 		}
 
 		InetAddress address;
@@ -89,7 +79,7 @@ public class ChannelManager {
 		}
 
 		logger.info("Node config, trust {}, active {}, forward {}.",
-				trustNodes.size(), activeNodes.size(), fastForwardNodes.size());
+			trustNodes.size(), activeNodes.size(), fastForwardNodes.size());
 
 		syncPool.init();
 		fastForward.init();

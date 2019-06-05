@@ -3,24 +3,25 @@ package io.midasprotocol.common.utils;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.capsule.BlockCapsule;
+import io.midasprotocol.core.config.Parameter.ForkBlockVersionEnum;
+import io.midasprotocol.core.config.args.Args;
+import io.midasprotocol.core.db.Manager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.midasprotocol.core.Wallet;
-import io.midasprotocol.core.capsule.BlockCapsule;
-//import io.midasprotocol.core.config.Parameter.ForkBlockVersionConsts;
-import io.midasprotocol.core.config.Parameter.ForkBlockVersionEnum;
-import io.midasprotocol.core.config.args.Args;
-import io.midasprotocol.core.db.Manager;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+//import io.midasprotocol.core.config.Parameter.ForkBlockVersionConsts;
 
 @Slf4j(topic = "utils")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -137,18 +138,18 @@ public class ForkController {
 		stats[slot] = VERSION_UPGRADE;
 		manager.getDynamicPropertiesStore().statsByVersion(version, stats);
 		logger.info(
-				"*******update hard fork:{}, witness size:{}, slot:{}, witness:{}, version:{}",
-				Streams.zip(witnesses.stream(), Stream.of(ArrayUtils.toObject(stats)), Maps::immutableEntry)
-						.map(e -> Maps
-								.immutableEntry(Wallet.encodeBase58Check(e.getKey().toByteArray()), e.getValue()))
-						.map(e -> Maps
-								.immutableEntry(StringUtils.substring(e.getKey(), e.getKey().length() - 4),
-										e.getValue()))
-						.collect(Collectors.toList()),
-				witnesses.size(),
-				slot,
-				Wallet.encodeBase58Check(witness.toByteArray()),
-				version);
+			"*******update hard fork:{}, witness size:{}, slot:{}, witness:{}, version:{}",
+			Streams.zip(witnesses.stream(), Stream.of(ArrayUtils.toObject(stats)), Maps::immutableEntry)
+				.map(e -> Maps
+					.immutableEntry(Wallet.encodeBase58Check(e.getKey().toByteArray()), e.getValue()))
+				.map(e -> Maps
+					.immutableEntry(StringUtils.substring(e.getKey(), e.getKey().length() - 4),
+						e.getValue()))
+				.collect(Collectors.toList()),
+			witnesses.size(),
+			slot,
+			Wallet.encodeBase58Check(witness.toByteArray()),
+			version);
 	}
 
 	public synchronized void reset() {

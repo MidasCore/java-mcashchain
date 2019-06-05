@@ -1,9 +1,5 @@
 package io.midasprotocol.core.net.messagehandler;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
 import io.midasprotocol.core.config.Parameter.ChainConstant;
 import io.midasprotocol.core.config.Parameter.NodeConstant;
@@ -14,6 +10,10 @@ import io.midasprotocol.core.net.message.ChainInventoryMessage;
 import io.midasprotocol.core.net.message.TronMessage;
 import io.midasprotocol.core.net.peer.PeerConnection;
 import io.midasprotocol.core.net.service.SyncService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -63,7 +63,7 @@ public class ChainInventoryMsgHandler implements TronMsgHandler {
 
 		synchronized (tronNetDelegate.getBlockLock()) {
 			while (!peer.getSyncBlockToFetch().isEmpty() && tronNetDelegate
-					.containBlock(peer.getSyncBlockToFetch().peek())) {
+				.containBlock(peer.getSyncBlockToFetch().peek())) {
 				BlockId blockId = peer.getSyncBlockToFetch().pop();
 				logger.info("Block {} from {} is processed", blockId.getString(), peer.getNode().getHost());
 			}
@@ -74,8 +74,8 @@ public class ChainInventoryMsgHandler implements TronMsgHandler {
 //    }
 
 		if ((chainInventoryMessage.getRemainNum() == 0 && !peer.getSyncBlockToFetch().isEmpty()) ||
-				(chainInventoryMessage.getRemainNum() != 0
-						&& peer.getSyncBlockToFetch().size() > NodeConstant.SYNC_FETCH_BATCH_NUM)) {
+			(chainInventoryMessage.getRemainNum() != 0
+				&& peer.getSyncBlockToFetch().size() > NodeConstant.SYNC_FETCH_BATCH_NUM)) {
 			syncService.setFetchFlag(true);
 		} else {
 			syncService.syncNext(peer);
@@ -98,7 +98,7 @@ public class ChainInventoryMsgHandler implements TronMsgHandler {
 
 		if (msg.getRemainNum() != 0 && blockIds.size() < NodeConstant.SYNC_FETCH_BATCH_NUM) {
 			throw new P2pException(TypeEnum.BAD_MESSAGE,
-					"remain: " + msg.getRemainNum() + ", blockIds size: " + blockIds.size());
+				"remain: " + msg.getRemainNum() + ", blockIds size: " + blockIds.size());
 		}
 
 		long num = blockIds.get(0).getNum();
@@ -110,20 +110,20 @@ public class ChainInventoryMsgHandler implements TronMsgHandler {
 
 		if (!peer.getSyncChainRequested().getKey().contains(blockIds.get(0))) {
 			throw new P2pException(TypeEnum.BAD_MESSAGE, "unlinked block, my head: "
-					+ peer.getSyncChainRequested().getKey().getLast().getString()
-					+ ", peer: " + blockIds.get(0).getString());
+				+ peer.getSyncChainRequested().getKey().getLast().getString()
+				+ ", peer: " + blockIds.get(0).getString());
 		}
 
 		if (tronNetDelegate.getHeadBlockId().getNum() > 0) {
 			long maxRemainTime =
-					ChainConstant.CLOCK_MAX_DELAY + System.currentTimeMillis() - tronNetDelegate
-							.getBlockTime(tronNetDelegate.getSolidBlockId());
+				ChainConstant.CLOCK_MAX_DELAY + System.currentTimeMillis() - tronNetDelegate
+					.getBlockTime(tronNetDelegate.getSolidBlockId());
 			long maxFutureNum =
-					maxRemainTime / BLOCK_PRODUCED_INTERVAL + tronNetDelegate.getSolidBlockId().getNum();
+				maxRemainTime / BLOCK_PRODUCED_INTERVAL + tronNetDelegate.getSolidBlockId().getNum();
 			long lastNum = blockIds.get(blockIds.size() - 1).getNum();
 			if (lastNum + msg.getRemainNum() > maxFutureNum) {
 				throw new P2pException(TypeEnum.BAD_MESSAGE, "lastNum: " + lastNum + " + remainNum: "
-						+ msg.getRemainNum() + " > futureMaxNum: " + maxFutureNum);
+					+ msg.getRemainNum() + " > futureMaxNum: " + maxFutureNum);
 			}
 		}
 	}

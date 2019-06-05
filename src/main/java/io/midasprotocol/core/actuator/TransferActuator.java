@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.storage.Deposit;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -16,6 +15,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.TransferContract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 
@@ -47,7 +47,7 @@ public class TransferActuator extends AbstractActuator {
 		AccountCapsule toAccount = deposit.getAccount(toAddress);
 		if (toAccount == null) {
 			throw new ContractValidateException(
-					"Validate InternalTransfer error, no ToAccount. And not allowed to create account in smart contract.");
+				"Validate InternalTransfer error, no ToAccount. And not allowed to create account in smart contract.");
 		}
 
 		long balance = ownerAccount.getBalance();
@@ -59,7 +59,7 @@ public class TransferActuator extends AbstractActuator {
 		try {
 			if (balance < amount) {
 				throw new ContractValidateException(
-						"Validate InternalTransfer error, balance is not sufficient.");
+					"Validate InternalTransfer error, balance is not sufficient.");
 			}
 
 			if (toAccount != null) {
@@ -86,9 +86,9 @@ public class TransferActuator extends AbstractActuator {
 			AccountCapsule toAccount = dbManager.getAccountStore().get(toAddress);
 			if (toAccount == null) {
 				boolean withDefaultPermission =
-						dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1;
+					dbManager.getDynamicPropertiesStore().getAllowMultiSign() == 1;
 				toAccount = new AccountCapsule(ByteString.copyFrom(toAddress), AccountType.Normal,
-						dbManager.getHeadBlockTimeStamp(), withDefaultPermission, dbManager);
+					dbManager.getHeadBlockTimeStamp(), withDefaultPermission, dbManager);
 				dbManager.getAccountStore().put(toAddress, toAccount);
 
 				fee = fee + dbManager.getDynamicPropertiesStore().getCreateNewAccountFeeInSystemContract();
@@ -124,8 +124,8 @@ public class TransferActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(TransferContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [TransferContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [TransferContract],real type[" + contract
+					.getClass() + "]");
 		}
 		long fee = calcFee();
 		final TransferContract transferContract;
@@ -170,7 +170,7 @@ public class TransferActuator extends AbstractActuator {
 
 			if (balance < Math.addExact(amount, fee)) {
 				throw new ContractValidateException(
-						"Validate TransferContract error, balance is not sufficient.");
+					"Validate TransferContract error, balance is not sufficient.");
 			}
 
 			if (toAccount != null) {

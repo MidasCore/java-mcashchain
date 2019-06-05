@@ -15,14 +15,14 @@
 
 package io.midasprotocol.core.db;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
 import io.midasprotocol.core.exception.BadItemException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
@@ -41,30 +41,30 @@ public class BlockStore extends TronStoreWithRevoking<BlockCapsule> {
 	public List<BlockCapsule> getLimitNumber(long startNumber, long limit) {
 		BlockId startBlockId = new BlockId(Sha256Hash.ZERO_HASH, startNumber);
 		return revokingDB.getValuesNext(startBlockId.getBytes(), limit).stream()
-				.map(bytes -> {
-					try {
-						return new BlockCapsule(bytes);
-					} catch (BadItemException ignored) {
-					}
-					return null;
-				})
-				.filter(Objects::nonNull)
-				.sorted(Comparator.comparing(BlockCapsule::getNum))
-				.collect(Collectors.toList());
+			.map(bytes -> {
+				try {
+					return new BlockCapsule(bytes);
+				} catch (BadItemException ignored) {
+				}
+				return null;
+			})
+			.filter(Objects::nonNull)
+			.sorted(Comparator.comparing(BlockCapsule::getNum))
+			.collect(Collectors.toList());
 	}
 
 	public List<BlockCapsule> getBlockByLatestNum(long getNum) {
 
 		return revokingDB.getlatestValues(getNum).stream()
-				.map(bytes -> {
-					try {
-						return new BlockCapsule(bytes);
-					} catch (BadItemException ignored) {
-					}
-					return null;
-				})
-				.filter(Objects::nonNull)
-				.sorted(Comparator.comparing(BlockCapsule::getNum))
-				.collect(Collectors.toList());
+			.map(bytes -> {
+				try {
+					return new BlockCapsule(bytes);
+				} catch (BadItemException ignored) {
+				}
+				return null;
+			})
+			.filter(Objects::nonNull)
+			.sorted(Comparator.comparing(BlockCapsule::getNum))
+			.collect(Collectors.toList());
 	}
 }

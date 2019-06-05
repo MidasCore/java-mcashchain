@@ -167,7 +167,7 @@ public class Value {
 	public boolean isList() {
 //        decode();
 		return value != null && value.getClass().isArray() && !value.getClass().getComponentType()
-				.isPrimitive();
+			.isPrimitive();
 	}
 
 	public boolean isString() {
@@ -225,7 +225,7 @@ public class Value {
 		for (byte aData : data) {
 
 			if ((aData >= 48 && aData <= 57)
-					|| (aData >= 97 && aData <= 102)) {
+				|| (aData >= 97 && aData <= 102)) {
 				++hexChars;
 			}
 		}
@@ -344,8 +344,8 @@ public class Value {
 //        decode();
 		if (this.isList()) {
 			return this.asList().stream()
-					.mapToInt(obj -> (new Value(obj)).countBranchNodes())
-					.sum();
+				.mapToInt(obj -> (new Value(obj)).countBranchNodes())
+				.sum();
 		} else if (this.isBytes()) {
 			this.asBytes();
 		}

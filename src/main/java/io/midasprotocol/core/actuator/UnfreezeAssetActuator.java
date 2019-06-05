@@ -1,11 +1,9 @@
 package io.midasprotocol.core.actuator;
 
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Longs;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -16,6 +14,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UnfreezeAssetContract;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +31,7 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final UnfreezeAssetContract unfreezeAssetContract = contract
-					.unpack(UnfreezeAssetContract.class);
+				.unpack(UnfreezeAssetContract.class);
 			byte[] ownerAddress = unfreezeAssetContract.getOwnerAddress().toByteArray();
 
 			AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
@@ -51,7 +50,7 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 
 			accountCapsule.addAssetAmountV2(accountCapsule.getAssetIssuedId(), unfreezeAsset);
 			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-					.clearFrozenSupply().addAllFrozenSupply(frozenList).build());
+				.clearFrozenSupply().addAllFrozenSupply(frozenList).build());
 
 			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 			ret.setStatus(fee, code.SUCCESS);
@@ -74,7 +73,7 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(UnfreezeAssetContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected UnfreezeAssetContract, actual" + contract.getClass());
+				"Contract type error, expected UnfreezeAssetContract, actual" + contract.getClass());
 		}
 		final UnfreezeAssetContract unfreezeAssetContract;
 		try {
@@ -92,7 +91,7 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account " + readableOwnerAddress + " does not exist");
+				"Account " + readableOwnerAddress + " does not exist");
 		}
 
 		if (accountCapsule.getFrozenSupplyCount() <= 0) {
@@ -105,7 +104,7 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 
 		long now = dbManager.getHeadBlockTimeStamp();
 		long allowedUnfreezeCount = accountCapsule.getFrozenSupplyList().stream()
-				.filter(frozen -> frozen.getExpireTime() <= now).count();
+			.filter(frozen -> frozen.getExpireTime() <= now).count();
 		if (allowedUnfreezeCount <= 0) {
 			throw new ContractValidateException("It's not time to unfreeze asset supply");
 		}

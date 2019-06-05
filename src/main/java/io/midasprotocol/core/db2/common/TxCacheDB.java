@@ -5,8 +5,8 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.primitives.Longs;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.db.common.WrappedByteArray;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -45,11 +45,11 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
 		Set<Long> keys = blockNumMap.keySet();
 		if (keys.size() > BLOCK_COUNT) {
 			keys.stream()
-					.min(Long::compareTo)
-					.ifPresent(k -> {
-						blockNumMap.removeAll(k);
-						logger.debug("******removeEldest block number:{}, block count:{}", k, keys.size());
-					});
+				.min(Long::compareTo)
+				.ifPresent(k -> {
+					blockNumMap.removeAll(k);
+					logger.debug("******removeEldest block number:{}, block count:{}", k, keys.size());
+				});
 		}
 	}
 
@@ -73,7 +73,7 @@ public class TxCacheDB implements DB<byte[], byte[]>, Flusher {
 	@Override
 	public Iterator<Map.Entry<byte[], byte[]>> iterator() {
 		return Iterators.transform(db.entrySet().iterator(),
-				e -> Maps.immutableEntry(e.getKey().getBytes(), Longs.toByteArray(e.getValue())));
+			e -> Maps.immutableEntry(e.getKey().getBytes(), Longs.toByteArray(e.getValue())));
 	}
 
 	@Override

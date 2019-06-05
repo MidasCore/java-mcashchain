@@ -1,8 +1,6 @@
 package io.midasprotocol.program;
 
 import com.beust.jcommander.JCommander;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Utils;
@@ -11,6 +9,8 @@ import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.keystore.CipherException;
 import io.midasprotocol.keystore.Credentials;
 import io.midasprotocol.keystore.WalletUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +26,9 @@ public class KeystoreFactory {
 		KeystoreFactory cli = new KeystoreFactory();
 
 		JCommander.newBuilder()
-				.addObject(cli)
-				.build()
-				.parse(args);
+			.addObject(cli)
+			.build()
+			.parse(args);
 
 		cli.run();
 	}

@@ -1,10 +1,10 @@
 package io.midasprotocol.common.crypto;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "crypto")
 public class SymmEncoder {

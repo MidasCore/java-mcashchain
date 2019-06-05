@@ -72,35 +72,35 @@ public class OpActions {
 
 	public Action addStackPush(DataWord value) {
 		return addAction(stack, Action.Name.push)
-				.addParam("value", value);
+			.addParam("value", value);
 	}
 
 	public Action addStackSwap(int from, int to) {
 		return addAction(stack, Action.Name.swap)
-				.addParam("from", from)
-				.addParam("to", to);
+			.addParam("from", from)
+			.addParam("to", to);
 	}
 
 	public Action addMemoryExtend(long delta) {
 		return addAction(memory, Action.Name.extend)
-				.addParam("delta", delta);
+			.addParam("delta", delta);
 	}
 
 	public Action addMemoryWrite(int address, byte[] data, int size) {
 		return addAction(memory, Action.Name.write)
-				.addParam("address", address)
-				.addParam("data", toHexString(data).substring(0, size));
+			.addParam("address", address)
+			.addParam("data", toHexString(data).substring(0, size));
 	}
 
 	public Action addStoragePut(DataWord key, DataWord value) {
 		return addAction(storage, Action.Name.put)
-				.addParam("key", key)
-				.addParam("value", value);
+			.addParam("key", key)
+			.addParam("value", value);
 	}
 
 	public Action addStorageRemove(DataWord key) {
 		return addAction(storage, Action.Name.remove)
-				.addParam("key", key);
+			.addParam("key", key);
 	}
 
 	public Action addStorageClear() {

@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.*;
@@ -15,6 +14,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class UnstakeActuator extends AbstractActuator {
@@ -49,13 +49,13 @@ public class UnstakeActuator extends AbstractActuator {
 
 		if (unstakeAmount > 0) {
 			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
-					.setBalance(oldBalance + unstakeAmount)
-					.clearStake().build());
+				.setBalance(oldBalance + unstakeAmount)
+				.clearStake().build());
 
 			VoteChangeCapsule voteChangeCapsule;
 			if (!dbManager.getVoteChangeStore().has(ownerAddress)) {
 				voteChangeCapsule = new VoteChangeCapsule(unstakeContract.getOwnerAddress(),
-						accountCapsule.getVote());
+					accountCapsule.getVote());
 			} else {
 				voteChangeCapsule = dbManager.getVoteChangeStore().get(ownerAddress);
 			}
@@ -87,7 +87,7 @@ public class UnstakeActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(Contract.UnstakeContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected UnstakeContract, actual " + contract.getClass());
+				"Contract type error, expected UnstakeContract, actual " + contract.getClass());
 		}
 		final Contract.UnstakeContract unstakeContract;
 		try {
@@ -105,7 +105,7 @@ public class UnstakeActuator extends AbstractActuator {
 		if (accountCapsule == null) {
 			String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
 			throw new ContractValidateException(
-					"Account " + readableOwnerAddress + " does not exist");
+				"Account " + readableOwnerAddress + " does not exist");
 		}
 		long now = dbManager.getHeadBlockTimeStamp();
 		if (accountCapsule.getNormalStakeAmount() <= 0) {
@@ -149,7 +149,7 @@ public class UnstakeActuator extends AbstractActuator {
 
 		if (!stakeChangeStore.has(address)) {
 			stakeChangeCapsule = new StakeChangeCapsule(ByteString.copyFrom(address),
-					stakeAccountCapsule.getStakeAmount());
+				stakeAccountCapsule.getStakeAmount());
 		} else {
 			stakeChangeCapsule = stakeChangeStore.get(address);
 		}

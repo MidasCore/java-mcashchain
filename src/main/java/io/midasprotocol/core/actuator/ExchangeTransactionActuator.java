@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
@@ -16,6 +15,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.exception.ItemNotFoundException;
 import io.midasprotocol.protos.Contract.ExchangeTransactionContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class ExchangeTransactionActuator extends AbstractActuator {
@@ -29,12 +29,12 @@ public class ExchangeTransactionActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final ExchangeTransactionContract exchangeTransactionContract = this.contract
-					.unpack(ExchangeTransactionContract.class);
+				.unpack(ExchangeTransactionContract.class);
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
-					.get(exchangeTransactionContract.getOwnerAddress().toByteArray());
+				.get(exchangeTransactionContract.getOwnerAddress().toByteArray());
 
 			ExchangeCapsule exchangeCapsule = dbManager.getExchangeStore().
-					get(ByteArray.fromLong(exchangeTransactionContract.getExchangeId()));
+				get(ByteArray.fromLong(exchangeTransactionContract.getExchangeId()));
 
 			long firstTokenID = exchangeCapsule.getFirstTokenId();
 			long secondTokenID = exchangeCapsule.getSecondTokenId();
@@ -91,8 +91,8 @@ public class ExchangeTransactionActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(ExchangeTransactionContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [ExchangeTransactionContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [ExchangeTransactionContract],real type[" + contract
+					.getClass() + "]");
 		}
 		final ExchangeTransactionContract contract;
 		try {
@@ -121,7 +121,7 @@ public class ExchangeTransactionActuator extends AbstractActuator {
 		ExchangeCapsule exchangeCapsule;
 		try {
 			exchangeCapsule = dbManager.getExchangeStore().
-					get(ByteArray.fromLong(contract.getExchangeId()));
+				get(ByteArray.fromLong(contract.getExchangeId()));
 		} catch (ItemNotFoundException ex) {
 			throw new ContractValidateException("Exchange[" + contract.getExchangeId() + "] not exists");
 		}
@@ -149,11 +149,11 @@ public class ExchangeTransactionActuator extends AbstractActuator {
 
 		if (firstTokenBalance == 0 || secondTokenBalance == 0) {
 			throw new ContractValidateException("Token balance in exchange is equal with 0,"
-					+ "the exchange has been closed");
+				+ "the exchange has been closed");
 		}
 
 		long balanceLimit = dbManager.getDynamicPropertiesStore().getExchangeBalanceLimit();
-		long tokenBalance = tokenID == firstTokenID ? firstTokenBalance	: secondTokenBalance;
+		long tokenBalance = tokenID == firstTokenID ? firstTokenBalance : secondTokenBalance;
 		tokenBalance += tokenQuant;
 		if (tokenBalance > balanceLimit) {
 			throw new ContractValidateException("token balance must less than " + balanceLimit);

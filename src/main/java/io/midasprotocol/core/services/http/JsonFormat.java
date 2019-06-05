@@ -34,8 +34,8 @@ import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import org.apache.commons.lang3.StringUtils;
 import io.midasprotocol.common.utils.ByteArray;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -65,8 +65,8 @@ public class JsonFormat {
 
 	private static final int BUFFER_SIZE = 4096;
 	private static final Pattern DIGITS = Pattern.compile(
-			"[0-9]",
-			Pattern.CASE_INSENSITIVE);
+		"[0-9]",
+		Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * Outputs a textual representation of the Protocol Message supplied into the parameter output.
@@ -92,7 +92,7 @@ public class JsonFormat {
 
 	protected static void print(Message message, JsonGenerator generator) throws IOException {
 		for (Iterator<Map.Entry<FieldDescriptor, Object>> iter = message.getAllFields().entrySet()
-				.iterator(); iter.hasNext(); ) {
+			.iterator(); iter.hasNext(); ) {
 			Map.Entry<FieldDescriptor, Object> field = iter.next();
 			printField(field.getKey(), field.getValue(), generator);
 			if (iter.hasNext()) {
@@ -115,8 +115,8 @@ public class JsonFormat {
 			return text.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(
-					"Writing to a StringBuilder threw an IOException (should never happen).",
-					e);
+				"Writing to a StringBuilder threw an IOException (should never happen).",
+				e);
 		}
 	}
 
@@ -130,8 +130,8 @@ public class JsonFormat {
 			return text.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(
-					"Writing to a StringBuilder threw an IOException (should never happen).",
-					e);
+				"Writing to a StringBuilder threw an IOException (should never happen).",
+				e);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class JsonFormat {
 	}
 
 	public static void printField(FieldDescriptor field, Object value, JsonGenerator generator)
-			throws IOException {
+		throws IOException {
 
 		printSingleField(field, value, generator);
 	}
@@ -159,9 +159,9 @@ public class JsonFormat {
 			generator.print("\"");
 			// We special-case MessageSet elements for compatibility with proto1.
 			if (field.getContainingType().getOptions().getMessageSetWireFormat()
-					&& (field.getType() == FieldDescriptor.Type.MESSAGE) && (field.isOptional())
-					// object equality
-					&& (field.getExtensionScope() == field.getMessageType())) {
+				&& (field.getType() == FieldDescriptor.Type.MESSAGE) && (field.isOptional())
+				// object equality
+				&& (field.getExtensionScope() == field.getMessageType())) {
 				generator.print(field.getMessageType().getFullName());
 			} else {
 				generator.print(field.getFullName());
@@ -206,7 +206,7 @@ public class JsonFormat {
 	}
 
 	private static void printFieldValue(FieldDescriptor field, Object value, JsonGenerator generator)
-			throws IOException {
+		throws IOException {
 		switch (field.getType()) {
 			case INT32:
 			case INT64:
@@ -262,7 +262,7 @@ public class JsonFormat {
 	}
 
 	protected static void printUnknownFields(UnknownFieldSet unknownFields, JsonGenerator generator)
-			throws IOException {
+		throws IOException {
 		boolean firstField = true;
 		for (Map.Entry<Integer, UnknownFieldSet.Field> entry : unknownFields.asMap().entrySet()) {
 			final UnknownFieldSet.Field field = entry.getValue();
@@ -403,8 +403,8 @@ public class JsonFormat {
 		// Test to make sure the tokenizer has reached the end of the stream.
 		if (!tokenizer.atEnd()) {
 			throw tokenizer.parseException(
-					"Expecting the end of the stream, but there seems to be more data!  "
-							+ "Check the input for a valid JSON format.");
+				"Expecting the end of the stream, but there seems to be more data!  "
+					+ "Check the input for a valid JSON format.");
 		}
 	}
 
@@ -454,7 +454,7 @@ public class JsonFormat {
 		}
 		// Again, special-case group names as described above.
 		if ((field != null) && (field.getType() == FieldDescriptor.Type.GROUP)
-				&& !field.getMessageType().getName().equals(name)) {
+			&& !field.getMessageType().getName().equals(name)) {
 			field = null;
 		}
 
@@ -470,8 +470,8 @@ public class JsonFormat {
 		if (extension != null) {
 			if (extension.descriptor.getContainingType() != type) {
 				throw tokenizer.parseExceptionPreviousToken("Extension \"" + name
-						+ "\" does not extend message type \""
-						+ type.getFullName() + "\".");
+					+ "\" does not extend message type \""
+					+ type.getFullName() + "\".");
 			}
 			field = extension.descriptor;
 		}
@@ -560,7 +560,7 @@ public class JsonFormat {
 	}
 
 	private static Object handlePrimitive(Tokenizer tokenizer, FieldDescriptor field)
-			throws ParseException {
+		throws ParseException {
 		Object value = null;
 		if ("null".equals(tokenizer.currentToken())) {
 			tokenizer.consume("null");
@@ -617,9 +617,9 @@ public class JsonFormat {
 					value = enumType.findValueByNumber(number);
 					if (value == null) {
 						throw tokenizer.parseExceptionPreviousToken("Enum type \""
-								+ enumType.getFullName()
-								+ "\" has no value with number "
-								+ number + ".");
+							+ enumType.getFullName()
+							+ "\" has no value with number "
+							+ number + ".");
 					}
 				} else {
 					String id = tokenizer.consumeIdentifier();
@@ -632,9 +632,9 @@ public class JsonFormat {
 					value = enumType.findValueByName(id);
 					if (value == null) {
 						throw tokenizer.parseExceptionPreviousToken("Enum type \""
-								+ enumType.getFullName()
-								+ "\" has no value named \""
-								+ id + "\".");
+							+ enumType.getFullName()
+							+ "\" has no value named \""
+							+ id + "\".");
 					}
 				}
 
@@ -769,8 +769,8 @@ public class JsonFormat {
 						c = iter.next();
 						if (c == CharacterIterator.DONE) {
 							throw new IllegalArgumentException(
-									"invalid unicode string: unexpected high surrogate pair value "
-											+ "without corresponding low value.");
+								"invalid unicode string: unexpected high surrogate pair value "
+									+ "without corresponding low value.");
 						}
 						appendEscapedUnicode(builder, c);
 					} else {
@@ -870,7 +870,7 @@ public class JsonFormat {
 	 */
 	private static boolean isHex(char c) {
 		return (('0' <= c) && (c <= '9')) || (('a' <= c) && (c <= 'f'))
-				|| (('A' <= c) && (c <= 'F'));
+			|| (('A' <= c) && (c <= 'F'));
 	}
 
 	/**
@@ -926,7 +926,7 @@ public class JsonFormat {
 	}
 
 	private static long parseInteger(String text, boolean isSigned, boolean isLong)
-			throws NumberFormatException {
+		throws NumberFormatException {
 		int pos = 0;
 
 		boolean negative = false;
@@ -963,12 +963,12 @@ public class JsonFormat {
 				if (isSigned) {
 					if ((result > Integer.MAX_VALUE) || (result < Integer.MIN_VALUE)) {
 						throw new NumberFormatException("Number out of range for 32-bit signed integer: "
-								+ text);
+							+ text);
 					}
 				} else {
 					if ((result >= (1L << 32)) || (result < 0)) {
 						throw new NumberFormatException("Number out of range for 32-bit unsigned integer: "
-								+ text);
+							+ text);
 					}
 				}
 			}
@@ -983,24 +983,24 @@ public class JsonFormat {
 				if (isSigned) {
 					if (bigValue.bitLength() > 31) {
 						throw new NumberFormatException("Number out of range for 32-bit signed integer: "
-								+ text);
+							+ text);
 					}
 				} else {
 					if (bigValue.bitLength() > 32) {
 						throw new NumberFormatException("Number out of range for 32-bit unsigned integer: "
-								+ text);
+							+ text);
 					}
 				}
 			} else {
 				if (isSigned) {
 					if (bigValue.bitLength() > 63) {
 						throw new NumberFormatException("Number out of range for 64-bit signed integer: "
-								+ text);
+							+ text);
 					}
 				} else {
 					if (bigValue.bitLength() > 64) {
 						throw new NumberFormatException("Number out of range for 64-bit unsigned integer: "
-								+ text);
+							+ text);
 					}
 				}
 			}
@@ -1101,22 +1101,22 @@ public class JsonFormat {
 		// We use possesive quantifiers (*+ and ++) because otherwise the Java
 		// regex matcher has stack overflows on large inputs.
 		private static final Pattern WHITESPACE =
-				Pattern.compile("(\\s|(#.*$))++", Pattern.MULTILINE);
+			Pattern.compile("(\\s|(#.*$))++", Pattern.MULTILINE);
 		private static final Pattern TOKEN = Pattern.compile(
-				"[a-zA-Z_][0-9a-zA-Z_+-]*+|" +                // an identifier
-						"[.]?[0-9+-][0-9a-zA-Z_.+-]*+|" +             // a number
-						"\"([^\"\n\\\\]|\\\\.)*+(\"|\\\\?$)|" +       // a double-quoted string
-						"\'([^\'\n\\\\]|\\\\.)*+(\'|\\\\?$)",         // a single-quoted string
-				Pattern.MULTILINE);
+			"[a-zA-Z_][0-9a-zA-Z_+-]*+|" +                // an identifier
+				"[.]?[0-9+-][0-9a-zA-Z_.+-]*+|" +             // a number
+				"\"([^\"\n\\\\]|\\\\.)*+(\"|\\\\?$)|" +       // a double-quoted string
+				"\'([^\'\n\\\\]|\\\\.)*+(\'|\\\\?$)",         // a single-quoted string
+			Pattern.MULTILINE);
 		private static final Pattern DOUBLE_INFINITY = Pattern.compile(
-				"-?inf(inity)?",
-				Pattern.CASE_INSENSITIVE);
+			"-?inf(inity)?",
+			Pattern.CASE_INSENSITIVE);
 		private static final Pattern FLOAT_INFINITY = Pattern.compile(
-				"-?inf(inity)?f?",
-				Pattern.CASE_INSENSITIVE);
+			"-?inf(inity)?f?",
+			Pattern.CASE_INSENSITIVE);
 		private static final Pattern FLOAT_NAN = Pattern.compile(
-				"nanf?",
-				Pattern.CASE_INSENSITIVE);
+			"nanf?",
+			Pattern.CASE_INSENSITIVE);
 		private final CharSequence text;
 		private final Matcher matcher;
 		private String currentToken;
@@ -1355,7 +1355,7 @@ public class JsonFormat {
 			for (int i = 0; i < currentToken.length(); i++) {
 				char c = currentToken.charAt(i);
 				if ((('a' <= c) && (c <= 'z')) || (('A' <= c) && (c <= 'Z'))
-						|| (('0' <= c) && (c <= '9')) || (c == '_') || (c == '.') || (c == '"')) {
+					|| (('0' <= c) && (c <= '9')) || (c == '_') || (c == '.') || (c == '"')) {
 					// OK
 				} else {
 					throw parseException("Expected identifier. -" + c);
@@ -1502,7 +1502,7 @@ public class JsonFormat {
 			}
 
 			if ((currentToken.length() < 2)
-					|| (currentToken.charAt(currentToken.length() - 1) != quote)) {
+				|| (currentToken.charAt(currentToken.length() - 1) != quote)) {
 				throw parseException("String missing ending quote.");
 			}
 
@@ -1524,7 +1524,7 @@ public class JsonFormat {
 			}
 
 			if ((currentToken.length() < 2)
-					|| (currentToken.charAt(currentToken.length() - 1) != quote)) {
+				|| (currentToken.charAt(currentToken.length() - 1) != quote)) {
 				throw parseException("String missing ending quote.");
 			}
 
@@ -1554,7 +1554,7 @@ public class JsonFormat {
 		public ParseException parseExceptionPreviousToken(String description) {
 			// Note: People generally prefer one-based line and column numbers.
 			return new ParseException((previousLine + 1) + ":" + (previousColumn + 1) + ": "
-					+ description);
+				+ description);
 		}
 
 		/**

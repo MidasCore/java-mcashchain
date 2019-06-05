@@ -1,10 +1,10 @@
 package io.midasprotocol.common.logsfilter.capsule;
 
-import lombok.Getter;
-import lombok.Setter;
 import io.midasprotocol.common.logsfilter.EventPluginLoader;
 import io.midasprotocol.common.logsfilter.FilterQuery;
 import io.midasprotocol.common.logsfilter.trigger.ContractLogTrigger;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ContractLogTriggerCapsule extends TriggerCapsule {
 

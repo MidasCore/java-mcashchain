@@ -25,10 +25,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import lombok.extern.slf4j.Slf4j;
-import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.OpCode;
+import lombok.extern.slf4j.Slf4j;
+import org.spongycastle.util.encoders.Hex;
 
 import java.io.IOException;
 
@@ -49,9 +49,9 @@ public final class Serializers {
 
 	private static VisibilityChecker<?> fieldsOnlyVisibilityChecker(ObjectMapper mapper) {
 		return mapper.getSerializationConfig().getDefaultVisibilityChecker()
-				.withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-				.withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-				.withIsGetterVisibility(JsonAutoDetect.Visibility.NONE);
+			.withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+			.withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+			.withIsGetterVisibility(JsonAutoDetect.Visibility.NONE);
 	}
 
 	public static ObjectMapper createMapper(boolean pretty) {
@@ -66,7 +66,7 @@ public final class Serializers {
 
 		@Override
 		public void serialize(DataWord energy, JsonGenerator jgen, SerializerProvider provider)
-				throws IOException, JsonProcessingException {
+			throws IOException, JsonProcessingException {
 			jgen.writeString(energy.value().toString());
 		}
 	}
@@ -75,7 +75,7 @@ public final class Serializers {
 
 		@Override
 		public void serialize(byte[] memory, JsonGenerator jgen, SerializerProvider provider)
-				throws IOException, JsonProcessingException {
+			throws IOException, JsonProcessingException {
 			jgen.writeString(Hex.toHexString(memory));
 		}
 	}
@@ -84,7 +84,7 @@ public final class Serializers {
 
 		@Override
 		public void serialize(Byte op, JsonGenerator jgen, SerializerProvider provider)
-				throws IOException, JsonProcessingException {
+			throws IOException, JsonProcessingException {
 			jgen.writeString(OpCode.code(op).name());
 		}
 	}

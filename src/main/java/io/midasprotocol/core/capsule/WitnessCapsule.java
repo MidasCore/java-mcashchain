@@ -2,10 +2,10 @@ package io.midasprotocol.core.capsule;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.protos.Protocol.Witness;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
 public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<WitnessCapsule> {
@@ -18,9 +18,9 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 	public WitnessCapsule(final ByteString pubKey, final String url) {
 		final Witness.Builder witnessBuilder = Witness.newBuilder();
 		this.witness = witnessBuilder
-				.setPubKey(pubKey)
-				.setAddress(ByteString.copyFrom(ECKey.computeAddress(pubKey.toByteArray())))
-				.setUrl(url).build();
+			.setPubKey(pubKey)
+			.setAddress(ByteString.copyFrom(ECKey.computeAddress(pubKey.toByteArray())))
+			.setUrl(url).build();
 	}
 
 	public WitnessCapsule(final Witness witness) {
@@ -40,12 +40,12 @@ public class WitnessCapsule implements ProtoCapsule<Witness>, Comparable<Witness
 	public WitnessCapsule(final ByteString address, final ByteString ownerAddress, final long voteCount, final String url) {
 		final Witness.Builder witnessBuilder = Witness.newBuilder();
 		this.witness = witnessBuilder
-				.setAddress(address)
-				.setOwnerAddress(ownerAddress)
-				.setVoteCount(voteCount)
-				.setUrl(url)
-				.setStatus(Witness.Status.ACTIVE)
-				.build();
+			.setAddress(address)
+			.setOwnerAddress(ownerAddress)
+			.setVoteCount(voteCount)
+			.setUrl(url)
+			.setStatus(Witness.Status.ACTIVE)
+			.build();
 	}
 
 	public WitnessCapsule(final byte[] data) {

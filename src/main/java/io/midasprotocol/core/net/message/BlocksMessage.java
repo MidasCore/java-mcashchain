@@ -1,8 +1,8 @@
 package io.midasprotocol.core.net.message;
 
-import org.apache.commons.collections4.CollectionUtils;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.Items;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class BlocksMessage extends TronMessage {
 	@Override
 	public String toString() {
 		return super.toString() + "size: " + (CollectionUtils.isNotEmpty(blocks) ? blocks
-				.size() : 0);
+			.size() : 0);
 	}
 
 	@Override

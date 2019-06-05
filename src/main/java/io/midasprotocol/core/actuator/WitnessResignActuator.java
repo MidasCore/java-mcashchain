@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -17,6 +16,7 @@ import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.WitnessUpdateContract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class WitnessResignActuator extends AbstractActuator {
 
 	private void resignWitness(final Contract.WitnessResignContract contract) {
 		WitnessCapsule witnessCapsule = this.dbManager.getWitnessStore()
-				.get(contract.getWitnessAddress().toByteArray());
+			.get(contract.getWitnessAddress().toByteArray());
 		witnessCapsule.setStatus(Protocol.Witness.Status.RESIGNED);
 		witnessCapsule.setIsJobs(false);
 
@@ -47,7 +47,7 @@ public class WitnessResignActuator extends AbstractActuator {
 		// combine stake for witness and normal stake with 30 days duration
 		long now = dbManager.getHeadBlockTimeStamp();
 		long duration = dbManager.getDynamicPropertiesStore().getResignStakeTimeInDay()
-				* Parameter.TimeConstant.MS_PER_DAY;
+			* Parameter.TimeConstant.MS_PER_DAY;
 		long newStake = owner.getTotalStakeAmount();
 
 		owner.clearWitnessStake();
@@ -61,7 +61,7 @@ public class WitnessResignActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final Contract.WitnessResignContract witnessResignContract = this.contract
-					.unpack(Contract.WitnessResignContract.class);
+				.unpack(Contract.WitnessResignContract.class);
 			this.resignWitness(witnessResignContract);
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (final InvalidProtocolBufferException e) {
@@ -82,7 +82,7 @@ public class WitnessResignActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(Contract.WitnessResignContract.class)) {
 			throw new ContractValidateException(
-					"Contract type error, expected WitnessResignContract, actual " + contract.getClass());
+				"Contract type error, expected WitnessResignContract, actual " + contract.getClass());
 		}
 		final Contract.WitnessResignContract contract;
 		try {
@@ -115,7 +115,7 @@ public class WitnessResignActuator extends AbstractActuator {
 		WitnessCapsule witnessCapsule = this.dbManager.getWitnessStore().get(witnessAddress);
 		if (!witnessCapsule.getOwnerAddress().equals(ByteString.copyFrom(ownerAddress))) {
 			throw new ContractValidateException("Address " + StringUtil.createReadableString(ownerAddress) +
-					" does not own witness " + StringUtil.createReadableString(witnessAddress));
+				" does not own witness " + StringUtil.createReadableString(witnessAddress));
 		}
 
 		return true;

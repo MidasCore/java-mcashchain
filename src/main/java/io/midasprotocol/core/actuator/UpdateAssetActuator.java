@@ -3,7 +3,6 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.AssetIssueCapsule;
@@ -16,6 +15,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AccountUpdateContract;
 import io.midasprotocol.protos.Contract.UpdateAssetContract;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
 public class UpdateAssetActuator extends AbstractActuator {
@@ -29,7 +29,7 @@ public class UpdateAssetActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			final UpdateAssetContract updateAssetContract = this.contract
-					.unpack(UpdateAssetContract.class);
+				.unpack(UpdateAssetContract.class);
 
 			long newLimit = updateAssetContract.getNewLimit();
 			long newPublicLimit = updateAssetContract.getNewPublicLimit();
@@ -50,7 +50,7 @@ public class UpdateAssetActuator extends AbstractActuator {
 			assetIssueCapsuleV2.setDescription(newDescription);
 
 			dbManager.getAssetIssueStore()
-					.put(assetIssueCapsuleV2.createDbKey(), assetIssueCapsuleV2);
+				.put(assetIssueCapsuleV2.createDbKey(), assetIssueCapsuleV2);
 
 			ret.setStatus(fee, code.SUCCESS);
 		} catch (InvalidProtocolBufferException e) {
@@ -73,8 +73,8 @@ public class UpdateAssetActuator extends AbstractActuator {
 		}
 		if (!this.contract.is(UpdateAssetContract.class)) {
 			throw new ContractValidateException(
-					"contract type error,expected type [UpdateAssetContract],real type[" + contract
-							.getClass() + "]");
+				"contract type error,expected type [UpdateAssetContract],real type[" + contract
+					.getClass() + "]");
 		}
 		final UpdateAssetContract updateAssetContract;
 		try {
@@ -120,7 +120,7 @@ public class UpdateAssetActuator extends AbstractActuator {
 		}
 
 		if (newPublicLimit < 0 || newPublicLimit >=
-				dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
 			throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
 		}
 

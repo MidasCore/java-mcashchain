@@ -17,9 +17,9 @@
  */
 package io.midasprotocol.common.runtime.vm.program;
 
-import lombok.extern.slf4j.Slf4j;
 import io.midasprotocol.common.runtime.vm.DataWord;
 import io.midasprotocol.common.runtime.vm.OpCode;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -67,7 +67,7 @@ public class ProgramPrecompile {
 			}
 
 			if (op.equals(OpCode.RETURN) && i + 1 < ops.length && OpCode.code(ops[i + 1]) != null
-					&& OpCode.code(ops[i + 1]).equals(OpCode.STOP)) {
+				&& OpCode.code(ops[i + 1]).equals(OpCode.STOP)) {
 				byte[] ret;
 				i++;
 				ret = new byte[ops.length - i - 1];
