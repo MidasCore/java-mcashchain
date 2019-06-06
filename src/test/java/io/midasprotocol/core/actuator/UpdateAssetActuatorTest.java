@@ -114,7 +114,7 @@ public class UpdateAssetActuatorTest {
 				.setName(ByteString.copyFromUtf8(NAME))
 				.setTotalSupply(TOTAL_SUPPLY)
 				.setId(tokenId)
-				.setTrxNum(100)
+				.setMcashNum(100)
 				.setNum(10)
 				.setStartTime(nowTime)
 				.setEndTime(nowTime + 24 * 3600 * 1000)

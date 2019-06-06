@@ -185,7 +185,7 @@ public class CreateAssetIssue2Test {
 			builder.setOwnerAddress(ByteString.copyFrom(address));
 			builder.setName(ByteString.copyFrom(name.getBytes()));
 			builder.setTotalSupply(totalSupply);
-			builder.setTrxNum(trxNum);
+			builder.setMcashNum(trxNum);
 			builder.setNum(icoNum);
 			builder.setStartTime(startTime);
 			builder.setEndTime(endTime);

@@ -110,7 +110,7 @@ public class WalletTestAssetIssue004 {
 			if (queryAssetIssueByAccount.get().getAssetIssue(j).getTotalSupply() == totalSupply) {
 				Assert.assertTrue(queryAssetIssueByAccount.isPresent());
 				//Assert.assertTrue(queryAssetIssueByAccount.get().getAssetIssue(j).getDecayRatio() > 0);
-				Assert.assertTrue(queryAssetIssueByAccount.get().getAssetIssue(j).getTrxNum() > 0);
+				Assert.assertTrue(queryAssetIssueByAccount.get().getAssetIssue(j).getMcashNum() > 0);
 				Assert.assertTrue(queryAssetIssueByAccount.get().getAssetIssue(j).getVoteScore() > 0);
 				Assert.assertFalse(queryAssetIssueByAccount.get().getAssetIssue(j).getUrl().isEmpty());
 				logger.info("TestGetAssetIssueByAccount ok!");
@@ -170,7 +170,7 @@ public class WalletTestAssetIssue004 {
 			builder.setOwnerAddress(ByteString.copyFrom(address));
 			builder.setName(ByteString.copyFrom(name.getBytes()));
 			builder.setTotalSupply(totalSupply);
-			builder.setTrxNum(trxNum);
+			builder.setMcashNum(trxNum);
 			builder.setNum(icoNum);
 			builder.setStartTime(startTime);
 			builder.setEndTime(endTime);

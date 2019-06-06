@@ -99,7 +99,7 @@ public class TransferTokenTest {
 						.setName(ByteString.copyFrom(ByteArray.fromString(tokenName)))
 						.setId(id)
 						.setTotalSupply(TOTAL_SUPPLY)
-						.setTrxNum(TRX_NUM)
+						.setMcashNum(TRX_NUM)
 						.setNum(NUM)
 						.setStartTime(START_TIME)
 						.setEndTime(END_TIME)

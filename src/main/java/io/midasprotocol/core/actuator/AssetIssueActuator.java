@@ -169,8 +169,8 @@ public class AssetIssueActuator extends AbstractActuator {
 			throw new ContractValidateException("TotalSupply must greater than 0!");
 		}
 
-		if (assetIssueContract.getTrxNum() <= 0) {
-			throw new ContractValidateException("TrxNum must greater than 0!");
+		if (assetIssueContract.getMcashNum() <= 0) {
+			throw new ContractValidateException("McashNum must greater than 0!");
 		}
 
 		if (assetIssueContract.getNum() <= 0) {

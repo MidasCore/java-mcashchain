@@ -276,7 +276,7 @@ public class WalletTestAccount003 {
 			builder.setOwnerAddress(ByteString.copyFrom(address));
 			builder.setName(ByteString.copyFrom(name.getBytes()));
 			builder.setTotalSupply(TotalSupply);
-			builder.setTrxNum(trxNum);
+			builder.setMcashNum(trxNum);
 			builder.setNum(icoNum);
 			builder.setStartTime(startTime);
 			builder.setEndTime(endTime);
