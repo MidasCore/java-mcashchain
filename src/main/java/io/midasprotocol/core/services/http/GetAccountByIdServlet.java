@@ -28,9 +28,9 @@ public class GetAccountByIdServlet extends HttpServlet {
 			return JsonFormat.printToString(account);
 		} else {
 			JSONObject accountJson = JSONObject.parseObject(JsonFormat.printToString(account));
-			String assetId = accountJson.get("assetIssuedId").toString();
+			String assetId = accountJson.get("asset_issued_ID").toString();
 			accountJson.put(
-				"assetIssuedId", ByteString.copyFrom(ByteArray.fromHexString(assetId)).toStringUtf8());
+				"asset_issued_ID", ByteString.copyFrom(ByteArray.fromHexString(assetId)).toStringUtf8());
 			return accountJson.toJSONString();
 		}
 

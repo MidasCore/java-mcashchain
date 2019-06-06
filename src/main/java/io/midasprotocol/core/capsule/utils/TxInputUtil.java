@@ -35,7 +35,7 @@ public class TxInputUtil {
 		TXInput.raw.Builder rawBuilder = TXInput.raw.newBuilder();
 
 		TXInput.raw rawData = rawBuilder
-			.setTxId(ByteString.copyFrom(txId))
+			.setTxID(ByteString.copyFrom(txId))
 			.setVout(vout)
 			.setPubKey(ByteString.copyFrom(pubKey)).build();
 

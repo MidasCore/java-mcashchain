@@ -39,11 +39,11 @@ public class DeployContractServlet extends HttpServlet {
 			Util.checkBodySize(contract);
 			CreateSmartContract.Builder build = CreateSmartContract.newBuilder();
 			JSONObject jsonObject = JSONObject.parseObject(contract);
-			byte[] ownerAddress = ByteArray.fromHexString(jsonObject.getString("ownerAddress"));
+			byte[] ownerAddress = ByteArray.fromHexString(jsonObject.getString("owner_address"));
 			build.setOwnerAddress(ByteString.copyFrom(ownerAddress));
 			build
-				.setCallTokenValue(jsonObject.getLongValue("callTokenValue"))
-				.setTokenId(jsonObject.getLongValue("tokenId"));
+				.setCallTokenValue(jsonObject.getLongValue("call_token_value"))
+				.setTokenId(jsonObject.getLongValue("token_id"));
 
 			String abi = jsonObject.getString("abi");
 			StringBuffer abiSB = new StringBuffer("{");
@@ -53,14 +53,14 @@ public class DeployContractServlet extends HttpServlet {
 			ABI.Builder abiBuilder = ABI.newBuilder();
 			JsonFormat.merge(abiSB.toString(), abiBuilder);
 
-			long feeLimit = jsonObject.getLongValue("feeLimit");
+			long feeLimit = jsonObject.getLongValue("fee_limit");
 
 			SmartContract.Builder smartBuilder = SmartContract.newBuilder();
 			smartBuilder
 				.setAbi(abiBuilder)
-				.setCallValue(jsonObject.getLongValue("callValue"))
-				.setConsumeUserResourcePercent(jsonObject.getLongValue("consumeUserResourcePercent"))
-				.setOriginEnergyLimit(jsonObject.getLongValue("originEnergyLimit"));
+				.setCallValue(jsonObject.getLongValue("call_value"))
+				.setConsumeUserResourcePercent(jsonObject.getLongValue("consume_user_resource_percent"))
+				.setOriginEnergyLimit(jsonObject.getLongValue("origin_energy_limit"));
 			if (!ArrayUtils.isEmpty(ownerAddress)) {
 				smartBuilder.setOriginAddress(ByteString.copyFrom(ownerAddress));
 			}
@@ -82,7 +82,7 @@ public class DeployContractServlet extends HttpServlet {
 			Transaction tx = wallet
 				.createTransactionCapsule(build.build(), ContractType.CreateSmartContract).getInstance();
 			Transaction.Builder txBuilder = tx.toBuilder();
-			Transaction.Raw.Builder rawBuilder = tx.getRawData().toBuilder();
+			Transaction.raw.Builder rawBuilder = tx.getRawData().toBuilder();
 			rawBuilder.setFeeLimit(feeLimit);
 			txBuilder.setRawData(rawBuilder);
 			response.getWriter().println(Util.printTransaction(txBuilder.build()));

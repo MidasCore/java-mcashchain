@@ -66,7 +66,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		builder.addContractResult(contractResult);
 		builder.setContractAddress(ContractAddress);
 		builder.setUnfreezeAmount(programResult.getRet().getUnfreezeAmount());
-		builder.setAssetIssueId(programResult.getRet().getAssetIssueId());
+		builder.setAssetIssueID(programResult.getRet().getAssetIssueID());
 		builder.setExchangeId(programResult.getRet().getExchangeId());
 		builder.setWithdrawAmount(programResult.getRet().getWithdrawAmount());
 		builder.setUnstakeAmount(programResult.getRet().getUnstakeAmount());

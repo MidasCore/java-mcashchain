@@ -203,7 +203,7 @@ public class StoreAPITest {
 			TransferContract transferContract, long transactionTimestamp) {
 		return Transaction.newBuilder()
 				.setRawData(
-						Transaction.Raw
+						Transaction.raw
 								.newBuilder()
 								.setTimestamp(transactionTimestamp)
 								.addContract(

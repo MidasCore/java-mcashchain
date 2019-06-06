@@ -68,7 +68,7 @@ public class IndexHelperTest {
 				new TransactionCapsule(
 						Transaction.newBuilder()
 								.setRawData(
-										Transaction.Raw
+										Transaction.raw
 												.newBuilder()
 												.setData(ByteString.copyFrom("i am trans".getBytes()))
 												.build())
@@ -193,7 +193,7 @@ public class IndexHelperTest {
 				new TransactionCapsule(
 						Transaction.newBuilder()
 								.setRawData(
-										Transaction.Raw
+										Transaction.raw
 												.newBuilder()
 												.setData(ByteString.copyFrom("i am trans".getBytes()))
 												.build())

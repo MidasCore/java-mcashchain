@@ -24,18 +24,18 @@ message AccountId {
 // vote message
 message Vote {
     // the super rep address
-    bytes voteAddress = 1;
+    bytes vote_address = 1;
     // the vote num to this super rep.
-    int64 voteCount = 2;
+    int64 vote_count = 2;
 }
 
 // Proposal
 message Proposal {
-    int64 proposalId = 1;
-    bytes proposerAddress = 2;
+    int64 proposal_id = 1;
+    bytes proposer_address = 2;
     map<int64, int64> parameters = 3;
-    int64 expirationTime = 4;
-    int64 createTime = 5;
+    int64 expiration_time = 4;
+    int64 create_time = 5;
     repeated bytes approvals = 6;
     enum State {
         PENDING = 0;
@@ -48,13 +48,13 @@ message Proposal {
 
 // Exchange
 message Exchange {
-    int64 exchangeId = 1;
-    bytes creatorAddress = 2;
-    int64 createTime = 3;
-    int64 firstTokenId = 6;
-    int64 firstTokenBalance = 7;
-    int64 secondTokenId = 8;
-    int64 secondTokenBalance = 9;
+    int64 exchange_id = 1;
+    bytes creator_address = 2;
+    int64 create_time = 3;
+    int64 first_token_id = 6;
+    int64 first_token_balance = 7;
+    int64 second_token_id = 8;
+    int64 second_token_balance = 9;
 }
 
 message ChainParameters {
@@ -69,11 +69,11 @@ message ChainParameters {
 message Account {
     /* frozen balance */
     message Frozen {
-        int64 frozenBalance = 1; // the frozen trx balance
-        int64 expireTime = 2; // the expire time
+        int64 frozen_balance = 1; // the frozen trx balance
+        int64 expire_time = 2; // the expire time
     }
     // account nick name
-    bytes accountName = 1;
+    bytes account_name = 1;
     AccountType type = 2;
     // the create address
     bytes address = 3;
@@ -87,60 +87,60 @@ message Account {
     // the frozen balance for bandwidth
     repeated Frozen frozen = 7;
     // bandwidth, get from frozen
-    int64 netUsage = 8;
+    int64 net_usage = 8;
     //Frozen balance provided by other accounts to this account
-    int64 acquiredDelegatedFrozenBalanceForBandwidth = 41;
+    int64 acquired_delegated_frozen_balance_for_bandwidth = 41;
     //Freeze and provide balances to other accounts
-    int64 delegatedFrozenBalanceForBandwidth = 42;
+    int64 delegated_frozen_balance_for_bandwidth = 42;
 
     // this account create time
-    int64 createTime = 0x09;
-    // this last operation time, including transfer, voting and so on.
-    int64 latestOperationTime = 10;
+    int64 create_time = 0x09;
+    // this last operation time, including transfer, voting and so on. //FIXME fix grammar
+    int64 latest_opration_time = 10;
     // witness block producing allowance
     int64 allowance = 0x0B;
     // last withdraw time
-    int64 latestWithdrawTime = 0x0C;
+    int64 latest_withdraw_time = 0x0C;
     // not used so far
     bytes code = 13;
-    bool isWitness = 14;
-    bool isCommittee = 15;
+    bool is_witness = 14;
+    bool is_committee = 15;
     // frozen asset(for asset issuer)
-    repeated Frozen frozenSupply = 16;
-    // assetIssuedId
-    int64 assetIssuedId = 17;
-    map<int64, int64> latestAssetOperationTime = 18;
-    int64 freeNetUsage = 19;
-    map<int64, int64> freeAssetNetUsage = 20;
-    int64 latestConsumeTime = 21;
-    int64 latestConsumeFreeTime = 22;
+    repeated Frozen frozen_supply = 16;
+    // asset_issued_id
+    int64 asset_issued_id = 17;
+    map<int64, int64> latest_asset_operation_time = 18;
+    int64 free_net_usage = 19;
+    map<int64, int64> free_asset_net_usage = 20;
+    int64 latest_consume_time = 21;
+    int64 latest_consume_free_time = 22;
 
     // the identity of this account, case insensitive
-    bytes accountId = 23;
+    bytes account_id = 23;
 
     message AccountResource {
         // energy resource, get from frozen
-        int64 energyUsage = 1;
+        int64 energy_usage = 1;
         // the frozen balance for energy
-        Frozen frozenBalanceForEnergy = 2;
-        int64 latestConsumeTimeForEnergy = 3;
+        Frozen frozen_balance_for_energy = 2;
+        int64 latest_consume_time_for_energy = 3;
 
         //Frozen balance provided by other accounts to this account
-        int64 acquiredDelegatedFrozenBalanceForEnergy = 4;
+        int64 acquired_delegated_frozen_balance_for_energy = 4;
         //Frozen balances provided to other accounts
-        int64 delegatedFrozenBalanceForEnergy = 5;
+        int64 delegated_frozen_balance_for_energy = 5;
 
         // storage resource, get from market
-        int64 storageLimit = 6;
-        int64 storageUsage = 7;
-        int64 latestExchangeStorageTime = 8;
+        int64 storage_limit = 6;
+        int64 storage_usage = 7;
+        int64 latest_exchange_storage_time = 8;
 
     }
-    AccountResource accountResource = 26;
+    AccountResource account_resource = 26;
     bytes codeHash = 30;
-    Permission ownerPermission = 31;
-    Permission witnessPermission = 32;
-    repeated Permission activePermission = 33;
+    Permission owner_permission = 31;
+    Permission witness_permission = 32;
+    repeated Permission active_permission = 33;
 
     // stakes
     Stake stake = 60;
@@ -156,15 +156,15 @@ message Key {
 message DelegatedResource {
     bytes from = 1;
     bytes to = 2;
-    int64 frozenBalanceForBandwidth = 3;
-    int64 frozenBalanceForEnergy = 4;
-    int64 expireTimeForBandwidth = 5;
-    int64 expireTimeForEnergy = 6;
+    int64 frozen_balance_for_bandwidth = 3;
+    int64 frozen_balance_for_energy = 4;
+    int64 expire_time_for_bandwidth = 5;
+    int64 expire_time_for_energy = 6;
 }
 
 message authority {
     AccountId account = 1;
-    bytes permissionName = 2;
+    bytes permission_name = 2;
 }
 
 message Permission {
@@ -175,9 +175,9 @@ message Permission {
     }
     PermissionType type = 1;
     int32 id = 2; //Owner id=0, Witness id=1, Active id start by 2
-    string permissionName = 3;
+    string permission_name = 3;
     int64 threshold = 4;
-    int32 parentId = 5;
+    int32 parent_id = 5;
     bytes operations = 6; //1 bit 1 contract
     repeated Key keys = 7;
 }
@@ -258,11 +258,11 @@ message TXOutput {
 
 message TXInput {
     message raw {
-        bytes txId = 1;
+        bytes txID = 1;
         int64 vout = 2;
         bytes pubKey = 3;
     }
-    raw rawData = 1;
+    raw raw_data = 1;
     bytes signature = 4;
 }
 
@@ -271,12 +271,12 @@ message TXOutputs {
 }
 
 message ResourceReceipt {
-    int64 energyUsage = 1;
-    int64 energyFee = 2;
-    int64 originEnergyUsage = 3;
-    int64 energyUsageTotal = 4;
-    int64 netUsage = 5;
-    int64 netFee = 6;
+    int64 energy_usage = 1;
+    int64 energy_fee = 2;
+    int64 origin_energy_usage = 3;
+    int64 energy_usage_total = 4;
+    int64 net_usage = 5;
+    int64 net_fee = 6;
     Transaction.Result.contractResult result = 7;
 }
 
@@ -323,8 +323,8 @@ message Transaction {
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
         bytes provider = 3;
-        bytes contractName = 4;
-        int32 permissionId = 5;
+        bytes ContractName = 4;
+        int32 Permission_id = 5;
     }
 
     message Result {
@@ -352,20 +352,20 @@ message Transaction {
         code ret = 2;
         contractResult contractRet = 3;
 
-        int64 assetIssueId = 14;
-        int64 withdrawAmount = 15;
-        int64 unfreezeAmount = 16;
-        int64 exchangeReceivedAmount = 18;
-        int64 exchangeInjectAnotherAmount = 19;
-        int64 exchangeWithdrawAnotherAmount = 20;
-        int64 exchangeId = 21;
-        int64 unstakeAmount = 22;
+        int64 assetIssueID = 14;
+        int64 withdraw_amount = 15;
+        int64 unfreeze_amount = 16;
+        int64 exchange_received_amount = 18;
+        int64 exchange_inject_another_amount = 19;
+        int64 exchange_withdraw_another_amount = 20;
+        int64 exchange_id = 21;
+        int64 unstake_amount = 22;
     }
 
-    message Raw {
-        bytes refBlockBytes = 1;
-        int64 refBlockNum = 3;
-        bytes refBlockHash = 4;
+    message raw {
+        bytes ref_block_bytes = 1;
+        int64 ref_block_num = 3;
+        bytes ref_block_hash = 4;
         int64 expiration = 8;
         repeated authority auths = 9;
         // data not used
@@ -375,10 +375,10 @@ message Transaction {
         // scripts not used
         bytes scripts = 12;
         int64 timestamp = 14;
-        int64 feeLimit = 18;
+        int64 fee_limit = 18;
     }
 
-    Raw rawData = 1;
+    raw raw_data = 1;
     // only support size = 1,  repeated list here for muti-sig extension
     repeated bytes signature = 2;
     repeated Result ret = 5;
@@ -399,21 +399,21 @@ message TransactionInfo {
     int64 blockNumber = 3;
     int64 blockTimeStamp = 4;
     repeated bytes contractResult = 5;
-    bytes contractAddress = 6;
+    bytes contract_address = 6;
     ResourceReceipt receipt = 7;
     repeated Log log = 8;
     code result = 9;
     bytes resMessage = 10;
 
-    int64 assetIssueId = 14;
-    int64 withdrawAmount = 15;
-    int64 unfreezeAmount = 16;
-    repeated InternalTransaction internalTransactions = 17;
-    int64 exchangeReceivedAmount = 18;
-    int64 exchangeInjectAnotherAmount = 19;
-    int64 exchangeWithdrawAnotherAmount = 20;
-    int64 exchangeId = 21;
-    int64 unstakeAmount = 22;
+    int64 assetIssueID = 14;
+    int64 withdraw_amount = 15;
+    int64 unfreeze_amount = 16;
+    repeated InternalTransaction internal_transactions = 17;
+    int64 exchange_received_amount = 18;
+    int64 exchange_inject_another_amount = 19;
+    int64 exchange_withdraw_another_amount = 20;
+    int64 exchange_id = 21;
+    int64 unstake_amount = 22;
 }
 
 message Transactions {
@@ -433,18 +433,18 @@ message BlockHeader {
         //bytes nonce = 5;
         //bytes difficulty = 6;
         int64 number = 7;
-        int64 witnessId = 8;
-        bytes witnessAddress = 9;
+        int64 witness_id = 8;
+        bytes witness_address = 9;
         int32 version = 10;
     }
-    raw rawData = 1;
-    bytes witnessSignature = 2;
+    raw raw_data = 1;
+    bytes witness_signature = 2;
 }
 
 // block
 message Block {
     repeated Transaction transactions = 1;
-    BlockHeader blockHeader = 2;
+    BlockHeader block_header = 2;
 }
 
 message ChainInventory {
@@ -453,7 +453,7 @@ message ChainInventory {
         int64 number = 2;
     }
     repeated BlockId ids = 1;
-    int64 remainNum = 2;
+    int64 remain_num = 2;
 }
 
 // Inventory
@@ -491,13 +491,13 @@ message Items {
 
     ItemType type = 1;
     repeated Block blocks = 2;
-    repeated BlockHeader blockHeaders = 3;
+    repeated BlockHeader block_headers = 3;
     repeated Transaction transactions = 4;
 }
 
 // DynamicProperties
 message DynamicProperties {
-    int64 lastSolidityBlockNum = 1;
+    int64 last_solidity_block_num = 1;
 }
 
 enum ReasonCode {
@@ -580,14 +580,14 @@ message SmartContract {
         }
         repeated Entry entrys = 1;
     }
-    bytes originAddress = 1;
-    bytes contractAddress = 2;
+    bytes origin_address = 1;
+    bytes contract_address = 2;
     ABI abi = 3;
     bytes bytecode = 4;
-    int64 callValue = 5;
-    int64 consumeUserResourcePercent = 6;
+    int64 call_value = 5;
+    int64 consume_user_resource_percent = 6;
     string name = 7;
-    int64 originEnergyLimit = 8;
+    int64 origin_energy_limit = 8;
 
 }
 
@@ -596,9 +596,9 @@ message InternalTransaction {
     // should equals to root transaction id.
     bytes hash = 1;
     // the one send trx (TBD: or token) via function
-    bytes callerAddress = 2;
+    bytes caller_address = 2;
     // the one recieve trx (TBD: or token) via function
-    bytes transferToAddress = 3;
+    bytes transferTo_address = 3;
     message CallValueInfo {
         // trx (TBD: or token) value
         int64 callValue = 1;

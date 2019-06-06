@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.ResponseCode.*;
+import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.response_code.*;
 
 @Slf4j
 public class MultiSign25 {

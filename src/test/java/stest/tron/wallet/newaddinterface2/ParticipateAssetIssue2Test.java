@@ -123,30 +123,30 @@ public class ParticipateAssetIssue2Test {
 		//The amount is large than the total supply, participate failed.
 		Return ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				name.getBytes(), 9100000000000000000L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : No enough balance !");
 		//The asset issue name is not correct, participate failed.
 		ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				(name + "wrong").getBytes(), 100L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
 		//The amount is 0, participate asset issue failed.
 		ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				name.getBytes(), 0L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0!");
 
 		//The amount is -1, participate asset issue failed.
 		ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				name.getBytes(), -1L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0!");
 		//The asset issue owner address is not correct, participate asset issue failed.
 		ret1 = PublicMethed.participateAssetIssue2(fromAddress, name.getBytes(), 100L,
 				toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
 	}
 
 	/**

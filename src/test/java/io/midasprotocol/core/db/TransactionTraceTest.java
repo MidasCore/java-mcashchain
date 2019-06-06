@@ -48,7 +48,7 @@ import io.midasprotocol.protos.Protocol.SmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
-import io.midasprotocol.protos.Protocol.Transaction.Raw;
+import io.midasprotocol.protos.Protocol.Transaction.raw;
 
 import java.io.File;
 
@@ -122,7 +122,7 @@ public class TransactionTraceTest {
 		String abi = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"uint256\"}],\"name\":\"getCoin\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
 				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
 						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)).build();
 
@@ -145,7 +145,7 @@ public class TransactionTraceTest {
 		String abi = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"uint256\"}],\"name\":\"getCoin\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
 				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
 						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)
 				.setTimestamp(System.currentTimeMillis()))
@@ -175,7 +175,7 @@ public class TransactionTraceTest {
 		String abi = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"uint256\"}],\"name\":\"getCoin\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
 				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
 						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)
 				.setTimestamp(System.currentTimeMillis())).build();
@@ -196,7 +196,7 @@ public class TransactionTraceTest {
 		TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
 				"setCoin(uint256,uint256)", "133,133", false,
 				0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-		Transaction transaction2 = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+		Transaction transaction2 = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(triggerContract))
 						.setType(ContractType.TriggerSmartContract)).setFeeLimit(1000000000L)).build();
 		TransactionCapsule transactionCapsule = new TransactionCapsule(transaction2);
@@ -221,7 +221,7 @@ public class TransactionTraceTest {
 		String abi = "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"account\",\"type\":\"uint256\"}],\"name\":\"getCoin\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
 				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
 						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)
 				.setTimestamp(System.currentTimeMillis()))
@@ -239,7 +239,7 @@ public class TransactionTraceTest {
 		TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
 				"setCoin(uint256,uint256)", "133,133", false,
 				0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-		Transaction transaction2 = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+		Transaction transaction2 = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(triggerContract))
 						.setType(ContractType.TriggerSmartContract)).setFeeLimit(1000000000L)).build();
 		TransactionCapsule transactionCapsule = new TransactionCapsule(transaction2);
@@ -317,7 +317,7 @@ public class TransactionTraceTest {
 
 		Transaction transaction = Transaction.newBuilder()
 				.setRawData(
-						Raw.newBuilder()
+						raw.newBuilder()
 								.addContract(
 										Contract.newBuilder()
 												.setParameter(Any.pack(contract))

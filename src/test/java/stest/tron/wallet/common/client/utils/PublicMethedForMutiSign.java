@@ -32,7 +32,7 @@ import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.*;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
-import io.midasprotocol.protos.Protocol.Transaction.Raw;
+import io.midasprotocol.protos.Protocol.Transaction.raw;
 import stest.tron.wallet.common.client.WalletClient;
 
 import java.math.BigInteger;
@@ -279,7 +279,7 @@ public class PublicMethedForMutiSign {
 
 		long currentTime = System.currentTimeMillis();//*1000000 + System.nanoTime()%1000000;
 		Transaction.Builder builder = transaction.toBuilder();
-		io.midasprotocol.protos.Protocol.Transaction.Raw.Builder rowBuilder = transaction.getRawData()
+		io.midasprotocol.protos.Protocol.Transaction.raw.Builder rowBuilder = transaction.getRawData()
 				.toBuilder();
 		rowBuilder.setTimestamp(currentTime);
 		builder.setRawData(rowBuilder.build());
@@ -299,11 +299,11 @@ public class PublicMethedForMutiSign {
 			transaction = TransactionUtils.sign(transaction, ecKey);
 			TransactionSignWeight weight = blockingStubFull.getTransactionSignWeight(transaction);
 			if (weight.getResult().getCode()
-					== TransactionSignWeight.Result.ResponseCode.ENOUGH_PERMISSION) {
+					== TransactionSignWeight.Result.response_code.ENOUGH_PERMISSION) {
 				break;
 			}
 			if (weight.getResult().getCode()
-					== TransactionSignWeight.Result.ResponseCode.NOT_ENOUGH_PERMISSION) {
+					== TransactionSignWeight.Result.response_code.NOT_ENOUGH_PERMISSION) {
 				continue;
 			}
 		}
@@ -1370,7 +1370,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -1496,7 +1496,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -1975,7 +1975,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -2293,7 +2293,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -2820,7 +2820,7 @@ public class PublicMethedForMutiSign {
 		TransactionExtention transactionExtention = blockingStubFull.createTransaction2(contract);
 
 		Transaction transaction = transactionExtention.getTransaction();
-		Raw rawData = transaction.getRawData();
+		raw rawData = transaction.getRawData();
 		Transaction.Contract contract1 = transactionExtention.getTransaction().getRawData()
 				.getContractList().get(0);
 		contract1 = contract1.toBuilder().setPermissionId(permissionId).build();
@@ -2906,7 +2906,7 @@ public class PublicMethedForMutiSign {
 		}
 
 		Transaction transaction = transactionExtention.getTransaction();
-		Raw rawData = transaction.getRawData();
+		raw rawData = transaction.getRawData();
 		Transaction.Contract contract1 = transactionExtention.getTransaction().getRawData()
 				.getContractList().get(0);
 		contract1 = contract1.toBuilder().setPermissionId(permissionId).build();
@@ -3005,7 +3005,7 @@ public class PublicMethedForMutiSign {
 		}
 
 		//transaction = setPermissionId(transaction, permissionId);
-		Transaction.Raw.Builder raw = transaction.getRawData().toBuilder();
+		Transaction.raw.Builder raw = transaction.getRawData().toBuilder();
 		Transaction.Contract.Builder contract = raw.getContract(0).toBuilder()
 				.setPermissionId(permissionId);
 		raw.clearContract();
@@ -3035,7 +3035,7 @@ public class PublicMethedForMutiSign {
 			throw new CancelException("User cancelled");
 		}
 		if (permissionId != 0) {
-			Transaction.Raw.Builder raw = transaction.getRawData().toBuilder();
+			Transaction.raw.Builder raw = transaction.getRawData().toBuilder();
 			Transaction.Contract.Builder contract = raw.getContract(0).toBuilder()
 					.setPermissionId(permissionId);
 			raw.clearContract();
@@ -3084,7 +3084,7 @@ public class PublicMethedForMutiSign {
 		TransactionExtention transactionExtention = blockingStubFull.createTransaction2(contract);
 
 		Transaction transaction = transactionExtention.getTransaction();
-		Raw rawData = transaction.getRawData();
+		raw rawData = transaction.getRawData();
 		Transaction.Contract contract1 = transactionExtention.getTransaction().getRawData()
 				.getContractList().get(0);
 		contract1 = contract1.toBuilder().setPermissionId(permissionId).build();
@@ -3311,7 +3311,7 @@ public class PublicMethedForMutiSign {
 	private static Transaction setReference(Transaction transaction, long blockNum,
 											byte[] blockHash) {
 		byte[] refBlockNum = ByteArray.fromLong(blockNum);
-		Transaction.Raw rawData = transaction.getRawData().toBuilder()
+		Transaction.raw rawData = transaction.getRawData().toBuilder()
 				.setRefBlockHash(ByteString.copyFrom(blockHash))
 				.setRefBlockBytes(ByteString.copyFrom(refBlockNum))
 				.build();
@@ -3322,7 +3322,7 @@ public class PublicMethedForMutiSign {
 	 * constructor.
 	 */
 	public static Transaction setExpiration(Transaction transaction, long expiration) {
-		Transaction.Raw rawData = transaction.getRawData().toBuilder().setExpiration(expiration)
+		Transaction.raw rawData = transaction.getRawData().toBuilder().setExpiration(expiration)
 				.build();
 		return transaction.toBuilder().setRawData(rawData).build();
 	}
@@ -3332,7 +3332,7 @@ public class PublicMethedForMutiSign {
 	 */
 	public static Transaction createTransaction(com.google.protobuf.Message message,
 												ContractType contractType) {
-		Transaction.Raw.Builder transactionBuilder = Transaction.Raw.newBuilder().addContract(
+		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
 				Transaction.Contract.newBuilder().setType(contractType).setParameter(
 						Any.pack(message)).build());
 
@@ -3408,7 +3408,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -3544,7 +3544,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -3669,7 +3669,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -3775,7 +3775,7 @@ public class PublicMethedForMutiSign {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);

@@ -4,7 +4,7 @@ import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.EasyTransferAssetMessage;
 import io.midasprotocol.api.GrpcAPI.EasyTransferResponse;
-import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
+import io.midasprotocol.api.GrpcAPI.Return.response_code;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.TransactionCapsule;
@@ -61,7 +61,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 			response.getWriter().println(Util.printEasyTransferResponse(responseBuild.build()));
 		} catch (ParseException e) {
 			logger.debug("ParseException: {}", e.getMessage());
-			returnBuilder.setResult(false).setCode(ResponseCode.OTHER_ERROR)
+			returnBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
 				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {
@@ -72,7 +72,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 			return;
 		} catch (IOException e) {
 			logger.debug("IOException: {}", e.getMessage());
-			returnBuilder.setResult(false).setCode(ResponseCode.OTHER_ERROR)
+			returnBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
 				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {
@@ -82,7 +82,7 @@ public class EasyTransferAssetServlet extends HttpServlet {
 			}
 			return;
 		} catch (ContractValidateException e) {
-			returnBuilder.setResult(false).setCode(ResponseCode.CONTRACT_VALIDATE_ERROR)
+			returnBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
 				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {

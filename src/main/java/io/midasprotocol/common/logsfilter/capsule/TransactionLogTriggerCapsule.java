@@ -158,8 +158,8 @@ public class TransactionLogTriggerCapsule extends TriggerCapsule {
 			item.setHash(Hex.toHexString(internalTransaction.getHash()));
 			item.setCallValue(internalTransaction.getValue());
 			item.setTokenInfo(internalTransaction.getTokenInfo());
-			item.setCallerAddress(Hex.toHexString(internalTransaction.getSender()));
-			item.setTransferToAddress(Hex.toHexString(internalTransaction.getTransferToAddress()));
+			item.setCaller_address(Hex.toHexString(internalTransaction.getSender()));
+			item.setTransferTo_address(Hex.toHexString(internalTransaction.getTransferToAddress()));
 			item.setData(Hex.toHexString(internalTransaction.getData()));
 			item.setRejected(internalTransaction.isRejected());
 			item.setNote(internalTransaction.getNote());

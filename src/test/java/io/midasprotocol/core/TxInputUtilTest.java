@@ -44,7 +44,7 @@ public class TxInputUtilTest {
 				.fromHexString("a0c9d5524c055381fe8b1950e0c3b09d252add57a7aec061ae258aa03ee25822");
 		TXInput txInput = TxInputUtil.newTxInput(txId, vout, signature, pubkey);
 
-		Assert.assertArrayEquals(txId, txInput.getRawData().getTxId().toByteArray());
+		Assert.assertArrayEquals(txId, txInput.getRawData().getTxID().toByteArray());
 		Assert.assertEquals(vout, txInput.getRawData().getVout());
 		Assert.assertArrayEquals(signature, txInput.getSignature().toByteArray());
 		Assert.assertArrayEquals(pubkey, txInput.getRawData().getPubKey().toByteArray());

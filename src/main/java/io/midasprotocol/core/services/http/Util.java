@@ -49,9 +49,9 @@ public class Util {
 
 	public static JSONObject printBlockToJSON(Block block) {
 		BlockCapsule blockCapsule = new BlockCapsule(block);
-		String blockId = ByteArray.toHexString(blockCapsule.getBlockId().getBytes());
+		String blockID = ByteArray.toHexString(blockCapsule.getBlockId().getBytes());
 		JSONObject jsonObject = JSONObject.parseObject(JsonFormat.printToString(block));
-		jsonObject.put("blockId", blockId);
+		jsonObject.put("blockID", blockID);
 		if (!blockCapsule.getTransactions().isEmpty()) {
 			jsonObject.put("transactions", printTransactionListToJSON(blockCapsule.getTransactions()));
 		}
@@ -222,7 +222,7 @@ public class Util {
 						contractJson = JSONObject.parseObject(JsonFormat.printToString(deployContract));
 						byte[] ownerAddress = deployContract.getOwnerAddress().toByteArray();
 						byte[] contractAddress = generateContractAddress(transaction, ownerAddress);
-						jsonTransaction.put("contractAddress", ByteArray.toHexString(contractAddress));
+						jsonTransaction.put("contract_address", ByteArray.toHexString(contractAddress));
 						break;
 					case TriggerSmartContract:
 						TriggerSmartContract triggerSmartContract = contractParameter
@@ -314,19 +314,19 @@ public class Util {
 			}
 		});
 
-		JSONObject rawData = JSONObject.parseObject(jsonTransaction.get("rawData").toString());
+		JSONObject rawData = JSONObject.parseObject(jsonTransaction.get("raw_data").toString());
 		rawData.put("contract", contracts);
-		jsonTransaction.put("rawData", rawData);
+		jsonTransaction.put("raw_data", rawData);
 		String rawDataHex = ByteArray.toHexString(transaction.getRawData().toByteArray());
-		jsonTransaction.put("rawDataHex", rawDataHex);
-		String txId = ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray()));
-		jsonTransaction.put("txId", txId);
+		jsonTransaction.put("raw_data_hex", rawDataHex);
+		String txID = ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray()));
+		jsonTransaction.put("txID", txID);
 		return jsonTransaction;
 	}
 
 	public static Transaction packTransaction(String strTransaction) {
 		JSONObject jsonTransaction = JSONObject.parseObject(strTransaction);
-		JSONObject rawData = jsonTransaction.getJSONObject("rawData");
+		JSONObject rawData = jsonTransaction.getJSONObject("raw_data");
 		JSONArray contracts = new JSONArray();
 		JSONArray rawContractArray = rawData.getJSONArray("contract");
 
@@ -574,7 +574,7 @@ public class Util {
 			}
 		}
 		rawData.put("contract", contracts);
-		jsonTransaction.put("rawData", rawData);
+		jsonTransaction.put("raw_data", rawData);
 		Transaction.Builder transactionBuilder = Transaction.newBuilder();
 		try {
 			JsonFormat.merge(jsonTransaction.toJSONString(), transactionBuilder);

@@ -183,7 +183,7 @@ dependencies {
 	compile group: 'org.pf4j', name: 'pf4j', version: '2.5.0'
 }
 
-//check.dependsOn 'lint'
+check.dependsOn 'lint'
 
 //checkstyle {
 //    toolVersion = "${versions.checkstyle}"

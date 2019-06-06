@@ -34,7 +34,7 @@ public class ActuatorFactory {
 		}
 
 		Preconditions.checkNotNull(manager, "manager is null");
-		Protocol.Transaction.Raw rawData = transactionCapsule.getInstance().getRawData();
+		Protocol.Transaction.raw rawData = transactionCapsule.getInstance().getRawData();
 		rawData.getContractList()
 			.forEach(contract -> actuatorList.add(getActuatorByContract(contract, manager)));
 		return actuatorList;

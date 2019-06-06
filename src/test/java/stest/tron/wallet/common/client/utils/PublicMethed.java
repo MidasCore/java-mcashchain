@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.*;
-import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
+import io.midasprotocol.api.GrpcAPI.Return.response_code;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.api.WalletSolidityGrpc;
 import io.midasprotocol.common.crypto.ECKey;
@@ -834,7 +834,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static long printTransactionRow(Transaction.Raw raw) {
+	public static long printTransactionRow(Transaction.raw raw) {
 		long timestamp = raw.getTimestamp();
 
 		return timestamp;
@@ -1598,7 +1598,7 @@ public class PublicMethed {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -1727,7 +1727,7 @@ public class PublicMethed {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -2122,7 +2122,7 @@ public class PublicMethed {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -2489,7 +2489,7 @@ public class PublicMethed {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -2921,7 +2921,7 @@ public class PublicMethed {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -3018,7 +3018,7 @@ public class PublicMethed {
 
 		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.Raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
@@ -3239,7 +3239,7 @@ public class PublicMethed {
 													  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		int i = 10;
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
-		while (response.getResult() == false && response.getCode() == ResponseCode.SERVER_BUSY
+		while (response.getResult() == false && response.getCode() == response_code.SERVER_BUSY
 				&& i > 0) {
 			try {
 				Thread.sleep(300);

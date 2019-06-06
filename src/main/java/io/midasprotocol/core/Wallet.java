@@ -27,7 +27,7 @@ import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.*;
-import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
+import io.midasprotocol.api.GrpcAPI.Return.response_code;
 import io.midasprotocol.api.GrpcAPI.TransactionExtention.Builder;
 import io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result;
 import io.midasprotocol.common.crypto.ECKey;
@@ -420,7 +420,7 @@ public class Wallet {
 			if (minEffectiveConnection != 0) {
 				if (tronNetDelegate.getActivePeer().isEmpty()) {
 					logger.warn("Broadcast transaction {} failed, no connection.", trx.getTransactionId());
-					return builder.setResult(false).setCode(ResponseCode.NO_CONNECTION)
+					return builder.setResult(false).setCode(response_code.NO_CONNECTION)
 						.setMessage(ByteString.copyFromUtf8("no connection"))
 						.build();
 				}
@@ -433,7 +433,7 @@ public class Wallet {
 					String info = "effective connection:" + count + " lt minEffectiveConnection:"
 						+ minEffectiveConnection;
 					logger.warn("Broadcast transaction {} failed, {}.", trx.getTransactionId(), info);
-					return builder.setResult(false).setCode(ResponseCode.NOT_ENOUGH_EFFECTIVE_CONNECTION)
+					return builder.setResult(false).setCode(response_code.NOT_ENOUGH_EFFECTIVE_CONNECTION)
 						.setMessage(ByteString.copyFromUtf8(info))
 						.build();
 				}
@@ -441,17 +441,17 @@ public class Wallet {
 
 			if (dbManager.isTooManyPending()) {
 				logger.warn("Broadcast transaction {} failed, too many pending.", trx.getTransactionId());
-				return builder.setResult(false).setCode(ResponseCode.SERVER_BUSY).build();
+				return builder.setResult(false).setCode(response_code.SERVER_BUSY).build();
 			}
 
 			if (dbManager.isGeneratingBlock()) {
 				logger.warn("Broadcast transaction {} failed, is generating block.", trx.getTransactionId());
-				return builder.setResult(false).setCode(ResponseCode.SERVER_BUSY).build();
+				return builder.setResult(false).setCode(response_code.SERVER_BUSY).build();
 			}
 
 			if (dbManager.getTransactionIdCache().getIfPresent(trx.getTransactionId()) != null) {
 				logger.warn("Broadcast transaction {} failed, is already exist.", trx.getTransactionId());
-				return builder.setResult(false).setCode(ResponseCode.DUP_TRANSACTION_ERROR).build();
+				return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR).build();
 			} else {
 				dbManager.getTransactionIdCache().put(trx.getTransactionId(), true);
 			}
@@ -461,50 +461,50 @@ public class Wallet {
 			dbManager.pushTransaction(trx);
 			tronNetService.broadcast(message);
 			logger.info("Broadcast transaction {} successfully.", trx.getTransactionId());
-			return builder.setResult(true).setCode(ResponseCode.SUCCESS).build();
+			return builder.setResult(true).setCode(response_code.SUCCESS).build();
 		} catch (ValidateSignatureException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.SIGERROR)
+			return builder.setResult(false).setCode(response_code.SIGERROR)
 				.setMessage(ByteString.copyFromUtf8("validate signature error " + e.getMessage()))
 				.build();
 		} catch (ContractValidateException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.CONTRACT_VALIDATE_ERROR)
+			return builder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
 				.setMessage(ByteString.copyFromUtf8("contract validate error : " + e.getMessage()))
 				.build();
 		} catch (ContractExeException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.CONTRACT_EXE_ERROR)
+			return builder.setResult(false).setCode(response_code.CONTRACT_EXE_ERROR)
 				.setMessage(ByteString.copyFromUtf8("contract execute error : " + e.getMessage()))
 				.build();
 		} catch (AccountResourceInsufficientException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.BANDWIDTH_ERROR)
+			return builder.setResult(false).setCode(response_code.BANDWITH_ERROR)
 				.setMessage(ByteString.copyFromUtf8("AccountResourceInsufficient error"))
 				.build();
 		} catch (DupTransactionException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.DUP_TRANSACTION_ERROR)
+			return builder.setResult(false).setCode(response_code.DUP_TRANSACTION_ERROR)
 				.setMessage(ByteString.copyFromUtf8("dup transaction"))
 				.build();
 		} catch (TaposException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.TAPOS_ERROR)
+			return builder.setResult(false).setCode(response_code.TAPOS_ERROR)
 				.setMessage(ByteString.copyFromUtf8("Tapos check error"))
 				.build();
 		} catch (TooBigTransactionException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.TOO_BIG_TRANSACTION_ERROR)
+			return builder.setResult(false).setCode(response_code.TOO_BIG_TRANSACTION_ERROR)
 				.setMessage(ByteString.copyFromUtf8("transaction size is too big"))
 				.build();
 		} catch (TransactionExpirationException e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.TRANSACTION_EXPIRATION_ERROR)
+			return builder.setResult(false).setCode(response_code.TRANSACTION_EXPIRATION_ERROR)
 				.setMessage(ByteString.copyFromUtf8("transaction expired"))
 				.build();
 		} catch (Exception e) {
 			logger.error("Broadcast transaction {} failed, {}.", trx.getTransactionId(), e.getMessage());
-			return builder.setResult(false).setCode(ResponseCode.OTHER_ERROR)
+			return builder.setResult(false).setCode(response_code.OTHER_ERROR)
 				.setMessage(ByteString.copyFromUtf8("other error : " + e.getMessage()))
 				.build();
 		}
@@ -531,7 +531,7 @@ public class Wallet {
 		trxExBuilder.setTransaction(trx);
 		trxExBuilder.setTxid(ByteString.copyFrom(Sha256Hash.hash(trx.getRawData().toByteArray())));
 		Return.Builder retBuilder = Return.newBuilder();
-		retBuilder.setResult(true).setCode(ResponseCode.SUCCESS);
+		retBuilder.setResult(true).setCode(response_code.SUCCESS);
 		trxExBuilder.setResult(retBuilder);
 		tswBuilder.setTransaction(trxExBuilder);
 		Result.Builder resultBuilder = Result.newBuilder();
@@ -565,21 +565,21 @@ public class Wallet {
 				tswBuilder.setCurrentWeight(currentWeight);
 			}
 			if (tswBuilder.getCurrentWeight() >= permission.getThreshold()) {
-				resultBuilder.setCode(Result.ResponseCode.ENOUGH_PERMISSION);
+				resultBuilder.setCode(Result.response_code.ENOUGH_PERMISSION);
 			} else {
-				resultBuilder.setCode(Result.ResponseCode.NOT_ENOUGH_PERMISSION);
+				resultBuilder.setCode(Result.response_code.NOT_ENOUGH_PERMISSION);
 			}
 		} catch (SignatureFormatException signEx) {
-			resultBuilder.setCode(Result.ResponseCode.SIGNATURE_FORMAT_ERROR);
+			resultBuilder.setCode(Result.response_code.SIGNATURE_FORMAT_ERROR);
 			resultBuilder.setMessage(signEx.getMessage());
 		} catch (SignatureException signEx) {
-			resultBuilder.setCode(Result.ResponseCode.COMPUTE_ADDRESS_ERROR);
+			resultBuilder.setCode(Result.response_code.COMPUTE_ADDRESS_ERROR);
 			resultBuilder.setMessage(signEx.getMessage());
 		} catch (PermissionException permEx) {
-			resultBuilder.setCode(Result.ResponseCode.PERMISSION_ERROR);
+			resultBuilder.setCode(Result.response_code.PERMISSION_ERROR);
 			resultBuilder.setMessage(permEx.getMessage());
 		} catch (Exception ex) {
-			resultBuilder.setCode(Result.ResponseCode.OTHER_ERROR);
+			resultBuilder.setCode(Result.response_code.OTHER_ERROR);
 			resultBuilder.setMessage(ex.getClass() + " : " + ex.getMessage());
 		}
 		tswBuilder.setResult(resultBuilder);
@@ -592,7 +592,7 @@ public class Wallet {
 		trxExBuilder.setTransaction(trx);
 		trxExBuilder.setTxid(ByteString.copyFrom(Sha256Hash.hash(trx.getRawData().toByteArray())));
 		Return.Builder retBuilder = Return.newBuilder();
-		retBuilder.setResult(true).setCode(ResponseCode.SUCCESS);
+		retBuilder.setResult(true).setCode(response_code.SUCCESS);
 		trxExBuilder.setResult(retBuilder);
 		tswBuilder.setTransaction(trxExBuilder);
 		TransactionApprovedList.Result.Builder resultBuilder = TransactionApprovedList.Result
@@ -619,15 +619,15 @@ public class Wallet {
 				}
 				tswBuilder.addAllApprovedList(approveList);
 			}
-			resultBuilder.setCode(TransactionApprovedList.Result.ResponseCode.SUCCESS);
+			resultBuilder.setCode(TransactionApprovedList.Result.response_code.SUCCESS);
 		} catch (SignatureFormatException signEx) {
-			resultBuilder.setCode(TransactionApprovedList.Result.ResponseCode.SIGNATURE_FORMAT_ERROR);
+			resultBuilder.setCode(TransactionApprovedList.Result.response_code.SIGNATURE_FORMAT_ERROR);
 			resultBuilder.setMessage(signEx.getMessage());
 		} catch (SignatureException signEx) {
-			resultBuilder.setCode(TransactionApprovedList.Result.ResponseCode.COMPUTE_ADDRESS_ERROR);
+			resultBuilder.setCode(TransactionApprovedList.Result.response_code.COMPUTE_ADDRESS_ERROR);
 			resultBuilder.setMessage(signEx.getMessage());
 		} catch (Exception ex) {
-			resultBuilder.setCode(TransactionApprovedList.Result.ResponseCode.OTHER_ERROR);
+			resultBuilder.setCode(TransactionApprovedList.Result.response_code.OTHER_ERROR);
 			resultBuilder.setMessage(ex.getClass() + " : " + ex.getMessage());
 		}
 		tswBuilder.setResult(resultBuilder);

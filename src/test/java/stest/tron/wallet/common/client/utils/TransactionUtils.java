@@ -179,7 +179,7 @@ public class TransactionUtils {
 	public static Transaction setTimestamp(Transaction transaction) {
 		long currentTime = System.currentTimeMillis();//*1000000 + System.nanoTime()%1000000;
 		Transaction.Builder builder = transaction.toBuilder();
-		io.midasprotocol.protos.Protocol.Transaction.Raw.Builder rowBuilder = transaction.getRawData()
+		io.midasprotocol.protos.Protocol.Transaction.raw.Builder rowBuilder = transaction.getRawData()
 				.toBuilder();
 		rowBuilder.setTimestamp(currentTime);
 		builder.setRawData(rowBuilder.build());
