@@ -167,13 +167,13 @@ public class StakeActuatorTest {
 
 	@Test
 	public void stakeTimes() {
-		long stakeAmount = ConversionUtil.McashToMatoshi(1_000);
+		long stakeAmount = ConversionUtil.McashToMatoshi(5_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
 				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager
 		);
 
-		long secondStakeAmount = ConversionUtil.McashToMatoshi(4_000);
+		long secondStakeAmount = ConversionUtil.McashToMatoshi(10_000);
 		StakeActuator secondActuator = new StakeActuator(
 				getContract(OWNER_ADDRESS, secondStakeAmount, duration), dbManager
 		);
@@ -183,6 +183,7 @@ public class StakeActuatorTest {
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 		long beforeStakeSize = dbManager.getStakeAccountStore().size();
 		logger.info("[Before] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
+		logger.info("before stake size = {}", beforeStakeSize);
 		try {
 			actuator.validate();
 			actuator.execute(ret);
@@ -195,11 +196,9 @@ public class StakeActuatorTest {
 			Assert.assertEquals(owner.getBalance(), expectedBalanceAfterStaking);
 			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount);
 
-			Assert.assertEquals(beforeStakeSize,
-					dbManager.getStakeAccountStore().size());
+			Assert.assertEquals(beforeStakeSize, dbManager.getStakeAccountStore().size());
 			stakeAccountController.updateStakeAccount();
-			Assert.assertEquals(beforeStakeSize,
-					dbManager.getStakeAccountStore().size());
+			Assert.assertEquals(beforeStakeSize + 1, dbManager.getStakeAccountStore().size());
 
 			accountCapsule = dbManager.getAccountStore().get(
 					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
@@ -240,52 +239,6 @@ public class StakeActuatorTest {
 	}
 
 	@Test
-	public void stakeAmountLessThanMinStakeNode() {
-		long stakeAmount = ConversionUtil.McashToMatoshi(1_000);
-		long duration = 3;
-		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager
-		);
-		TransactionResultCapsule ret = new TransactionResultCapsule();
-
-		AccountCapsule accountCapsule = dbManager.getAccountStore().get(
-				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
-		long beforeStakeSize = dbManager.getStakeAccountStore().size();
-		logger.info("[Before] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
-		try {
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-
-			long expectedBalanceAfterStaking = initBalance - stakeAmount - ChainConstant.TRANSFER_FEE;
-
-			Assert.assertEquals(owner.getBalance(), expectedBalanceAfterStaking);
-			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount);
-
-			Assert.assertEquals(beforeStakeSize, dbManager.getStakeAccountStore().size());
-
-			stakeAccountController.updateStakeAccount();
-			Assert.assertEquals(beforeStakeSize, dbManager.getStakeAccountStore().size());
-
-			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
-			Assert.assertEquals(expectedBalanceAfterStaking, accountCapsule.getBalance());
-
-			stakeAccountController.updateStakeAccount();
-			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
-			Assert.assertEquals(expectedBalanceAfterStaking, accountCapsule.getBalance());
-			logger.info("[After] {} balance = {}", OWNER_ADDRESS, accountCapsule.getBalance());
-		} catch (ContractValidateException | ContractExeException e) {
-			Assert.fail(e.getMessage());
-		} finally {
-			dbManager.getBlockRewardStore().reset();
-		}
-	}
-
-	@Test
 	public void stakeLessThanZero() {
 		long stakeAmount = ConversionUtil.McashToMatoshi(-1_000);
 		long duration = 3;
@@ -305,7 +258,7 @@ public class StakeActuatorTest {
 
 	@Test
 	public void stakeMoreThanBalance() {
-		long stakeAmount = ConversionUtil.McashToMatoshi(10_000_001);
+		long stakeAmount = ConversionUtil.McashToMatoshi(20_000_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
 				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
@@ -361,7 +314,7 @@ public class StakeActuatorTest {
 	}
 
 	@Test
-	public void lessThan1TrxTest() {
+	public void stakeAmountLessThanMinStakeNode() {
 		long stakeAmount = 100000000;
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
@@ -372,7 +325,7 @@ public class StakeActuatorTest {
 			actuator.execute(ret);
 			Assert.fail("cannot run here.");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Stake amount must be more than 1000 MCASH", e.getMessage());
+			Assert.assertEquals("Stake amount must be more than or equal 5000 MCASH", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

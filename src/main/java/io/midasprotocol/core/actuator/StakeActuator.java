@@ -104,8 +104,12 @@ public class StakeActuator extends AbstractActuator {
 		if (stakeAmount <= 0) {
 			throw new ContractValidateException("Stake amount must be positive");
 		}
-		if (stakeAmount < ConversionUtil.McashToMatoshi(1000)) {
-			throw new ContractValidateException("Stake amount must be more than 1000 MCASH");
+		if (stakeAmount < ConversionUtil.McashToMatoshi(5000)) {
+			throw new ContractValidateException("Stake amount must be more than or equal 5000 MCASH");
+		}
+
+		if (stakeAmount % ConversionUtil.McashToMatoshi(5000) != 0) {
+			throw new ContractValidateException("Stake amount must be divisible by 5000 MCASH");
 		}
 
 		if (stakeAmount > accountCapsule.getBalance()) {
