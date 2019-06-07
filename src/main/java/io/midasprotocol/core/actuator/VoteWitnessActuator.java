@@ -90,10 +90,9 @@ public class VoteWitnessActuator extends AbstractActuator {
 			if (!Wallet.addressValid(witnessCandidate)) {
 				throw new ContractValidateException("Invalid vote address");
 			}
-//			long voteCount = vote.getVoteCount();
 			long voteCount = accountCapsule.getVotingPower();
 			if (voteCount <= 0) {
-				throw new ContractValidateException("vote count must be greater than 0");
+				throw new ContractValidateException("Account not have stake");
 			}
 			String readableWitnessAddress = StringUtil.createReadableString(contract.getVoteAddress());
 			if (!Objects.isNull(getDeposit())) {
