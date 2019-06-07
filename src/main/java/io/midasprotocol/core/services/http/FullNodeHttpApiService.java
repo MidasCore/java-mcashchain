@@ -2,12 +2,17 @@ package io.midasprotocol.core.services.http;
 
 import io.midasprotocol.common.application.Service;
 import io.midasprotocol.core.config.args.Args;
+import io.midasprotocol.core.services.config.CORSFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.DispatcherType;
+import java.util.EnumSet;
 
 @Component
 @Slf4j(topic = "API")
@@ -165,6 +170,8 @@ public class FullNodeHttpApiService implements Service {
 	private ResignWitnessServlet resignWitnessServlet;
 	@Autowired
 	private BlockRewardServlet blockRewardServlet;
+	@Autowired
+	private CORSFilter corsFilter;
 
 	@Override
 	public void init() {
@@ -270,6 +277,10 @@ public class FullNodeHttpApiService implements Service {
 			context.addServlet(new ServletHolder(stakeServlet), "/stake");
 			context.addServlet(new ServletHolder(unstakeServlet), "/unstake");
 			context.addServlet(new ServletHolder(blockRewardServlet), "/getreward");
+
+			FilterHolder filterHolder = new FilterHolder();
+			filterHolder.setFilter(corsFilter);
+			context.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
 			server.start();
 		} catch (Exception e) {
 			logger.debug("IOException: {}", e.getMessage());
