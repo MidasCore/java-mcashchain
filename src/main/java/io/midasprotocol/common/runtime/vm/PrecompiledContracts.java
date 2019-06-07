@@ -701,13 +701,9 @@ public class PrecompiledContracts {
 			Contract.VoteWitnessContract.Builder builder = Contract.VoteWitnessContract.newBuilder();
 			builder.setOwnerAddress(ByteString.copyFrom(getCallerAddress()));
 			long count = Longs.fromByteArray(value);
-			Contract.VoteWitnessContract.Vote.Builder voteBuilder = Contract.VoteWitnessContract.Vote
-				.newBuilder();
 			byte[] witnessAddress20 = new byte[20];
 			System.arraycopy(witnessAddress, 12, witnessAddress20, 0, 20);
-			voteBuilder.setVoteAddress(ByteString.copyFrom(convertToTronAddress(witnessAddress20)));
-			voteBuilder.setVoteCount(count);
-			builder.setVote(voteBuilder.build());
+			builder.setVoteAddress(ByteString.copyFrom(convertToTronAddress(witnessAddress20)));
 			VoteWitnessContract contract = builder.build();
 
 			final List<Actuator> actuatorList = ActuatorFactory

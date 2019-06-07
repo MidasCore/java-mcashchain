@@ -439,14 +439,12 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 
 	public long getVotingPower() {
 		long stakeAmount = getTotalStakeAmount();
-		long votingPower = 0;
-
 		for (NodeTier tier : NODE_TIERS) {
-			long k = stakeAmount / tier.getStakeAmount();
-			votingPower += k * tier.getVotingPower();
-			stakeAmount -= k * tier.getStakeAmount();
+			if (stakeAmount >= tier.getStakeAmount()) {
+				return tier.getVotingPower();
+			}
 		}
-		return votingPower;
+		return 0;
 	}
 
 	public boolean assetBalanceEnoughV2(long tokenId, long amount) {

@@ -18,7 +18,6 @@ import io.midasprotocol.core.db.WitnessStore;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.VoteWitnessContract;
-import io.midasprotocol.protos.Contract.VoteWitnessContract.Vote;
 import io.midasprotocol.protos.Protocol.Transaction.Result.code;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,21 +76,26 @@ public class VoteWitnessActuator extends AbstractActuator {
 		AccountStore accountStore = dbManager.getAccountStore();
 		WitnessStore witnessStore = dbManager.getWitnessStore();
 
-		if (!contract.hasVote()) {
-			throw new ContractValidateException("VoteNumber must more than 0");
-		}
 		try {
+			AccountCapsule accountCapsule =
+				(Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
+					: getDeposit().getAccount(ownerAddress);
+			if (accountCapsule == null) {
+				throw new ContractValidateException(
+					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+			}
+
 			long sum = 0L;
-			Vote vote = contract.getVote();
-			byte[] witnessCandidate = vote.getVoteAddress().toByteArray();
+			byte[] witnessCandidate = contract.getVoteAddress().toByteArray();
 			if (!Wallet.addressValid(witnessCandidate)) {
 				throw new ContractValidateException("Invalid vote address");
 			}
-			long voteCount = vote.getVoteCount();
+//			long voteCount = vote.getVoteCount();
+			long voteCount = accountCapsule.getVotingPower();
 			if (voteCount <= 0) {
 				throw new ContractValidateException("vote count must be greater than 0");
 			}
-			String readableWitnessAddress = StringUtil.createReadableString(vote.getVoteAddress());
+			String readableWitnessAddress = StringUtil.createReadableString(contract.getVoteAddress());
 			if (!Objects.isNull(getDeposit())) {
 				if (Objects.isNull(getDeposit().getAccount(witnessCandidate))) {
 					throw new ContractValidateException(
@@ -110,15 +114,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 				throw new ContractValidateException(
 					WITNESS_EXCEPTION_STR + readableWitnessAddress + NOT_EXIST_STR);
 			}
-			sum = LongMath.checkedAdd(sum, vote.getVoteCount());
-
-			AccountCapsule accountCapsule =
-				(Objects.isNull(getDeposit())) ? accountStore.get(ownerAddress)
-					: getDeposit().getAccount(ownerAddress);
-			if (accountCapsule == null) {
-				throw new ContractValidateException(
-					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
-			}
+			sum = LongMath.checkedAdd(sum, voteCount);
 
 			long votingPower = accountCapsule.getVotingPower();
 
@@ -162,13 +158,11 @@ public class VoteWitnessActuator extends AbstractActuator {
 		accountCapsule.clearVote();
 		voteChangeCapsule.clearNewVote();
 
-		if (voteContract.hasVote()) {
-			logger.debug("countVoteAccount,address[{}]",
-				ByteArray.toHexString(voteContract.getVote().getVoteAddress().toByteArray()));
-			voteChangeCapsule.setNewVote(
-				voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
-			accountCapsule.setVote(voteContract.getVote().getVoteAddress(), voteContract.getVote().getVoteCount());
-		}
+		logger.debug("countVoteAccount,address[{}]",
+			ByteArray.toHexString(voteContract.getVoteAddress().toByteArray()));
+		long voteCount = accountCapsule.getVotingPower();
+		voteChangeCapsule.setNewVote(voteContract.getVoteAddress(), voteCount);
+		accountCapsule.setVote(voteContract.getVoteAddress(), voteCount);
 
 		if (Objects.isNull(deposit)) {
 			accountStore.put(accountCapsule.createDbKey(), accountCapsule);

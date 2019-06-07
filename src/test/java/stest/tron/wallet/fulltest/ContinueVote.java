@@ -168,16 +168,12 @@ public class ContinueVote {
 		for (String addressBase58 : witness.keySet()) {
 			String value = witness.get(addressBase58);
 			final long count = Long.parseLong(value);
-			Contract.VoteWitnessContract.Vote.Builder voteBuilder = Contract.VoteWitnessContract.Vote
-					.newBuilder();
 			byte[] address = WalletClient.decodeFromBase58Check(addressBase58);
 			logger.info("address ====== " + ByteArray.toHexString(address));
 			if (address == null) {
 				continue;
 			}
-			voteBuilder.setVoteAddress(ByteString.copyFrom(address));
-			voteBuilder.setVoteCount(count);
-			builder.setVote(voteBuilder.build());
+			builder.setVoteAddress(ByteString.copyFrom(address));
 		}
 
 		Contract.VoteWitnessContract contract = builder.build();

@@ -62,13 +62,8 @@ message VoteAssetContract {
 }
 
 message VoteWitnessContract {
-    message Vote {
-        bytes vote_address = 1;
-        int64 vote_count = 2;
-    }
-    bytes owner_address = 1;
-    Vote vote = 2;
-    bool support = 3;
+    bytes vote_address = 1;
+    bytes owner_address = 2;
 }
 
 message UpdateSettingContract {

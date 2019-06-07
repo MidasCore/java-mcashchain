@@ -21,7 +21,6 @@ import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract.AccountCreateContract;
 import io.midasprotocol.protos.Contract.TransferContract;
 import io.midasprotocol.protos.Contract.VoteWitnessContract;
-import io.midasprotocol.protos.Contract.VoteWitnessContract.Vote;
 import io.midasprotocol.protos.Contract.WitnessCreateContract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
@@ -124,9 +123,7 @@ public class TransactionStoreTest {
 	private VoteWitnessContract getVoteWitnessContract(String address, String voteaddress, Long value) {
 		return VoteWitnessContract.newBuilder()
 				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.setVote(Vote.newBuilder()
-						.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
-						.setVoteCount(value).build())
+				.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
 				.build();
 	}
 

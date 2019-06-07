@@ -198,18 +198,13 @@ public class VoteWitnessAccount2Test {
 		builder.setOwnerAddress(ByteString.copyFrom(addRess));
 		for (String addressBase58 : witness.keySet()) {
 
-			Contract.VoteWitnessContract.Vote.Builder voteBuilder = Contract.VoteWitnessContract.Vote
-					.newBuilder();
 			byte[] address = WalletClient.decodeFromBase58Check(addressBase58);
 			logger.info("address ====== " + ByteArray.toHexString(address));
 			String value = witness.get(addressBase58);
 			if (address == null) {
 				continue;
 			}
-			voteBuilder.setVoteAddress(ByteString.copyFrom(address));
-			long count = Long.parseLong(value);
-			voteBuilder.setVoteCount(count);
-			builder.setVote(voteBuilder.build());
+			builder.setVoteAddress(ByteString.copyFrom(address));
 		}
 
 		Contract.VoteWitnessContract contract = builder.build();
@@ -322,18 +317,13 @@ public class VoteWitnessAccount2Test {
 		builder.setOwnerAddress(ByteString.copyFrom(addRess));
 		for (String addressBase58 : witness.keySet()) {
 
-			Contract.VoteWitnessContract.Vote.Builder voteBuilder = Contract.VoteWitnessContract.Vote
-					.newBuilder();
 			byte[] address = WalletClient.decodeFromBase58Check(addressBase58);
 			logger.info("address ====== " + ByteArray.toHexString(address));
 			String value = witness.get(addressBase58);
 			if (address == null) {
 				continue;
 			}
-			voteBuilder.setVoteAddress(ByteString.copyFrom(address));
-			long count = Long.parseLong(value);
-			voteBuilder.setVoteCount(count);
-			builder.setVote(voteBuilder.build());
+			builder.setVoteAddress(ByteString.copyFrom(address));
 		}
 
 		Contract.VoteWitnessContract contract = builder.build();
