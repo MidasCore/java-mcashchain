@@ -360,6 +360,7 @@ message Transaction {
         int64 exchange_withdraw_another_amount = 20;
         int64 exchange_id = 21;
         int64 unstake_amount = 22;
+        int64 vote_amount = 23;
     }
 
     message raw {
@@ -414,6 +415,7 @@ message TransactionInfo {
     int64 exchange_withdraw_another_amount = 20;
     int64 exchange_id = 21;
     int64 unstake_amount = 22;
+    int64 vote_amount = 23;
 }
 
 message Transactions {

@@ -76,7 +76,7 @@ public class StakeAccountController {
 		long totalPay = RewardUtil.rewardInflation(manager.getDynamicPropertiesStore().getStakingRewardPerEpoch(),
 			manager.getHeadBlockNum(), Parameter.ChainConstant.BLOCKS_PER_YEAR);
 
-		long blockNumber = manager.getHeadBlockNum();
+		long blockNumber = manager.getHeadBlockNum() + 1;
 		BlockRewardCapsule blockRewardCapsule = manager.getBlockRewardStore().get(ByteArray.fromLong(blockNumber));
 		if (blockRewardCapsule == null) {
 			blockRewardCapsule = new BlockRewardCapsule(blockNumber);

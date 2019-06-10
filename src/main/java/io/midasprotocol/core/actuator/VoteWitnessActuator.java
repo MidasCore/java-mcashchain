@@ -38,8 +38,9 @@ public class VoteWitnessActuator extends AbstractActuator {
 		long fee = calcFee();
 		try {
 			VoteWitnessContract voteContract = contract.unpack(VoteWitnessContract.class);
-			countVoteAccount(voteContract, getDeposit());
+			long voteCount = countVoteAccount(voteContract, getDeposit());
 			ret.setStatus(fee, code.SUCCESS);
+			ret.setVoteAmount(voteCount);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
 			ret.setStatus(fee, code.FAILED);
@@ -129,7 +130,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 		return true;
 	}
 
-	private void countVoteAccount(VoteWitnessContract voteContract, Deposit deposit) {
+	private long countVoteAccount(VoteWitnessContract voteContract, Deposit deposit) {
 		byte[] ownerAddress = voteContract.getOwnerAddress().toByteArray();
 
 		VoteChangeCapsule voteChangeCapsule;
@@ -171,7 +172,7 @@ public class VoteWitnessActuator extends AbstractActuator {
 			deposit.putAccountValue(accountCapsule.createDbKey(), accountCapsule);
 			deposit.putVoteChangeValue(ownerAddress, voteChangeCapsule);
 		}
-
+		return voteCount;
 	}
 
 	@Override

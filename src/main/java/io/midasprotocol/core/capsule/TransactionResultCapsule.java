@@ -136,6 +136,16 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 			.build();
 	}
 
+	public long getVoteAmount() {
+		return transactionResult.getVoteAmount();
+	}
+
+	public void setVoteAmount(long amount) {
+		this.transactionResult = this.transactionResult.toBuilder()
+			.setVoteAmount(amount)
+			.build();
+	}
+
 	@Override
 	public byte[] getData() {
 		return this.transactionResult.toByteArray();
