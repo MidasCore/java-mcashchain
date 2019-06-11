@@ -95,8 +95,8 @@ message Account {
 
     // this account create time
     int64 create_time = 0x09;
-    // this last operation time, including transfer, voting and so on. //FIXME fix grammar
-    int64 latest_opration_time = 10;
+    // this last operation time, including transfer, voting and so on
+    int64 latest_operation_time = 10;
     // witness block producing allowance
     int64 allowance = 0x0B;
     // last withdraw time

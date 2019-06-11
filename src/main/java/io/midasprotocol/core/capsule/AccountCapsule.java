@@ -309,11 +309,11 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public long getLatestOperationTime() {
-		return this.account.getLatestOprationTime();
+		return this.account.getLatestOperationTime();
 	}
 
 	public void setLatestOperationTime(long latest_time) {
-		this.account = this.account.toBuilder().setLatestOprationTime(latest_time).build();
+		this.account = this.account.toBuilder().setLatestOperationTime(latest_time).build();
 	}
 
 	public long getLatestConsumeTime() {
