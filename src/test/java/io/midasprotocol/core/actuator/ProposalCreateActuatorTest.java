@@ -254,7 +254,7 @@ public class ProposalCreateActuatorTest {
 		}
 
 		paras = new HashMap<>();
-		paras.put(10L, -1L);
+		paras.put(9L, -1L);
 		actuator =
 				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
 		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(-1);
@@ -267,7 +267,7 @@ public class ProposalCreateActuatorTest {
 					e.getMessage());
 		}
 
-		paras.put(10L, -1L);
+		paras.put(9L, -1L);
 		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(0);
 		actuator =
 				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
@@ -306,7 +306,7 @@ public class ProposalCreateActuatorTest {
 	@Test
 	public void InvalidParaValue() {
 		HashMap<Long, Long> paras = new HashMap<>();
-		paras.put(10L, 1000L);
+		paras.put(9L, 1000L);
 		ProposalCreateActuator actuator =
 				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
@@ -339,12 +339,11 @@ public class ProposalCreateActuatorTest {
 		paras.put(5L, 64_000_000L);
 		paras.put(6L, 64_000_000L);
 		paras.put(7L, 64_000_000L);
-		paras.put(8L, 64_000_000L);
+		paras.put(8L, 1L);
 		paras.put(9L, 1L);
-		paras.put(10L, 1L);
+		paras.put(10L, 64L);
 		paras.put(11L, 64L);
 		paras.put(12L, 64L);
-		paras.put(13L, 64L);
 
 		ProposalCreateActuator actuator =
 				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);

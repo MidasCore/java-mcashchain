@@ -145,7 +145,7 @@ public class StakeActuatorTest {
 					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertNotEquals(0, accountCapsule.getAllowance());
 
-			long blockNumber = dbManager.getHeadBlockNum();
+			long blockNumber = dbManager.getHeadBlockNum() + 1;
 			byte[] key = ByteArray.fromLong(blockNumber);
 
 			Assert.assertTrue(dbManager.getBlockRewardStore().has(key));
