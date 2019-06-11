@@ -136,13 +136,13 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 			.build();
 	}
 
-	public long getVoteAmount() {
-		return transactionResult.getVoteAmount();
+	public long getVoteCount() {
+		return transactionResult.getVoteCount();
 	}
 
-	public void setVoteAmount(long amount) {
+	public void setVoteCount(long amount) {
 		this.transactionResult = this.transactionResult.toBuilder()
-			.setVoteAmount(amount)
+			.setVoteCount(amount)
 			.build();
 	}
 
