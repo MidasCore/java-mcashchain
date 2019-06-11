@@ -24,6 +24,10 @@ if [[ -n ${PRIVATE_KEY} ]]; then
 	OPT="$OPT -p $PRIVATE_KEY"
 fi
 
+if [[ -n ${TRUST_NODE} ]]; then
+	OPT="$OPT --trust-node $TRUST_NODE"
+fi
+
 argc=$#
 argv=($@)
 
@@ -39,7 +43,7 @@ for (( i=0; i<argc; i++ )); do
         	CONFIG_FILE=${argv[i+1]}
         	;;
         --pk)
-        	PRIVATE_KEY=${argv[i+1]}
+        	OPT="$OPT -p ${argv[i+1]}"
         	;;
         --witness)
         	OPT="$OPT --witness"
@@ -49,6 +53,9 @@ for (( i=0; i<argc; i++ )); do
         	;;
         --output-directory)
         	OUTPUT_DIRECTORY=${argv[i+1]}
+        	;;
+        --trust-node)
+        	OPT="$OPT --trust-node ${argv[i+1]}"
         	;;
         *)
             ;;
@@ -62,10 +69,9 @@ elif [[ ${DB} == "backup" ]]; then
   echo "backup db success"
 fi
 
-echo "process    : java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/config/${CONFIG_FILE} -p ${PRIVATE_KEY} -d ${OUTPUT_DIRECTORY} ${OPT}"
+echo "process    : java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/config/${CONFIG_FILE} -d ${OUTPUT_DIRECTORY} ${OPT}"
 echo "application: $APP"
 echo "db path    : $OUTPUT_DIRECTORY"
-echo "pk         : $PRIVATE_KEY"
 echo "config     : $CONFIG_FILE"
 
 java ${JVM_OPT} -jar ${APP_HOME}/${APP}.jar -c ${APP_HOME}/config/${CONFIG_FILE} -d ${OUTPUT_DIRECTORY} ${OPT}
