@@ -1588,7 +1588,7 @@ public class HttpMethed {
 			String requestUrl = "http://" + httpNode + "/wallet/getblockbylimitnext";
 			JsonObject userBaseObj2 = new JsonObject();
 			userBaseObj2.addProperty("startNum", startNum);
-			userBaseObj2.addProperty("endNum", endNum);
+			userBaseObj2.addProperty("end_num", endNum);
 			response = createConnect(requestUrl, userBaseObj2);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1640,8 +1640,8 @@ public class HttpMethed {
 		try {
 			String requestUrl = "http://" + httpNode + "/wallet/getdelegatedresource";
 			JsonObject userBaseObj2 = new JsonObject();
-			userBaseObj2.addProperty("fromAddress", ByteArray.toHexString(fromAddress));
-			userBaseObj2.addProperty("toAddress", ByteArray.toHexString(toAddress));
+			userBaseObj2.addProperty("from_address", ByteArray.toHexString(fromAddress));
+			userBaseObj2.addProperty("to_address", ByteArray.toHexString(toAddress));
 			response = createConnect(requestUrl, userBaseObj2);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1659,8 +1659,8 @@ public class HttpMethed {
 		try {
 			String requestUrl = "http://" + httpSolidityNode + "/walletsolidity/getdelegatedresource";
 			JsonObject userBaseObj2 = new JsonObject();
-			userBaseObj2.addProperty("fromAddress", ByteArray.toHexString(fromAddress));
-			userBaseObj2.addProperty("toAddress", ByteArray.toHexString(toAddress));
+			userBaseObj2.addProperty("from_address", ByteArray.toHexString(fromAddress));
+			userBaseObj2.addProperty("to_address", ByteArray.toHexString(toAddress));
 			response = createConnect(requestUrl, userBaseObj2);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1964,7 +1964,7 @@ public class HttpMethed {
 		try {
 			final String requestUrl = "http://" + httpNode + "/wallet/easytransfer";
 			JsonObject userBaseObj2 = new JsonObject();
-			userBaseObj2.addProperty("toAddress", ByteArray.toHexString(toAddress));
+			userBaseObj2.addProperty("to_address", ByteArray.toHexString(toAddress));
 			userBaseObj2.addProperty("passPhrase", str2hex(value));
 			userBaseObj2.addProperty("amount", amount);
 			response = createConnect(requestUrl, userBaseObj2);
@@ -1988,7 +1988,7 @@ public class HttpMethed {
 			final String requestUrl = "http://" + httpNode + "/wallet/easytransferbyprivate";
 			JsonObject userBaseObj2 = new JsonObject();
 			userBaseObj2.addProperty("privateKey", privateKey);
-			userBaseObj2.addProperty("toAddress", ByteArray.toHexString(toAddress));
+			userBaseObj2.addProperty("to_address", ByteArray.toHexString(toAddress));
 			userBaseObj2.addProperty("amount", amount);
 			response = createConnect(requestUrl, userBaseObj2);
 			logger.info(userBaseObj2.toString());
@@ -2010,7 +2010,7 @@ public class HttpMethed {
 		try {
 			final String requestUrl = "http://" + httpNode + "/wallet/easytransferasset";
 			JsonObject userBaseObj2 = new JsonObject();
-			userBaseObj2.addProperty("toAddress", ByteArray.toHexString(toAddress));
+			userBaseObj2.addProperty("to_address", ByteArray.toHexString(toAddress));
 			userBaseObj2.addProperty("passPhrase", str2hex(value));
 			userBaseObj2.addProperty("amount", amount);
 			userBaseObj2.addProperty("assetId", assetId);
@@ -2035,7 +2035,7 @@ public class HttpMethed {
 			final String requestUrl = "http://" + httpNode + "/wallet/easytransferassetbyprivate";
 			JsonObject userBaseObj2 = new JsonObject();
 			userBaseObj2.addProperty("privateKey", privateKey);
-			userBaseObj2.addProperty("toAddress", ByteArray.toHexString(toAddress));
+			userBaseObj2.addProperty("to_address", ByteArray.toHexString(toAddress));
 			userBaseObj2.addProperty("amount", amount);
 			userBaseObj2.addProperty("assetId", assetId);
 			response = createConnect(requestUrl, userBaseObj2);

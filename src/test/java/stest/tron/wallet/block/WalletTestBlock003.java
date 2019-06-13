@@ -127,7 +127,7 @@ public class WalletTestBlock003 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

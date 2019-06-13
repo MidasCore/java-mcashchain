@@ -29,7 +29,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.ParticipateAssetIssueContract;
 import io.midasprotocol.protos.Protocol;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -76,10 +76,10 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 			//write to db
 			dbManager.getAccountStore().put(ownerAddress, ownerAccount);
 			dbManager.getAccountStore().put(toAddress, toAccount);
-			ret.setStatus(fee, Protocol.Transaction.Result.code.SUCCESS);
+			ret.setStatus(fee, Protocol.Transaction.Result.Code.SUCCESS);
 		} catch (InvalidProtocolBufferException | ArithmeticException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 

@@ -14,7 +14,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.exception.ItemNotFoundException;
 import io.midasprotocol.protos.Contract.ProposalDeleteContract;
 import io.midasprotocol.protos.Protocol.Proposal.State;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -45,10 +45,10 @@ public class ProposalDeleteActuator extends AbstractActuator {
 				deposit.putProposalValue(proposalCapsule.createDbKey(), proposalCapsule);
 			}
 
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (InvalidProtocolBufferException | ItemNotFoundException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		return true;

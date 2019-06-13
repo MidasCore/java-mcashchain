@@ -71,7 +71,7 @@ public class WalletTestBlock001 {
 	 */
 	@Test(enabled = true, description = "Get now block from fullnode")
 	public void testCurrentBlock() {
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Assert.assertTrue(currentBlock.hasBlockHeader());
 		Assert.assertFalse(currentBlock.getBlockHeader().getWitnessSignature().isEmpty());
 		Assert.assertTrue(currentBlock.getBlockHeader().getRawData().getTimestamp() > 0);
@@ -84,7 +84,7 @@ public class WalletTestBlock001 {
 
 		//Improve coverage.
 		currentBlock.equals(currentBlock);
-		Block newBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension newBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		newBlock.equals(currentBlock);
 		newBlock.hashCode();
 		newBlock.getSerializedSize();
@@ -97,7 +97,7 @@ public class WalletTestBlock001 {
 	 */
 	@Test(enabled = true, description = "Get now block from solidity")
 	public void testCurrentBlockFromSolidity() {
-		Block currentBlock = blockingStubSolidity
+		GrpcAPI.BlockExtension currentBlock = blockingStubSolidity
 				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Assert.assertTrue(currentBlock.hasBlockHeader());
 		Assert.assertFalse(currentBlock.getBlockHeader().getWitnessSignature().isEmpty());
@@ -169,7 +169,7 @@ public class WalletTestBlock001 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

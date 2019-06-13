@@ -95,7 +95,7 @@ public class CreateAssetIssue2Test {
 			GrpcAPI.Return ret1 = PublicMethed.createAssetIssue2(noBandwitchAddress, name, totalSupply, 1,
 					100, start, end, 1, description, url, 10000L, 10000L,
 					1L, 1L, noBandwitch, blockingStubFull);
-			Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		} else {
 			logger.info("This account already create an assetisue");
@@ -109,38 +109,38 @@ public class CreateAssetIssue2Test {
 		//Transfer Asset failed when transfer to yourself
 		//Assert.assertFalse(transferAsset2(toAddress, name.getBytes(), 100L, toAddress, testKey003));
 		Return ret1 = transferAsset2(toAddress, assetIssueId, 100L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Cannot transfer asset to yourself.");
 		//Transfer Asset failed when the transfer amount is large than the asset balance you have.
 		ret1 =
 				transferAsset2(fromAddress, assetIssueId, 9100000000000000000L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : assetBalance is not sufficient.");
 		//Transfer Asset failed when the transfer amount is 0
 		ret1 = transferAsset2(fromAddress, assetIssueId, 0L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Transfer Asset failed when the transfer amount is -1
 		ret1 = transferAsset2(fromAddress, assetIssueId, -1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Transfer failed when you want to transfer to an invalid address
 		ret1 = transferAsset2(INVAILD_ADDRESS, assetIssueId,
 				1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid toAddress");
 		//Transfer failed when the asset issue name is not correct.
 		ret1 = transferAsset2(fromAddress, assetIssueId + 100000, 1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : No asset !");
 		//Transfer success.
 		ret1 = transferAsset2(fromAddress, assetIssueId, 1L, toAddress, testKey003);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		//No freeze asset, try to unfreeze asset failed.
@@ -194,7 +194,7 @@ public class CreateAssetIssue2Test {
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
 			builder.setFreeAssetNetLimit(20000);
 			builder.setPublicFreeAssetNetLimit(20000);
-			Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction == null");
 				return false;
@@ -251,7 +251,7 @@ public class CreateAssetIssue2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -288,7 +288,7 @@ public class CreateAssetIssue2Test {
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.TransferAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.transferAsset(contract);
+		Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null || transaction.getRawData().getContractCount() == 0");
 			return false;
@@ -327,11 +327,11 @@ public class CreateAssetIssue2Test {
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.TransferAssetContract contract = builder.build();
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.transferAsset2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.transferAsset(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -340,13 +340,13 @@ public class CreateAssetIssue2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		Return response = blockingStubFull.broadcastTransaction(transaction);
 		if (response.getResult() == false) {
@@ -378,7 +378,7 @@ public class CreateAssetIssue2Test {
 		ByteString byteAddreess = ByteString.copyFrom(address);
 		builder.setOwnerAddress(byteAddreess);
 		Contract.UnfreezeAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.unfreezeAsset(contract);
+		Transaction transaction = blockingStubFull.unfreezeAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}

@@ -157,7 +157,7 @@ public class NodeInfo {
 			peerInfoBuilder.setSyncToFetchSize(peerInfo.getSyncToFetchSize());
 			peerInfoBuilder.setSyncToFetchSizePeekNum(peerInfo.getSyncToFetchSizePeekNum());
 			peerInfoBuilder.setSyncBlockRequestedSize(peerInfo.getSyncBlockRequestedSize());
-			peerInfoBuilder.setUnFetchSynNum(peerInfo.getUnFetchSynNum());
+			peerInfoBuilder.setUnfetchSynNum(peerInfo.getUnFetchSynNum());
 			peerInfoBuilder.setBlockInPorcSize(peerInfo.getBlockInPorcSize());
 			peerInfoBuilder.setHeadBlockWeBothHave(peerInfo.getHeadBlockWeBothHave());
 			peerInfoBuilder.setIsActive(peerInfo.isActive());
@@ -206,7 +206,7 @@ public class NodeInfo {
 			machineBuilder.setCpuRate(machineInfo.getCpuRate());
 			machineBuilder.setJavaVersion(machineInfo.getJavaVersion());
 			machineBuilder.setOsName(machineInfo.getOsName());
-			machineBuilder.setJvmTotalMemoery(machineInfo.getJvmTotalMemoery());
+			machineBuilder.setJvmTotalMemory(machineInfo.getJvmTotalMemoery());
 			machineBuilder.setJvmFreeMemory(machineInfo.getJvmFreeMemory());
 			machineBuilder.setProcessCpuRate(machineInfo.getProcessCpuRate());
 			for (MemoryDescInfo memoryDescInfo : machineInfo.getMemoryDescInfoList()) {

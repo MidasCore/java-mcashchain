@@ -19,7 +19,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 
@@ -138,7 +138,7 @@ public class WitnessUpdateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
 					.get(ByteArray.fromHexString(WITNESS_ADDRESS));
 			Assert.assertNotNull(witnessCapsule);
@@ -210,7 +210,7 @@ public class WitnessUpdateActuatorTest {
 					dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
 					.get(ByteArray.fromHexString(WITNESS_ADDRESS));
 			Assert.assertNotNull(witnessCapsule);
@@ -225,7 +225,7 @@ public class WitnessUpdateActuatorTest {
 					getContract(OWNER_ADDRESS, WITNESS_ADDRESS, url256Bytes), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			WitnessCapsule witnessCapsule = dbManager.getWitnessStore()
 					.get(ByteArray.fromHexString(WITNESS_ADDRESS));
 			Assert.assertNotNull(witnessCapsule);

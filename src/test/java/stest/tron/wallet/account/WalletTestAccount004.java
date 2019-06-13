@@ -3,6 +3,7 @@ package stest.tron.wallet.account;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.midasprotocol.api.GrpcAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -189,7 +190,7 @@ public class WalletTestAccount004 {
 			ex.printStackTrace();
 		}
 		ECKey ecKey = temKey;
-		Block currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
@@ -208,15 +209,15 @@ public class WalletTestAccount004 {
 				.setFrozenDuration(frozenDuration);
 
 		FreezeBalanceContract contract = builder.build();
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		GrpcAPI.TransactionExtension transaction = blockingStubFull.freezeBalance(contract);
 
-		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
+		if (transaction == null || transaction.getTransaction().getRawData().getContractCount() == 0) {
 			return false;
 		}
 
-		transaction = TransactionUtils.setTimestamp(transaction);
-		transaction = TransactionUtils.sign(transaction, ecKey);
-		Return response = blockingStubFull.broadcastTransaction(transaction);
+		transaction = transaction.toBuilder().setTransaction(TransactionUtils.setTimestamp(transaction.getTransaction())).build();
+		transaction = transaction.toBuilder().setTransaction(TransactionUtils.sign(transaction.getTransaction(), ecKey)).build();
+		Return response = blockingStubFull.broadcastTransaction(transaction.getTransaction());
 
 		if (response.getResult() == false) {
 			return false;
@@ -278,7 +279,7 @@ public class WalletTestAccount004 {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -331,7 +332,7 @@ public class WalletTestAccount004 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

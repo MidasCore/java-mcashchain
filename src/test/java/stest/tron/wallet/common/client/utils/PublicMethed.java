@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.*;
-import io.midasprotocol.api.GrpcAPI.Return.response_code;
+import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.api.WalletSolidityGrpc;
 import io.midasprotocol.common.crypto.ECKey;
@@ -86,7 +86,7 @@ public class PublicMethed {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction == null");
 				return false;
@@ -141,7 +141,7 @@ public class PublicMethed {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction == null");
 				return false;
@@ -197,13 +197,13 @@ public class PublicMethed {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			TransactionExtention transactionExtention = blockingStubFull
-					.createAssetIssue2(builder.build());
+			TransactionExtension TransactionExtension = blockingStubFull
+					.createAssetIssue(builder.build());
 
-			if (transactionExtention == null) {
-				return transactionExtention.getResult();
+			if (TransactionExtension == null) {
+				return TransactionExtension.getResult();
 			}
-			Return ret = transactionExtention.getResult();
+			Return ret = TransactionExtension.getResult();
 			if (!ret.getResult()) {
 				System.out.println("Code = " + ret.getCode());
 				System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -212,13 +212,13 @@ public class PublicMethed {
 				System.out.println("Code = " + ret.getCode());
 				System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			}
-			Transaction transaction = transactionExtention.getTransaction();
+			Transaction transaction = TransactionExtension.getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				System.out.println("Transaction is empty");
-				return transactionExtention.getResult();
+				return TransactionExtension.getResult();
 			}
 			System.out.println(
-					"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+					"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 			transaction = signTransaction(ecKey, transaction);
 
 			GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
@@ -336,7 +336,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static Protocol.Block getBlock(long blockNum,
+	public static GrpcAPI.BlockExtension getBlock(long blockNum,
 										  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		GrpcAPI.NumberMessage.Builder builder = GrpcAPI.NumberMessage.newBuilder();
 		builder.setNum(blockNum);
@@ -381,7 +381,7 @@ public class PublicMethed {
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.participateAssetIssue(contract);
+		Protocol.Transaction transaction = blockingStubFull.participateAssetIssue(contract).getTransaction();
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -412,23 +412,23 @@ public class PublicMethed {
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.participateAssetIssue2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		TransactionExtension TransactionExtension = blockingStubFull.participateAssetIssue(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return ret;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		//Protocol.Transaction transaction = blockingStubFull.participateAssetIssue(contract);
 
@@ -459,7 +459,7 @@ public class PublicMethed {
 			ex.printStackTrace();
 		}
 		final ECKey ecKey = temKey;
-		Protocol.Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI
+		BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Protocol.Account beforeFronzen = queryAccount(priKey, blockingStubFull);
@@ -479,7 +479,7 @@ public class PublicMethed {
 				.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -525,7 +525,7 @@ public class PublicMethed {
 			ex.printStackTrace();
 		}
 		final ECKey ecKey = temKey;
-		Protocol.Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI
+		BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Protocol.Account beforeFronzen = queryAccount(priKey, blockingStubFull);
@@ -546,11 +546,11 @@ public class PublicMethed {
 
 		Contract.FreezeBalanceContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.freezeBalance2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.freezeBalance(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -559,13 +559,13 @@ public class PublicMethed {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = TransactionUtils.setTimestamp(transaction);
 		transaction = TransactionUtils.sign(transaction, ecKey);
@@ -578,7 +578,7 @@ public class PublicMethed {
 		Long afterBlockNum = 0L;
 
 		while (afterBlockNum < beforeBlockNum) {
-			Protocol.Block currentBlock1 = blockingStubFull.getNowBlock(GrpcAPI
+			BlockExtension currentBlock1 = blockingStubFull.getNowBlock(GrpcAPI
 					.EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 		}
@@ -616,7 +616,7 @@ public class PublicMethed {
 		}
 
 		Contract.UnfreezeBalanceContract contract = builder.build();
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 
@@ -650,7 +650,7 @@ public class PublicMethed {
 			builder.setAmount(amount);
 
 			Contract.TransferContract contract = builder.build();
-			Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+			Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction ==null");
 				continue;
@@ -687,12 +687,12 @@ public class PublicMethed {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.createTransaction2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		TransactionExtension TransactionExtension = blockingStubFull.createTransaction(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
 
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -702,13 +702,13 @@ public class PublicMethed {
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
 
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
@@ -744,7 +744,7 @@ public class PublicMethed {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction ==null");
 			return null;
@@ -834,7 +834,7 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static long printTransactionRow(Transaction.raw raw) {
+	public static long printTransactionRow(Transaction.Raw raw) {
 		long timestamp = raw.getTimestamp();
 
 		return timestamp;
@@ -865,7 +865,7 @@ public class PublicMethed {
 
 		Contract.UpdateAssetContract contract
 				= builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateAsset(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateAsset(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -902,11 +902,11 @@ public class PublicMethed {
 		Contract.UpdateAssetContract contract
 				= builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.updateAsset2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		TransactionExtension TransactionExtension = blockingStubFull.updateAsset(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -915,13 +915,13 @@ public class PublicMethed {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
@@ -956,7 +956,7 @@ public class PublicMethed {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.transferAsset(contract);
+		Protocol.Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			if (transaction == null) {
@@ -995,7 +995,7 @@ public class PublicMethed {
 		builder.setOwnerAddress(basAddreess);
 
 		Contract.AccountUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("Please check!!! transaction == null");
@@ -1012,8 +1012,8 @@ public class PublicMethed {
 
 	public static boolean waitSolidityNodeSynFullNodeData(WalletGrpc.WalletBlockingStub
 																  blockingStubFull, WalletSolidityGrpc.WalletSolidityBlockingStub blockingStubSolidity) {
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
-		Block solidityCurrentBlock = blockingStubSolidity.getNowBlock(GrpcAPI.EmptyMessage
+		BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		BlockExtension solidityCurrentBlock = blockingStubSolidity.getNowBlock(GrpcAPI.EmptyMessage
 				.newBuilder().build());
 		Integer wait = 0;
 		logger.info("Fullnode block num is " + Long.toString(currentBlock
@@ -1044,10 +1044,10 @@ public class PublicMethed {
 
 	public static boolean waitProduceNextBlock(WalletGrpc.WalletBlockingStub
 													   blockingStubFull) {
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		final Long currentNum = currentBlock.getBlockHeader().getRawData().getNumber();
 
-		Block nextBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		BlockExtension nextBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long nextNum = nextBlock.getBlockHeader().getRawData().getNumber();
 
 		Integer wait = 0;
@@ -1134,7 +1134,7 @@ public class PublicMethed {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setAccountAddress(ByteString.copyFrom(newAddress));
 		Contract.AccountCreateContract contract = builder.build();
-		Transaction transaction = blockingStubFull.createAccount(contract);
+		Transaction transaction = blockingStubFull.createAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 		}
@@ -1164,12 +1164,12 @@ public class PublicMethed {
 		builder.setAccountAddress(ByteString.copyFrom(newAddress));
 		Contract.AccountCreateContract contract = builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.createAccount2(contract);
+		TransactionExtension TransactionExtension = blockingStubFull.createAccount(contract);
 
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -1178,13 +1178,13 @@ public class PublicMethed {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
@@ -1216,23 +1216,23 @@ public class PublicMethed {
 		builder.putAllParameters(parametersMap);
 
 		Contract.ProposalCreateContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.proposalCreate(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.proposalCreate(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 
@@ -1261,23 +1261,23 @@ public class PublicMethed {
 		builder.setProposalId(id);
 		builder.setIsAddApproval(isAddApproval);
 		Contract.ProposalApproveContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.proposalApprove(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.proposalApprove(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -1304,23 +1304,23 @@ public class PublicMethed {
 		builder.setProposalId(id);
 
 		Contract.ProposalDeleteContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.proposalDelete(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.proposalDelete(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -1415,7 +1415,7 @@ public class PublicMethed {
 				.setFrozenDuration(frozenDuration).setResourceValue(resourceCode);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -1456,23 +1456,23 @@ public class PublicMethed {
 		ByteString byteAddress = ByteString.copyFrom(address);
 		builder.setOwnerAddress(byteAddress).setQuant(quantity);
 		Contract.BuyStorageContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.buyStorage(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.buyStorage(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -1497,23 +1497,23 @@ public class PublicMethed {
 		ByteString byteAddress = ByteString.copyFrom(address);
 		builder.setOwnerAddress(byteAddress).setStorageBytes(quantity);
 		Contract.SellStorageContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.sellStorage(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.sellStorage(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -1584,50 +1584,50 @@ public class PublicMethed {
 		CreateSmartContract contractDeployContract = contractBuilder
 				.setNewContract(builder.build()).build();
 
-		TransactionExtention transactionExtention = blockingStubFull
+		TransactionExtension TransactionExtension = blockingStubFull
 				.deployContract(contractDeployContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create trx failed!");
-			if (transactionExtention != null) {
-				System.out.println("Code = " + transactionExtention.getResult().getCode());
+			if (TransactionExtension != null) {
+				System.out.println("Code = " + TransactionExtension.getResult().getCode());
 				System.out
-						.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+						.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			}
 			return null;
 		}
 
-		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
+		final TransactionExtension.Builder texBuilder = TransactionExtension.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.Raw.Builder rawBuilder = TransactionExtension.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
-		for (int i = 0; i < transactionExtention.getTransaction().getSignatureCount(); i++) {
-			ByteString s = transactionExtention.getTransaction().getSignature(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getSignatureCount(); i++) {
+			ByteString s = TransactionExtension.getTransaction().getSignature(i);
 			transBuilder.setSignature(i, s);
 		}
-		for (int i = 0; i < transactionExtention.getTransaction().getRetCount(); i++) {
-			Result r = transactionExtention.getTransaction().getRet(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getRetCount(); i++) {
+			Result r = TransactionExtension.getTransaction().getRet(i);
 			transBuilder.setRet(i, r);
 		}
 		texBuilder.setTransaction(transBuilder);
-		texBuilder.setResult(transactionExtention.getResult());
-		texBuilder.setTxid(transactionExtention.getTxid());
-		transactionExtention = texBuilder.build();
+		texBuilder.setResult(TransactionExtension.getResult());
+		texBuilder.setTxId(TransactionExtension.getTxId());
+		TransactionExtension = texBuilder.build();
 
-		byte[] contractAddress = generateContractAddress(transactionExtention.getTransaction(), owner);
+		byte[] contractAddress = generateContractAddress(TransactionExtension.getTransaction(), owner);
 		System.out.println(
 				"Your smart contract address will be: " + WalletClient.encodeBase58(contractAddress));
-		if (transactionExtention == null) {
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return null;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return null;
@@ -1713,47 +1713,47 @@ public class PublicMethed {
 		CreateSmartContract contractDeployContract = contractBuilder
 				.setNewContract(builder.build()).build();
 
-		TransactionExtention transactionExtention = blockingStubFull
+		TransactionExtension TransactionExtension = blockingStubFull
 				.deployContract(contractDeployContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create trx failed!");
-			if (transactionExtention != null) {
-				System.out.println("Code = " + transactionExtention.getResult().getCode());
+			if (TransactionExtension != null) {
+				System.out.println("Code = " + TransactionExtension.getResult().getCode());
 				System.out
-						.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+						.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			}
 			return null;
 		}
 
-		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
+		final TransactionExtension.Builder texBuilder = TransactionExtension.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.Raw.Builder rawBuilder = TransactionExtension.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
-		for (int i = 0; i < transactionExtention.getTransaction().getSignatureCount(); i++) {
-			ByteString s = transactionExtention.getTransaction().getSignature(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getSignatureCount(); i++) {
+			ByteString s = TransactionExtension.getTransaction().getSignature(i);
 			transBuilder.setSignature(i, s);
 		}
-		for (int i = 0; i < transactionExtention.getTransaction().getRetCount(); i++) {
-			Result r = transactionExtention.getTransaction().getRet(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getRetCount(); i++) {
+			Result r = TransactionExtension.getTransaction().getRet(i);
 			transBuilder.setRet(i, r);
 		}
 		texBuilder.setTransaction(transBuilder);
-		texBuilder.setResult(transactionExtention.getResult());
-		texBuilder.setTxid(transactionExtention.getTxid());
-		transactionExtention = texBuilder.build();
+		texBuilder.setResult(TransactionExtension.getResult());
+		texBuilder.setTxId(TransactionExtension.getTxId());
+		TransactionExtension = texBuilder.build();
 
-		if (transactionExtention == null) {
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return null;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return null;
@@ -2015,33 +2015,33 @@ public class PublicMethed {
 		builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
 
 		UpdateSettingContract updateSettingContract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull
+		TransactionExtension TransactionExtension = blockingStubFull
 				.updateSetting(updateSettingContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create trx failed!");
-			if (transactionExtention != null) {
-				System.out.println("Code = " + transactionExtention.getResult().getCode());
+			if (TransactionExtension != null) {
+				System.out.println("Code = " + TransactionExtension.getResult().getCode());
 				System.out
-						.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+						.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			}
 			return false;
 		}
-		if (transactionExtention == null) {
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -2100,54 +2100,54 @@ public class PublicMethed {
 		builder.setCallTokenValue(tokenValue);
 		Contract.TriggerSmartContract triggerContract = builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.triggerContract(triggerContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		TransactionExtension TransactionExtension = blockingStubFull.triggerContract(triggerContract);
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create call trx failed!");
-			System.out.println("Code = " + transactionExtention.getResult().getCode());
+			System.out.println("Code = " + TransactionExtension.getResult().getCode());
 			System.out
-					.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+					.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			return null;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction.getRetCount() != 0
-				&& transactionExtention.getConstantResult(0) != null
-				&& transactionExtention.getResult() != null) {
-			byte[] result = transactionExtention.getConstantResult(0).toByteArray();
+				&& TransactionExtension.getConstantResult(0) != null
+				&& TransactionExtension.getResult() != null) {
+			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
 			System.out.println("message:" + transaction.getRet(0).getRet());
 			System.out.println(":" + ByteArray
-					.toStr(transactionExtention.getResult().getMessage().toByteArray()));
+					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
 			return null;
 		}
 
-		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
+		final TransactionExtension.Builder texBuilder = TransactionExtension.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.Raw.Builder rawBuilder = TransactionExtension.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
-		for (int i = 0; i < transactionExtention.getTransaction().getSignatureCount(); i++) {
-			ByteString s = transactionExtention.getTransaction().getSignature(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getSignatureCount(); i++) {
+			ByteString s = TransactionExtension.getTransaction().getSignature(i);
 			transBuilder.setSignature(i, s);
 		}
-		for (int i = 0; i < transactionExtention.getTransaction().getRetCount(); i++) {
-			Result r = transactionExtention.getTransaction().getRet(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getRetCount(); i++) {
+			Result r = TransactionExtension.getTransaction().getRet(i);
 			transBuilder.setRet(i, r);
 		}
 		texBuilder.setTransaction(transBuilder);
-		texBuilder.setResult(transactionExtention.getResult());
-		texBuilder.setTxid(transactionExtention.getTxid());
-		transactionExtention = texBuilder.build();
-		if (transactionExtention == null) {
+		texBuilder.setResult(TransactionExtension.getResult());
+		texBuilder.setTxId(TransactionExtension.getTxId());
+		TransactionExtension = texBuilder.build();
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return null;
 		}
-		transaction = transactionExtention.getTransaction();
+		transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return null;
@@ -2190,23 +2190,23 @@ public class PublicMethed {
 				.setSecondTokenId(secondTokenId)
 				.setSecondTokenBalance(secondTokenBalance);
 		Contract.ExchangeCreateContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.exchangeCreate(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.exchangeCreate(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		System.out.println(
 				"txid = " + ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
@@ -2240,23 +2240,23 @@ public class PublicMethed {
 				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeInjectContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.exchangeInject(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.exchangeInject(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		System.out.println(
 				"txid = " + ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
@@ -2333,23 +2333,23 @@ public class PublicMethed {
 				.setTokenId(tokenId)
 				.setQuant(quant);
 		Contract.ExchangeWithdrawContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.exchangeWithdraw(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.exchangeWithdraw(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		System.out.println(
 				"txid = " + ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
@@ -2384,23 +2384,23 @@ public class PublicMethed {
 				.setQuant(quant)
 				.setExpected(expected);
 		Contract.ExchangeTransactionContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.exchangeTransaction(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.exchangeTransaction(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		System.out.println(
 				"txid = " + ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray())));
@@ -2475,47 +2475,47 @@ public class PublicMethed {
 		CreateSmartContract contractDeployContract = contractBuilder.setNewContract(builder.build())
 				.build();
 
-		TransactionExtention transactionExtention = blockingStubFull
+		TransactionExtension TransactionExtension = blockingStubFull
 				.deployContract(contractDeployContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create trx failed!");
-			if (transactionExtention != null) {
-				System.out.println("Code = " + transactionExtention.getResult().getCode());
+			if (TransactionExtension != null) {
+				System.out.println("Code = " + TransactionExtension.getResult().getCode());
 				System.out
-						.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+						.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			}
 			return null;
 		}
 
-		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
+		final TransactionExtension.Builder texBuilder = TransactionExtension.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.Raw.Builder rawBuilder = TransactionExtension.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
-		for (int i = 0; i < transactionExtention.getTransaction().getSignatureCount(); i++) {
-			ByteString s = transactionExtention.getTransaction().getSignature(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getSignatureCount(); i++) {
+			ByteString s = TransactionExtension.getTransaction().getSignature(i);
 			transBuilder.setSignature(i, s);
 		}
-		for (int i = 0; i < transactionExtention.getTransaction().getRetCount(); i++) {
-			Result r = transactionExtention.getTransaction().getRet(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getRetCount(); i++) {
+			Result r = TransactionExtension.getTransaction().getRet(i);
 			transBuilder.setRet(i, r);
 		}
 		texBuilder.setTransaction(transBuilder);
-		texBuilder.setResult(transactionExtention.getResult());
-		texBuilder.setTxid(transactionExtention.getTxid());
-		transactionExtention = texBuilder.build();
+		texBuilder.setResult(TransactionExtension.getResult());
+		texBuilder.setTxId(TransactionExtension.getTxId());
+		TransactionExtension = texBuilder.build();
 
-		if (transactionExtention == null) {
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return null;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return null;
@@ -2561,7 +2561,7 @@ public class PublicMethed {
 				.setFrozenDuration(frozenDuration).setResourceValue(resourceCode);
 		builder.setReceiverAddress(receiverAddressBytes);
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -2723,23 +2723,23 @@ public class PublicMethed {
 
 		Contract.AccountPermissionUpdateContract contract = builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.accountPermissionUpdate(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.accountPermissionUpdate(contract);
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -2907,47 +2907,47 @@ public class PublicMethed {
 		CreateSmartContract contractDeployContract = contractBuilder
 				.setNewContract(builder.build()).build();
 
-		TransactionExtention transactionExtention = blockingStubFull
+		TransactionExtension TransactionExtension = blockingStubFull
 				.deployContract(contractDeployContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create trx failed!");
-			if (transactionExtention != null) {
-				System.out.println("Code = " + transactionExtention.getResult().getCode());
+			if (TransactionExtension != null) {
+				System.out.println("Code = " + TransactionExtension.getResult().getCode());
 				System.out
-						.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+						.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			}
 			return null;
 		}
 
-		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
+		final TransactionExtension.Builder texBuilder = TransactionExtension.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.Raw.Builder rawBuilder = TransactionExtension.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
-		for (int i = 0; i < transactionExtention.getTransaction().getSignatureCount(); i++) {
-			ByteString s = transactionExtention.getTransaction().getSignature(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getSignatureCount(); i++) {
+			ByteString s = TransactionExtension.getTransaction().getSignature(i);
 			transBuilder.setSignature(i, s);
 		}
-		for (int i = 0; i < transactionExtention.getTransaction().getRetCount(); i++) {
-			Result r = transactionExtention.getTransaction().getRet(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getRetCount(); i++) {
+			Result r = TransactionExtension.getTransaction().getRet(i);
 			transBuilder.setRet(i, r);
 		}
 		texBuilder.setTransaction(transBuilder);
-		texBuilder.setResult(transactionExtention.getResult());
-		texBuilder.setTxid(transactionExtention.getTxid());
-		transactionExtention = texBuilder.build();
+		texBuilder.setResult(TransactionExtension.getResult());
+		texBuilder.setTxId(TransactionExtension.getTxId());
+		TransactionExtension = texBuilder.build();
 
-		if (transactionExtention == null) {
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return null;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return null;
@@ -2996,54 +2996,54 @@ public class PublicMethed {
 		builder.setCallTokenValue(tokenValue);
 		Contract.TriggerSmartContract triggerContract = builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.triggerContract(triggerContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		TransactionExtension TransactionExtension = blockingStubFull.triggerContract(triggerContract);
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create call trx failed!");
-			System.out.println("Code = " + transactionExtention.getResult().getCode());
+			System.out.println("Code = " + TransactionExtension.getResult().getCode());
 			System.out
-					.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+					.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			return null;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction.getRetCount() != 0
-				&& transactionExtention.getConstantResult(0) != null
-				&& transactionExtention.getResult() != null) {
-			byte[] result = transactionExtention.getConstantResult(0).toByteArray();
+				&& TransactionExtension.getConstantResult(0) != null
+				&& TransactionExtension.getResult() != null) {
+			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
 			System.out.println("message:" + transaction.getRet(0).getRet());
 			System.out.println(":" + ByteArray
-					.toStr(transactionExtention.getResult().getMessage().toByteArray()));
+					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
 			return null;
 		}
 
-		final TransactionExtention.Builder texBuilder = TransactionExtention.newBuilder();
+		final TransactionExtension.Builder texBuilder = TransactionExtension.newBuilder();
 		Transaction.Builder transBuilder = Transaction.newBuilder();
-		Transaction.raw.Builder rawBuilder = transactionExtention.getTransaction().getRawData()
+		Transaction.Raw.Builder rawBuilder = TransactionExtension.getTransaction().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transBuilder.setRawData(rawBuilder);
-		for (int i = 0; i < transactionExtention.getTransaction().getSignatureCount(); i++) {
-			ByteString s = transactionExtention.getTransaction().getSignature(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getSignatureCount(); i++) {
+			ByteString s = TransactionExtension.getTransaction().getSignature(i);
 			transBuilder.setSignature(i, s);
 		}
-		for (int i = 0; i < transactionExtention.getTransaction().getRetCount(); i++) {
-			Result r = transactionExtention.getTransaction().getRet(i);
+		for (int i = 0; i < TransactionExtension.getTransaction().getRetCount(); i++) {
+			Result r = TransactionExtension.getTransaction().getRet(i);
 			transBuilder.setRet(i, r);
 		}
 		texBuilder.setTransaction(transBuilder);
-		texBuilder.setResult(transactionExtention.getResult());
-		texBuilder.setTxid(transactionExtention.getTxid());
-		transactionExtention = texBuilder.build();
-		if (transactionExtention == null) {
+		texBuilder.setResult(TransactionExtension.getResult());
+		texBuilder.setTxId(TransactionExtension.getTxId());
+		TransactionExtension = texBuilder.build();
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return null;
 		}
-		transaction = transactionExtention.getTransaction();
+		transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return null;
@@ -3079,33 +3079,33 @@ public class PublicMethed {
 		builder.setOriginEnergyLimit(originEnergyLimit);
 
 		UpdateEnergyLimitContract updateEnergyLimitContract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull
+		TransactionExtension TransactionExtension = blockingStubFull
 				.updateEnergyLimit(updateEnergyLimitContract);
-		if (transactionExtention == null || !transactionExtention.getResult().getResult()) {
+		if (TransactionExtension == null || !TransactionExtension.getResult().getResult()) {
 			System.out.println("RPC create trx failed!");
-			if (transactionExtention != null) {
-				System.out.println("Code = " + transactionExtention.getResult().getCode());
+			if (TransactionExtension != null) {
+				System.out.println("Code = " + TransactionExtension.getResult().getCode());
 				System.out
-						.println("Message = " + transactionExtention.getResult().getMessage().toStringUtf8());
+						.println("Message = " + TransactionExtension.getResult().getMessage().toStringUtf8());
 			}
 			return false;
 		}
-		if (transactionExtention == null) {
+		if (TransactionExtension == null) {
 			return false;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return false;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return false;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 		return response.getResult();
@@ -3160,23 +3160,23 @@ public class PublicMethed {
 
 		Contract.AccountPermissionUpdateContract contract = builder.build();
 
-		TransactionExtention transactionExtention = blockingStubFull.accountPermissionUpdate(contract);
-		if (transactionExtention == null) {
+		TransactionExtension TransactionExtension = blockingStubFull.accountPermissionUpdate(contract);
+		if (TransactionExtension == null) {
 			return null;
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 			return ret;
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
 			return ret;
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = broadcastTransaction(transaction, blockingStubFull);
 
@@ -3239,7 +3239,7 @@ public class PublicMethed {
 													  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		int i = 10;
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
-		while (response.getResult() == false && response.getCode() == response_code.SERVER_BUSY
+		while (response.getResult() == false && response.getCode() == ResponseCode.SERVER_BUSY
 				&& i > 0) {
 			try {
 				Thread.sleep(300);

@@ -21,7 +21,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.AssetIssueContract.FrozenSupply;
 import io.midasprotocol.protos.Protocol.AccountType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -142,7 +142,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(owner.getBalance(), 0L);
@@ -179,7 +179,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(owner.getBalance(), 0L);
@@ -216,7 +216,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(owner.getBalance(), 0L);
@@ -730,7 +730,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -771,7 +771,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =
@@ -905,7 +905,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =
@@ -946,7 +946,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =
@@ -988,7 +988,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =
@@ -1081,7 +1081,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -1122,7 +1122,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =
@@ -1163,7 +1163,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =
@@ -1673,7 +1673,7 @@ public class AssetIssueActuatorTest {
 			actuator.execute(ret);
 			AccountCapsule account = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			Assert.assertEquals(account.getAssetIssuedId(), assetIssueId);
@@ -2012,7 +2012,7 @@ public class AssetIssueActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertNotEquals(0, ret.getInstance().getAssetIssueID());
 			long assetIssueId = ret.getInstance().getAssetIssueID();
 			AccountCapsule owner =

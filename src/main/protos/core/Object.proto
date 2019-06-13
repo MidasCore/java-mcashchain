@@ -59,7 +59,7 @@ message Exchange {
 }
 
 message ChainParameters {
-    repeated ChainParameter chainParameter = 1;
+    repeated ChainParameter chain_parameter = 1;
     message ChainParameter {
         string key = 1;
         int64 value = 2;
@@ -145,7 +145,7 @@ message Account {
 
     // stakes
     Stake stake = 60;
-    Stake witnessStake = 61;
+    Stake witness_stake = 61;
 }
 
 
@@ -192,48 +192,48 @@ message Witness {
         RESIGNED = 3;
     }
     bytes address = 1;
-    int64 voteCount = 2;
-    bytes pubKey = 3;
+    int64 vote_count = 2;
+    bytes pub_key = 3;
     string url = 4;
-    int64 totalProduced = 5;
-    int64 totalMissed = 6;
-    int64 latestBlockNum = 7;
-    int64 latestSlotNum = 8;
-    bool isJobs = 9;
+    int64 total_produced = 5;
+    int64 total_missed = 6;
+    int64 latest_block_num = 7;
+    int64 latest_slot_num = 8;
+    bool is_jobs = 9;
     Status status = 10;
-    bytes ownerAddress = 11;
-    int64 epochProduced = 12;
-    int64 epochMissed = 13;
+    bytes owner_address = 11;
+    int64 epoch_produced = 12;
+    int64 epoch_missed = 13;
 }
 
 message BannedWitness {
-    bytes witnessAddress = 1;
-    int64 expirationTime = 2;
+    bytes witness_address = 1;
+    int64 expiration_time = 2;
 }
 
 // Vote Change
 message VoteChange {
     bytes address = 1;
-    Vote oldVote = 2;
-    Vote newVote = 3;
+    Vote old_vote = 2;
+    Vote new_vote = 3;
 }
 
 message Stake {
-    int64 stakeAmount = 1;
-    int64 expirationTime = 2; // the expire time
+    int64 stake_amount = 1;
+    int64 expiration_time = 2; // the expire time
 }
 
 message StakeChange {
     bytes address = 1;
-    int64 oldStakeAmount = 2;
-    int64 newStakeAmount = 3;
+    int64 old_stake_amount = 2;
+    int64 new_stake_amount = 3;
 }
 
 message StakeAccount {
     bytes address = 1;
-    int64 stakeAmount = 2;
-    int64 stakeAmountWithBonus = 3;
-    int64 votingPower = 4;
+    int64 stake_amount = 2;
+    int64 stake_amount_with_bonus = 3;
+    int64 voting_power = 4;
 }
 
 message BlockReward {
@@ -246,7 +246,7 @@ message BlockReward {
         int64 amount = 2;
         RewardType type = 3;
     }
-    int64 blockNumber = 1;
+    int64 block_number = 1;
     repeated Reward rewards = 2;
 }
 
@@ -254,14 +254,14 @@ message BlockReward {
 
 message TXOutput {
     int64 value = 1;
-    bytes pubKeyHash = 2;
+    bytes pub_key_hash = 2;
 }
 
 message TXInput {
     message raw {
-        bytes txID = 1;
+        bytes tx_id = 1;
         int64 vout = 2;
-        bytes pubKey = 3;
+        bytes pub_key = 3;
     }
     raw raw_data = 1;
     bytes signature = 4;
@@ -278,7 +278,7 @@ message ResourceReceipt {
     int64 energy_usage_total = 4;
     int64 net_usage = 5;
     int64 net_fee = 6;
-    Transaction.Result.contractResult result = 7;
+    Transaction.Result.ContractResult result = 7;
 }
 
 message Transaction {
@@ -324,16 +324,16 @@ message Transaction {
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
         bytes provider = 3;
-        bytes ContractName = 4;
-        int32 Permission_id = 5;
+        bytes contract_name = 4;
+        int32 permission_id = 5;
     }
 
     message Result {
-        enum code {
+        enum Code {
             SUCCESS = 0;
             FAILED = 1;
         }
-        enum contractResult {
+        enum ContractResult {
             DEFAULT = 0;
             OK = 1;
             REVERT = 2;
@@ -350,10 +350,10 @@ message Transaction {
             UNKNOWN = 13;
         }
         int64 fee = 1;
-        code ret = 2;
-        contractResult contractRet = 3;
+        Code ret = 2;
+        ContractResult contractRet = 3;
 
-        int64 assetIssueID = 14;
+        int64 asset_issue_i_d = 14;
         int64 withdraw_amount = 15;
         int64 unfreeze_amount = 16;
         int64 exchange_received_amount = 18;
@@ -364,7 +364,7 @@ message Transaction {
         int64 vote_count = 23;
     }
 
-    message raw {
+    message Raw {
         bytes ref_block_bytes = 1;
         int64 ref_block_num = 3;
         bytes ref_block_hash = 4;
@@ -380,14 +380,14 @@ message Transaction {
         int64 fee_limit = 18;
     }
 
-    raw raw_data = 1;
-    // only support size = 1,  repeated list here for muti-sig extension
+    Raw raw_data = 1;
+    // only support size = 1,  repeated list here for multi-sig extension
     repeated bytes signature = 2;
     repeated Result ret = 5;
 }
 
 message TransactionInfo {
-    enum code {
+    enum Code {
         SUCCESS = 0;
         FAILED = 1;
     }
@@ -398,16 +398,16 @@ message TransactionInfo {
     }
     bytes id = 1;
     int64 fee = 2;
-    int64 blockNumber = 3;
-    int64 blockTimeStamp = 4;
-    repeated bytes contractResult = 5;
+    int64 block_number = 3;
+    int64 block_time_stamp = 4;
+    repeated bytes contract_result = 5;
     bytes contract_address = 6;
     ResourceReceipt receipt = 7;
     repeated Log log = 8;
-    code result = 9;
-    bytes resMessage = 10;
+    Code result = 9;
+    bytes res_message = 10;
 
-    int64 assetIssueID = 14;
+    int64 asset_issue_id = 14;
     int64 withdraw_amount = 15;
     int64 unfreeze_amount = 16;
     repeated InternalTransaction internal_transactions = 17;
@@ -425,14 +425,14 @@ message Transactions {
 
 message TransactionSign {
     Transaction transaction = 1;
-    bytes privateKey = 2;
+    bytes private_key = 2;
 }
 
 message BlockHeader {
-    message raw {
+    message Raw {
         int64 timestamp = 1;
-        bytes txTrieRoot = 2;
-        bytes parentHash = 3;
+        bytes tx_trie_root = 2;
+        bytes parent_hash = 3;
         //bytes nonce = 5;
         //bytes difficulty = 6;
         int64 number = 7;
@@ -440,7 +440,7 @@ message BlockHeader {
         bytes witness_address = 9;
         int32 version = 10;
     }
-    raw raw_data = 1;
+    Raw raw_data = 1;
     bytes witness_signature = 2;
 }
 
@@ -601,119 +601,119 @@ message InternalTransaction {
     // the one send trx (TBD: or token) via function
     bytes caller_address = 2;
     // the one recieve trx (TBD: or token) via function
-    bytes transferTo_address = 3;
+    bytes transfer_to_address = 3;
     message CallValueInfo {
         // trx (TBD: or token) value
-        int64 callValue = 1;
+        int64 call_value = 1;
         // TBD: tokenName, trx should be empty
-        int64 tokenId = 2;
+        int64 token_id = 2;
     }
-    repeated CallValueInfo callValueInfo = 4;
+    repeated CallValueInfo call_value_info = 4;
     bytes note = 5;
     bool rejected = 6;
 }
 
 message DelegatedResourceAccountIndex {
     bytes account = 1;
-    repeated bytes fromAccounts = 2;
-    repeated bytes toAccounts = 3;
+    repeated bytes from_accounts = 2;
+    repeated bytes to_accounts = 3;
 }
 
 message NodeInfo {
-    int64 beginSyncNum = 1;
+    int64 begin_sync_num = 1;
     string block = 2;
-    string solidityBlock = 3;
+    string solidity_block = 3;
     //connect information
-    int32 currentConnectCount = 4;
-    int32 activeConnectCount = 5;
-    int32 passiveConnectCount = 6;
-    int64 totalFlow = 7;
-    repeated PeerInfo peerInfoList = 8;
-    ConfigNodeInfo configNodeInfo = 9;
-    MachineInfo machineInfo = 10;
-    map<string, string> cheatWitnessInfoMap = 11;
+    int32 current_connect_count = 4;
+    int32 active_connect_count = 5;
+    int32 passive_connect_count = 6;
+    int64 total_flow = 7;
+    repeated PeerInfo peer_info_list = 8;
+    ConfigNodeInfo config_node_info = 9;
+    MachineInfo machine_info = 10;
+    map<string, string> cheat_witness_info_map = 11;
 
     message PeerInfo {
-        string lastSyncBlock = 1;
-        int64 remainNum = 2;
-        int64 lastBlockUpdateTime = 3;
-        bool syncFlag = 4;
-        int64 headBlockTimeWeBothHave = 5;
-        bool needSyncFromPeer = 6;
-        bool needSyncFromUs = 7;
+        string last_sync_block = 1;
+        int64 remain_num = 2;
+        int64 last_block_update_time = 3;
+        bool sync_flag = 4;
+        int64 head_block_time_we_both_have = 5;
+        bool need_sync_from_peer = 6;
+        bool need_sync_from_us = 7;
         string host = 8;
         int32 port = 9;
-        string nodeId = 10;
-        int64 connectTime = 11;
-        double avgLatency = 12;
-        int32 syncToFetchSize = 13;
-        int64 syncToFetchSizePeekNum = 14;
-        int32 syncBlockRequestedSize = 15;
-        int64 unFetchSynNum = 16;
-        int32 blockInPorcSize = 17;
-        string headBlockWeBothHave = 18;
-        bool isActive = 19;
+        string node_id = 10;
+        int64 connect_time = 11;
+        double avg_latency = 12;
+        int32 sync_to_fetch_size = 13;
+        int64 sync_to_fetch_size_peek_num = 14;
+        int32 sync_block_requested_size = 15;
+        int64 unfetch_syn_num = 16;
+        int32 block_in_porc_size = 17;
+        string head_block_we_both_have = 18;
+        bool is_active = 19;
         int32 score = 20;
-        int32 nodeCount = 21;
-        int64 inFlow = 22;
-        int32 disconnectTimes = 23;
-        string localDisconnectReason = 24;
-        string remoteDisconnectReason = 25;
+        int32 node_count = 21;
+        int64 in_flow = 22;
+        int32 disconnect_times = 23;
+        string local_disconnect_reason = 24;
+        string remote_disconnect_reason = 25;
     }
 
     message ConfigNodeInfo {
-        string codeVersion = 1;
-        string p2pVersion = 2;
-        int32 listenPort = 3;
-        bool discoverEnable = 4;
-        int32 activeNodeSize = 5;
-        int32 passiveNodeSize = 6;
-        int32 sendNodeSize = 7;
-        int32 maxConnectCount = 8;
-        int32 sameIpMaxConnectCount = 9;
-        int32 backupListenPort = 10;
-        int32 backupMemberSize = 11;
-        int32 backupPriority = 12;
-        int32 dbVersion = 13;
-        int32 minParticipationRate = 14;
-        bool supportConstant = 15;
-        double minTimeRatio = 16;
-        double maxTimeRatio = 17;
-        int64 allowCreationOfContracts = 18;
-        int64 allowAdaptiveEnergy = 19;
+        string code_version = 1;
+        string p2p_version = 2;
+        int32 listen_port = 3;
+        bool discover_enable = 4;
+        int32 active_node_size = 5;
+        int32 passive_node_size = 6;
+        int32 send_node_size = 7;
+        int32 max_connect_count = 8;
+        int32 same_ip_max_connect_count = 9;
+        int32 backup_listen_port = 10;
+        int32 backup_member_size = 11;
+        int32 backup_priority = 12;
+        int32 db_version = 13;
+        int32 min_participation_rate = 14;
+        bool support_constant = 15;
+        double min_time_ratio = 16;
+        double max_time_ratio = 17;
+        int64 allow_creation_of_contracts = 18;
+        int64 allow_adaptive_energy = 19;
     }
 
     message MachineInfo {
-        int32 threadCount = 1;
-        int32 deadLockThreadCount = 2;
-        int32 cpuCount = 3;
-        int64 totalMemory = 4;
-        int64 freeMemory = 5;
-        double cpuRate = 6;
-        string javaVersion = 7;
-        string osName = 8;
-        int64 jvmTotalMemoery = 9;
-        int64 jvmFreeMemory = 10;
-        double processCpuRate = 11;
-        repeated MemoryDescInfo memoryDescInfoList = 12;
-        repeated DeadLockThreadInfo deadLockThreadInfoList = 13;
+        int32 thread_count = 1;
+        int32 dead_lock_thread_count = 2;
+        int32 cpu_count = 3;
+        int64 total_memory = 4;
+        int64 free_memory = 5;
+        double cpu_rate = 6;
+        string java_version = 7;
+        string os_name = 8;
+        int64 jvm_total_memory = 9;
+        int64 jvm_free_memory = 10;
+        double process_cpu_rate = 11;
+        repeated MemoryDescInfo memory_desc_info_list = 12;
+        repeated DeadLockThreadInfo dead_lock_thread_info_list = 13;
 
         message MemoryDescInfo {
             string name = 1;
-            int64 initSize = 2;
-            int64 useSize = 3;
-            int64 maxSize = 4;
-            double useRate = 5;
+            int64 init_size = 2;
+            int64 use_size = 3;
+            int64 max_size = 4;
+            double use_rate = 5;
         }
 
         message DeadLockThreadInfo {
             string name = 1;
-            string lockName = 2;
-            string lockOwner = 3;
+            string lock_name = 2;
+            string lock_owner = 3;
             string state = 4;
-            int64 blockTime = 5;
-            int64 waitTime = 6;
-            string stackTrace = 7;
+            int64 block_time = 5;
+            int64 wait_time = 6;
+            string stack_trace = 7;
         }
     }
 }

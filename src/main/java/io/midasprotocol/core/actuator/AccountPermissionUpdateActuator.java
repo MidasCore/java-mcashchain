@@ -15,7 +15,7 @@ import io.midasprotocol.protos.Contract.AccountPermissionUpdateContract;
 import io.midasprotocol.protos.Protocol.Key;
 import io.midasprotocol.protos.Protocol.Permission;
 import io.midasprotocol.protos.Protocol.Permission.PermissionType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,14 +49,14 @@ public class AccountPermissionUpdateActuator extends AbstractActuator {
 			dbManager.adjustBalance(ownerAddress, -fee);
 			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().createDbKey(), fee);
 
-			result.setStatus(fee, code.SUCCESS);
+			result.setStatus(fee, Code.SUCCESS);
 		} catch (BalanceInsufficientException e) {
 			logger.debug(e.getMessage(), e);
-			result.setStatus(fee, code.FAILED);
+			result.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			result.setStatus(fee, code.FAILED);
+			result.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 

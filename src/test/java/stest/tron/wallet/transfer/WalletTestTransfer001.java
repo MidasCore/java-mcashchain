@@ -3,14 +3,6 @@ package stest.tron.wallet.transfer;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.spongycastle.util.encoders.Hex;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.NumberMessage;
 import io.midasprotocol.api.GrpcAPI.Return;
@@ -22,8 +14,15 @@ import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.FreezeBalanceContract;
 import io.midasprotocol.protos.Protocol.Account;
-import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.Transaction;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.util.encoders.Hex;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.utils.PublicMethed;
 import stest.tron.wallet.common.client.utils.TransactionUtils;
@@ -35,10 +34,10 @@ import java.util.concurrent.TimeUnit;
 public class WalletTestTransfer001 {
 
 	private final String testKey002 = Configuration.getByPath("testng.conf")
-			.getString("foundationAccount.key1");
+		.getString("foundationAccount.key1");
 	private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
 	private final String testKey003 = Configuration.getByPath("testng.conf")
-			.getString("foundationAccount.key2");
+		.getString("foundationAccount.key2");
 	private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
 	//send account
 	ECKey ecKey1 = new ECKey(Utils.getRandom());
@@ -53,9 +52,9 @@ public class WalletTestTransfer001 {
 	private WalletGrpc.WalletBlockingStub blockingStubFull = null;
 	private WalletGrpc.WalletBlockingStub searchBlockingStubFull = null;
 	private String fullnode = Configuration.getByPath("testng.conf").getStringList("fullnode.ip.list")
-			.get(0);
+		.get(0);
 	private String searchFullnode = Configuration.getByPath("testng.conf")
-			.getStringList("fullnode.ip.list").get(1);
+		.getStringList("fullnode.ip.list").get(1);
 
 	public static String loadPubKey() {
 		char[] buf = new char[0x100];
@@ -74,13 +73,13 @@ public class WalletTestTransfer001 {
 	@BeforeClass
 	public void beforeClass() {
 		channelFull = ManagedChannelBuilder.forTarget(fullnode)
-				.usePlaintext(true)
-				.build();
+			.usePlaintext(true)
+			.build();
 		blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
 
 		searchChannelFull = ManagedChannelBuilder.forTarget(searchFullnode)
-				.usePlaintext(true)
-				.build();
+			.usePlaintext(true)
+			.build();
 		searchBlockingStubFull = WalletGrpc.newBlockingStub(searchChannelFull);
 	}
 
@@ -97,7 +96,7 @@ public class WalletTestTransfer001 {
 		receiptAccountKey = ByteArray.toHexString(ecKey2.getPrivKeyBytes());
 
 		Assert.assertTrue(PublicMethed.sendcoin(sendAccountAddress, 90000000000L,
-				fromAddress, testKey002, blockingStubFull));
+			fromAddress, testKey002, blockingStubFull));
 
 		logger.info(receiptAccountKey);
 		//Test send coin.
@@ -111,7 +110,7 @@ public class WalletTestTransfer001 {
 		//Test send coin
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Assert.assertTrue(PublicMethed.sendcoin(receiptAccountAddress, 49880000000L,
-				sendAccountAddress, sendAccountKey, blockingStubFull));
+			sendAccountAddress, sendAccountKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		sendAccount = PublicMethed.queryAccount(sendAccountKey, blockingStubFull);
@@ -165,7 +164,7 @@ public class WalletTestTransfer001 {
 			ex.printStackTrace();
 		}
 		ECKey ecKey = temKey;
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
@@ -181,10 +180,10 @@ public class WalletTestTransfer001 {
 		ByteString byteAddreess = ByteString.copyFrom(address);
 
 		builder.setOwnerAddress(byteAddreess).setFrozenBalance(frozenBalance)
-				.setFrozenDuration(frozenDuration);
+			.setFrozenDuration(frozenDuration);
 
 		FreezeBalanceContract contract = builder.build();
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -203,8 +202,8 @@ public class WalletTestTransfer001 {
 		Long afterBlockNum = 0L;
 		Integer wait = 0;
 		while (afterBlockNum < beforeBlockNum + 1 && wait < 10) {
-			Block currentBlock1 = searchBlockingStubFull
-					.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock1 = searchBlockingStubFull
+				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 			wait++;
 			try {
@@ -222,8 +221,8 @@ public class WalletTestTransfer001 {
 		logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
 		//logger.info(Integer.toString(search.getFrozenCount()));
 		logger.info(
-				"beforefronen" + beforeFrozenBalance.toString() + "    afterfronzen" + afterFrozenBalance
-						.toString());
+			"beforefronen" + beforeFrozenBalance.toString() + "    afterfronzen" + afterFrozenBalance
+				.toString());
 		Assert.assertTrue(afterFrozenBalance - beforeFrozenBalance == freezeBalance);
 		//Assert.assertTrue(afterBandwidth - beforeBandwidth == freezeBalance * frozen_duration);
 		return true;
@@ -256,7 +255,7 @@ public class WalletTestTransfer001 {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Transaction transaction = blockingStubFull.createTransaction(contract);
+		Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -306,7 +305,7 @@ public class WalletTestTransfer001 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

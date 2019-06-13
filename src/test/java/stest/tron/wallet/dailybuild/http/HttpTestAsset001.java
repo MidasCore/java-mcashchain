@@ -71,7 +71,7 @@ public class HttpTestAsset001 {
 		responseContent = HttpMethed.parseResponseContent(response);
 		HttpMethed.printJsonContent(responseContent);
 
-		assetIssueId = responseContent.getString("asset_issued_ID");
+		assetIssueId = responseContent.getString("asset_issued_id");
 		logger.info(assetIssueId);
 		Assert.assertTrue(Integer.parseInt(assetIssueId) > 1000000);
 	}

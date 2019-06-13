@@ -23,7 +23,7 @@ import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Protocol.AccountType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.Map;
@@ -160,7 +160,7 @@ public class ExchangeCreateActuatorTest {
 			actuator.execute(ret);
 
 			Assert.assertEquals(ret.getInstance().getExchangeId(), 1L);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
 			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore()
@@ -220,7 +220,7 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
 			// check V2 version
@@ -291,7 +291,7 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
 
@@ -352,7 +352,7 @@ public class ExchangeCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			long id = 1;
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestExchangeNum(), id);
 			// check V2 version

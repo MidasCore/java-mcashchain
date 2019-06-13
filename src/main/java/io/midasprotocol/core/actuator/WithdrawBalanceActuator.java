@@ -14,7 +14,7 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.WithdrawBalanceContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -38,7 +38,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 			withdrawBalanceContract = contract.unpack(WithdrawBalanceContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 
@@ -62,7 +62,7 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 		}
 
 		ret.setWithdrawAmount(allowance);
-		ret.setStatus(fee, code.SUCCESS);
+		ret.setStatus(fee, Code.SUCCESS);
 
 		return true;
 	}

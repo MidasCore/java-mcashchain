@@ -17,7 +17,7 @@ import io.midasprotocol.core.exception.*;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -120,7 +120,7 @@ public class TransactionTrace {
 		runtime.go();
 
 		if (TRX_PRECOMPILED_TYPE != runtime.getTrxType()) {
-			if (contractResult.OUT_OF_TIME
+			if (ContractResult.OUT_OF_TIME
 				.equals(receipt.getResult())) {
 				setTimeResultType(TimeResultType.OUT_OF_TIME);
 			} else if (System.currentTimeMillis() - txStartTimeInMs
@@ -188,8 +188,8 @@ public class TransactionTrace {
 		if (!needVM()) {
 			return false;
 		}
-		return trx.getContractRet() != contractResult.OUT_OF_TIME && receipt.getResult()
-			== contractResult.OUT_OF_TIME;
+		return trx.getContractRet() != ContractResult.OUT_OF_TIME && receipt.getResult()
+			== ContractResult.OUT_OF_TIME;
 	}
 
 	public void check() throws ReceiptCheckErrException {
@@ -219,50 +219,50 @@ public class TransactionTrace {
 		RuntimeException exception = runtime.getResult().getException();
 		if (Objects.isNull(exception) && StringUtils
 			.isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
-			receipt.setResult(contractResult.OK);
+			receipt.setResult(ContractResult.OK);
 			return;
 		}
 		if (runtime.getResult().isRevert()) {
-			receipt.setResult(contractResult.REVERT);
+			receipt.setResult(ContractResult.REVERT);
 			return;
 		}
 		if (exception instanceof IllegalOperationException) {
-			receipt.setResult(contractResult.ILLEGAL_OPERATION);
+			receipt.setResult(ContractResult.ILLEGAL_OPERATION);
 			return;
 		}
 		if (exception instanceof OutOfEnergyException) {
-			receipt.setResult(contractResult.OUT_OF_ENERGY);
+			receipt.setResult(ContractResult.OUT_OF_ENERGY);
 			return;
 		}
 		if (exception instanceof BadJumpDestinationException) {
-			receipt.setResult(contractResult.BAD_JUMP_DESTINATION);
+			receipt.setResult(ContractResult.BAD_JUMP_DESTINATION);
 			return;
 		}
 		if (exception instanceof OutOfTimeException) {
-			receipt.setResult(contractResult.OUT_OF_TIME);
+			receipt.setResult(ContractResult.OUT_OF_TIME);
 			return;
 		}
 		if (exception instanceof OutOfMemoryException) {
-			receipt.setResult(contractResult.OUT_OF_MEMORY);
+			receipt.setResult(ContractResult.OUT_OF_MEMORY);
 			return;
 		}
 		if (exception instanceof PrecompiledContractException) {
-			receipt.setResult(contractResult.PRECOMPILED_CONTRACT);
+			receipt.setResult(ContractResult.PRECOMPILED_CONTRACT);
 			return;
 		}
 		if (exception instanceof StackTooSmallException) {
-			receipt.setResult(contractResult.STACK_TOO_SMALL);
+			receipt.setResult(ContractResult.STACK_TOO_SMALL);
 			return;
 		}
 		if (exception instanceof StackTooLargeException) {
-			receipt.setResult(contractResult.STACK_TOO_LARGE);
+			receipt.setResult(ContractResult.STACK_TOO_LARGE);
 			return;
 		}
 		if (exception instanceof JVMStackOverFlowException) {
-			receipt.setResult(contractResult.JVM_STACK_OVER_FLOW);
+			receipt.setResult(ContractResult.JVM_STACK_OVER_FLOW);
 			return;
 		}
-		receipt.setResult(contractResult.UNKNOWN);
+		receipt.setResult(ContractResult.UNKNOWN);
 	}
 
 	public String getRuntimeError() {

@@ -14,7 +14,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UnfreezeBalanceContract;
 import io.midasprotocol.protos.Protocol.Account.AccountResource;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -38,7 +38,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 			unfreezeBalanceContract = contract.unpack(UnfreezeBalanceContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		byte[] ownerAddress = unfreezeBalanceContract.getOwnerAddress().toByteArray();
@@ -184,7 +184,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		dbManager.getVoteChangeStore().put(ownerAddress, voteChangeCapsule);
 
 		ret.setUnfreezeAmount(unfreezeBalance);
-		ret.setStatus(fee, code.SUCCESS);
+		ret.setStatus(fee, Code.SUCCESS);
 
 		return true;
 	}

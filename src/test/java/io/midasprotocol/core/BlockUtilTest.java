@@ -28,7 +28,7 @@ import io.midasprotocol.core.capsule.utils.BlockUtil;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.BlockHeader;
-import io.midasprotocol.protos.Protocol.BlockHeader.raw;
+import io.midasprotocol.protos.Protocol.BlockHeader.Raw;
 
 @Slf4j
 public class BlockUtilTest {
@@ -58,13 +58,13 @@ public class BlockUtilTest {
 		//test isParentOf method: create blockCapsule2 and blockCapsule3
 		// blockCapsule3.setParentHash() equals blockCapsule2.getBlockId
 		BlockCapsule blockCapsule2 = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(raw.newBuilder().setParentHash(ByteString.copyFrom(
+				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
 						ByteArray.fromHexString(
 								"0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b81")))
 				)).build());
 
 		BlockCapsule blockCapsule3 = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(raw.newBuilder().setParentHash(ByteString.copyFrom(
+				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
 						ByteArray
 								.fromHexString(blockCapsule2.getBlockId().toString())))
 				)).build());

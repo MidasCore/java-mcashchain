@@ -12,7 +12,7 @@ import io.midasprotocol.core.exception.BalanceInsufficientException;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AccountCreateContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
@@ -40,10 +40,10 @@ public class CreateAccountActuator extends AbstractActuator {
 			// Add to blackhole address
 			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().createDbKey(), fee);
 
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (BalanceInsufficientException | InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 

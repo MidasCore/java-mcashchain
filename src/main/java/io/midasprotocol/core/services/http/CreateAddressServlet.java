@@ -33,7 +33,7 @@ public class CreateAddressServlet extends HttpServlet {
 			String base58check = Wallet.encodeBase58Check(address);
 			String hexString = ByteArray.toHexString(address);
 			JSONObject jsonAddress = new JSONObject();
-			jsonAddress.put("base58checkAddress", base58check);
+			jsonAddress.put("base58_check_address", base58check);
 			jsonAddress.put("value", hexString);
 			response.getWriter().println(jsonAddress.toJSONString());
 		} catch (Exception e) {
@@ -57,7 +57,7 @@ public class CreateAddressServlet extends HttpServlet {
 			String base58check = Wallet.encodeBase58Check(address);
 			String hexString = ByteArray.toHexString(address);
 			JSONObject jsonAddress = new JSONObject();
-			jsonAddress.put("base58checkAddress", base58check);
+			jsonAddress.put("base58_check_address", base58check);
 			jsonAddress.put("value", hexString);
 			response.getWriter().println(jsonAddress.toJSONString());
 		} catch (Exception e) {

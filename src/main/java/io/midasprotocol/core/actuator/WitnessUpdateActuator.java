@@ -11,7 +11,7 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.WitnessUpdateContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
@@ -35,10 +35,10 @@ public class WitnessUpdateActuator extends AbstractActuator {
 			final WitnessUpdateContract witnessUpdateContract = this.contract
 				.unpack(WitnessUpdateContract.class);
 			this.updateWitness(witnessUpdateContract);
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (final InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		return true;

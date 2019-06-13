@@ -71,7 +71,7 @@ public class FreezeAndSendcoin {
 			ex.printStackTrace();
 		}
 		final ECKey ecKey = temKey;
-		Protocol.Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Long beforeFrozenBalance = 0L;
@@ -84,7 +84,7 @@ public class FreezeAndSendcoin {
 				.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -103,7 +103,7 @@ public class FreezeAndSendcoin {
 		Long afterBlockNum = 0L;
 
 		while (afterBlockNum < beforeBlockNum) {
-			Protocol.Block currentBlock1 = blockingStubFull.getNowBlock(GrpcAPI
+			GrpcAPI.BlockExtension currentBlock1 = blockingStubFull.getNowBlock(GrpcAPI
 					.EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 		}
@@ -256,7 +256,7 @@ public class FreezeAndSendcoin {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -292,7 +292,7 @@ public class FreezeAndSendcoin {
 		builder.setOwnerAddress(byteAddreess);
 		Contract.WithdrawBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.withdrawBalance(contract);
+		Transaction transaction = blockingStubFull.withdrawBalance(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}

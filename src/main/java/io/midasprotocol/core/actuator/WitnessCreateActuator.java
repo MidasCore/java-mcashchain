@@ -19,7 +19,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.util.StakeUtil;
 import io.midasprotocol.protos.Contract.WitnessCreateContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -39,10 +39,10 @@ public class WitnessCreateActuator extends AbstractActuator {
 				.unpack(WitnessCreateContract.class);
 			this.createWitness(witnessCreateContract);
 			this.updateVote(witnessCreateContract);
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (InvalidProtocolBufferException | BalanceInsufficientException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		return true;

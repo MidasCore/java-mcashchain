@@ -22,7 +22,7 @@ import io.midasprotocol.core.exception.ItemNotFoundException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Protocol.AccountType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.Arrays;
@@ -190,7 +190,7 @@ public class ExchangeTransactionActuatorTest {
 
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			exchangeV2Capsule = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
 			Assert.assertNotNull(exchangeV2Capsule);
 			Assert.assertEquals(exchangeId, exchangeV2Capsule.getID());
@@ -259,7 +259,7 @@ public class ExchangeTransactionActuatorTest {
 
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 
 			//V2
 			exchangeCapsuleV2 = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));

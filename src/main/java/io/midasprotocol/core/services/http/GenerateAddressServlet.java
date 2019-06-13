@@ -29,8 +29,8 @@ public class GenerateAddressServlet extends HttpServlet {
 			String hexString = ByteArray.toHexString(address);
 			JSONObject jsonAddress = new JSONObject();
 			jsonAddress.put("address", base58check);
-			jsonAddress.put("hexAddress", hexString);
-			jsonAddress.put("privateKey", priKeyStr);
+			jsonAddress.put("hex_address", hexString);
+			jsonAddress.put("private_key", priKeyStr);
 			response.getWriter().println(jsonAddress.toJSONString());
 		} catch (Exception e) {
 			logger.debug("Exception: {}", e.getMessage());

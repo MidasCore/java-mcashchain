@@ -106,7 +106,7 @@ public class AttackSendcoin {
 			ex.printStackTrace();
 		}
 		final ECKey ecKey = temKey;
-		Protocol.Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Long beforeFrozenBalance = 0L;
@@ -119,7 +119,7 @@ public class AttackSendcoin {
 				.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -138,7 +138,7 @@ public class AttackSendcoin {
 		Long afterBlockNum = 0L;
 
 		while (afterBlockNum < beforeBlockNum) {
-			Protocol.Block currentBlock1 = blockingStubFull.getNowBlock(GrpcAPI
+			GrpcAPI.BlockExtension currentBlock1 = blockingStubFull.getNowBlock(GrpcAPI
 					.EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 		}
@@ -291,7 +291,7 @@ public class AttackSendcoin {
 		while (blockTimes < 5) {
 			blockTimes++;
 			//Print the current block transaction num.
-			Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			Long currentNum = currentBlock.getBlockHeader().getRawData().getNumber();
 			logger.info("The block num " + Long.toString(currentNum)
 					+ "total transaction is " + Long.toString(currentBlock.getTransactionsCount()));
@@ -306,7 +306,7 @@ public class AttackSendcoin {
 			Long temp = 0L;
 			for (Integer m = 0; m < currentBlock.getTransactionsCount(); m++) {
 				try {
-					temp = currentBlock.getTransactions(m).getRawData().getContract(0).getParameter()
+					temp = currentBlock.getTransactions(m).getTransaction().getRawData().getContract(0).getParameter()
 							.unpack(TransferContract.class).getAmount();
 				} catch (InvalidProtocolBufferException e) {
 					e.printStackTrace();
@@ -374,7 +374,7 @@ public class AttackSendcoin {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -410,7 +410,7 @@ public class AttackSendcoin {
 		builder.setOwnerAddress(byteAddreess);
 		Contract.WithdrawBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.withdrawBalance(contract);
+		Transaction transaction = blockingStubFull.withdrawBalance(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}

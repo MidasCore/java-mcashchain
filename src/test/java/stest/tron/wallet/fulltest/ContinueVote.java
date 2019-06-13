@@ -178,7 +178,7 @@ public class ContinueVote {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -249,7 +249,7 @@ public class ContinueVote {
 
 		FreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -263,8 +263,8 @@ public class ContinueVote {
 			return false;
 		}
 
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
-		Block searchCurrentBlock = searchBlockingStubFull.getNowBlock(GrpcAPI
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension searchCurrentBlock = searchBlockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		Integer wait = 0;
 		while (searchCurrentBlock.getBlockHeader().getRawData().getNumber()
@@ -331,7 +331,7 @@ public class ContinueVote {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -380,7 +380,7 @@ public class ContinueVote {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

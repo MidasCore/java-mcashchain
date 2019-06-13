@@ -170,7 +170,7 @@ public class WalletTestWitness003 {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.createWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -198,7 +198,7 @@ public class WalletTestWitness003 {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.createWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -224,7 +224,7 @@ public class WalletTestWitness003 {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUpdateUrl(ByteString.copyFrom(url));
 		Contract.WitnessUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -265,7 +265,7 @@ public class WalletTestWitness003 {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -324,7 +324,7 @@ public class WalletTestWitness003 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

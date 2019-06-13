@@ -96,11 +96,11 @@ public class VoteWitnessAccount2Test {
 		//sendcoin
 		Return ret1 = PublicMethed.sendcoin2(lowBalAddress, 21245000000L,
 				fromAddress, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		ret1 = PublicMethed.sendcoin2(lowBalAddress2, 21245000000L,
 				fromAddress, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		//assetissue
@@ -108,7 +108,7 @@ public class VoteWitnessAccount2Test {
 		byte[] createUrl = createUrl1.getBytes();
 		String lowBalTest = ByteArray.toHexString(ecKey.getPrivKeyBytes());
 		ret1 = createWitness2(lowBalAddress, createUrl, lowBalTest);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		String voteStr1 = Base58.encodeBase58(lowBalAddress);
@@ -133,29 +133,29 @@ public class VoteWitnessAccount2Test {
 
 		//Freeze balance to get vote ability.
 		ret1 = PublicMethed.freezeBalance2(fromAddress, 10000000L, 3L, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		//Vote failed when the vote is large than the freeze balance.
 		ret1 = voteWitness2(veryLargeMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 
 		//Vote failed due to 0 vote.
 		ret1 = voteWitness2(zeroVoteMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : vote count must be greater than 0");
 
 		ret1 = voteWitness2(wrongVoteMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : vote count must be greater than 0");
 
 		ret1 = voteWitness2(wrongDropMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : overflow: checkedMultiply(10000000000000000, 1000000)");
 		ret1 = voteWitness2(smallVoteMap, fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 	}
@@ -209,7 +209,7 @@ public class VoteWitnessAccount2Test {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -262,12 +262,12 @@ public class VoteWitnessAccount2Test {
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.createWitness2(contract);
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.createWitness(contract);
 
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -276,13 +276,13 @@ public class VoteWitnessAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -329,13 +329,13 @@ public class VoteWitnessAccount2Test {
 		Contract.VoteWitnessContract contract = builder.build();
 
 		//Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull
-				.voteWitnessAccount2(contract);
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull
+				.voteWitnessAccount(contract);
 
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -344,13 +344,13 @@ public class VoteWitnessAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -418,7 +418,7 @@ public class VoteWitnessAccount2Test {
 
 		FreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -432,8 +432,8 @@ public class VoteWitnessAccount2Test {
 			return false;
 		}
 
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
-		Block searchCurrentBlock = searchBlockingStubFull.getNowBlock(GrpcAPI
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension searchCurrentBlock = searchBlockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		Integer wait = 0;
 		while (searchCurrentBlock.getBlockHeader().getRawData().getNumber()
@@ -500,7 +500,7 @@ public class VoteWitnessAccount2Test {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -553,7 +553,7 @@ public class VoteWitnessAccount2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

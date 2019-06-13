@@ -88,7 +88,7 @@ public class ParticipateAssetIssue {
 		builder.setOwnerAddress(bsOwner);
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.participateAssetIssue(contract);
+		Protocol.Transaction transaction = blockingStubFull.participateAssetIssue(contract).getTransaction();
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
 		if (response.getResult() == false) {
@@ -136,7 +136,7 @@ public class ParticipateAssetIssue {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.transferAsset(contract);
+		Protocol.Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			if (transaction == null) {
 				//logger.info("transaction == null");
@@ -282,7 +282,7 @@ public class ParticipateAssetIssue {
 		while (blockTimes < 5) {
 			blockTimes++;
 			//Print the current block transaction num.
-			Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			Long currentNum = currentBlock.getBlockHeader().getRawData().getNumber();
 			logger.info("The block num " + currentNum
 					+ " total transaction is " + currentBlock.getTransactionsCount());

@@ -22,7 +22,7 @@ import io.midasprotocol.core.exception.ItemNotFoundException;
 import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol.AccountType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.HashMap;
@@ -138,7 +138,7 @@ public class ProposalCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			long id = 1;
 			ProposalCapsule proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(id));
 			Assert.assertNotNull(proposalCapsule);
@@ -356,11 +356,11 @@ public class ProposalCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 
 			actuatorSecond.validate();
 			actuatorSecond.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 2L);
 			ProposalCapsule proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(2L));

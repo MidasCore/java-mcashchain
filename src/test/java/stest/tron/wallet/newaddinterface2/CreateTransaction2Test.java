@@ -105,7 +105,7 @@ public class CreateTransaction2Test {
 		//normal sendcoin2
 		Return ret1 = PublicMethed.sendcoin2(receiptAccountAddress, 49880000000L,
 				sendAccountAddress, sendAccountKey, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		sendAccount = PublicMethed.queryAccount(sendAccountKey, blockingStubFull);
@@ -120,33 +120,33 @@ public class CreateTransaction2Test {
 		ret1 = PublicMethed
 				.sendcoin2(receiptAccountAddress, 9199999999999999999L, sendAccountAddress, sendAccountKey,
 						blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Validate TransferContract error, balance is not sufficient.");
 		//Send coin failed due to the amount is 0.
 		ret1 = PublicMethed
 				.sendcoin2(receiptAccountAddress, 0L, sendAccountAddress, sendAccountKey, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 		//Send coin failed due to the amount is -1Trx.
 		ret1 = PublicMethed
 				.sendcoin2(receiptAccountAddress, -1000000L, sendAccountAddress, sendAccountKey,
 						blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0.");
 
 		//Send coin to yourself
 		ret1 = PublicMethed.sendcoin2(sendAccountAddress, 1000000L, sendAccountAddress, sendAccountKey,
 				blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Cannot transfer trx to yourself.");
 		//transfer all balance
 		ret1 = PublicMethed.sendcoin2(receiptAccountAddress, 40119900000L,
 				sendAccountAddress, sendAccountKey, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		sendAccount = PublicMethed.queryAccount(sendAccountKey, blockingStubFull);
@@ -194,7 +194,7 @@ public class CreateTransaction2Test {
 			ex.printStackTrace();
 		}
 		ECKey ecKey = temKey;
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
@@ -213,7 +213,7 @@ public class CreateTransaction2Test {
 				.setFrozenDuration(frozenDuration);
 
 		FreezeBalanceContract contract = builder.build();
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -232,7 +232,7 @@ public class CreateTransaction2Test {
 		Long afterBlockNum = 0L;
 		Integer wait = 0;
 		while (afterBlockNum < beforeBlockNum + 1 && wait < 10) {
-			Block currentBlock1 = searchBlockingStubFull
+			GrpcAPI.BlockExtension currentBlock1 = searchBlockingStubFull
 					.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 			wait++;
@@ -285,7 +285,7 @@ public class CreateTransaction2Test {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Transaction transaction = blockingStubFull.createTransaction(contract);
+		Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -335,7 +335,7 @@ public class CreateTransaction2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

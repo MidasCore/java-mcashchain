@@ -103,23 +103,23 @@ public class GetTransactionsToThis2 {
 		AccountPaginated.Builder accountPaginated = AccountPaginated.newBuilder().setAccount(account);
 		accountPaginated.setOffset(1000);
 		accountPaginated.setLimit(0);
-		GrpcAPI.TransactionListExtention transactionListExtention = blockingStubExtension
-				.getTransactionsToThis2(accountPaginated.build());
+		GrpcAPI.TransactionListExtension TransactionListExtension = blockingStubExtension
+				.getTransactionsToThis(accountPaginated.build());
 
-		Optional<GrpcAPI.TransactionListExtention> gettransactionstothis2 = Optional
-				.ofNullable(transactionListExtention);
+		Optional<GrpcAPI.TransactionListExtension> gettransactionstothis2 = Optional
+				.ofNullable(TransactionListExtension);
 
-		if (gettransactionstothis2.get().getTransactionCount() == 0) {
+		if (gettransactionstothis2.get().getTransactionsCount() == 0) {
 			Assert.assertTrue(PublicMethed.sendcoin(toAddress, 1000000L, fromAddress, testKey002,
 					blockingStubFull));
 		}
 
 		Assert.assertTrue(gettransactionstothis2.isPresent());
-		Integer beforecount = gettransactionstothis2.get().getTransactionCount();
+		Integer beforecount = gettransactionstothis2.get().getTransactionsCount();
 		logger.info(Integer.toString(beforecount));
 		for (Integer j = 0; j < beforecount; j++) {
 			Assert.assertFalse(
-					gettransactionstothis2.get().getTransaction(j).getTransaction().getRawData()
+					gettransactionstothis2.get().getTransactions(j).getTransaction().getRawData()
 							.getContractList().isEmpty());
 		}
 	}
@@ -132,12 +132,12 @@ public class GetTransactionsToThis2 {
 		AccountPaginated.Builder accountPaginated = AccountPaginated.newBuilder().setAccount(account);
 		accountPaginated.setOffset(1000);
 		accountPaginated.setLimit(0);
-		GrpcAPI.TransactionListExtention transactionListExtention = blockingStubExtension
-				.getTransactionsToThis2(accountPaginated.build());
-		Optional<GrpcAPI.TransactionListExtention> gettransactionstothisByInvaildAddress = Optional
-				.ofNullable(transactionListExtention);
+		GrpcAPI.TransactionListExtension TransactionListExtension = blockingStubExtension
+				.getTransactionsToThis(accountPaginated.build());
+		Optional<GrpcAPI.TransactionListExtension> gettransactionstothisByInvaildAddress = Optional
+				.ofNullable(TransactionListExtension);
 
-		Assert.assertTrue(gettransactionstothisByInvaildAddress.get().getTransactionCount() == 0);
+		Assert.assertTrue(gettransactionstothisByInvaildAddress.get().getTransactionsCount() == 0);
 
 		//Limit is -1
 		addressBs = ByteString.copyFrom(INVAILD_ADDRESS);
@@ -145,12 +145,12 @@ public class GetTransactionsToThis2 {
 		accountPaginated = AccountPaginated.newBuilder().setAccount(account);
 		accountPaginated.setOffset(1000);
 		accountPaginated.setLimit(-1);
-		transactionListExtention = blockingStubExtension
-				.getTransactionsToThis2(accountPaginated.build());
+		TransactionListExtension = blockingStubExtension
+				.getTransactionsToThis(accountPaginated.build());
 		gettransactionstothisByInvaildAddress = Optional
-				.ofNullable(transactionListExtention);
+				.ofNullable(TransactionListExtension);
 
-		Assert.assertTrue(gettransactionstothisByInvaildAddress.get().getTransactionCount() == 0);
+		Assert.assertTrue(gettransactionstothisByInvaildAddress.get().getTransactionsCount() == 0);
 
 		//offset is -1
 		addressBs = ByteString.copyFrom(INVAILD_ADDRESS);
@@ -158,12 +158,12 @@ public class GetTransactionsToThis2 {
 		accountPaginated = AccountPaginated.newBuilder().setAccount(account);
 		accountPaginated.setOffset(-1);
 		accountPaginated.setLimit(100);
-		transactionListExtention = blockingStubExtension
-				.getTransactionsToThis2(accountPaginated.build());
+		TransactionListExtension = blockingStubExtension
+				.getTransactionsToThis(accountPaginated.build());
 		gettransactionstothisByInvaildAddress = Optional
-				.ofNullable(transactionListExtention);
+				.ofNullable(TransactionListExtension);
 
-		Assert.assertTrue(gettransactionstothisByInvaildAddress.get().getTransactionCount() == 0);
+		Assert.assertTrue(gettransactionstothisByInvaildAddress.get().getTransactionsCount() == 0);
 
 	}
 
@@ -218,7 +218,7 @@ public class GetTransactionsToThis2 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

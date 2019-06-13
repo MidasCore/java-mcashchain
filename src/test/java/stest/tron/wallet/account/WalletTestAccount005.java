@@ -3,6 +3,7 @@ package stest.tron.wallet.account;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.midasprotocol.api.GrpcAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -133,7 +134,7 @@ public class WalletTestAccount005 {
 		builder.setOwnerAddress(byteAddreess);
 		Contract.WithdrawBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.withdrawBalance(contract);
+		Transaction transaction = blockingStubFull.withdrawBalance(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -182,7 +183,7 @@ public class WalletTestAccount005 {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -241,7 +242,7 @@ public class WalletTestAccount005 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

@@ -4,7 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.midasprotocol.core.exception.BadItemException;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
-import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "capsule")
@@ -31,15 +31,15 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 		this.transactionResult = Transaction.Result.newBuilder().build();
 	}
 
-	public TransactionResultCapsule(contractResult code) {
+	public TransactionResultCapsule(ContractResult code) {
 		this.transactionResult = Transaction.Result.newBuilder().setContractRet(code).build();
 	}
 
-	public TransactionResultCapsule(Transaction.Result.code code, long fee) {
+	public TransactionResultCapsule(Transaction.Result.Code code, long fee) {
 		this.transactionResult = Transaction.Result.newBuilder().setRet(code).setFee(fee).build();
 	}
 
-	public void setStatus(long fee, Transaction.Result.code code) {
+	public void setStatus(long fee, Transaction.Result.Code code) {
 		long oldValue = transactionResult.getFee();
 		this.transactionResult = this.transactionResult.toBuilder()
 			.setFee(oldValue + fee)
@@ -62,11 +62,11 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 		this.transactionResult = this.transactionResult.toBuilder().setUnfreezeAmount(amount).build();
 	}
 
-	public long getAssetIssueID() {
+	public long getAssetIssueId() {
 		return transactionResult.getAssetIssueID();
 	}
 
-	public void setAssetIssueID(long id) {
+	public void setAssetIssueId(long id) {
 		this.transactionResult = this.transactionResult.toBuilder().setAssetIssueID(id).build();
 	}
 
@@ -122,7 +122,7 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 			.setFee(this.transactionResult.getFee() + fee).build();
 	}
 
-	public void setErrorCode(Transaction.Result.code code) {
+	public void setErrorCode(Transaction.Result.Code code) {
 		this.transactionResult = this.transactionResult.toBuilder().setRet(code).build();
 	}
 

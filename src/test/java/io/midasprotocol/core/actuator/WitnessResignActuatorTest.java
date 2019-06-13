@@ -20,7 +20,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -169,13 +169,13 @@ public class WitnessResignActuatorTest {
 		try {
 			witnessCreateActuator.validate();
 			witnessCreateActuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			dbManager.getWitnessController().updateWitness();
 			Assert.assertTrue(dbManager.getWitnessScheduleStore().getActiveWitnesses().contains(witnessAddressByteString));
 
 			witnessResignActuator.validate();
 			witnessResignActuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertFalse(dbManager.getWitnessScheduleStore().getActiveWitnesses().contains(witnessAddressByteString));
 			dbManager.getWitnessController().updateWitness();
 		} catch (ContractValidateException | ContractExeException e) {
@@ -199,7 +199,7 @@ public class WitnessResignActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			Assert.assertTrue(dbManager.getWitnessStore().has(witnessAddress));
 			WitnessCapsule witnessCapsule = dbManager.getWitnessStore().get(witnessAddress);
 			Assert.assertEquals(Protocol.Witness.Status.RESIGNED, witnessCapsule.getStatus());

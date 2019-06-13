@@ -204,7 +204,7 @@ public class WalletTestAccount003 {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.createWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -240,7 +240,7 @@ public class WalletTestAccount003 {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -284,7 +284,7 @@ public class WalletTestAccount003 {
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
 
-			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("Please check!!! transaction == null");
 				return false;
@@ -349,7 +349,7 @@ public class WalletTestAccount003 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -387,7 +387,7 @@ public class WalletTestAccount003 {
 		builder.setOwnerAddress(basAddreess);
 
 		Contract.AccountUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("Please check!!! transaction == null");
@@ -428,7 +428,7 @@ public class WalletTestAccount003 {
 
 		Contract.UnfreezeBalanceContract contract = builder.build();
 
-		Protocol.Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -472,7 +472,7 @@ public class WalletTestAccount003 {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Protocol.Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Protocol.Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -514,7 +514,7 @@ public class WalletTestAccount003 {
 				.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;

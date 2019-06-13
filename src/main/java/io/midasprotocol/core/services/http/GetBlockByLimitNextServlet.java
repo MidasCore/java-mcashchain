@@ -23,8 +23,8 @@ public class GetBlockByLimitNextServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			long startNum = Long.parseLong(request.getParameter("startNum"));
-			long endNum = Long.parseLong(request.getParameter("endNum"));
+			long startNum = Long.parseLong(request.getParameter("start_num"));
+			long endNum = Long.parseLong(request.getParameter("end_num"));
 			if (endNum > 0 && endNum > startNum && endNum - startNum <= BLOCK_LIMIT_NUM) {
 				BlockList reply = wallet.getBlocksByLimitNext(startNum, endNum - startNum);
 				if (reply != null) {

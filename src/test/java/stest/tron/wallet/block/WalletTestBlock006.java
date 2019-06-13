@@ -66,7 +66,7 @@ public class WalletTestBlock006 {
 				.build()).getNum();
 		Assert.assertTrue(transactionNumInBlock == -1);
 
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		builder.setNum(currentBlockNum + 10000L);
 		transactionNumInBlock = blockingStubFull.getTransactionCountByBlockNum(builder
@@ -88,7 +88,7 @@ public class WalletTestBlock006 {
 				.build()).getNum();
 		Assert.assertTrue(transactionNumInBlock == -1);
 
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		builder.setNum(currentBlockNum + 10000L);
 		transactionNumInBlock = blockingStubSolidity.getTransactionCountByBlockNum(builder

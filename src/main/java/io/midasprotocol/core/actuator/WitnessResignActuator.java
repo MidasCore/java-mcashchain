@@ -15,7 +15,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.WitnessUpdateContract;
 import io.midasprotocol.protos.Protocol;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -63,10 +63,10 @@ public class WitnessResignActuator extends AbstractActuator {
 			final Contract.WitnessResignContract witnessResignContract = this.contract
 				.unpack(Contract.WitnessResignContract.class);
 			this.resignWitness(witnessResignContract);
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (final InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		return true;

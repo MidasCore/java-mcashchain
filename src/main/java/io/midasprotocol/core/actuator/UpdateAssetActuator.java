@@ -14,7 +14,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AccountUpdateContract;
 import io.midasprotocol.protos.Contract.UpdateAssetContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
@@ -52,10 +52,10 @@ public class UpdateAssetActuator extends AbstractActuator {
 			dbManager.getAssetIssueStore()
 				.put(assetIssueCapsuleV2.createDbKey(), assetIssueCapsuleV2);
 
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 

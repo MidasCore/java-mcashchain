@@ -13,7 +13,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
@@ -31,7 +31,7 @@ public class UnstakeActuator extends AbstractActuator {
 			unstakeContract = contract.unpack(Contract.UnstakeContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		byte[] ownerAddress = unstakeContract.getOwnerAddress().toByteArray();
@@ -72,7 +72,7 @@ public class UnstakeActuator extends AbstractActuator {
 		}
 
 		ret.setUnstakeAmount(unstakeAmount);
-		ret.setStatus(fee, code.SUCCESS);
+		ret.setStatus(fee, Code.SUCCESS);
 
 		return true;
 	}

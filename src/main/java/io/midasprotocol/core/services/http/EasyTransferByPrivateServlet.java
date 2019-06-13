@@ -4,7 +4,7 @@ import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.EasyTransferByPrivateMessage;
 import io.midasprotocol.api.GrpcAPI.EasyTransferResponse;
-import io.midasprotocol.api.GrpcAPI.Return.response_code;
+import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.TransactionCapsule;
@@ -58,7 +58,7 @@ public class EasyTransferByPrivateServlet extends HttpServlet {
 			responseBuild.setResult(retur);
 			response.getWriter().println(Util.printEasyTransferResponse(responseBuild.build()));
 		} catch (Exception e) {
-			returnBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
+			returnBuilder.setResult(false).setCode(ResponseCode.CONTRACT_VALIDATE_ERROR)
 				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 			responseBuild.setResult(returnBuilder.build());
 			try {

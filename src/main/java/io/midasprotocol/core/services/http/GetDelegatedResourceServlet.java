@@ -24,8 +24,8 @@ public class GetDelegatedResourceServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			String fromAddress = request.getParameter("fromAddress");
-			String toAddress = request.getParameter("toAddress");
+			String fromAddress = request.getParameter("from_address");
+			String toAddress = request.getParameter("to_address");
 
 			DelegatedResourceList reply =
 				wallet.getDelegatedResource(

@@ -18,7 +18,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -38,7 +38,7 @@ public class StakeActuator extends AbstractActuator {
 			stakeContract = contract.unpack(Contract.StakeContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
@@ -62,7 +62,7 @@ public class StakeActuator extends AbstractActuator {
 
 		dbManager.getDynamicPropertiesStore().addTotalStake(stakeAmount);
 
-		ret.setStatus(fee, code.SUCCESS);
+		ret.setStatus(fee, Code.SUCCESS);
 
 		return true;
 	}

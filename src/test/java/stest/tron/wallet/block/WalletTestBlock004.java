@@ -61,7 +61,7 @@ public class WalletTestBlock004 {
 	@Test(enabled = true)
 	public void testGetBlockByLimitNext() {
 		//
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Assert.assertFalse(currentBlockNum < 0);
 		while (currentBlockNum <= 5) {
@@ -73,31 +73,31 @@ public class WalletTestBlock004 {
 		GrpcAPI.BlockLimit.Builder builder = GrpcAPI.BlockLimit.newBuilder();
 		builder.setStartNum(2);
 		builder.setEndNum(4);
-		GrpcAPI.BlockList blockList = blockingStubFull.getBlockByLimitNext(builder.build());
-		Optional<GrpcAPI.BlockList> getBlockByLimitNext = Optional.ofNullable(blockList);
+		GrpcAPI.BlockListExtension blockList = blockingStubFull.getBlockByLimitNext(builder.build());
+		Optional<GrpcAPI.BlockListExtension> getBlockByLimitNext = Optional.ofNullable(blockList);
 		Assert.assertTrue(getBlockByLimitNext.isPresent());
-		Assert.assertTrue(getBlockByLimitNext.get().getBlockCount() == 2);
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocksCount() == 2);
 		logger.info(Long.toString(
-				getBlockByLimitNext.get().getBlock(0).getBlockHeader().getRawData().getNumber()));
+				getBlockByLimitNext.get().getBlocks(0).getBlockHeader().getRawData().getNumber()));
 		logger.info(Long.toString(
-				getBlockByLimitNext.get().getBlock(1).getBlockHeader().getRawData().getNumber()));
+				getBlockByLimitNext.get().getBlocks(1).getBlockHeader().getRawData().getNumber()));
 		Assert.assertTrue(
-				getBlockByLimitNext.get().getBlock(0).getBlockHeader().getRawData().getNumber() < 4);
+				getBlockByLimitNext.get().getBlocks(0).getBlockHeader().getRawData().getNumber() < 4);
 		Assert.assertTrue(
-				getBlockByLimitNext.get().getBlock(1).getBlockHeader().getRawData().getNumber() < 4);
-		Assert.assertTrue(getBlockByLimitNext.get().getBlock(0).hasBlockHeader());
-		Assert.assertTrue(getBlockByLimitNext.get().getBlock(1).hasBlockHeader());
+				getBlockByLimitNext.get().getBlocks(1).getBlockHeader().getRawData().getNumber() < 4);
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocks(0).hasBlockHeader());
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocks(1).hasBlockHeader());
 		Assert.assertFalse(
-				getBlockByLimitNext.get().getBlock(0).getBlockHeader().getRawData().getParentHash()
+				getBlockByLimitNext.get().getBlocks(0).getBlockHeader().getRawData().getParentHash()
 						.isEmpty());
 		Assert.assertFalse(
-				getBlockByLimitNext.get().getBlock(1).getBlockHeader().getRawData().getParentHash()
+				getBlockByLimitNext.get().getBlocks(1).getBlockHeader().getRawData().getParentHash()
 						.isEmpty());
 	}
 
 	@Test(enabled = true)
 	public void testGetBlockByExceptionLimitNext() {
-		Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Assert.assertFalse(currentBlockNum < 0);
 		while (currentBlockNum <= 5) {
@@ -110,9 +110,9 @@ public class WalletTestBlock004 {
 		GrpcAPI.BlockLimit.Builder builder = GrpcAPI.BlockLimit.newBuilder();
 		builder.setStartNum(-1);
 		builder.setEndNum(1);
-		GrpcAPI.BlockList blockList = blockingStubFull.getBlockByLimitNext(builder.build());
-		Optional<GrpcAPI.BlockList> getBlockByLimitNext = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLimitNext.get().getBlockCount() == 0);
+		GrpcAPI.BlockListExtension blockList = blockingStubFull.getBlockByLimitNext(builder.build());
+		Optional<GrpcAPI.BlockListExtension> getBlockByLimitNext = Optional.ofNullable(blockList);
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocksCount() == 0);
 
 		//From 3 to 3
 		builder = GrpcAPI.BlockLimit.newBuilder();
@@ -120,7 +120,7 @@ public class WalletTestBlock004 {
 		builder.setEndNum(3);
 		blockList = blockingStubFull.getBlockByLimitNext(builder.build());
 		getBlockByLimitNext = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLimitNext.get().getBlockCount() == 0);
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocksCount() == 0);
 
 		//From 4 to 2
 		builder = GrpcAPI.BlockLimit.newBuilder();
@@ -128,7 +128,7 @@ public class WalletTestBlock004 {
 		builder.setEndNum(2);
 		blockList = blockingStubFull.getBlockByLimitNext(builder.build());
 		getBlockByLimitNext = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLimitNext.get().getBlockCount() == 0);
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocksCount() == 0);
 
 		//From 999999990 to 999999999
 		builder = GrpcAPI.BlockLimit.newBuilder();
@@ -136,7 +136,7 @@ public class WalletTestBlock004 {
 		builder.setEndNum(999999999);
 		blockList = blockingStubFull.getBlockByLimitNext(builder.build());
 		getBlockByLimitNext = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLimitNext.get().getBlockCount() == 0);
+		Assert.assertTrue(getBlockByLimitNext.get().getBlocksCount() == 0);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class WalletTestBlock004 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

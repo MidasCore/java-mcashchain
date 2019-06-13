@@ -146,7 +146,7 @@ public class TestApproveProposal {
 					.usePlaintext(true)
 					.build();
 			blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
-			Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 			logger.info("ip " + ip + ", block num is : " + currentBlockNum);
 
@@ -157,8 +157,8 @@ public class TestApproveProposal {
 				TransferContract transferContract;
 				Integer triggerNum = 0;
 				Integer transactionNum = 0;
-				for (Transaction transaction : currentBlock.getTransactionsList()) {
-					if (transaction.getRawData().getContract(0).getContractName().isEmpty()) {
+				for (GrpcAPI.TransactionExtension transaction : currentBlock.getTransactionsList()) {
+					if (transaction.getTransaction().getRawData().getContract(0).getContractName().isEmpty()) {
 						transactionNum++;
 					} else {
 						triggerNum++;

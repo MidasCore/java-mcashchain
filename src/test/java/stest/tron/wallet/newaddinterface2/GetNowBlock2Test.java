@@ -68,8 +68,8 @@ public class GetNowBlock2Test {
 	@Test
 	public void testCurrentBlock2() {
 		//Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
-		GrpcAPI.BlockExtention currentBlock = blockingStubFull
-				.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull
+				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Assert.assertTrue(currentBlock.hasBlockHeader());
 		Assert.assertFalse(currentBlock.getBlockHeader().getWitnessSignature().isEmpty());
 		Assert.assertTrue(currentBlock.getBlockHeader().getRawData().getTimestamp() > 0);
@@ -79,25 +79,25 @@ public class GetNowBlock2Test {
 		Assert.assertTrue(currentBlock.getBlockHeader().getRawData().getWitnessId() >= 0);
 		logger.info("test getcurrentblock is " + Long
 				.toString(currentBlock.getBlockHeader().getRawData().getNumber()));
-		Assert.assertFalse(currentBlock.getBlockid().isEmpty());
+		Assert.assertFalse(currentBlock.getBlockId().isEmpty());
 
 		//Improve coverage.
 		currentBlock.equals(currentBlock);
 		//Block newBlock = blockingStubFull.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
-		GrpcAPI.BlockExtention newBlock = blockingStubFull
-				.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension newBlock = blockingStubFull
+				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		newBlock.equals(currentBlock);
 		newBlock.hashCode();
 		newBlock.getSerializedSize();
 		newBlock.getTransactionsCount();
 		newBlock.getTransactionsList();
-		Assert.assertFalse(newBlock.getBlockid().isEmpty());
+		Assert.assertFalse(newBlock.getBlockId().isEmpty());
 	}
 
 	@Test
 	public void testCurrentBlockFromSolidity2() {
-		GrpcAPI.BlockExtention currentBlock = blockingStubSolidity
-				.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubSolidity
+				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Assert.assertTrue(currentBlock.hasBlockHeader());
 		Assert.assertFalse(currentBlock.getBlockHeader().getWitnessSignature().isEmpty());
 		Assert.assertTrue(currentBlock.getBlockHeader().getRawData().getTimestamp() > 0);
@@ -169,7 +169,7 @@ public class GetNowBlock2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

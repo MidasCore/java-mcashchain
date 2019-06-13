@@ -89,7 +89,7 @@ public class CreateaAndUpdateWitness2Test {
 	@Test
 	public void testInvaildToApplyBecomeWitness2() {
 		GrpcAPI.Return ret1 = createWitness2(INVAILD_ADDRESS, createUrl, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid address");
 	}
@@ -99,14 +99,14 @@ public class CreateaAndUpdateWitness2Test {
 		//If you are already is witness, apply failed
 		createWitness(fromAddress, createUrl, testKey002);
 		GrpcAPI.Return ret1 = createWitness2(fromAddress, createUrl, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Witness[415624c12e308b03a1a6b21d9b86e3942fac1ab92b] "
 						+ "has existed");
 		//balance is not enouhg,try to create witness.
 		Assert.assertTrue(sendcoin(lowBalAddress, 1000000L, fromAddress, testKey002));
 		ret1 = createWitness2(lowBalAddress, createUrl, lowBalTest);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : balance < AccountUpgradeCost");
 		//Send enough coin to the apply account to make that account
@@ -118,7 +118,7 @@ public class CreateaAndUpdateWitness2Test {
 		if (result.get().getWitnessesCount() < 6) {
 			Assert.assertTrue(sendcoin(lowBalAddress, costForCreateWitness, fromAddress, testKey002));
 			ret1 = createWitness2(lowBalAddress, createUrl, lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		}
 	}
@@ -132,16 +132,16 @@ public class CreateaAndUpdateWitness2Test {
 		if (result.get().getWitnessesCount() < 6) {
 			//null url, update failed
 			GrpcAPI.Return ret1 = updateWitness2(lowBalAddress, wrongUrl, lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 					"contract validate error : Invalid url");
 			//Content space and special char, update success
 			ret1 = updateWitness2(lowBalAddress, updateSpaceUrl, lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 			//update success
 			ret1 = updateWitness2(lowBalAddress, updateUrl, lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		} else {
 			logger.info("Update witness case had been test.This time skip it.");
@@ -178,7 +178,7 @@ public class CreateaAndUpdateWitness2Test {
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
 
-		Protocol.Transaction transaction = blockingStubFull.createWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.createWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -211,12 +211,12 @@ public class CreateaAndUpdateWitness2Test {
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.createWitness2(contract);
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.createWitness(contract);
 
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -225,13 +225,13 @@ public class CreateaAndUpdateWitness2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -260,7 +260,7 @@ public class CreateaAndUpdateWitness2Test {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUpdateUrl(ByteString.copyFrom(url));
 		Contract.WitnessUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -296,11 +296,11 @@ public class CreateaAndUpdateWitness2Test {
 		builder.setUpdateUrl(ByteString.copyFrom(url));
 		Contract.WitnessUpdateContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.updateWitness2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.updateWitness(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -309,13 +309,13 @@ public class CreateaAndUpdateWitness2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -351,7 +351,7 @@ public class CreateaAndUpdateWitness2Test {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -410,7 +410,7 @@ public class CreateaAndUpdateWitness2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

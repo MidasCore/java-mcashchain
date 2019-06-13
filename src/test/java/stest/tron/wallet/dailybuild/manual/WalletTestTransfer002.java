@@ -144,7 +144,7 @@ public class WalletTestTransfer002 {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Transaction transaction = blockingStubFull.createTransaction(contract);
+		Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -194,7 +194,7 @@ public class WalletTestTransfer002 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

@@ -39,7 +39,7 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Contract.TransferContract;
 import io.midasprotocol.protos.Protocol.*;
-import io.midasprotocol.protos.Protocol.BlockHeader.raw;
+import io.midasprotocol.protos.Protocol.BlockHeader.Raw;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 
@@ -140,7 +140,7 @@ public class WalletTest {
 	private static Transaction getBuildTransaction(
 			TransferContract transferContract, long transactionTimestamp, long refBlockNum) {
 		return Transaction.newBuilder().setRawData(
-				Transaction.raw.newBuilder().setTimestamp(transactionTimestamp).setRefBlockNum(refBlockNum)
+				Transaction.Raw.newBuilder().setTimestamp(transactionTimestamp).setRefBlockNum(refBlockNum)
 						.addContract(
 								Contract.newBuilder().setType(ContractType.TransferContract)
 										.setParameter(Any.pack(transferContract)).build()).build()).build();
@@ -182,7 +182,7 @@ public class WalletTest {
 	private static Block getBuildBlock(long timestamp, long num, long witnessId,
 									   String witnessAddress, Transaction transaction, Transaction transactionNext) {
 		return Block.newBuilder().setBlockHeader(BlockHeader.newBuilder().setRawData(
-				raw.newBuilder().setTimestamp(timestamp).setNumber(num).setWitnessId(witnessId)
+				Raw.newBuilder().setTimestamp(timestamp).setNumber(num).setWitnessId(witnessId)
 						.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(witnessAddress)))
 						.build()).build()).addTransactions(transaction).addTransactions(transactionNext)
 				.build();

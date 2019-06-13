@@ -60,7 +60,7 @@ public class HttpTestSmartContract001 {
 		responseContent = HttpMethed.parseResponseContent(response);
 		HttpMethed.printJsonContent(responseContent);
 
-		assetIssueId = responseContent.getString("asset_issued_ID");
+		assetIssueId = responseContent.getString("asset_issued_id");
 
 		contractName = "transferTokenContract";
 		String code = Configuration.getByPath("testng.conf")

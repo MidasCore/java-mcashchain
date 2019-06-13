@@ -8,7 +8,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import io.midasprotocol.api.GrpcAPI.TransactionExtention;
+import io.midasprotocol.api.GrpcAPI.TransactionExtension;
 import io.midasprotocol.api.GrpcAPI.TransactionSignWeight;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.response_code.*;
+import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.ResponseCode.*;
 
 @Slf4j
 public class MultiSign23 {
@@ -617,9 +617,9 @@ public class MultiSign23 {
 				Contract.AccountPermissionUpdateContract.newBuilder();
 
 		Contract.AccountPermissionUpdateContract contract = builder.build();
-		TransactionExtention transactionExtention =
+		TransactionExtension TransactionExtension =
 				blockingStubFull.accountPermissionUpdate(contract);
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 
 		Transaction transaction1 = PublicMethed
 				.addTransactionSign(transaction, ownerKey, blockingStubFull);

@@ -53,8 +53,8 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 
 	public BlockCapsule(long number, Sha256Hash hash, long when, ByteString witnessAddress) {
 		// blockheader raw
-		BlockHeader.raw.Builder blockHeaderRawBuild = BlockHeader.raw.newBuilder();
-		BlockHeader.raw blockHeaderRaw = blockHeaderRawBuild
+		BlockHeader.Raw.Builder blockHeaderRawBuild = BlockHeader.Raw.newBuilder();
+		BlockHeader.Raw blockHeaderRaw = blockHeaderRawBuild
 			.setNumber(number)
 			.setParentHash(hash.getByteString())
 			.setTimestamp(when)
@@ -76,8 +76,8 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 	public BlockCapsule(long timestamp, ByteString parentHash, long number,
 						List<Transaction> transactionList) {
 		// blockheader raw
-		BlockHeader.raw.Builder blockHeaderRawBuild = BlockHeader.raw.newBuilder();
-		BlockHeader.raw blockHeaderRaw = blockHeaderRawBuild
+		BlockHeader.Raw.Builder blockHeaderRawBuild = BlockHeader.Raw.newBuilder();
+		BlockHeader.Raw blockHeaderRaw = blockHeaderRawBuild
 			.setTimestamp(timestamp)
 			.setParentHash(parentHash)
 			.setNumber(number)
@@ -183,7 +183,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 	}
 
 	public void setMerkleRoot() {
-		BlockHeader.raw blockHeaderRaw =
+		BlockHeader.Raw blockHeaderRaw =
 			this.block.getBlockHeader().getRawData().toBuilder()
 				.setTxTrieRoot(calcMerkleRoot().getByteString()).build();
 
@@ -193,7 +193,7 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 
 	/* only for genesis */
 	public void setWitness(String witness) {
-		BlockHeader.raw blockHeaderRaw =
+		BlockHeader.Raw blockHeaderRaw =
 			this.block.getBlockHeader().getRawData().toBuilder().setWitnessAddress(
 				ByteString.copyFrom(witness.getBytes())).build();
 

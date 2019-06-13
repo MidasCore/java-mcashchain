@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static io.midasprotocol.api.GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR;
+import static io.midasprotocol.api.GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR;
 
 @Slf4j
 public class MultiSign17 {

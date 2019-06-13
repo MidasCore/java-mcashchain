@@ -82,7 +82,7 @@ public class DeployContractServlet extends HttpServlet {
 			Transaction tx = wallet
 				.createTransactionCapsule(build.build(), ContractType.CreateSmartContract).getInstance();
 			Transaction.Builder txBuilder = tx.toBuilder();
-			Transaction.raw.Builder rawBuilder = tx.getRawData().toBuilder();
+			Transaction.Raw.Builder rawBuilder = tx.getRawData().toBuilder();
 			rawBuilder.setFeeLimit(feeLimit);
 			txBuilder.setRawData(rawBuilder);
 			response.getWriter().println(Util.printTransaction(txBuilder.build()));

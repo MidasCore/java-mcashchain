@@ -101,7 +101,7 @@ public class WalletTestAssetIssue017 {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction == null");
 				return false;

@@ -28,9 +28,9 @@ public class GetAccountByIdServlet extends HttpServlet {
 			return JsonFormat.printToString(account);
 		} else {
 			JSONObject accountJson = JSONObject.parseObject(JsonFormat.printToString(account));
-			String assetId = accountJson.get("asset_issued_ID").toString();
+			String assetId = accountJson.get("asset_issued_id").toString();
 			accountJson.put(
-				"asset_issued_ID", ByteString.copyFrom(ByteArray.fromHexString(assetId)).toStringUtf8());
+				"asset_issued_id", ByteString.copyFrom(ByteArray.fromHexString(assetId)).toStringUtf8());
 			return accountJson.toJSONString();
 		}
 
@@ -38,10 +38,10 @@ public class GetAccountByIdServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			String accountId = request.getParameter("accountId");
+			String accountId = request.getParameter("account_id");
 			Account.Builder build = Account.newBuilder();
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("accountId", accountId);
+			jsonObject.put("account_id", accountId);
 			JsonFormat.merge(jsonObject.toJSONString(), build);
 
 			Account reply = wallet.getAccountById(build.build());

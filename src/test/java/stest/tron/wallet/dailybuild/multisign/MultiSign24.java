@@ -9,7 +9,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import io.midasprotocol.api.GrpcAPI.TransactionExtention;
+import io.midasprotocol.api.GrpcAPI.TransactionExtension;
 import io.midasprotocol.api.GrpcAPI.TransactionSignWeight;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.response_code.ENOUGH_PERMISSION;
+import static io.midasprotocol.api.GrpcAPI.TransactionSignWeight.Result.ResponseCode.ENOUGH_PERMISSION;
 
 @Slf4j
 public class MultiSign24 {
@@ -701,8 +701,8 @@ public class MultiSign24 {
 				Contract.AccountPermissionUpdateContract.newBuilder();
 
 		Contract.AccountPermissionUpdateContract contract = builder.build();
-		TransactionExtention transactionExtention = blockingStubFull.accountPermissionUpdate(contract);
-		Transaction transaction = transactionExtention.getTransaction();
+		TransactionExtension TransactionExtension = blockingStubFull.accountPermissionUpdate(contract);
+		Transaction transaction = TransactionExtension.getTransaction();
 
 		Transaction transaction1 = PublicMethed
 				.addTransactionSign(transaction, ownerKey, blockingStubFull);

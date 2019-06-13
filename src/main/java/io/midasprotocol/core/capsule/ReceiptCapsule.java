@@ -7,7 +7,7 @@ import io.midasprotocol.core.db.EnergyProcessor;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
 import io.midasprotocol.protos.Protocol.ResourceReceipt;
-import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -169,11 +169,11 @@ public class ReceiptCapsule {
 		manager.getAccountStore().put(account.getAddress().toByteArray(), account);
 	}
 
-	public contractResult getResult() {
+	public ContractResult getResult() {
 		return this.receipt.getResult();
 	}
 
-	public void setResult(contractResult success) {
+	public void setResult(ContractResult success) {
 		this.receipt = receipt.toBuilder().setResult(success).build();
 	}
 }

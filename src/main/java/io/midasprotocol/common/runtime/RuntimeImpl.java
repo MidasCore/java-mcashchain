@@ -40,7 +40,7 @@ import io.midasprotocol.protos.Protocol.SmartContract;
 import io.midasprotocol.protos.Protocol.SmartContract.ABI;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
+import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -338,7 +338,7 @@ public class RuntimeImpl implements Runtime {
 				cpuLimitRatio = 1.0;
 			} else {
 				// self witness or other witness or fullnode verifies block
-				if (trx.getRet(0).getContractRet() == contractResult.OUT_OF_TIME) {
+				if (trx.getRet(0).getContractRet() == ContractResult.OUT_OF_TIME) {
 					cpuLimitRatio = Args.getInstance().getMinTimeRatio();
 				} else {
 					cpuLimitRatio = Args.getInstance().getMaxTimeRatio();
@@ -598,7 +598,7 @@ public class RuntimeImpl implements Runtime {
 			if (vm != null) {
 				TransactionCapsule trxCap = new TransactionCapsule(trx);
 				if (null != blockCap && blockCap.generatedByMyself && null != trxCap.getContractRet()
-					&& contractResult.OUT_OF_TIME == trxCap.getContractRet()) {
+					&& ContractResult.OUT_OF_TIME == trxCap.getContractRet()) {
 					result = program.getResult();
 					program.spendAllEnergy();
 

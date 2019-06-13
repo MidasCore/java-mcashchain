@@ -108,7 +108,7 @@ public class WalletTestAssetIssue008 {
 					testKey002, blockingStubFull));
 			Assert.assertTrue(PublicMethed.sendcoin(toAddress, 999999L, fromAddress,
 					testKey002, blockingStubFull));
-			Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			logger.info("fullnode block num is " + Long.toString(currentBlock.getBlockHeader()
 					.getRawData().getNumber()));
 			PublicMethed.waitSolidityNodeSynFullNodeData(blockingStubFull, blockingStubSolidity);
@@ -178,7 +178,7 @@ public class WalletTestAssetIssue008 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -218,7 +218,7 @@ public class WalletTestAssetIssue008 {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.transferAsset(contract);
+		Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -258,7 +258,7 @@ public class WalletTestAssetIssue008 {
 
 		Contract.UnfreezeAssetContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeAsset(contract);
+		Transaction transaction = blockingStubFull.unfreezeAsset(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;

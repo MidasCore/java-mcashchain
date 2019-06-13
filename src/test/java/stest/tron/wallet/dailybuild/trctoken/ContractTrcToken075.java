@@ -23,7 +23,7 @@ import stest.tron.wallet.common.client.utils.PublicMethed;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static io.midasprotocol.protos.Protocol.TransactionInfo.code.FAILED;
+import static io.midasprotocol.protos.Protocol.TransactionInfo.Code.FAILED;
 
 @Slf4j
 public class ContractTrcToken075 {

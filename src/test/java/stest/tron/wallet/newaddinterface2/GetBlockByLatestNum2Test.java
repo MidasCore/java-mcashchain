@@ -57,59 +57,59 @@ public class GetBlockByLatestNum2Test {
 	@Test(enabled = true)
 	public void testGetBlockByLatestNum2() {
 		//
-		GrpcAPI.BlockExtention currentBlock = blockingStubFull
-				.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull
+				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Assert.assertFalse(currentBlockNum < 0);
 		while (currentBlockNum <= 5) {
 			logger.info("Now the block num is " + Long.toString(currentBlockNum) + " Please wait");
-			currentBlock = blockingStubFull.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+			currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		}
 		NumberMessage numberMessage = NumberMessage.newBuilder().setNum(3).build();
-		GrpcAPI.BlockListExtention blockList = blockingStubFull.getBlockByLatestNum2(numberMessage);
-		Optional<GrpcAPI.BlockListExtention> getBlockByLatestNum = Optional.ofNullable(blockList);
+		GrpcAPI.BlockListExtension blockList = blockingStubFull.getBlockByLatestNum(numberMessage);
+		Optional<GrpcAPI.BlockListExtension> getBlockByLatestNum = Optional.ofNullable(blockList);
 		Assert.assertTrue(getBlockByLatestNum.isPresent());
-		Assert.assertTrue(getBlockByLatestNum.get().getBlockCount() == 3);
-		Assert.assertTrue(getBlockByLatestNum.get().getBlock(0).hasBlockHeader());
+		Assert.assertTrue(getBlockByLatestNum.get().getBlocksCount() == 3);
+		Assert.assertTrue(getBlockByLatestNum.get().getBlocks(0).hasBlockHeader());
 		Assert.assertTrue(
-				getBlockByLatestNum.get().getBlock(1).getBlockHeader().getRawData().getNumber() > 0);
+				getBlockByLatestNum.get().getBlocks(1).getBlockHeader().getRawData().getNumber() > 0);
 		Assert.assertFalse(
-				getBlockByLatestNum.get().getBlock(2).getBlockHeader().getRawData().getParentHash()
+				getBlockByLatestNum.get().getBlocks(2).getBlockHeader().getRawData().getParentHash()
 						.isEmpty());
 		logger.info("TestGetBlockByLatestNum ok!!!");
-		Assert.assertFalse(getBlockByLatestNum.get().getBlock(0).getBlockid().isEmpty());
-		Assert.assertFalse(getBlockByLatestNum.get().getBlock(1).getBlockid().isEmpty());
-		Assert.assertFalse(getBlockByLatestNum.get().getBlock(2).getBlockid().isEmpty());
+		Assert.assertFalse(getBlockByLatestNum.get().getBlocks(0).getBlockId().isEmpty());
+		Assert.assertFalse(getBlockByLatestNum.get().getBlocks(1).getBlockId().isEmpty());
+		Assert.assertFalse(getBlockByLatestNum.get().getBlocks(2).getBlockId().isEmpty());
 	}
 
 	@Test(enabled = true)
 	public void testGetBlockByExceptionNum2() {
-		GrpcAPI.BlockExtention currentBlock = blockingStubFull
-				.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull
+				.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 		Long currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Assert.assertFalse(currentBlockNum < 0);
 		while (currentBlockNum <= 5) {
 			logger.info("Now the block num is " + Long.toString(currentBlockNum) + " Please wait");
-			currentBlock = blockingStubFull.getNowBlock2(GrpcAPI.EmptyMessage.newBuilder().build());
+			currentBlock = blockingStubFull.getNowBlock(GrpcAPI.EmptyMessage.newBuilder().build());
 			currentBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		}
 		NumberMessage numberMessage = NumberMessage.newBuilder().setNum(-1).build();
-		GrpcAPI.BlockListExtention blockList = blockingStubFull.getBlockByLatestNum2(numberMessage);
-		Optional<GrpcAPI.BlockListExtention> getBlockByLatestNum = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLatestNum.get().getBlockCount() == 0);
+		GrpcAPI.BlockListExtension blockList = blockingStubFull.getBlockByLatestNum(numberMessage);
+		Optional<GrpcAPI.BlockListExtension> getBlockByLatestNum = Optional.ofNullable(blockList);
+		Assert.assertTrue(getBlockByLatestNum.get().getBlocksCount() == 0);
 		//Assert.assertTrue(getBlockByLatestNum.get().getBlock(1).getBlockid().isEmpty());
 
 		numberMessage = NumberMessage.newBuilder().setNum(0).build();
-		blockList = blockingStubFull.getBlockByLatestNum2(numberMessage);
+		blockList = blockingStubFull.getBlockByLatestNum(numberMessage);
 		getBlockByLatestNum = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLatestNum.get().getBlockCount() == 0);
+		Assert.assertTrue(getBlockByLatestNum.get().getBlocksCount() == 0);
 		//Assert.assertTrue(getBlockByLatestNum.get().getBlock(1).getBlockid().isEmpty());
 
 		numberMessage = NumberMessage.newBuilder().setNum(100).build();
-		blockList = blockingStubFull.getBlockByLatestNum2(numberMessage);
+		blockList = blockingStubFull.getBlockByLatestNum(numberMessage);
 		getBlockByLatestNum = Optional.ofNullable(blockList);
-		Assert.assertTrue(getBlockByLatestNum.get().getBlockCount() == 0);
+		Assert.assertTrue(getBlockByLatestNum.get().getBlocksCount() == 0);
 		//Assert.assertTrue(getBlockByLatestNum.get().getBlock(10).getBlockid().isEmpty());
 
 	}
@@ -170,7 +170,7 @@ public class GetBlockByLatestNum2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

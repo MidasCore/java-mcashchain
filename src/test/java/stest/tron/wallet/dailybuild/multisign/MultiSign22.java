@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static io.midasprotocol.api.GrpcAPI.Return.response_code.SIGERROR;
+import static io.midasprotocol.api.GrpcAPI.Return.ResponseCode.SIGERROR;
 
 @Slf4j
 public class MultiSign22 {

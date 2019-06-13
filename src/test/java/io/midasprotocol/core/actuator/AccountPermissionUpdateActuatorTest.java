@@ -25,7 +25,7 @@ import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Key;
 import io.midasprotocol.protos.Protocol.Permission;
 import io.midasprotocol.protos.Protocol.Permission.PermissionType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -302,7 +302,7 @@ public class AccountPermissionUpdateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 
 			// step 4, check result after update operation
 			owner = dbManager.getAccountStore().get(owner_name_array);

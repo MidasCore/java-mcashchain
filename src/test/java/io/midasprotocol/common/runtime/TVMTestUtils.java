@@ -113,7 +113,7 @@ public class TVMTestUtils {
 				ContractType.CreateSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
 
-		Transaction.raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
+		Transaction.Raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transactionBuilder.setRawData(rawBuilder);
@@ -133,7 +133,7 @@ public class TVMTestUtils {
 				ContractType.CreateSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
 
-		Transaction.raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
+		Transaction.Raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transactionBuilder.setRawData(rawBuilder);
@@ -153,7 +153,7 @@ public class TVMTestUtils {
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.CreateSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
-		Transaction.raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
+		Transaction.Raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transactionBuilder.setRawData(rawBuilder);
@@ -392,7 +392,7 @@ public class TVMTestUtils {
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.TriggerSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
-		Transaction.raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
+		Transaction.Raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transactionBuilder.setRawData(rawBuilder);
@@ -409,7 +409,7 @@ public class TVMTestUtils {
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.TriggerSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
-		Transaction.raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
+		Transaction.Raw.Builder rawBuilder = trxCapWithoutFeeLimit.getInstance().getRawData()
 				.toBuilder();
 		rawBuilder.setFeeLimit(feeLimit);
 		transactionBuilder.setRawData(rawBuilder);

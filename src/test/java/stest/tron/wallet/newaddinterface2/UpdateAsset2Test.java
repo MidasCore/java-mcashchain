@@ -137,7 +137,7 @@ public class UpdateAsset2Test {
 				.updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
 						updateFreeAssetNetLimit,
 						updatePublicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 		//After update asset issue ,query the description and url,
@@ -162,7 +162,7 @@ public class UpdateAsset2Test {
 				.updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
 						updateFreeAssetNetLimit,
 						-1L, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid PublicFreeAssetNetLimit");
 		//publicFreeAssetNetLimit is 0
@@ -170,39 +170,39 @@ public class UpdateAsset2Test {
 				.updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(),
 						updateFreeAssetNetLimit,
 						0, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		//FreeAssetNetLimit is -1
 		ret1 = PublicMethed
 				.updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(), -1,
 						publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid FreeAssetNetLimit");
 		//FreeAssetNetLimit is 0
 		ret1 = PublicMethed
 				.updateAsset2(asset010Address, updateDescription.getBytes(), updateUrl.getBytes(), 0,
 						publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		//Description is null
 		ret1 = PublicMethed
 				.updateAsset2(asset010Address, "".getBytes(), updateUrl.getBytes(), freeAssetNetLimit,
 						publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		//Url is null
 		ret1 = PublicMethed
 				.updateAsset2(asset010Address, description.getBytes(), "".getBytes(), freeAssetNetLimit,
 						publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : Invalid url");
 		//Too long discription
 		ret1 = PublicMethed
 				.updateAsset2(asset010Address, tooLongDescription.getBytes(), url.getBytes(),
 						freeAssetNetLimit,
 						publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Invalid description");
 		//Too long URL
@@ -210,7 +210,7 @@ public class UpdateAsset2Test {
 				.updateAsset2(asset010Address, description.getBytes(), tooLongUrl.getBytes(),
 						freeAssetNetLimit,
 						publicFreeAssetNetLimit, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "contract validate error : Invalid url");
 	}
 
@@ -223,7 +223,7 @@ public class UpdateAsset2Test {
 		Return ret1 = PublicMethed
 				.updateAsset2(asset010Address, description.getBytes(), url.getBytes(), 1999999999,
 						199, testKeyForAssetIssue010, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		if (channelFull != null) {
 			channelFull.shutdown().awaitTermination(5, TimeUnit.SECONDS);
@@ -267,7 +267,7 @@ public class UpdateAsset2Test {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction == null");
 				return false;
@@ -324,7 +324,7 @@ public class UpdateAsset2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -364,7 +364,7 @@ public class UpdateAsset2Test {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.transferAsset(contract);
+		Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -403,7 +403,7 @@ public class UpdateAsset2Test {
 
 		Contract.UnfreezeAssetContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeAsset(contract);
+		Transaction transaction = blockingStubFull.unfreezeAsset(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -445,7 +445,7 @@ public class UpdateAsset2Test {
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.participateAssetIssue(contract);
+		Transaction transaction = blockingStubFull.participateAssetIssue(contract).getTransaction();
 		transaction = signTransaction(ecKey, transaction);
 		Return response = blockingStubFull.broadcastTransaction(transaction);
 		if (response.getResult() == false) {

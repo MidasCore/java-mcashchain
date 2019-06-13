@@ -35,7 +35,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Protocol.AccountType;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 
@@ -220,7 +220,7 @@ public class TransferAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
@@ -251,7 +251,7 @@ public class TransferAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
@@ -288,7 +288,7 @@ public class TransferAssetActuatorTest {
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Owner no asset!", e.getMessage());
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule toAccount =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
@@ -314,7 +314,7 @@ public class TransferAssetActuatorTest {
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertTrue("assetBalance is not sufficient.".equals(e.getMessage()));
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
@@ -343,7 +343,7 @@ public class TransferAssetActuatorTest {
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertTrue("Amount must greater than 0.".equals(e.getMessage()));
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
@@ -372,7 +372,7 @@ public class TransferAssetActuatorTest {
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Amount must greater than 0.", e.getMessage());
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
@@ -402,7 +402,7 @@ public class TransferAssetActuatorTest {
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertTrue("No asset !".equals(e.getMessage()));
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =

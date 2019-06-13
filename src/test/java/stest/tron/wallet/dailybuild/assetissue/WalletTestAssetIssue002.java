@@ -3,6 +3,7 @@ package stest.tron.wallet.dailybuild.assetissue;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.midasprotocol.api.GrpcAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -170,7 +171,7 @@ public class WalletTestAssetIssue002 {
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.participateAssetIssue(contract);
+		Transaction transaction = blockingStubFull.participateAssetIssue(contract).getTransaction();
 		transaction = signTransaction(ecKey, transaction);
 		Return response = blockingStubFull.broadcastTransaction(transaction);
 		if (response.getResult() == false) {
@@ -219,7 +220,7 @@ public class WalletTestAssetIssue002 {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				return false;
 			}
@@ -282,7 +283,7 @@ public class WalletTestAssetIssue002 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -322,7 +323,7 @@ public class WalletTestAssetIssue002 {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.transferAsset(contract);
+		Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null || transaction.getRawData().getContractCount() == 0");
 			return false;

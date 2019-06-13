@@ -4,6 +4,7 @@ import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.midasprotocol.api.GrpcAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.spongycastle.util.encoders.Hex;
@@ -173,7 +174,7 @@ public class WalletTestAssetIssue001 {
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
 			builder.setFreeAssetNetLimit(20000);
 			builder.setPublicFreeAssetNetLimit(20000);
-			Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("transaction == null");
 				return false;
@@ -230,7 +231,7 @@ public class WalletTestAssetIssue001 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -270,7 +271,7 @@ public class WalletTestAssetIssue001 {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.transferAsset(contract);
+		Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null || transaction.getRawData().getContractCount() == 0");
 			return false;
@@ -311,7 +312,7 @@ public class WalletTestAssetIssue001 {
 
 		Contract.UnfreezeAssetContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeAsset(contract);
+		Transaction transaction = blockingStubFull.unfreezeAsset(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;

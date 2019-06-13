@@ -138,7 +138,7 @@ public class UpdateEnergyLimitContractActuatorTest {
 			// assert result state and energy_limit
 			Assert.assertEquals(OWNER_ADDRESS,
 					ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.Code.SUCCESS);
 			Assert.assertEquals(
 					dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
 							.getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
@@ -253,7 +253,7 @@ public class UpdateEnergyLimitContractActuatorTest {
 
 			Assert.assertEquals(OWNER_ADDRESS,
 					ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.Code.SUCCESS);
 			Assert.assertEquals(
 					dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
 							.getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
@@ -262,7 +262,7 @@ public class UpdateEnergyLimitContractActuatorTest {
 			secondActuator.validate();
 			secondActuator.execute(ret);
 
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.Code.SUCCESS);
 			Assert.assertEquals(
 					dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
 							.getOriginEnergyLimit(), 90L);

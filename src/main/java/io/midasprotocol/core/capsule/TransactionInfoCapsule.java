@@ -11,7 +11,7 @@ import io.midasprotocol.core.exception.BadItemException;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.TransactionInfo;
 import io.midasprotocol.protos.Protocol.TransactionInfo.Log;
-import io.midasprotocol.protos.Protocol.TransactionInfo.code;
+import io.midasprotocol.protos.Protocol.TransactionInfo.Code;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,10 +48,10 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 
 		TransactionInfo.Builder builder = TransactionInfo.newBuilder();
 		ReceiptCapsule traceReceipt = trace.getReceipt();
-		builder.setResult(code.SUCCESS);
+		builder.setResult(Code.SUCCESS);
 		if (StringUtils.isNoneEmpty(trace.getRuntimeError()) || Objects
 			.nonNull(trace.getRuntimeResult().getException())) {
-			builder.setResult(code.FAILED);
+			builder.setResult(Code.FAILED);
 			builder.setResMessage(ByteString.copyFromUtf8(trace.getRuntimeError()));
 		}
 		builder.setId(ByteString.copyFrom(trxCap.getTransactionId().getBytes()));
@@ -66,7 +66,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		builder.addContractResult(contractResult);
 		builder.setContractAddress(ContractAddress);
 		builder.setUnfreezeAmount(programResult.getRet().getUnfreezeAmount());
-		builder.setAssetIssueID(programResult.getRet().getAssetIssueID());
+		builder.setAssetIssueId(programResult.getRet().getAssetIssueId());
 		builder.setExchangeId(programResult.getRet().getExchangeId());
 		builder.setWithdrawAmount(programResult.getRet().getWithdrawAmount());
 		builder.setUnstakeAmount(programResult.getRet().getUnstakeAmount());
@@ -167,7 +167,7 @@ public class TransactionInfoCapsule implements ProtoCapsule<TransactionInfo> {
 		this.transactionInfo = this.transactionInfo.toBuilder().setUnstakeAmount(amount).build();
 	}
 
-	public void setResult(code result) {
+	public void setResult(Code result) {
 		this.transactionInfo = this.transactionInfo.toBuilder().setResult(result).build();
 	}
 

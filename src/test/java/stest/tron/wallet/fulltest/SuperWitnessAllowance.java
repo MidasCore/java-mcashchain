@@ -186,7 +186,7 @@ public class SuperWitnessAllowance {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.createWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -218,7 +218,7 @@ public class SuperWitnessAllowance {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUpdateUrl(ByteString.copyFrom(url));
 		Contract.WitnessUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -259,7 +259,7 @@ public class SuperWitnessAllowance {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -318,7 +318,7 @@ public class SuperWitnessAllowance {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -370,7 +370,7 @@ public class SuperWitnessAllowance {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;

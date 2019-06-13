@@ -3,14 +3,6 @@ package stest.tron.wallet.newaddinterface2;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.spongycastle.util.encoders.Hex;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI;
 import io.midasprotocol.api.GrpcAPI.NumberMessage;
 import io.midasprotocol.api.GrpcAPI.WitnessList;
@@ -22,7 +14,14 @@ import io.midasprotocol.core.Wallet;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Account;
-import io.midasprotocol.protos.Protocol.Block;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.spongycastle.util.encoders.Hex;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 import stest.tron.wallet.common.client.Configuration;
 import stest.tron.wallet.common.client.WalletClient;
 import stest.tron.wallet.common.client.utils.Base58;
@@ -45,17 +44,17 @@ public class UpdateAccount2Test {
 	private static final long TotalSupply = now;
 	//testng001、testng002、testng003、testng004
 	private final String testKey002 = Configuration.getByPath("testng.conf")
-			.getString("foundationAccount.key1");
+		.getString("foundationAccount.key1");
 	private final String testKey003 = Configuration.getByPath("testng.conf")
-			.getString("foundationAccount.key2");
+		.getString("foundationAccount.key2");
 	private final byte[] fromAddress = PublicMethed.getFinalAddress(testKey002);
 	private final byte[] toAddress = PublicMethed.getFinalAddress(testKey003);
 	String mostLongNamePlusOneChar = "1abcdeabcdefabcdefg1abcdefg10o0og1abcdefg10o0oabcd"
-			+ "efabcdefg1abcdefg10o0og1abcdefg10o0oabcdefabcdefg1abcdefg10o0og1abcdefg10o0oab"
-			+ "cdefabcdefg1abcdefg10o0og1abcdefg10o0ofabcdefg1abcdefg10o0og1abcdefg10o0o";
+		+ "efabcdefg1abcdefg10o0og1abcdefg10o0oabcdefabcdefg1abcdefg10o0og1abcdefg10o0oab"
+		+ "cdefabcdefg1abcdefg10o0og1abcdefg10o0ofabcdefg1abcdefg10o0og1abcdefg10o0o";
 	String mostLongName = "abcdeabcdefabcdefg1abcdefg10o0og1abcdefg10o0oabcd"
-			+ "efabcdefg1abcdefg10o0og1abcdefg10o0oabcdefabcdefg1abcdefg10o0og1abcdefg10o0oab"
-			+ "cdefabcdefg1abcdefg10o0og1abcdefg10o0ofabcdefg1abcdefg10o0og1abcdefg10o0o";
+		+ "efabcdefg1abcdefg10o0og1abcdefg10o0oabcdefabcdefg1abcdefg10o0og1abcdefg10o0oab"
+		+ "cdefabcdefg1abcdefg10o0og1abcdefg10o0ofabcdefg1abcdefg10o0og1abcdefg10o0o";
 	String description = "just-test";
 	String url = "https://github.com/tronprotocol/wallet-cli/";
 
@@ -72,7 +71,7 @@ public class UpdateAccount2Test {
 	private ManagedChannel channelFull = null;
 	private WalletGrpc.WalletBlockingStub blockingStubFull = null;
 	private String fullnode = Configuration.getByPath("testng.conf").getStringList("fullnode.ip.list")
-			.get(0);
+		.get(0);
 
 	public static String loadPubKey() {
 		char[] buf = new char[0x100];
@@ -92,8 +91,8 @@ public class UpdateAccount2Test {
 	public void beforeClass() {
 		PublicMethed.printAddress(lowBalTest);
 		channelFull = ManagedChannelBuilder.forTarget(fullnode)
-				.usePlaintext(true)
-				.build();
+			.usePlaintext(true)
+			.build();
 		blockingStubFull = WalletGrpc.newBlockingStub(channelFull);
 	}
 
@@ -102,10 +101,10 @@ public class UpdateAccount2Test {
 		Account noCreateAccount = queryAccount(lowBalTest, blockingStubFull);
 		if (noCreateAccount.getAccountName().isEmpty()) {
 			Assert.assertTrue(PublicMethed.freezeBalance(fromAddress, 10000000, 3, testKey002,
-					blockingStubFull));
+				blockingStubFull));
 			//Assert.assertTrue(sendCoin2(lowBalAddress, 1L, fromAddress, testKey002));
 			GrpcAPI.Return ret1 = sendCoin2(lowBalAddress, 1000000L, fromAddress, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 			//Assert.assertTrue(Sendcoin(Low_Bal_ADDRESS, 1000000L, fromAddress, testKey002));
@@ -127,11 +126,11 @@ public class UpdateAccount2Test {
 			byte[] lowBalAddress2 = ecKey2.getAddress();
 
 			ret1 = PublicMethed.sendcoin2(lowBalAddress2, 21245000000L,
-					fromAddress, testKey002, blockingStubFull);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+				fromAddress, testKey002, blockingStubFull);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 
 			WitnessList witnesslist = blockingStubFull
-					.listWitnesses(GrpcAPI.EmptyMessage.newBuilder().build());
+				.listWitnesses(GrpcAPI.EmptyMessage.newBuilder().build());
 			Optional<WitnessList> result = Optional.ofNullable(witnesslist);
 			WitnessList witnessList = result.get();
 			if (result.get().getWitnessesCount() < 6) {
@@ -139,14 +138,14 @@ public class UpdateAccount2Test {
 				byte[] createUrl = createUrl1.getBytes();
 				String lowBalTest2 = ByteArray.toHexString(ecKey2.getPrivKeyBytes());
 				ret1 = createWitness2(lowBalAddress2, createUrl, lowBalTest2);
-				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 				Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 				String voteStr1 = Base58.encodeBase58(lowBalAddress2);
 				HashMap<String, String> voteToWitAddress = new HashMap<String, String>();
 				voteToWitAddress.put(voteStr1, "1");
 				PublicMethed.printAddress(lowBalTest);
 				ret1 = voteWitness2(voteToWitAddress, fromAddress, testKey002);
-				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+				Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 				Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 				//logger.info("vote to non witness account ok!!!");
 			}
@@ -154,21 +153,21 @@ public class UpdateAccount2Test {
 			//normal freezeBalance
 			//Assert.assertTrue(freezeBalance2(fromAddress, 10000000L, 3L, testKey002))
 			ret1 = freezeBalance2(fromAddress, 100000000L, 3L, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.SUCCESS);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 
 			//vote To NonWitnessAccount
 			ret1 = voteWitness2(voteToNonWitnessAccount, fromAddress, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			//vote to InvaildAddress
 			ret1 = voteWitness2(voteToInvaildAddress, fromAddress, testKey002);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-					"contract validate error : VoteNumber must more than 0");
+				"contract validate error : VoteNumber must more than 0");
 
 		} else {
 			logger.info(
-					"Please confirm wither the create account test is pass, or you will do it by manual");
+				"Please confirm wither the create account test is pass, or you will do it by manual");
 		}
 	}
 
@@ -177,26 +176,26 @@ public class UpdateAccount2Test {
 		Account tryToUpdateAccount = queryAccount(lowBalTest, blockingStubFull);
 		if (tryToUpdateAccount.getAccountName().isEmpty()) {
 			GrpcAPI.Return ret1 = updateAccount2(lowBalAddress, mostLongNamePlusOneChar.getBytes(),
-					lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+				lowBalTest);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-					"contract validate error : Invalid accountName");
+				"contract validate error : Invalid accountName");
 
 			ret1 = updateAccount2(lowBalAddress, "".getBytes(), lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-					"contract validate error : This name has existed");
+				"contract validate error : This name has existed");
 
 			System.out.println("dingwei2:");
 			ret1 = updateAccount2(lowBalAddress, mostLongName.getBytes(), lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-					"contract validate error : This name has existed");
+				"contract validate error : This name has existed");
 
 			ret1 = updateAccount2(lowBalAddress, "secondUpdateName".getBytes(), lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-					"contract validate error : This name has existed");
+				"contract validate error : This name has existed");
 
 		}
 	}
@@ -210,11 +209,11 @@ public class UpdateAccount2Test {
 
 		System.out.println("1111112222");
 		GrpcAPI.Return ret1 = PublicMethed.createAssetIssue2(lowBalAddress, name, TotalSupply, 1, 1,
-				now + 100000000L, now + 10000000000L, 2, description, url, 10000L,
-				10000L, 1L, 1L, lowBalTest, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			now + 100000000L, now + 10000000000L, 2, description, url, 10000L,
+			10000L, 1L, 1L, lowBalTest, blockingStubFull);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-				"contract validate error : No enough balance for fee!");
+			"contract validate error : No enough balance for fee!");
 		logger.info("nobalancecreateassetissue");
 	}
 
@@ -230,9 +229,9 @@ public class UpdateAccount2Test {
 		//Assert.assertFalse(createWitness2(lowBalAddress, fromAddress, lowBalTest));
 		System.out.println("1111222333:" + lowBalAddress);
 		GrpcAPI.Return ret1 = createWitness2(lowBalAddress, fromAddress, lowBalTest);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-				"contract validate error : balance < AccountUpgradeCost");
+			"contract validate error : balance < AccountUpgradeCost");
 
 	}
 
@@ -242,9 +241,9 @@ public class UpdateAccount2Test {
 		Account noFreezeAccount = queryAccount(lowBalTest, blockingStubFull);
 		if (noFreezeAccount.getFrozenCount() == 0) {
 			GrpcAPI.Return ret1 = unFreezeBalance2(lowBalAddress, lowBalTest);
-			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),
-					"contract validate error : no frozenBalance");
+				"contract validate error : no frozenBalance");
 		} else {
 			logger.info("This account has freeze balance, please test this case for manual");
 		}
@@ -279,7 +278,7 @@ public class UpdateAccount2Test {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createWitness(contract);
+		Protocol.Transaction transaction = blockingStubFull.createWitness(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
 		}
@@ -310,11 +309,11 @@ public class UpdateAccount2Test {
 		builder.setOwnerAddress(ByteString.copyFrom(owner));
 		builder.setUrl(ByteString.copyFrom(url));
 		Contract.WitnessCreateContract contract = builder.build();
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.createWitness2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.createWitness(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -323,13 +322,13 @@ public class UpdateAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+			"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -362,7 +361,7 @@ public class UpdateAccount2Test {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -400,13 +399,13 @@ public class UpdateAccount2Test {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull
-				.createTransaction2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull
+			.createTransaction(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
 
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -416,13 +415,13 @@ public class UpdateAccount2Test {
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
 
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+			"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
 		if (response.getResult() == false) {
@@ -461,7 +460,7 @@ public class UpdateAccount2Test {
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
 
-			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Protocol.Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				logger.info("Please check!!! transaction == null");
 				return false;
@@ -526,7 +525,7 @@ public class UpdateAccount2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -564,7 +563,7 @@ public class UpdateAccount2Test {
 		builder.setOwnerAddress(basAddreess);
 
 		Contract.AccountUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("Please check!!! transaction == null");
@@ -605,12 +604,12 @@ public class UpdateAccount2Test {
 		builder.setOwnerAddress(basAddreess);
 
 		Contract.AccountUpdateContract contract = builder.build();
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.updateAccount2(contract);
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.updateAccount(contract);
 
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -619,13 +618,13 @@ public class UpdateAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+			"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -653,14 +652,14 @@ public class UpdateAccount2Test {
 		}
 		final ECKey ecKey = temKey;
 		Contract.UnfreezeBalanceContract.Builder builder = Contract.UnfreezeBalanceContract
-				.newBuilder();
+			.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
 
 		builder.setOwnerAddress(byteAddreess);
 
 		Contract.UnfreezeBalanceContract contract = builder.build();
 
-		Protocol.Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -692,17 +691,17 @@ public class UpdateAccount2Test {
 		}
 		final ECKey ecKey = temKey;
 		Contract.UnfreezeBalanceContract.Builder builder = Contract.UnfreezeBalanceContract
-				.newBuilder();
+			.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
 
 		builder.setOwnerAddress(byteAddreess);
 
 		Contract.UnfreezeBalanceContract contract = builder.build();
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.unfreezeBalance2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.unfreezeBalance(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -711,13 +710,13 @@ public class UpdateAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+			"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = TransactionUtils.setTimestamp(transaction);
 		transaction = TransactionUtils.sign(transaction, ecKey);
@@ -756,7 +755,7 @@ public class UpdateAccount2Test {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Protocol.Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Protocol.Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null");
 			return false;
@@ -800,12 +799,12 @@ public class UpdateAccount2Test {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull
-				.voteWitnessAccount2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull
+			.voteWitnessAccount(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -814,13 +813,13 @@ public class UpdateAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+			"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = signTransaction(ecKey, transaction);
 		GrpcAPI.Return response = blockingStubFull.broadcastTransaction(transaction);
@@ -855,10 +854,10 @@ public class UpdateAccount2Test {
 		ByteString byteAddreess = ByteString.copyFrom(address);
 
 		builder.setOwnerAddress(byteAddreess).setFrozenBalance(frozenBalance)
-				.setFrozenDuration(frozenDuration);
+			.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -900,14 +899,14 @@ public class UpdateAccount2Test {
 		ByteString byteAddreess = ByteString.copyFrom(address);
 
 		builder.setOwnerAddress(byteAddreess).setFrozenBalance(frozenBalance)
-				.setFrozenDuration(frozenDuration);
+			.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.freezeBalance2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.freezeBalance(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		GrpcAPI.Return ret = transactionExtention.getResult();
+		GrpcAPI.Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -916,13 +915,12 @@ public class UpdateAccount2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Protocol.Transaction transaction = transactionExtention.getTransaction();
+		Protocol.Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
-		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+		System.out.println("Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = TransactionUtils.setTimestamp(transaction);
 		transaction = TransactionUtils.sign(transaction, ecKey);

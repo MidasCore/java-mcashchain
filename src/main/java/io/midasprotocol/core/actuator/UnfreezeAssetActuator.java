@@ -13,7 +13,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UnfreezeAssetContract;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
@@ -53,10 +53,10 @@ public class UnfreezeAssetActuator extends AbstractActuator {
 				.clearFrozenSupply().addAllFrozenSupply(frozenList).build());
 
 			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (InvalidProtocolBufferException | ArithmeticException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 

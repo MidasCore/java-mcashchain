@@ -8,7 +8,6 @@ import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Protocol.Account;
-import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.Transaction;
 
 import java.util.Optional;
@@ -43,28 +42,28 @@ public class WalletGrpcClient {
 		return walletBlockingStub.getAccount(request);
 	}
 
-	public Transaction createTransaction(Contract.TransferContract contract) {
+	public TransactionExtension createTransaction(Contract.TransferContract contract) {
 		return walletBlockingStub.createTransaction(contract);
 	}
 
-	public Transaction createTransferAssetTransaction(Contract.TransferAssetContract contract) {
+	public TransactionExtension createTransferAssetTransaction(Contract.TransferAssetContract contract) {
 		return walletBlockingStub.transferAsset(contract);
 	}
 
-	public Transaction createParticipateAssetIssueTransaction(
+	public TransactionExtension createParticipateAssetIssueTransaction(
 		Contract.ParticipateAssetIssueContract contract) {
 		return walletBlockingStub.participateAssetIssue(contract);
 	}
 
-	public Transaction createAssetIssue(AssetIssueContract contract) {
+	public TransactionExtension createAssetIssue(AssetIssueContract contract) {
 		return walletBlockingStub.createAssetIssue(contract);
 	}
 
-	public Transaction voteWitnessAccount(Contract.VoteWitnessContract contract) {
+	public TransactionExtension voteWitnessAccount(Contract.VoteWitnessContract contract) {
 		return walletBlockingStub.voteWitnessAccount(contract);
 	}
 
-	public Transaction createWitness(Contract.WitnessCreateContract contract) {
+	public TransactionExtension createWitness(Contract.WitnessCreateContract contract) {
 		return walletBlockingStub.createWitness(contract);
 	}
 
@@ -73,7 +72,7 @@ public class WalletGrpcClient {
 		return response.getResult();
 	}
 
-	public Block getBlock(long blockNum) {
+	public BlockExtension getBlock(long blockNum) {
 		if (blockNum < 0) {
 			return walletBlockingStub.getNowBlock(EmptyMessage.newBuilder().build());
 		}

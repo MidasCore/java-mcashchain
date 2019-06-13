@@ -43,7 +43,7 @@ import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
-import io.midasprotocol.protos.Protocol.Transaction.raw;
+import io.midasprotocol.protos.Protocol.Transaction.Raw;
 
 import java.io.File;
 
@@ -144,7 +144,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 			TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
 					"fibonacciNotify(uint256)", "500000", false,
 					0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-			Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
+			Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
 					Contract.newBuilder().setParameter(Any.pack(triggerContract))
 							.setType(ContractType.TriggerSmartContract)).setFeeLimit(100000000000L)).build();
 			TransactionCapsule trxCap = new TransactionCapsule(transaction);
@@ -186,7 +186,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 		String abi = "[{\"constant\":false,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacciNotify\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacci\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"input\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"result\",\"type\":\"uint256\"}],\"name\":\"Notify\",\"type\":\"event\"}]";
 		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
 				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(raw.newBuilder().addContract(
+		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
 						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)).build();
 		TransactionCapsule trxCap = new TransactionCapsule(transaction);

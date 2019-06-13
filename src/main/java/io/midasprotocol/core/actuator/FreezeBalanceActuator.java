@@ -16,7 +16,7 @@ import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract.FreezeBalanceContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -38,7 +38,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 			freezeBalanceContract = contract.unpack(FreezeBalanceContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
@@ -90,7 +90,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 		accountCapsule.setBalance(newBalance);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 
-		ret.setStatus(fee, code.SUCCESS);
+		ret.setStatus(fee, Code.SUCCESS);
 
 		return true;
 	}

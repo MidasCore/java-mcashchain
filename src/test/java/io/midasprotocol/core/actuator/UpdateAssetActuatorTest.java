@@ -153,7 +153,7 @@ public class UpdateAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.Code.SUCCESS);
 			AssetIssueCapsule assetIssueCapsuleV2 =
 					dbManager.getAssetIssueStore().get(tokenId);
 			Assert.assertNotNull(assetIssueCapsuleV2);

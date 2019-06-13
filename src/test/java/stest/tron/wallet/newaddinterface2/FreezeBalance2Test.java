@@ -83,42 +83,42 @@ public class FreezeBalance2Test {
 	public void testFreezeBalance2() {
 		//Freeze failed when freeze amount is large than currently balance.
 		Return ret1 = freezeBalance2(fromAddress, 9000000000000000000L, 3L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenBalance must be less than accountBalance");
 		//Freeze failed when freeze amount less than 1Trx
 		ret1 = freezeBalance2(fromAddress, 999999L, 3L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenBalance must be more than 1TRX");
 		//Freeze failed when freeze duration isn't 3 days.
 		ret1 = freezeBalance2(fromAddress, 1000000L, 2L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenDuration must be less than 3 days and more than 3 days");
 		//Unfreeze balance failed when 3 days hasn't come.
 		ret1 = unFreezeBalance2(fromAddress, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : It's not time to unfreeze.");
 		//Freeze failed when freeze amount is 0.
 		ret1 = freezeBalance2(fromAddress, 0L, 3L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenBalance must be positive");
 		//Freeze failed when freeze amount is -1.
 		ret1 = freezeBalance2(fromAddress, -1L, 3L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenBalance must be positive");
 		//Freeze failed when freeze duration is -1.
 		ret1 = freezeBalance2(fromAddress, 1000000L, -1L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenDuration must be less than 3 days and more than 3 days");
 		//Freeze failed when freeze duration is 0.
 		ret1 = freezeBalance2(fromAddress, 1000000L, 0L, testKey002);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : frozenDuration must be less than 3 days and more than 3 days");
 
@@ -129,7 +129,7 @@ public class FreezeBalance2Test {
 		}
 		//Freeze balance success.
 		ret1 = PublicMethed.freezeBalance2(fromAddress, 1000000L, 3L, testKey002, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), Return.response_code.SUCCESS);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 	}
 
@@ -138,7 +138,7 @@ public class FreezeBalance2Test {
 		//Unfreeze failed when there is no freeze balance.
 		Return ret1 = unFreezeBalance2(noFrozenAddress, noFrozenBalanceTestKey);
 		logger.info("Test unfreezebalance");
-		Assert.assertEquals(ret1.getCode(), Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : no frozenBalance");
 	}
@@ -176,7 +176,7 @@ public class FreezeBalance2Test {
 			ex.printStackTrace();
 		}
 		ECKey ecKey = temKey;
-		Block currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
@@ -195,7 +195,7 @@ public class FreezeBalance2Test {
 				.setFrozenDuration(frozenDuration);
 
 		FreezeBalanceContract contract = builder.build();
-		Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -212,7 +212,7 @@ public class FreezeBalance2Test {
 		Long afterBlockNum = 0L;
 		Integer wait = 0;
 		while (afterBlockNum < beforeBlockNum + 1 && wait < 10) {
-			Block currentBlock1 = searchBlockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock1 = searchBlockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 			wait++;
 			try {
@@ -258,7 +258,7 @@ public class FreezeBalance2Test {
 			ex.printStackTrace();
 		}
 		ECKey ecKey = temKey;
-		Block currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
@@ -278,11 +278,11 @@ public class FreezeBalance2Test {
 
 		FreezeBalanceContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.freezeBalance2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.freezeBalance(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -291,13 +291,13 @@ public class FreezeBalance2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = TransactionUtils.setTimestamp(transaction);
 		transaction = TransactionUtils.sign(transaction, ecKey);
@@ -310,7 +310,7 @@ public class FreezeBalance2Test {
 		Long afterBlockNum = 0L;
 		Integer wait = 0;
 		while (afterBlockNum < beforeBlockNum + 1 && wait < 10) {
-			Block currentBlock1 = searchBlockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
+			GrpcAPI.BlockExtension currentBlock1 = searchBlockingStubFull.getNowBlock(EmptyMessage.newBuilder().build());
 			afterBlockNum = currentBlock1.getBlockHeader().getRawData().getNumber();
 			wait++;
 			try {
@@ -362,7 +362,7 @@ public class FreezeBalance2Test {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.unfreezeBalance(contract);
+		Transaction transaction = blockingStubFull.unfreezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			return false;
@@ -403,11 +403,11 @@ public class FreezeBalance2Test {
 
 		UnfreezeBalanceContract contract = builder.build();
 
-		GrpcAPI.TransactionExtention transactionExtention = blockingStubFull.unfreezeBalance2(contract);
-		if (transactionExtention == null) {
-			return transactionExtention.getResult();
+		GrpcAPI.TransactionExtension TransactionExtension = blockingStubFull.unfreezeBalance(contract);
+		if (TransactionExtension == null) {
+			return TransactionExtension.getResult();
 		}
-		Return ret = transactionExtention.getResult();
+		Return ret = TransactionExtension.getResult();
 		if (!ret.getResult()) {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
@@ -416,13 +416,13 @@ public class FreezeBalance2Test {
 			System.out.println("Code = " + ret.getCode());
 			System.out.println("Message = " + ret.getMessage().toStringUtf8());
 		}
-		Transaction transaction = transactionExtention.getTransaction();
+		Transaction transaction = TransactionExtension.getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			System.out.println("Transaction is empty");
-			return transactionExtention.getResult();
+			return TransactionExtension.getResult();
 		}
 		System.out.println(
-				"Receive txid = " + ByteArray.toHexString(transactionExtention.getTxid().toByteArray()));
+				"Receive txid = " + ByteArray.toHexString(TransactionExtension.getTxId().toByteArray()));
 
 		transaction = TransactionUtils.setTimestamp(transaction);
 		transaction = TransactionUtils.sign(transaction, ecKey);
@@ -470,7 +470,7 @@ public class FreezeBalance2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

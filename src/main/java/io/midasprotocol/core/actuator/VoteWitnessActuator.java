@@ -18,7 +18,7 @@ import io.midasprotocol.core.db.WitnessStore;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.VoteWitnessContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -39,11 +39,11 @@ public class VoteWitnessActuator extends AbstractActuator {
 		try {
 			VoteWitnessContract voteContract = contract.unpack(VoteWitnessContract.class);
 			long voteCount = countVoteAccount(voteContract, getDeposit());
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setStatus(fee, Code.SUCCESS);
 			ret.setVoteCount(voteCount);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 		return true;

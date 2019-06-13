@@ -123,30 +123,30 @@ public class ParticipateAssetIssue2Test {
 		//The amount is large than the total supply, participate failed.
 		Return ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				name.getBytes(), 9100000000000000000L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : No enough balance !");
 		//The asset issue name is not correct, participate failed.
 		ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				(name + "wrong").getBytes(), 100L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		//The amount is 0, participate asset issue failed.
 		ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				name.getBytes(), 0L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0!");
 
 		//The amount is -1, participate asset issue failed.
 		ret1 = PublicMethed.participateAssetIssue2(participateAccountAddress,
 				name.getBytes(), -1L, toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(),
 				"contract validate error : Amount must greater than 0!");
 		//The asset issue owner address is not correct, participate asset issue failed.
 		ret1 = PublicMethed.participateAssetIssue2(fromAddress, name.getBytes(), 100L,
 				toAddress, testKey003, blockingStubFull);
-		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.response_code.CONTRACT_VALIDATE_ERROR);
+		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class ParticipateAssetIssue2Test {
 		builder.setAmount(amount);
 		Contract.ParticipateAssetIssueContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.participateAssetIssue(contract);
+		Transaction transaction = blockingStubFull.participateAssetIssue(contract).getTransaction();
 		transaction = signTransaction(ecKey, transaction);
 		Return response = blockingStubFull.broadcastTransaction(transaction);
 		if (response.getResult() == false) {
@@ -234,7 +234,7 @@ public class ParticipateAssetIssue2Test {
 			frozenBuilder.setFrozenDays(frozenDay);
 			builder.addFrozenSupply(0, frozenBuilder);
 
-			Transaction transaction = blockingStubFull.createAssetIssue(builder.build());
+			Transaction transaction = blockingStubFull.createAssetIssue(builder.build()).getTransaction();
 			if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 				return false;
 			}
@@ -297,7 +297,7 @@ public class ParticipateAssetIssue2Test {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -337,7 +337,7 @@ public class ParticipateAssetIssue2Test {
 		builder.setAmount(amount);
 
 		Contract.TransferAssetContract contract = builder.build();
-		Transaction transaction = blockingStubFull.transferAsset(contract);
+		Transaction transaction = blockingStubFull.transferAsset(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction == null || transaction.getRawData().getContractCount() == 0");
 			return false;

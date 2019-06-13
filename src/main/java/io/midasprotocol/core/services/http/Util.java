@@ -88,11 +88,11 @@ public class Util {
 		return printTransactionToJSON(transaction).toJSONString();
 	}
 
-	public static String printTransactionExtention(TransactionExtention transactionExtention) {
-		String string = JsonFormat.printToString(transactionExtention);
+	public static String printTransactionExtension(TransactionExtension TransactionExtension) {
+		String string = JsonFormat.printToString(TransactionExtension);
 		JSONObject jsonObject = JSONObject.parseObject(string);
-		if (transactionExtention.getResult().getResult()) {
-			jsonObject.put("transaction", printTransactionToJSON(transactionExtention.getTransaction()));
+		if (TransactionExtension.getResult().getResult()) {
+			jsonObject.put("transaction", printTransactionToJSON(TransactionExtension.getTransaction()));
 		}
 		return jsonObject.toJSONString();
 	}
@@ -320,7 +320,7 @@ public class Util {
 		String rawDataHex = ByteArray.toHexString(transaction.getRawData().toByteArray());
 		jsonTransaction.put("raw_data_hex", rawDataHex);
 		String txID = ByteArray.toHexString(Sha256Hash.hash(transaction.getRawData().toByteArray()));
-		jsonTransaction.put("txID", txID);
+		jsonTransaction.put("tx_id", txID);
 		return jsonTransaction;
 	}
 

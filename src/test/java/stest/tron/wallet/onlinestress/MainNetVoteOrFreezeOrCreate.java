@@ -100,7 +100,7 @@ public class MainNetVoteOrFreezeOrCreate {
 			ex.printStackTrace();
 		}
 		final ECKey ecKey = temKey;
-		Protocol.Block currentBlock = blockingStubFull.getNowBlock(GrpcAPI
+		GrpcAPI.BlockExtension currentBlock = blockingStubFull.getNowBlock(GrpcAPI
 				.EmptyMessage.newBuilder().build());
 		final Long beforeBlockNum = currentBlock.getBlockHeader().getRawData().getNumber();
 		Contract.FreezeBalanceContract.Builder builder = Contract.FreezeBalanceContract.newBuilder();
@@ -110,7 +110,7 @@ public class MainNetVoteOrFreezeOrCreate {
 				.setFrozenDuration(frozenDuration);
 
 		Contract.FreezeBalanceContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract);
+		Protocol.Transaction transaction = blockingStubFull.freezeBalance(contract).getTransaction();
 
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction = null");
@@ -274,7 +274,7 @@ public class MainNetVoteOrFreezeOrCreate {
 
 		Contract.VoteWitnessContract contract = builder.build();
 
-		Transaction transaction = blockingStubFull.voteWitnessAccount(contract);
+		Transaction transaction = blockingStubFull.voteWitnessAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			//logger.info("transaction == null,\n contract:{},\n transaction:{}" , contract.toString(),
 			// transaction.toString());
@@ -334,7 +334,7 @@ public class MainNetVoteOrFreezeOrCreate {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());

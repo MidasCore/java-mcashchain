@@ -6,7 +6,7 @@ import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
 import io.midasprotocol.api.DatabaseGrpc.DatabaseImplBase;
 import io.midasprotocol.api.GrpcAPI.*;
-import io.midasprotocol.api.GrpcAPI.Return.response_code;
+import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
 import io.midasprotocol.api.WalletSolidityGrpc.WalletSolidityImplBase;
 import io.midasprotocol.common.application.Service;
 import io.midasprotocol.common.crypto.ECKey;
@@ -84,27 +84,27 @@ public class RpcApiServiceOnSolidity implements Service {
 		}));
 	}
 
-	private TransactionExtention transaction2Extention(Transaction transaction) {
+	private TransactionExtension transaction2Extention(Transaction transaction) {
 		if (transaction == null) {
 			return null;
 		}
-		TransactionExtention.Builder trxExtBuilder = TransactionExtention.newBuilder();
+		TransactionExtension.Builder trxExtBuilder = TransactionExtension.newBuilder();
 		Return.Builder retBuilder = Return.newBuilder();
 		trxExtBuilder.setTransaction(transaction);
-		trxExtBuilder.setTxid(Sha256Hash.of(transaction.getRawData().toByteArray()).getByteString());
-		retBuilder.setResult(true).setCode(response_code.SUCCESS);
+		trxExtBuilder.setTxId(Sha256Hash.of(transaction.getRawData().toByteArray()).getByteString());
+		retBuilder.setResult(true).setCode(ResponseCode.SUCCESS);
 		trxExtBuilder.setResult(retBuilder);
 		return trxExtBuilder.build();
 	}
 
-	private BlockExtention block2Extention(Block block) {
+	private BlockExtension block2Extention(Block block) {
 		if (block == null) {
 			return null;
 		}
-		BlockExtention.Builder builder = BlockExtention.newBuilder();
+		BlockExtension.Builder builder = BlockExtension.newBuilder();
 		BlockCapsule blockCapsule = new BlockCapsule(block);
 		builder.setBlockHeader(block.getBlockHeader());
-		builder.setBlockid(ByteString.copyFrom(blockCapsule.getBlockId().getBytes()));
+		builder.setBlockId(ByteString.copyFrom(blockCapsule.getBlockId().getBytes()));
 		for (int i = 0; i < block.getTransactionsCount(); i++) {
 			Transaction transaction = block.getTransactions(i);
 			builder.addTransactions(transaction2Extention(transaction));
@@ -233,33 +233,19 @@ public class RpcApiServiceOnSolidity implements Service {
 		}
 
 		@Override
-		public void getNowBlock(EmptyMessage request, StreamObserver<Block> responseObserver) {
+		public void getNowBlock(EmptyMessage request,
+								StreamObserver<BlockExtension> responseObserver) {
 			walletOnSolidity.futureGet(
 				() -> rpcApiService.getWalletSolidityApi().getNowBlock(request, responseObserver)
 			);
-		}
-
-		@Override
-		public void getNowBlock2(EmptyMessage request,
-								 StreamObserver<BlockExtention> responseObserver) {
-			walletOnSolidity.futureGet(
-				() -> rpcApiService.getWalletSolidityApi().getNowBlock2(request, responseObserver)
-			);
 
 		}
 
 		@Override
-		public void getBlockByNum(NumberMessage request, StreamObserver<Block> responseObserver) {
+		public void getBlockByNum(NumberMessage request,
+								  StreamObserver<BlockExtension> responseObserver) {
 			walletOnSolidity.futureGet(
 				() -> rpcApiService.getWalletSolidityApi().getBlockByNum(request, responseObserver)
-			);
-		}
-
-		@Override
-		public void getBlockByNum2(NumberMessage request,
-								   StreamObserver<BlockExtention> responseObserver) {
-			walletOnSolidity.futureGet(
-				() -> rpcApiService.getWalletSolidityApi().getBlockByNum2(request, responseObserver)
 			);
 		}
 

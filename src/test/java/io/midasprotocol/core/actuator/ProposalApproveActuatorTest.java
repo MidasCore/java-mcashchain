@@ -24,7 +24,7 @@ import io.midasprotocol.core.util.ConversionUtil;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Proposal.State;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 import java.util.HashMap;
@@ -125,7 +125,7 @@ public class ProposalApproveActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			ProposalCapsule proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(id));
 			Assert.assertNotNull(proposalCapsule);
 			Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 1);
@@ -178,7 +178,7 @@ public class ProposalApproveActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			try {
 				proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(id));
 			} catch (ItemNotFoundException e) {
@@ -206,7 +206,7 @@ public class ProposalApproveActuatorTest {
 		try {
 			actuator2.validate();
 			actuator2.execute(ret2);
-			Assert.assertEquals(ret.getInstance().getRet(), code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
 			try {
 				proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(id));
 			} catch (ItemNotFoundException e) {

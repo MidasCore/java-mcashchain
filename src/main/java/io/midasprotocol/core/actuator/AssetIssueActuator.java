@@ -31,7 +31,7 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Contract.AssetIssueContract.FrozenSupply;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -87,11 +87,11 @@ public class AssetIssueActuator extends AbstractActuator {
 
 			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
-			ret.setAssetIssueID(tokenIdNum);
-			ret.setStatus(fee, code.SUCCESS);
+			ret.setAssetIssueId(tokenIdNum);
+			ret.setStatus(fee, Code.SUCCESS);
 		} catch (InvalidProtocolBufferException | ArithmeticException | BalanceInsufficientException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 

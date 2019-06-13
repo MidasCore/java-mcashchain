@@ -40,8 +40,8 @@ import io.midasprotocol.protos.Protocol.Permission.PermissionType;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
-import io.midasprotocol.protos.Protocol.Transaction.Result.contractResult;
-import io.midasprotocol.protos.Protocol.Transaction.raw;
+import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
+import io.midasprotocol.protos.Protocol.Transaction.Raw;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -145,7 +145,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		createTransaction(participateAssetIssueContract, ContractType.ParticipateAssetIssueContract);
 	}
 
-	public TransactionCapsule(raw rawData, List<ByteString> signatureList) {
+	public TransactionCapsule(Raw rawData, List<ByteString> signatureList) {
 		this.transaction = Transaction.newBuilder().setRawData(rawData).addAllSignature(signatureList)
 			.build();
 	}
@@ -156,7 +156,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	}
 
 	public TransactionCapsule(com.google.protobuf.Message message, ContractType contractType) {
-		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+		Transaction.Raw.Builder transactionBuilder = Transaction.Raw.newBuilder().addContract(
 			Transaction.Contract.newBuilder().setType(contractType).setParameter(
 				Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
@@ -464,7 +464,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	public void setReference(long blockNum, byte[] blockHash) {
 		byte[] refBlockNum = ByteArray.fromLong(blockNum);
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+		Transaction.Raw rawData = this.transaction.getRawData().toBuilder()
 			.setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
 			.setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
 			.build();
@@ -479,13 +479,13 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	 * @param expiration must be in milliseconds format
 	 */
 	public void setExpiration(long expiration) {
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
+		Transaction.Raw rawData = this.transaction.getRawData().toBuilder().setExpiration(expiration)
 			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
 	}
 
 	public void setTimestamp() {
-		Transaction.raw rawData = this.transaction.getRawData().toBuilder()
+		Transaction.Raw rawData = this.transaction.getRawData().toBuilder()
 			.setTimestamp(System.currentTimeMillis())
 			.build();
 		this.transaction = this.transaction.toBuilder().setRawData(rawData).build();
@@ -497,7 +497,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 
 	@Deprecated
 	public void createTransaction(com.google.protobuf.Message message, ContractType contractType) {
-		Transaction.raw.Builder transactionBuilder = Transaction.raw.newBuilder().addContract(
+		Transaction.Raw.Builder transactionBuilder = Transaction.Raw.newBuilder().addContract(
 			Transaction.Contract.newBuilder().setType(contractType).setParameter(
 				Any.pack(message)).build());
 		transaction = Transaction.newBuilder().setRawData(transactionBuilder.build()).build();
@@ -682,54 +682,54 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		RuntimeException exception = runtime.getResult().getException();
 		if (Objects.isNull(exception) && StringUtils
 			.isEmpty(runtime.getRuntimeError()) && !runtime.getResult().isRevert()) {
-			this.setResultCode(contractResult.OK);
+			this.setResultCode(ContractResult.OK);
 			return;
 		}
 		if (runtime.getResult().isRevert()) {
-			this.setResultCode(contractResult.REVERT);
+			this.setResultCode(ContractResult.REVERT);
 			return;
 		}
 		if (exception instanceof IllegalOperationException) {
-			this.setResultCode(contractResult.ILLEGAL_OPERATION);
+			this.setResultCode(ContractResult.ILLEGAL_OPERATION);
 			return;
 		}
 		if (exception instanceof OutOfEnergyException) {
-			this.setResultCode(contractResult.OUT_OF_ENERGY);
+			this.setResultCode(ContractResult.OUT_OF_ENERGY);
 			return;
 		}
 		if (exception instanceof BadJumpDestinationException) {
-			this.setResultCode(contractResult.BAD_JUMP_DESTINATION);
+			this.setResultCode(ContractResult.BAD_JUMP_DESTINATION);
 			return;
 		}
 		if (exception instanceof OutOfTimeException) {
-			this.setResultCode(contractResult.OUT_OF_TIME);
+			this.setResultCode(ContractResult.OUT_OF_TIME);
 			return;
 		}
 		if (exception instanceof OutOfMemoryException) {
-			this.setResultCode(contractResult.OUT_OF_MEMORY);
+			this.setResultCode(ContractResult.OUT_OF_MEMORY);
 			return;
 		}
 		if (exception instanceof PrecompiledContractException) {
-			this.setResultCode(contractResult.PRECOMPILED_CONTRACT);
+			this.setResultCode(ContractResult.PRECOMPILED_CONTRACT);
 			return;
 		}
 		if (exception instanceof StackTooSmallException) {
-			this.setResultCode(contractResult.STACK_TOO_SMALL);
+			this.setResultCode(ContractResult.STACK_TOO_SMALL);
 			return;
 		}
 		if (exception instanceof StackTooLargeException) {
-			this.setResultCode(contractResult.STACK_TOO_LARGE);
+			this.setResultCode(ContractResult.STACK_TOO_LARGE);
 			return;
 		}
 		if (exception instanceof JVMStackOverFlowException) {
-			this.setResultCode(contractResult.JVM_STACK_OVER_FLOW);
+			this.setResultCode(ContractResult.JVM_STACK_OVER_FLOW);
 			return;
 		}
-		this.setResultCode(contractResult.UNKNOWN);
+		this.setResultCode(ContractResult.UNKNOWN);
 		return;
 	}
 
-	public void setResultCode(contractResult code) {
+	public void setResultCode(ContractResult code) {
 		Result ret = Result.newBuilder().setContractRet(code).build();
 		if (this.transaction.getRetCount() > 0) {
 			ret = this.transaction.getRet(0).toBuilder().setContractRet(code).build();
@@ -740,7 +740,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		this.transaction = transaction.toBuilder().addRet(ret).build();
 	}
 
-	public contractResult getContractRet() {
+	public ContractResult getContractRet() {
 		if (this.transaction.getRetCount() <= 0) {
 			return null;
 		}

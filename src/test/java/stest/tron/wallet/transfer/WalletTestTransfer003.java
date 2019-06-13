@@ -114,7 +114,7 @@ public class WalletTestTransfer003 {
 		builder.setAmount(amount);
 
 		Contract.TransferContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract);
+		Protocol.Transaction transaction = blockingStubFull.createTransaction(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction ==null");
 		}
@@ -341,7 +341,7 @@ public class WalletTestTransfer003 {
 	 * constructor.
 	 */
 
-	public Block getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
+	public GrpcAPI.BlockExtension getBlock(long blockNum, WalletGrpc.WalletBlockingStub blockingStubFull) {
 		NumberMessage.Builder builder = NumberMessage.newBuilder();
 		builder.setNum(blockNum);
 		return blockingStubFull.getBlockByNum(builder.build());
@@ -371,7 +371,7 @@ public class WalletTestTransfer003 {
 		builder.setOwnerAddress(basAddreess);
 
 		Contract.AccountUpdateContract contract = builder.build();
-		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract);
+		Protocol.Transaction transaction = blockingStubFull.updateAccount(contract).getTransaction();
 		if (transaction == null || transaction.getRawData().getContractCount() == 0) {
 			logger.info("transaction ==null");
 		}

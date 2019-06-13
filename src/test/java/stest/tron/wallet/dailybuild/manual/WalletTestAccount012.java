@@ -47,7 +47,7 @@ public class WalletTestAccount012 {
 	Long afterTime;
 	Long beforeBlockNum;
 	Long afterBlockNum;
-	Block currentBlock;
+	GrpcAPI.BlockExtension currentBlock;
 	Long currentBlockNum;
 	private ManagedChannel channelFull = null;
 	private WalletGrpc.WalletBlockingStub blockingStubFull = null;

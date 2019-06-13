@@ -76,12 +76,12 @@ public class HttpTestExchange001 {
 
 		response = HttpMethed.getAccount(httpnode, exchangeOwnerAddress);
 		responseContent = HttpMethed.parseResponseContent(response);
-		assetIssueId1 = responseContent.getString("asset_issued_ID");
+		assetIssueId1 = responseContent.getString("asset_issued_id");
 		Assert.assertTrue(Integer.parseInt(assetIssueId1) > 1000000);
 
 		response = HttpMethed.getAccount(httpnode, asset2Address);
 		responseContent = HttpMethed.parseResponseContent(response);
-		assetIssueId2 = responseContent.getString("asset_issued_ID");
+		assetIssueId2 = responseContent.getString("asset_issued_id");
 		Assert.assertTrue(Integer.parseInt(assetIssueId2) > 1000000);
 
 		response = HttpMethed

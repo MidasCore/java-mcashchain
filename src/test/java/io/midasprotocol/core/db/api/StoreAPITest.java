@@ -20,7 +20,7 @@ import io.midasprotocol.core.exception.NonUniqueObjectException;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Contract.TransferContract;
 import io.midasprotocol.protos.Protocol.*;
-import io.midasprotocol.protos.Protocol.BlockHeader.raw;
+import io.midasprotocol.protos.Protocol.BlockHeader.Raw;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 
@@ -203,7 +203,7 @@ public class StoreAPITest {
 			TransferContract transferContract, long transactionTimestamp) {
 		return Transaction.newBuilder()
 				.setRawData(
-						Transaction.raw
+						Transaction.Raw
 								.newBuilder()
 								.setTimestamp(transactionTimestamp)
 								.addContract(
@@ -292,7 +292,7 @@ public class StoreAPITest {
 				.setBlockHeader(
 						BlockHeader.newBuilder()
 								.setRawData(
-										raw.newBuilder()
+										Raw.newBuilder()
 												.setTimestamp(timestamp)
 												.setNumber(num)
 												.setWitnessId(witnessId)

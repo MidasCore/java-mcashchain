@@ -13,7 +13,7 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.AccountUpdateContract;
-import io.midasprotocol.protos.Protocol.Transaction.Result.code;
+import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "actuator")
@@ -31,7 +31,7 @@ public class UpdateAccountActuator extends AbstractActuator {
 			accountUpdateContract = contract.unpack(AccountUpdateContract.class);
 		} catch (InvalidProtocolBufferException e) {
 			logger.debug(e.getMessage(), e);
-			ret.setStatus(fee, code.FAILED);
+			ret.setStatus(fee, Code.FAILED);
 			throw new ContractExeException(e.getMessage());
 		}
 
@@ -44,7 +44,7 @@ public class UpdateAccountActuator extends AbstractActuator {
 		accountStore.put(ownerAddress, account);
 		accountIndexStore.put(account);
 
-		ret.setStatus(fee, code.SUCCESS);
+		ret.setStatus(fee, Code.SUCCESS);
 
 		return true;
 	}

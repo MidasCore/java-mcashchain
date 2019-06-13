@@ -10,7 +10,7 @@ option go_package = "mcashscan/app/client/core";
 message Endpoint {
     bytes address = 1;
     int32 port = 2;
-    bytes nodeId = 3;
+    bytes node_id = 3;
 }
 
 message PingMessage {
@@ -28,7 +28,7 @@ message PongMessage {
 
 message FindNeighbours {
     Endpoint from = 1;
-    bytes targetId = 2;
+    bytes target_id = 2;
     int64 timestamp = 3;
 }
 

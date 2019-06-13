@@ -18,7 +18,7 @@ import io.midasprotocol.core.db.api.index.AccountIndex;
 import io.midasprotocol.core.db.api.index.Index;
 import io.midasprotocol.protos.Contract.AssetIssueContract;
 import io.midasprotocol.protos.Protocol.*;
-import io.midasprotocol.protos.Protocol.BlockHeader.raw;
+import io.midasprotocol.protos.Protocol.BlockHeader.Raw;
 
 import java.io.File;
 
@@ -54,7 +54,7 @@ public class IndexHelperTest {
 						Block.newBuilder()
 								.setBlockHeader(
 										BlockHeader.newBuilder()
-												.setRawData(raw.newBuilder().setNumber(4).build())
+												.setRawData(Raw.newBuilder().setNumber(4).build())
 												.build())
 								.build());
 		dbManager.getBlockStore().put(blockCapsule.getBlockId().getBytes(), blockCapsule);
@@ -68,7 +68,7 @@ public class IndexHelperTest {
 				new TransactionCapsule(
 						Transaction.newBuilder()
 								.setRawData(
-										Transaction.raw
+										Transaction.Raw
 												.newBuilder()
 												.setData(ByteString.copyFrom("i am trans".getBytes()))
 												.build())
@@ -146,7 +146,7 @@ public class IndexHelperTest {
 						Block.newBuilder()
 								.setBlockHeader(
 										BlockHeader.newBuilder()
-												.setRawData(raw.newBuilder().setNumber(6).build())
+												.setRawData(Raw.newBuilder().setNumber(6).build())
 												.build())
 								.build());
 		dbManager.getBlockStore().put(blockCapsule.getBlockId().getBytes(), blockCapsule);
@@ -193,7 +193,7 @@ public class IndexHelperTest {
 				new TransactionCapsule(
 						Transaction.newBuilder()
 								.setRawData(
-										Transaction.raw
+										Transaction.Raw
 												.newBuilder()
 												.setData(ByteString.copyFrom("i am trans".getBytes()))
 												.build())

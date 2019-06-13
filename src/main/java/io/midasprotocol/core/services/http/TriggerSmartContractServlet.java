@@ -3,8 +3,8 @@ package io.midasprotocol.core.services.http;
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.api.GrpcAPI.Return;
-import io.midasprotocol.api.GrpcAPI.Return.response_code;
-import io.midasprotocol.api.GrpcAPI.TransactionExtention;
+import io.midasprotocol.api.GrpcAPI.Return.ResponseCode;
+import io.midasprotocol.api.GrpcAPI.TransactionExtension;
 import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.core.Wallet;
@@ -50,7 +50,7 @@ public class TriggerSmartContractServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws IOException {
 		TriggerSmartContract.Builder build = TriggerSmartContract.newBuilder();
-		TransactionExtention.Builder trxExtBuilder = TransactionExtention.newBuilder();
+		TransactionExtension.Builder trxExtBuilder = TransactionExtension.newBuilder();
 		Return.Builder retBuilder = Return.newBuilder();
 
 		try {
@@ -70,7 +70,7 @@ public class TriggerSmartContractServlet extends HttpServlet {
 				.createTransactionCapsule(build.build(), ContractType.TriggerSmartContract);
 
 			Transaction.Builder txBuilder = trxCap.getInstance().toBuilder();
-			Transaction.raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
+			Transaction.Raw.Builder rawBuilder = trxCap.getInstance().getRawData().toBuilder();
 			rawBuilder.setFeeLimit(feeLimit);
 			txBuilder.setRawData(rawBuilder);
 
@@ -78,15 +78,15 @@ public class TriggerSmartContractServlet extends HttpServlet {
 				.triggerContract(build.build(), new TransactionCapsule(txBuilder.build()), trxExtBuilder,
 					retBuilder);
 			trxExtBuilder.setTransaction(trx);
-			retBuilder.setResult(true).setCode(response_code.SUCCESS);
+			retBuilder.setResult(true).setCode(ResponseCode.SUCCESS);
 		} catch (ContractValidateException e) {
-			retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
+			retBuilder.setResult(false).setCode(ResponseCode.CONTRACT_VALIDATE_ERROR)
 				.setMessage(ByteString.copyFromUtf8(e.getMessage()));
 		} catch (Exception e) {
-			retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
+			retBuilder.setResult(false).setCode(ResponseCode.OTHER_ERROR)
 				.setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
 		}
 		trxExtBuilder.setResult(retBuilder);
-		response.getWriter().println(Util.printTransactionExtention(trxExtBuilder.build()));
+		response.getWriter().println(Util.printTransactionExtension(trxExtBuilder.build()));
 	}
 }
