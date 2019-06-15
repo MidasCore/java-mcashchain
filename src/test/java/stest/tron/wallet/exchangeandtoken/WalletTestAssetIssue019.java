@@ -124,7 +124,7 @@ public class WalletTestAssetIssue019 {
 	}
 
 	@Test(enabled = true)
-	public void testGetAssetLastOperationTimeAndAssetIssueFreeNetUsed() {
+	public void testGetAssetLastOperationTimeAndAssetIssueFreeBandwidthUsed() {
 		Assert.assertTrue(PublicMethed.freezeBalance(asset019Address, 100000000L, 3,
 				asset019Key, blockingStubFull));
 		Assert.assertTrue(PublicMethed.freezeBalance(asset019SecondAddress, 100000000L, 3,
@@ -147,16 +147,16 @@ public class WalletTestAssetIssue019 {
 				10L, asset019Address, asset019Key, blockingStubFull);
 
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019Address, blockingStubFull);
-		for (long id : getAssetIdFromThisAccount.getFreeAssetNetUsageMap().keySet()) {
+		for (long id : getAssetIdFromThisAccount.getAccountResource().getAssetFreeBandwidthUsageMap().keySet()) {
 			if (asset019SecondAccountId == id) {
-				Assert.assertTrue(getAssetIdFromThisAccount.getFreeAssetNetUsageMap().get(id) > 0);
+				Assert.assertTrue(getAssetIdFromThisAccount.getAccountResource().getAssetFreeBandwidthUsageMap().get(id) > 0);
 			}
 		}
 
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset019SecondAddress, blockingStubFull);
-		for (long id : getAssetIdFromThisAccount.getLatestAssetOperationTimeMap().keySet()) {
+		for (long id : getAssetIdFromThisAccount.getAccountResource().getLatestAssetOperationTimeMap().keySet()) {
 			if (asset019AccountId == id) {
-				Assert.assertTrue(getAssetIdFromThisAccount.getLatestAssetOperationTimeMap().get(id) > 0);
+				Assert.assertTrue(getAssetIdFromThisAccount.getAccountResource().getLatestAssetOperationTimeMap().get(id) > 0);
 			}
 		}
 	}

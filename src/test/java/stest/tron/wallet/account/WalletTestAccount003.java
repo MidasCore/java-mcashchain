@@ -168,7 +168,7 @@ public class WalletTestAccount003 {
 	public void test6NoFreezeBalanceToUnfreezeBalance() {
 		//Unfreeze account failed when no freeze balance
 		Account noFreezeAccount = queryAccount(lowBalTest, blockingStubFull);
-		if (noFreezeAccount.getFrozenCount() == 0) {
+		if (noFreezeAccount.hasFrozenForBandwidth()) {
 			Assert.assertFalse(unFreezeBalance(lowBalAddress, lowBalTest));
 		} else {
 			logger.info("This account has freeze balance, please test this case for manual");

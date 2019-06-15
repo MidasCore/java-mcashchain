@@ -107,7 +107,7 @@ public class WalletTestAssetIssue011 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Account queryTransferAssetAccount = PublicMethed
 				.queryAccount(transferAssetCreateKey, blockingStubFull);
-		Assert.assertTrue(queryTransferAssetAccount.getAssetCount() == 1);
+		Assert.assertTrue(queryTransferAssetAccount.getAssetsCount() == 1);
 		Assert.assertTrue(PublicMethed.updateAccount(asset011Address, Long.toString(now)
 				.getBytes(), testKeyForAssetIssue011, blockingStubFull));
 		Assert.assertTrue(PublicMethed.updateAccount(transferAssetCreateAddress, updateMostLongName

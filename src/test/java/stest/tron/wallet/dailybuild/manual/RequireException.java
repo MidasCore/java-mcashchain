@@ -25,9 +25,9 @@ import java.util.Optional;
 @Slf4j
 public class RequireException {
 
-	private final String testNetAccountKey = Configuration.getByPath("testng.conf")
+	private final String testBandwidthAccountKey = Configuration.getByPath("testng.conf")
 			.getString("foundationAccount.key1");
-	private final byte[] testNetAccountAddress = PublicMethed.getFinalAddress(testNetAccountKey);
+	private final byte[] testBandwidthAccountAddress = PublicMethed.getFinalAddress(testBandwidthAccountKey);
 	byte[] contractAddress = null;
 	ECKey ecKey1 = new ECKey(Utils.getRandom());
 	byte[] asset016Address = ecKey1.getAddress();
@@ -81,11 +81,11 @@ public class RequireException {
 		ecKey1 = new ECKey(Utils.getRandom());
 		asset016Address = ecKey1.getAddress();
 		testKeyForAssetIssue016 = ByteArray.toHexString(ecKey1.getPrivKeyBytes());
-		logger.info(Long.toString(PublicMethed.queryAccount(testNetAccountKey, blockingStubFull)
+		logger.info(Long.toString(PublicMethed.queryAccount(testBandwidthAccountKey, blockingStubFull)
 				.getBalance()));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		Assert.assertTrue(PublicMethed
-				.sendcoin(asset016Address, 1000000000L, testNetAccountAddress, testNetAccountKey,
+				.sendcoin(asset016Address, 1000000000L, testBandwidthAccountAddress, testBandwidthAccountKey,
 						blockingStubFull));
 
 		String contractName = "TestRequireContract";
@@ -114,13 +114,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 
 		final String txid = PublicMethed.triggerContract(contractAddress,
 				"testRequire()", "#", false,
@@ -132,7 +132,7 @@ public class RequireException {
 
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -144,19 +144,19 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 	}
 
@@ -188,13 +188,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 
 		final String txid = PublicMethed.triggerContract(contractAddress,
 				"testThrow()", "#", false,
@@ -205,7 +205,7 @@ public class RequireException {
 		Optional<TransactionInfo> infoById;
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -217,20 +217,20 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 		logger.info("testTestThrowsContract");
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 	}
 
 
@@ -263,13 +263,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 
 		final String txid = PublicMethed.triggerContract(contractAddress,
 				"testRevert()", "#", false,
@@ -281,7 +281,7 @@ public class RequireException {
 
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -293,19 +293,19 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 	}
 
@@ -333,13 +333,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 
 		final String txid = PublicMethed.triggerContract(contractAddress,
 				"noPayable()", "#", false,
@@ -351,7 +351,7 @@ public class RequireException {
 
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 		logger.info("fee:" + fee);
 		logger.info("netUsed:" + netUsed);
@@ -361,19 +361,19 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 	}
 
@@ -386,13 +386,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 		String contractName = "noPayableConstructor";
 		String code = "6080604052348015600f57600080fd5b506040516020806071833981016040525134811115602c5"
 				+ "7600080fd5b600055603580603c6000396000f3006080604052600080fd00a165627a7a72305820cb20f649"
@@ -409,7 +409,7 @@ public class RequireException {
 		Optional<TransactionInfo> infoById = null;
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -421,19 +421,19 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 
 	}
@@ -462,15 +462,15 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 
-		String newCxoAddress = "\"" + Base58.encodeBase58(testNetAccountAddress)
+		String newCxoAddress = "\"" + Base58.encodeBase58(testBandwidthAccountAddress)
 				+ "\"";
 		final String txid = PublicMethed.triggerContract(contractAddress,
 				"tranferTest(address) ", newCxoAddress, false,
@@ -482,7 +482,7 @@ public class RequireException {
 
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -494,20 +494,20 @@ public class RequireException {
 				blockingStubFull1);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 		logger.info("transferTestContract");
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 	}
 
@@ -550,13 +550,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 
 		String saleContractString = "\"" + Base58.encodeBase58(contractAddress) + "\"";
 		final String txid = PublicMethed.triggerContract(contractAddress1,
@@ -568,7 +568,7 @@ public class RequireException {
 		Optional<TransactionInfo> infoById;
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -580,19 +580,19 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 	}
 
@@ -642,13 +642,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 		final String txid = PublicMethed.triggerContract(contractAddress1,
 				"newAccount()", "#", false,
 				0, 5226000, asset016Address, testKeyForAssetIssue016, blockingStubFull);
@@ -658,7 +658,7 @@ public class RequireException {
 		Optional<TransactionInfo> infoById = null;
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -670,18 +670,18 @@ public class RequireException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 
 	}
@@ -732,13 +732,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 		final String txid = PublicMethed.triggerContract(contractAddress1,
 				"messageUse(address)", saleContractString, false,
 				0, maxFeeLimit, asset016Address, testKeyForAssetIssue016, blockingStubFull);
@@ -748,7 +748,7 @@ public class RequireException {
 		Optional<TransactionInfo> infoById = null;
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -760,18 +760,18 @@ public class RequireException {
 				blockingStubFull1);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 	}
 
@@ -820,13 +820,13 @@ public class RequireException {
 		info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 		final String txid = PublicMethed.triggerContract(contractAddress1,
 				"messageUse(address)", saleContractString, false,
 				0, maxFeeLimit, asset016Address, testKeyForAssetIssue016, blockingStubFull);
@@ -837,7 +837,7 @@ public class RequireException {
 
 		infoById = PublicMethed.getTransactionInfoById(txid, blockingStubFull);
 		Long fee = infoById.get().getFee();
-		Long netUsed = infoById.get().getReceipt().getNetUsage();
+		Long netUsed = infoById.get().getReceipt().getBandwidthUsage();
 		Long energyUsed = infoById.get().getReceipt().getEnergyUsage();
 
 		logger.info("fee:" + fee);
@@ -849,19 +849,19 @@ public class RequireException {
 				blockingStubFull1);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 
 		Assert.assertTrue(infoById.get().getResultValue() == 1);
 		Assert.assertTrue(afterBalance + fee == beforeBalance);
 		Assert.assertTrue(beforeEnergyUsed + energyUsed >= afterEnergyUsed);
-		Assert.assertTrue(beforeFreeNetUsed + netUsed >= afterFreeNetUsed);
-		Assert.assertTrue(beforeNetUsed + netUsed >= afterNetUsed);
+		Assert.assertTrue(beforeFreeBandwidthUsed + netUsed >= afterFreeBandwidthUsed);
+		Assert.assertTrue(beforeBandwidthUsed + netUsed >= afterBandwidthUsed);
 
 
 	}

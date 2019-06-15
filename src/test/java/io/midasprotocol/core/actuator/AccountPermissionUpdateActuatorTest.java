@@ -302,7 +302,7 @@ public class AccountPermissionUpdateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 
 			// step 4, check result after update operation
 			owner = dbManager.getAccountStore().get(owner_name_array);

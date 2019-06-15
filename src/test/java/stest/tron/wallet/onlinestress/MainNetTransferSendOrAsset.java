@@ -78,7 +78,7 @@ public class MainNetTransferSendOrAsset {
 		if (fromAccount.getBalance() < 10000000000L) {
 			PublicMethed.sendcoin(fromAddress, 10000000000L, defaultAddress, defaultKey, blockingStubFull);
 		}
-		if (fromAccount.getAssetCount() == 0) {
+		if (fromAccount.getAssetsCount() == 0) {
 			start = System.currentTimeMillis() + 2000;
 			end = System.currentTimeMillis() + 1000000000;
 			PublicMethed.createAssetIssue(fromAddress, "testNetAsset", 1000000000000L,
@@ -86,7 +86,7 @@ public class MainNetTransferSendOrAsset {
 					100000L, 1L, 1L, testKey001, blockingStubFull);
 		}
 		beforeToBalance = toAccount.getBalance();
-		beforeToAssetBalance = toAccount.getAssetMap().get("testNetAsset");
+		beforeToAssetBalance = toAccount.getAssetsMap().get("testNetAsset");
 
 		Account fromSendAccount = PublicMethed.queryAccount(testKey003, blockingStubFull);
 		Account toSendAccount = PublicMethed.queryAccount(testKey004, blockingStubFull);
@@ -141,7 +141,7 @@ public class MainNetTransferSendOrAsset {
 		Account fromAccount = PublicMethed.queryAccount(testKey001, blockingStubFull);
 		Account toAccount = PublicMethed.queryAccount(testKey002, blockingStubFull);
 		afterToBalance = toAccount.getBalance();
-		afterToAssetBalance = toAccount.getAssetMap().get("testNetAsset");
+		afterToAssetBalance = toAccount.getAssetsMap().get("testNetAsset");
 
 		logger.info("Success times is " + Long.toString(afterToAssetBalance - beforeToAssetBalance));
 		if (channelFull != null) {

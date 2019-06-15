@@ -26,7 +26,6 @@ import io.midasprotocol.protos.Contract.AccountUpdateContract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.*;
 import io.midasprotocol.protos.Protocol.Account.AccountResource;
-import io.midasprotocol.protos.Protocol.Account.Frozen;
 import io.midasprotocol.protos.Protocol.Permission.PermissionType;
 import lombok.extern.slf4j.Slf4j;
 
@@ -308,6 +307,10 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		this.account = this.account.toBuilder().setBalance(balance).build();
 	}
 
+	public void setAccountResource(Account.AccountResource accountResource) {
+		this.account = this.account.toBuilder().setAccountResource(accountResource).build();
+	}
+
 	public long getLatestOperationTime() {
 		return this.account.getLatestOperationTime();
 	}
@@ -316,78 +319,80 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		this.account = this.account.toBuilder().setLatestOperationTime(latest_time).build();
 	}
 
-	public long getLatestConsumeTime() {
-		return this.account.getLatestConsumeTime();
+	public long getLatestBandwidthConsumeTime() {
+		return this.account.getAccountResource().getLatestBandwidthConsumeTime();
 	}
 
-	public void setLatestConsumeTime(long latest_time) {
-		this.account = this.account.toBuilder().setLatestConsumeTime(latest_time).build();
+	public void setLatestBandwidthConsumeTime(long time) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().setLatestBandwidthConsumeTime(time).build();
+		this.setAccountResource(newResource);
 	}
 
-	public long getLatestConsumeFreeTime() {
-		return this.account.getLatestConsumeFreeTime();
+	public long getLatestFreeBandwidthConsumeTime() {
+		return this.account.getAccountResource().getLatestFreeBandwidthConsumeTime();
 	}
 
-	public void setLatestConsumeFreeTime(long latest_time) {
-		this.account = this.account.toBuilder().setLatestConsumeFreeTime(latest_time).build();
+	public void setLatestFreeBandwidthConsumeTime(long time) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().setLatestFreeBandwidthConsumeTime(time).build();
+		this.setAccountResource(newResource);
 	}
 
 	public void addDelegatedFrozenBalanceForBandwidth(long balance) {
-		this.account = this.account.toBuilder().setDelegatedFrozenBalanceForBandwidth(
-			this.account.getDelegatedFrozenBalanceForBandwidth() + balance).build();
+		long newBalance = this.account.getDelegatedFrozenForBandwidth().getDelegatedBalance() + balance;
+		Account.DelegatedFrozen newDelegatedFrozen = this.account.getDelegatedFrozenForBandwidth()
+			.toBuilder().setDelegatedBalance(newBalance).build();
+		this.account = this.account.toBuilder().setDelegatedFrozenForBandwidth(newDelegatedFrozen).build();
 	}
 
 	public long getAcquiredDelegatedFrozenBalanceForBandwidth() {
-		return this.account.getAcquiredDelegatedFrozenBalanceForBandwidth();
+		return this.account.getDelegatedFrozenForBandwidth().getAcquiredDelegatedBalance();
 	}
 
 	public void setAcquiredDelegatedFrozenBalanceForBandwidth(long balance) {
-		this.account = this.account.toBuilder().setAcquiredDelegatedFrozenBalanceForBandwidth(balance)
-			.build();
+		Account.DelegatedFrozen newDelegated = this.account.getDelegatedFrozenForBandwidth()
+			.toBuilder().setAcquiredDelegatedBalance(balance).build();
+		this.account = this.account.toBuilder().setDelegatedFrozenForBandwidth(newDelegated).build();
 	}
 
 	public void addAcquiredDelegatedFrozenBalanceForBandwidth(long balance) {
-		this.account = this.account.toBuilder().setAcquiredDelegatedFrozenBalanceForBandwidth(
-			this.account.getAcquiredDelegatedFrozenBalanceForBandwidth() + balance)
-			.build();
+		long newBalance = this.account.getDelegatedFrozenForBandwidth().getAcquiredDelegatedBalance() + balance;
+		Account.DelegatedFrozen newDelegatedFrozen = this.account.getDelegatedFrozenForBandwidth()
+			.toBuilder().setAcquiredDelegatedBalance(newBalance).build();
+		this.account = this.account.toBuilder().setDelegatedFrozenForBandwidth(newDelegatedFrozen).build();
 	}
 
 	public long getAcquiredDelegatedFrozenBalanceForEnergy() {
-		return getAccountResource().getAcquiredDelegatedFrozenBalanceForEnergy();
+		return this.account.getDelegatedFrozenForEnergy().getAcquiredDelegatedBalance();
 	}
 
 	public long getDelegatedFrozenBalanceForEnergy() {
-		return getAccountResource().getDelegatedFrozenBalanceForEnergy();
+		return this.account.getDelegatedFrozenForEnergy().getDelegatedBalance();
 	}
 
 	public long getDelegatedFrozenBalanceForBandwidth() {
-		return this.account.getDelegatedFrozenBalanceForBandwidth();
+		return this.account.getDelegatedFrozenForBandwidth().getDelegatedBalance();
 	}
 
 	public void setDelegatedFrozenBalanceForBandwidth(long balance) {
-		this.account = this.account.toBuilder()
-			.setDelegatedFrozenBalanceForBandwidth(balance)
-			.build();
+		Account.DelegatedFrozen newDelegated = this.account.getDelegatedFrozenForBandwidth()
+			.toBuilder().setDelegatedBalance(balance).build();
+		this.account = this.account.toBuilder().setDelegatedFrozenForBandwidth(newDelegated).build();
 	}
 
 	public void addAcquiredDelegatedFrozenBalanceForEnergy(long balance) {
-		AccountResource newAccountResource = getAccountResource().toBuilder()
-			.setAcquiredDelegatedFrozenBalanceForEnergy(
-				getAccountResource().getAcquiredDelegatedFrozenBalanceForEnergy() + balance).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(newAccountResource)
-			.build();
+		long newBalance = this.account.getDelegatedFrozenForEnergy().getAcquiredDelegatedBalance() + balance;
+		Account.DelegatedFrozen newDelegatedFrozen = this.account.getDelegatedFrozenForEnergy()
+			.toBuilder().setAcquiredDelegatedBalance(newBalance).build();
+		this.account = this.account.toBuilder().setDelegatedFrozenForEnergy(newDelegatedFrozen).build();
 	}
 
 	public void addDelegatedFrozenBalanceForEnergy(long balance) {
-		AccountResource newAccountResource = getAccountResource().toBuilder()
-			.setDelegatedFrozenBalanceForEnergy(
-				getAccountResource().getDelegatedFrozenBalanceForEnergy() + balance).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(newAccountResource)
-			.build();
+		long newBalance = this.account.getDelegatedFrozenForEnergy().getDelegatedBalance() + balance;
+		Account.DelegatedFrozen newDelegatedFrozen = this.account.getDelegatedFrozenForEnergy()
+			.toBuilder().setDelegatedBalance(newBalance).build();
+		this.account = this.account.toBuilder().setDelegatedFrozenForEnergy(newDelegatedFrozen).build();
 	}
 
 	@Override
@@ -406,20 +411,20 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 
 	public void clearAsset() {
 		this.account = this.account.toBuilder()
-			.clearAsset()
+			.clearAssets()
 			.build();
 	}
 
 	public void clearLatestAssetOperationTime() {
-		this.account = this.account.toBuilder()
-			.clearLatestAssetOperationTime()
-			.build();
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().clearLatestAssetOperationTime().build();
+		this.setAccountResource(newResource);
 	}
 
-	public void clearFreeAssetNetUsage() {
-		this.account = this.account.toBuilder()
-			.clearFreeAssetNetUsage()
-			.build();
+	public void clearFreeBandwidthNetUsage() {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().clearAssetFreeBandwidthUsage().build();
+		this.setAccountResource(newResource);
 	}
 
 	public void clearVote() {
@@ -447,8 +452,8 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		return 0;
 	}
 
-	public boolean assetBalanceEnoughV2(long tokenId, long amount) {
-		Map<Long, Long> assetMap = this.account.getAssetMap();
+	public boolean assetBalanceEnough(long tokenId, long amount) {
+		Map<Long, Long> assetMap = this.account.getAssetsMap();
 		long currentAmount = assetMap.getOrDefault(tokenId, 0L);
 		return amount > 0 && amount <= currentAmount;
 	}
@@ -456,12 +461,12 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	/**
 	 * reduce asset amount.
 	 */
-	public boolean reduceAssetAmountV2(long tokenId, long amount) {
-		Map<Long, Long> assetMap = this.account.getAssetMap();
+	public boolean reduceAssetAmount(long tokenId, long amount) {
+		Map<Long, Long> assetMap = this.account.getAssetsMap();
 		Long currentAmount = assetMap.get(tokenId);
 		if (amount > 0 && null != currentAmount && amount <= currentAmount) {
 			this.account = this.account.toBuilder()
-				.putAsset(tokenId, Math.subtractExact(currentAmount, amount))
+				.putAssets(tokenId, Math.subtractExact(currentAmount, amount))
 				.build();
 			return true;
 		}
@@ -471,25 +476,25 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	/**
 	 * add asset amount.
 	 */
-	public boolean addAssetAmountV2(long tokenId, long amount) {
-		Map<Long, Long> assetMap = this.account.getAssetMap();
+	public boolean addAssetAmount(long tokenId, long amount) {
+		Map<Long, Long> assetMap = this.account.getAssetsMap();
 		Long currentAmount = assetMap.get(tokenId);
 		if (currentAmount == null) {
 			currentAmount = 0L;
 		}
 		this.account = this.account.toBuilder()
-			.putAsset(tokenId, Math.addExact(currentAmount, amount))
+			.putAssets(tokenId, Math.addExact(currentAmount, amount))
 			.build();
 		return true;
 	}
 
-	public boolean addAssetV2(long tokenId, long value) {
-		Map<Long, Long> assetMap = this.account.getAssetMap();
+	public boolean addAsset(long tokenId, long value) {
+		Map<Long, Long> assetMap = this.account.getAssetsMap();
 		if (!assetMap.isEmpty() && assetMap.containsKey(tokenId)) {
 			return false;
 		}
 		this.account = this.account.toBuilder()
-			.putAsset(tokenId, value)
+			.putAssets(tokenId, value)
 			.build();
 		return true;
 	}
@@ -497,13 +502,13 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	/**
 	 * add asset.
 	 */
-	public boolean addAssetMapV2(Map<Long, Long> assetMap) {
-		this.account = this.account.toBuilder().putAllAsset(assetMap).build();
+	public boolean addAssetMap(Map<Long, Long> assetMap) {
+		this.account = this.account.toBuilder().putAllAssets(assetMap).build();
 		return true;
 	}
 
-	public Map<Long, Long> getAssetMapV2() {
-		Map<Long, Long> assetMap = this.account.getAssetMap();
+	public Map<Long, Long> getAssetMap() {
+		Map<Long, Long> assetMap = this.account.getAssetsMap();
 		if (assetMap.isEmpty()) {
 			assetMap = Maps.newHashMap();
 		}
@@ -511,53 +516,34 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		return assetMap;
 	}
 
-	public boolean addAllLatestAssetOperationTimeV2(Map<Long, Long> map) {
-		this.account = this.account.toBuilder().putAllLatestAssetOperationTime(map).build();
-		return true;
+	public long getLatestAssetOperationTime(long assetId) {
+		return this.account.getAccountResource().getLatestAssetOperationTimeMap().getOrDefault(assetId, 0L);
 	}
 
-	public Map<Long, Long> getLatestAssetOperationTimeMapV2() {
-		return this.account.getLatestAssetOperationTimeMap();
+	public void putLatestAssetOperationTimeMap(Long key, Long value) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().putLatestAssetOperationTime(key, value).build();
+		this.setAccountResource(newResource);
 	}
 
-	public long getLatestAssetOperationTimeV2(long assetId) {
-		return this.account.getLatestAssetOperationTimeOrDefault(assetId, 0);
-	}
-
-	public void putLatestAssetOperationTimeMapV2(Long key, Long value) {
-		this.account = this.account.toBuilder().putLatestAssetOperationTime(key, value).build();
-	}
-
-	public int getFrozenCount() {
-		return getInstance().getFrozenCount();
-	}
-
-	public List<Frozen> getFrozenList() {
-		return getInstance().getFrozenList();
-	}
-
-	public long getFrozenBalance() {
-		List<Frozen> frozenList = getFrozenList();
-		final long[] frozenBalance = {0};
-		frozenList.forEach(frozen -> frozenBalance[0] = Long.sum(frozenBalance[0],
-			frozen.getFrozenBalance()));
-		return frozenBalance[0];
+	public long getFrozenBalanceForBandwidth() {
+		return this.account.getFrozenForBandwidth().getFrozenBalance();
 	}
 
 	public long getAllFrozenBalanceForBandwidth() {
-		return getFrozenBalance() + getAcquiredDelegatedFrozenBalanceForBandwidth();
+		return getFrozenBalanceForBandwidth() + getAcquiredDelegatedFrozenBalanceForBandwidth();
 	}
 
 	public int getFrozenSupplyCount() {
-		return getInstance().getFrozenSupplyCount();
+		return this.account.getFrozenAssetsCount();
 	}
 
-	public List<Frozen> getFrozenSupplyList() {
-		return getInstance().getFrozenSupplyList();
+	public List<Account.Frozen> getFrozenSupplyList() {
+		return getInstance().getFrozenAssetsList();
 	}
 
 	public long getFrozenSupplyBalance() {
-		List<Frozen> frozenSupplyList = getFrozenSupplyList();
+		List<Account.Frozen> frozenSupplyList = getFrozenSupplyList();
 		final long[] frozenSupplyBalance = {0};
 		frozenSupplyList.forEach(frozen -> frozenSupplyBalance[0] = Long.sum(frozenSupplyBalance[0],
 			frozen.getFrozenBalance()));
@@ -660,66 +646,45 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public void setFrozenForBandwidth(long frozenBalance, long expireTime) {
-		Frozen newFrozen = Frozen.newBuilder()
+		Account.Frozen newFrozen = Account.Frozen.newBuilder()
 			.setFrozenBalance(frozenBalance)
 			.setExpireTime(expireTime)
 			.build();
-
-		long frozenCount = getFrozenCount();
-		if (frozenCount == 0) {
-			setInstance(getInstance().toBuilder()
-				.addFrozen(newFrozen)
-				.build());
-		} else {
-			setInstance(getInstance().toBuilder()
-				.setFrozen(0, newFrozen)
-				.build()
-			);
-		}
+		this.account = this.account.toBuilder().setFrozenForBandwidth(newFrozen).build();
 	}
 
-	//set FrozenBalanceForBandwidth
-	//for test only
-	public void setFrozen(long frozenBalance, long expireTime) {
-		Frozen newFrozen = Frozen.newBuilder()
-			.setFrozenBalance(frozenBalance)
-			.setExpireTime(expireTime)
-			.build();
-
-		this.account = this.account.toBuilder()
-			.addFrozen(newFrozen)
-			.build();
+	public long getBandwidthUsage() {
+		return this.account.getAccountResource().getBandwidthUsage();
 	}
 
-	public long getNetUsage() {
-		return this.account.getNetUsage();
-	}
-
-	public void setNetUsage(long netUsage) {
-		this.account = this.account.toBuilder()
-			.setNetUsage(netUsage).build();
+	public void setBandwidthUsage(long bandwidthUsage) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().setBandwidthUsage(bandwidthUsage).build();
+		this.setAccountResource(newResource);
 	}
 
 	public AccountResource getAccountResource() {
 		return this.account.getAccountResource();
 	}
 
+	public Account.Frozen getFrozenForEnergy() {
+		return this.account.getFrozenForEnergy();
+	}
+
+	public Account.Frozen getFrozenForBandwidth() {
+		return this.account.getFrozenForBandwidth();
+	}
+
 	public void setFrozenForEnergy(long newFrozenBalanceForEnergy, long time) {
-		Frozen newFrozenForEnergy = Frozen.newBuilder()
+		Account.Frozen newFrozen = Account.Frozen.newBuilder()
 			.setFrozenBalance(newFrozenBalanceForEnergy)
 			.setExpireTime(time)
 			.build();
-
-		AccountResource newAccountResource = getAccountResource().toBuilder()
-			.setFrozenBalanceForEnergy(newFrozenForEnergy).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(newAccountResource)
-			.build();
+		this.account = this.account.toBuilder().setFrozenForEnergy(newFrozen).build();
 	}
 
-	public long getEnergyFrozenBalance() {
-		return this.account.getAccountResource().getFrozenBalanceForEnergy().getFrozenBalance();
+	public long getFrozenBalanceForEnergy() {
+		return this.account.getFrozenForEnergy().getFrozenBalance();
 	}
 
 	public long getEnergyUsage() {
@@ -727,112 +692,47 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 	}
 
 	public void setEnergyUsage(long energyUsage) {
-		this.account = this.account.toBuilder()
-			.setAccountResource(
-				this.account.getAccountResource().toBuilder().setEnergyUsage(energyUsage).build())
-			.build();
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().setEnergyUsage(energyUsage).build();
+		this.setAccountResource(newResource);
 	}
 
 	public long getAllFrozenBalanceForEnergy() {
-		return getEnergyFrozenBalance() + getAcquiredDelegatedFrozenBalanceForEnergy();
+		return getFrozenBalanceForEnergy() + getAcquiredDelegatedFrozenBalanceForEnergy();
 	}
 
-	public long getLatestConsumeTimeForEnergy() {
-		return this.account.getAccountResource().getLatestConsumeTimeForEnergy();
+	public long getLatestEnergyConsumeTime() {
+		return this.account.getAccountResource().getLatestEnergyConsumeTime();
 	}
 
-	public void setLatestConsumeTimeForEnergy(long latest_time) {
-		this.account = this.account.toBuilder()
-			.setAccountResource(
-				this.account.getAccountResource().toBuilder().setLatestConsumeTimeForEnergy(latest_time)
-					.build()).build();
+	public void setLatestEnergyConsumeTime(long time) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().setLatestEnergyConsumeTime(time).build();
+		this.setAccountResource(newResource);
 	}
 
-	public long getFreeNetUsage() {
-		return this.account.getFreeNetUsage();
+	public long getFreeBandwidthUsage() {
+		return this.account.getAccountResource().getFreeBandwidthUsage();
 	}
 
-	public void setFreeNetUsage(long freeNetUsage) {
-		this.account = this.account.toBuilder()
-			.setFreeNetUsage(freeNetUsage).build();
+	public void setFreeBandwidthUsage(long freeBandwidthUsage) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().setFreeBandwidthUsage(freeBandwidthUsage).build();
+		this.setAccountResource(newResource);
 	}
 
-	public boolean addAllFreeAssetNetUsageV2(Map<Long, Long> map) {
-		this.account = this.account.toBuilder().putAllFreeAssetNetUsage(map).build();
-		return true;
+	public long getFreeAssetBandwidthUsage(Long assetId) {
+		return this.getAccountResource().getAssetFreeBandwidthUsageMap().getOrDefault(assetId, 0L);
 	}
 
-	public long getFreeAssetNetUsageV2(Long assetId) {
-		return this.account.getFreeAssetNetUsageOrDefault(assetId, 0);
+	public Map<Long, Long> getAllFreeAssetBandwidthUsage() {
+		return this.account.getAccountResource().getAssetFreeBandwidthUsageMap();
 	}
 
-	public Map<Long, Long> getAllFreeAssetNetUsage() {
-		return this.account.getFreeAssetNetUsageMap();
-	}
-
-	public Map<Long, Long> getAllFreeAssetNetUsageV2() {
-		return this.account.getFreeAssetNetUsageMap();
-	}
-
-	public void putFreeAssetNetUsageV2(Long id, long freeAssetNetUsage) {
-		this.account = this.account.toBuilder()
-			.putFreeAssetNetUsage(id, freeAssetNetUsage).build();
-	}
-
-	public long getStorageLimit() {
-		return this.account.getAccountResource().getStorageLimit();
-	}
-
-	public void setStorageLimit(long limit) {
-		AccountResource accountResource = this.account.getAccountResource();
-		accountResource = accountResource.toBuilder().setStorageLimit(limit).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(accountResource)
-			.build();
-	}
-
-	public long getStorageUsage() {
-		return this.account.getAccountResource().getStorageUsage();
-	}
-
-	public void setStorageUsage(long usage) {
-		AccountResource accountResource = this.account.getAccountResource();
-		accountResource = accountResource.toBuilder().setStorageUsage(usage).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(accountResource)
-			.build();
-	}
-
-	public long getStorageLeft() {
-		return getStorageLimit() - getStorageUsage();
-	}
-
-	public long getLatestExchangeStorageTime() {
-		return this.account.getAccountResource().getLatestExchangeStorageTime();
-	}
-
-	public void setLatestExchangeStorageTime(long time) {
-		AccountResource accountResource = this.account.getAccountResource();
-		accountResource = accountResource.toBuilder().setLatestExchangeStorageTime(time).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(accountResource)
-			.build();
-	}
-
-	public void addStorageUsage(long storageUsage) {
-		if (storageUsage <= 0) {
-			return;
-		}
-		AccountResource accountResource = this.account.getAccountResource();
-		accountResource = accountResource.toBuilder()
-			.setStorageUsage(accountResource.getStorageUsage() + storageUsage).build();
-
-		this.account = this.account.toBuilder()
-			.setAccountResource(accountResource)
-			.build();
+	public void putFreeAssetBandwidthUsage(Long id, long freeAssetBandwidthUsage) {
+		Account.AccountResource newResource = this.account.getAccountResource()
+			.toBuilder().putAssetFreeBandwidthUsage(id, freeAssetBandwidthUsage).build();
+		this.setAccountResource(newResource);
 	}
 
 	public Permission getPermissionById(int id) {

@@ -93,8 +93,8 @@ public class Fuzzytest {
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);

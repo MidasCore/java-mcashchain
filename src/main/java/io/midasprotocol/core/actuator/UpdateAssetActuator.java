@@ -44,8 +44,8 @@ public class UpdateAssetActuator extends AbstractActuator {
 			AssetIssueStore assetIssueStore = dbManager.getAssetIssueStore();
 			assetIssueCapsuleV2 = assetIssueStore.get(accountCapsule.getAssetIssuedId());
 
-			assetIssueCapsuleV2.setFreeAssetNetLimit(newLimit);
-			assetIssueCapsuleV2.setPublicFreeAssetNetLimit(newPublicLimit);
+			assetIssueCapsuleV2.setFreeAssetBandwidthLimit(newLimit);
+			assetIssueCapsuleV2.setPublicFreeAssetBandwidthLimit(newPublicLimit);
 			assetIssueCapsuleV2.setUrl(newUrl);
 			assetIssueCapsuleV2.setDescription(newDescription);
 
@@ -115,12 +115,12 @@ public class UpdateAssetActuator extends AbstractActuator {
 			throw new ContractValidateException("Invalid description");
 		}
 
-		if (newLimit < 0 || newLimit >= dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+		if (newLimit < 0 || newLimit >= dbManager.getDynamicPropertiesStore().getOneDayBandwidthLimit()) {
 			throw new ContractValidateException("Invalid FreeAssetNetLimit");
 		}
 
 		if (newPublicLimit < 0 || newPublicLimit >=
-			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			dbManager.getDynamicPropertiesStore().getOneDayBandwidthLimit()) {
 			throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
 		}
 

@@ -28,9 +28,9 @@ public class MUtil {
 		Protocol.Account.Builder fromBuilder = fromAccountCap.getInstance().toBuilder();
 		AccountCapsule toAccountCap = deposit.getAccount(toAddress);
 		Protocol.Account.Builder toBuilder = toAccountCap.getInstance().toBuilder();
-		fromAccountCap.getAssetMapV2().forEach((tokenId, amount) -> {
-			toBuilder.putAsset(tokenId, toBuilder.getAssetMap().getOrDefault(tokenId, 0L) + amount);
-			fromBuilder.putAsset(tokenId, 0L);
+		fromAccountCap.getAssetMap().forEach((tokenId, amount) -> {
+			toBuilder.putAssets(tokenId, toBuilder.getAssetsMap().getOrDefault(tokenId, 0L) + amount);
+			fromBuilder.putAssets(tokenId, 0L);
 		});
 		deposit.putAccountValue(fromAddress, new AccountCapsule(fromBuilder.build()));
 		deposit.putAccountValue(toAddress, new AccountCapsule(toBuilder.build()));

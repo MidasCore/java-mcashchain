@@ -28,7 +28,7 @@ public class EnergyProcessor extends ResourceProcessor {
 		AccountResource accountResource = accountCapsule.getAccountResource();
 
 		long oldEnergyUsage = accountResource.getEnergyUsage();
-		long latestConsumeTime = accountResource.getLatestConsumeTimeForEnergy();
+		long latestConsumeTime = accountCapsule.getLatestEnergyConsumeTime();
 
 		accountCapsule.setEnergyUsage(increase(oldEnergyUsage, 0, latestConsumeTime, now));
 	}
@@ -88,7 +88,7 @@ public class EnergyProcessor extends ResourceProcessor {
 	public boolean useEnergy(AccountCapsule accountCapsule, long energy, long now) {
 
 		long energyUsage = accountCapsule.getEnergyUsage();
-		long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEnergy();
+		long latestConsumeTime = accountCapsule.getLatestEnergyConsumeTime();
 		long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
 
 		long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);
@@ -102,7 +102,7 @@ public class EnergyProcessor extends ResourceProcessor {
 		newEnergyUsage = increase(newEnergyUsage, energy, latestConsumeTime, now);
 		accountCapsule.setEnergyUsage(newEnergyUsage);
 		accountCapsule.setLatestOperationTime(latestOperationTime);
-		accountCapsule.setLatestConsumeTimeForEnergy(latestConsumeTime);
+		accountCapsule.setLatestEnergyConsumeTime(latestConsumeTime);
 
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 
@@ -135,7 +135,7 @@ public class EnergyProcessor extends ResourceProcessor {
 		long now = dbManager.getWitnessController().getHeadSlot();
 
 		long energyUsage = accountCapsule.getEnergyUsage();
-		long latestConsumeTime = accountCapsule.getAccountResource().getLatestConsumeTimeForEnergy();
+		long latestConsumeTime = accountCapsule.getLatestEnergyConsumeTime();
 		long energyLimit = calculateGlobalEnergyLimit(accountCapsule);
 
 		long newEnergyUsage = increase(energyUsage, 0, latestConsumeTime, now);

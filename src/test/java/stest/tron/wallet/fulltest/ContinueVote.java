@@ -12,7 +12,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI;
-import io.midasprotocol.api.GrpcAPI.AccountNetMessage;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.GrpcAPI.NumberMessage;
 import io.midasprotocol.api.GrpcAPI.Return;
 import io.midasprotocol.api.WalletGrpc;
@@ -95,7 +95,7 @@ public class ContinueVote {
 	public void testVoteWitness() {
 		ByteString addressBs = ByteString.copyFrom(fromAddress);
 		Account request = Account.newBuilder().setAddress(addressBs).build();
-		AccountNetMessage accountNetMessage = blockingStubFull.getAccountNet(request);
+		AccountResourceMessage accountNetMessage = blockingStubFull.getAccountResource(request);
 		Random rand = new Random();
 		Integer randNum = rand.nextInt(30) + 1;
 		Base58.encodeBase58(fromAddress);
@@ -112,7 +112,7 @@ public class ContinueVote {
 			voteStr = "TB4B1RMhoPeivkj4Hebm6tttHjRY9yQFes";
 			smallVoteMap = new HashMap<String, String>();
 			smallVoteMap.put(voteStr, Integer.toString(randNum));
-			if (fromInfo.getFrozen(0).getFrozenBalance() < 10000000) {
+			if (fromInfo.getFrozenForBandwidth().getFrozenBalance() < 10000000) {
 				PublicMethed.freezeBalance(fromAddress, 10000000000L, 3, testKey002, blockingStubFull);
 			}
 			ret = voteWitness(smallVoteMap, fromAddress, testKey002);
@@ -122,8 +122,8 @@ public class ContinueVote {
 				logger.info(Integer.toString(i++));
 			}
 			fromInfo = PublicMethed.queryAccount(testKey002, blockingStubFull);
-			accountNetMessage = blockingStubFull.getAccountNet(request);
-			logger.info("Now the from net used is " + accountNetMessage.getNetUsed());
+			accountNetMessage = blockingStubFull.getAccountResource(request);
+			logger.info("Now the from net used is " + accountNetMessage.getBandwidthUsed());
 
 		}
 
@@ -234,11 +234,11 @@ public class ContinueVote {
 
 		Long beforeFrozenBalance = 0L;
 		//Long beforeBandwidth     = beforeFronzen.getBandwidth();
-		if (beforeFronzen.getFrozenCount() != 0) {
-			beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
+		if (beforeFronzen.hasFrozenForBandwidth()) {
+			beforeFrozenBalance = beforeFronzen.getFrozenForBandwidth().getFrozenBalance();
 			//beforeBandwidth     = beforeFronzen.getBandwidth();
 			//logger.info(Long.toString(beforeFronzen.getBandwidth()));
-			logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
+			logger.info(Long.toString(beforeFronzen.getFrozenForBandwidth().getFrozenBalance()));
 		}
 
 		FreezeBalanceContract.Builder builder = FreezeBalanceContract.newBuilder();
@@ -284,10 +284,10 @@ public class ContinueVote {
 		}
 
 		Account afterFronzen = queryAccount(ecKey, searchBlockingStubFull);
-		Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalance();
+		Long afterFrozenBalance = afterFronzen.getFrozenForBandwidth().getFrozenBalance();
 		//Long afterBandwidth     = afterFronzen.getBandwidth();
 		//logger.info(Long.toString(afterFronzen.getBandwidth()));
-		//logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
+		//logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalanceForBandwidth()));
 		//logger.info(Integer.toString(search.getFrozenCount()));
 		logger.info(
 				"afterfrozenbalance =" + afterFrozenBalance + "beforefrozenbalance =  "

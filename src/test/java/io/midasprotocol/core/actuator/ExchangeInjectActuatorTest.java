@@ -25,7 +25,6 @@ import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Map;
 
 import static org.testng.Assert.fail;
@@ -168,8 +167,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -181,7 +180,7 @@ public class ExchangeInjectActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			long id = 1;
 			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore().get(ByteArray.fromLong(id));
 			Assert.assertNotNull(exchangeCapsuleV2);
@@ -194,7 +193,7 @@ public class ExchangeInjectActuatorTest {
 			Assert.assertEquals(600000000L, exchangeCapsuleV2.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+			Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 			Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 			Assert.assertEquals(0L, assetV2Map.get(firstTokenId).longValue());
 			Assert.assertEquals(0L, assetV2Map.get(secondTokenId).longValue());
@@ -234,7 +233,7 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(firstTokenQuant);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -246,7 +245,7 @@ public class ExchangeInjectActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			ExchangeCapsule exchangeV2Capsule = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
 			Assert.assertNotNull(exchangeV2Capsule);
 			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeV2Capsule.getCreatorAddress());
@@ -258,7 +257,7 @@ public class ExchangeInjectActuatorTest {
 			Assert.assertEquals(11_000_000L, exchangeV2Capsule.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+			Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 			Assert.assertEquals(0L, accountCapsule.getBalance());
 			Assert.assertEquals(3_000_000L, assetV2Map.get(secondTokenId).longValue());
 
@@ -349,8 +348,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -391,8 +390,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_SECOND);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -431,7 +430,7 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(firstTokenQuant);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -470,8 +469,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -518,8 +517,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, 1000L);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, 1000L);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -558,7 +557,7 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(firstTokenQuant);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -598,7 +597,7 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(firstTokenQuant);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -637,7 +636,7 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(firstTokenQuant - 1);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -676,8 +675,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant - 1);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant - 1);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -714,7 +713,7 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(399_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -752,8 +751,8 @@ public class ExchangeInjectActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant - 1);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant - 1);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 

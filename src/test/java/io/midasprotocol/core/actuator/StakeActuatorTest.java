@@ -116,7 +116,7 @@ public class StakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
@@ -187,7 +187,7 @@ public class StakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 

@@ -978,19 +978,6 @@ public class RpcApiService implements Service {
 		}
 
 		@Override
-		public void getAccountNet(Account request,
-								  StreamObserver<AccountNetMessage> responseObserver) {
-			ByteString fromBs = request.getAddress();
-
-			if (fromBs != null) {
-				responseObserver.onNext(wallet.getAccountNet(fromBs));
-			} else {
-				responseObserver.onNext(null);
-			}
-			responseObserver.onCompleted();
-		}
-
-		@Override
 		public void getAccountResource(Account request,
 									   StreamObserver<AccountResourceMessage> responseObserver) {
 			ByteString fromBs = request.getAddress();

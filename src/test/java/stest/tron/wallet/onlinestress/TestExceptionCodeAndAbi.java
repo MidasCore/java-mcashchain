@@ -77,8 +77,8 @@ public class TestExceptionCodeAndAbi {
 		logger.info("Energy fee is " + infoById.get().getReceipt().getEnergyFee());
 		logger.info("Total energy is " + infoById.get().getReceipt().getEnergyUsageTotal());
 		logger.info("Energy used is " + infoById.get().getReceipt().getEnergyUsage());
-		logger.info("Net used is " + infoById.get().getReceipt().getNetUsage());
-		logger.info("Net fee is " + infoById.get().getReceipt().getNetFee());
+		logger.info("Net used is " + infoById.get().getReceipt().getBandwidthUsage());
+		logger.info("Net fee is " + infoById.get().getReceipt().getBandwidthFee());
 
 	}
 
@@ -294,10 +294,10 @@ public class TestExceptionCodeAndAbi {
 			beforeBalance = info.getBalance();
 			beforeEnergyLimit = resourceInfo.getEnergyLimit();
 			beforeEnergyUsed = resourceInfo.getEnergyUsed();
-			beforeFreeNetLimit = resourceInfo.getFreeNetLimit();
-			beforeNetLimit = resourceInfo.getNetLimit();
-			beforeNetUsed = resourceInfo.getNetUsed();
-			beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+			beforeFreeNetLimit = resourceInfo.getFreeBandwidthLimit();
+			beforeNetLimit = resourceInfo.getBandwidthLimit();
+			beforeNetUsed = resourceInfo.getBandwidthUsed();
+			beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 			logger.info("beofre free net used:" + Long.toString(beforeFreeNetUsed));
 
 			logger.info("before in 1 the balance is " + PublicMethed.queryAccount(asset016Address,
@@ -324,21 +324,21 @@ public class TestExceptionCodeAndAbi {
 			energyUsageTotal = infoById.get().getReceipt().getEnergyUsageTotal();
 			fee = infoById.get().getFee();
 			energyFee = infoById.get().getReceipt().getEnergyFee();
-			netUsed = infoById.get().getReceipt().getNetUsage();
+			netUsed = infoById.get().getReceipt().getBandwidthUsage();
 			energyUsed = infoById.get().getReceipt().getEnergyUsage();
-			netFee = infoById.get().getReceipt().getNetFee();
+			netFee = infoById.get().getReceipt().getBandwidthFee();
 
 			info = PublicMethed.queryAccount(testKeyForAssetIssue016, blockingStubFull3);
 			afterBalance = info.getBalance();
 			afterEnergyLimit = resourceInfo.getEnergyLimit();
 			afterEnergyUsed = resourceInfo.getEnergyUsed();
-			afterFreeNetLimit = resourceInfo.getFreeNetLimit();
-			afterNetLimit = resourceInfo.getNetLimit();
-			afterNetUsed = resourceInfo.getNetUsed();
+			afterFreeNetLimit = resourceInfo.getFreeBandwidthLimit();
+			afterNetLimit = resourceInfo.getBandwidthLimit();
+			afterNetUsed = resourceInfo.getBandwidthUsed();
 			minBalance = beforeBalance - afterBalance;
 			resourceInfo = PublicMethed.getAccountResource(asset016Address,
 					blockingStubFull2);
-			afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+			afterFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 
 			serachInfo(txid, blockingStubFull1);
 			serachInfo(txid, blockingStubFull2);

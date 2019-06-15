@@ -32,18 +32,18 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 	}
 
 	public TransactionResultCapsule(ContractResult code) {
-		this.transactionResult = Transaction.Result.newBuilder().setContractRet(code).build();
+		this.transactionResult = Transaction.Result.newBuilder().setContractResult(code).build();
 	}
 
 	public TransactionResultCapsule(Transaction.Result.Code code, long fee) {
-		this.transactionResult = Transaction.Result.newBuilder().setRet(code).setFee(fee).build();
+		this.transactionResult = Transaction.Result.newBuilder().setCode(code).setFee(fee).build();
 	}
 
 	public void setStatus(long fee, Transaction.Result.Code code) {
 		long oldValue = transactionResult.getFee();
 		this.transactionResult = this.transactionResult.toBuilder()
 			.setFee(oldValue + fee)
-			.setRet(code).build();
+			.setCode(code).build();
 	}
 
 	public long getFee() {
@@ -63,11 +63,11 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 	}
 
 	public long getAssetIssueId() {
-		return transactionResult.getAssetIssueID();
+		return transactionResult.getAssetIssueId();
 	}
 
 	public void setAssetIssueId(long id) {
-		this.transactionResult = this.transactionResult.toBuilder().setAssetIssueID(id).build();
+		this.transactionResult = this.transactionResult.toBuilder().setAssetIssueId(id).build();
 	}
 
 	public long getWithdrawAmount() {
@@ -123,7 +123,7 @@ public class TransactionResultCapsule implements ProtoCapsule<Transaction.Result
 	}
 
 	public void setErrorCode(Transaction.Result.Code code) {
-		this.transactionResult = this.transactionResult.toBuilder().setRet(code).build();
+		this.transactionResult = this.transactionResult.toBuilder().setCode(code).build();
 	}
 
 	public long getUnstakeAmount() {

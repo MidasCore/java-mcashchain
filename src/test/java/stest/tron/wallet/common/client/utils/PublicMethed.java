@@ -78,8 +78,8 @@ public class PublicMethed {
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -133,8 +133,8 @@ public class PublicMethed {
 			builder.setPrecision(precision);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -187,10 +187,10 @@ public class PublicMethed {
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
-			//builder.setPublicFreeAssetNetUsage();
-			//builder.setPublicLatestFreeNetTime();
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
+			//builder.setPublicFreeAssetBandwidthUsage();
+			//builder.setPublicLatestFreeBandwidthTime();
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -465,12 +465,10 @@ public class PublicMethed {
 		Protocol.Account beforeFronzen = queryAccount(priKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
 		//Long beforeBandwidth     = beforeFronzen.getBandwidth();
-		if (beforeFronzen.getFrozenCount() != 0) {
-			beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
-			//beforeBandwidth     = beforeFronzen.getBandwidth();
-			//logger.info(Long.toString(beforeFronzen.getBandwidth()));
-			logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
-		}
+		beforeFrozenBalance = beforeFronzen.getFrozenForBandwidth().getFrozenBalance();
+		//beforeBandwidth     = beforeFronzen.getBandwidth();
+		//logger.info(Long.toString(beforeFronzen.getBandwidth()));
+		logger.info(Long.toString(beforeFronzen.getFrozenForBandwidth().getFrozenBalance()));
 
 		Contract.FreezeBalanceContract.Builder builder = Contract.FreezeBalanceContract.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
@@ -500,8 +498,8 @@ public class PublicMethed {
     }
 
     Protocol.Account afterFronzen = queryAccount(priKey, blockingStubFull);
-    Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalance();
-    logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
+    Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalanceForBandwidth();
+    logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalanceForBandwidth()));
     logger.info("beforefronen" + beforeFrozenBalance.toString() + "    afterfronzen"
         + afterFrozenBalance.toString());
     Assert.assertTrue(afterFrozenBalance - beforeFrozenBalance == freezeBalance);*/
@@ -531,12 +529,10 @@ public class PublicMethed {
 		Protocol.Account beforeFronzen = queryAccount(priKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
 		//Long beforeBandwidth     = beforeFronzen.getBandwidth();
-		if (beforeFronzen.getFrozenCount() != 0) {
-			beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
-			//beforeBandwidth     = beforeFronzen.getBandwidth();
-			//logger.info(Long.toString(beforeFronzen.getBandwidth()));
-			logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
-		}
+		beforeFrozenBalance = beforeFronzen.getFrozenForBandwidth().getFrozenBalance();
+		//beforeBandwidth     = beforeFronzen.getBandwidth();
+		//logger.info(Long.toString(beforeFronzen.getBandwidth()));
+		logger.info(Long.toString(beforeFronzen.getFrozenForBandwidth().getFrozenBalance()));
 
 		Contract.FreezeBalanceContract.Builder builder = Contract.FreezeBalanceContract.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
@@ -584,8 +580,8 @@ public class PublicMethed {
 		}
 
 		Protocol.Account afterFronzen = queryAccount(priKey, blockingStubFull);
-		Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalance();
-		logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
+		Long afterFrozenBalance = afterFronzen.getFrozenForBandwidth().getFrozenBalance();
+		logger.info(Long.toString(afterFronzen.getFrozenForBandwidth().getFrozenBalance()));
 		logger.info("beforefronen" + beforeFrozenBalance.toString() + "    afterfronzen"
 				+ afterFrozenBalance.toString());
 		Assert.assertTrue(afterFrozenBalance - beforeFrozenBalance == freezeBalance);
@@ -1070,17 +1066,6 @@ public class PublicMethed {
 		}
 		logger.info("quit normally");
 		return true;
-	}
-
-	/**
-	 * constructor.
-	 */
-
-	public static AccountNetMessage getAccountNet(byte[] address, WalletGrpc.WalletBlockingStub
-			blockingStubFull) {
-		ByteString addressBs = ByteString.copyFrom(address);
-		Account request = Account.newBuilder().setAddress(addressBs).build();
-		return blockingStubFull.getAccountNet(request);
 	}
 
   /*  public static byte[] addPreFix(byte[] address) {
@@ -2113,7 +2098,7 @@ public class PublicMethed {
 				&& TransactionExtension.getConstantResult(0) != null
 				&& TransactionExtension.getResult() != null) {
 			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
-			System.out.println("message:" + transaction.getRet(0).getRet());
+			System.out.println("message:" + transaction.getRet(0).getCode());
 			System.out.println(":" + ByteArray
 					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
@@ -2760,7 +2745,7 @@ public class PublicMethed {
 		Account getAccount = queryAccount(ecKey, blockingStubFull);
 
 		long balance = info.getBalance();
-		long frozenBalance = info.getAccountResource().getFrozenBalanceForEnergy().getFrozenBalance();
+		long frozenBalance = info.getFrozenForEnergy().getFrozenBalance();
 		long totalEnergyLimit = resourceInfo.getTotalEnergyLimit();
 		long totalEnergyWeight = resourceInfo.getTotalEnergyWeight();
 		long energyUsed = resourceInfo.getEnergyUsed();
@@ -2797,7 +2782,7 @@ public class PublicMethed {
 										  WalletGrpc.WalletBlockingStub blockingStubFull) {
 		Long assetIssueCount = 0L;
 		Account contractAccount = queryAccount(accountAddress, blockingStubFull);
-		Map<Long, Long> createAssetIssueMap = contractAccount.getAssetMap();
+		Map<Long, Long> createAssetIssueMap = contractAccount.getAssetsMap();
 		for (Map.Entry<Long, Long> entry : createAssetIssueMap.entrySet()) {
 			if (assetIssueId == entry.getKey()) {
 				assetIssueCount = entry.getValue();
@@ -3009,7 +2994,7 @@ public class PublicMethed {
 				&& TransactionExtension.getConstantResult(0) != null
 				&& TransactionExtension.getResult() != null) {
 			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
-			System.out.println("message:" + transaction.getRet(0).getRet());
+			System.out.println("message:" + transaction.getRet(0).getCode());
 			System.out.println(":" + ByteArray
 					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
@@ -3203,10 +3188,10 @@ public class PublicMethed {
 		Account getAccount = queryAccount(ecKey, blockingStubFull);
 
 		long balance = info.getBalance();
-		long totalNetLimit = resourceInfo.getTotalNetLimit();
-		long totalNetWeight = resourceInfo.getTotalNetWeight();
-		long netUsed = resourceInfo.getNetUsed();
-		long netLimit = resourceInfo.getNetLimit();
+		long totalNetLimit = resourceInfo.getTotalBandwidthLimit();
+		long totalNetWeight = resourceInfo.getTotalBandwidthWeight();
+		long netUsed = resourceInfo.getBandwidthUsed();
+		long netLimit = resourceInfo.getBandwidthLimit();
 
 		if (netUsed > netLimit) {
 			targetNet = netUsed - netLimit + targetNet;

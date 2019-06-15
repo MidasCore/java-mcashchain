@@ -338,7 +338,7 @@ public class RuntimeImpl implements Runtime {
 				cpuLimitRatio = 1.0;
 			} else {
 				// self witness or other witness or fullnode verifies block
-				if (trx.getRet(0).getContractRet() == ContractResult.OUT_OF_TIME) {
+				if (trx.getRet(0).getContractResult() == ContractResult.OUT_OF_TIME) {
 					cpuLimitRatio = Args.getInstance().getMinTimeRatio();
 				} else {
 					cpuLimitRatio = Args.getInstance().getMaxTimeRatio();

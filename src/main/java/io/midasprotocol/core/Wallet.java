@@ -331,12 +331,12 @@ public class Wallet {
 		energyProcessor.updateUsage(accountCapsule);
 
 		long genesisTimeStamp = dbManager.getGenesisBlock().getTimeStamp();
-		accountCapsule.setLatestConsumeTime(genesisTimeStamp
-			+ ChainConstant.BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTime());
-		accountCapsule.setLatestConsumeFreeTime(genesisTimeStamp
-			+ ChainConstant.BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeFreeTime());
-		accountCapsule.setLatestConsumeTimeForEnergy(genesisTimeStamp
-			+ ChainConstant.BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestConsumeTimeForEnergy());
+		accountCapsule.setLatestBandwidthConsumeTime(genesisTimeStamp
+			+ ChainConstant.BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestBandwidthConsumeTime());
+		accountCapsule.setLatestFreeBandwidthConsumeTime(genesisTimeStamp
+			+ ChainConstant.BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestFreeBandwidthConsumeTime());
+		accountCapsule.setLatestEnergyConsumeTime(genesisTimeStamp
+			+ ChainConstant.BLOCK_PRODUCED_INTERVAL * accountCapsule.getLatestEnergyConsumeTime());
 
 		return accountCapsule.getInstance();
 	}
@@ -911,44 +911,6 @@ public class Wallet {
 		return builder.build();
 	}
 
-	public AccountNetMessage getAccountNet(ByteString accountAddress) {
-		if (accountAddress == null || accountAddress.isEmpty()) {
-			return null;
-		}
-		AccountNetMessage.Builder builder = AccountNetMessage.newBuilder();
-		AccountCapsule accountCapsule = dbManager.getAccountStore().get(accountAddress.toByteArray());
-		if (accountCapsule == null) {
-			return null;
-		}
-
-		BandwidthProcessor processor = new BandwidthProcessor(dbManager);
-		processor.updateUsage(accountCapsule);
-
-		long netLimit = processor
-			.calculateGlobalNetLimit(accountCapsule);
-		long freeNetLimit = dbManager.getDynamicPropertiesStore().getFreeNetLimit();
-		long totalNetLimit = dbManager.getDynamicPropertiesStore().getTotalNetLimit();
-		long totalNetWeight = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
-
-		Map<Long, Long> assetNetLimitMap = new HashMap<>();
-		Map<Long, Long> allFreeAssetNetUsage;
-
-		allFreeAssetNetUsage = accountCapsule.getAllFreeAssetNetUsageV2();
-		allFreeAssetNetUsage.keySet().forEach(assetId -> {
-			assetNetLimitMap.put(assetId, dbManager.getAssetIssueStore().get(assetId).getFreeAssetNetLimit());
-		});
-
-		builder.setFreeNetUsed(accountCapsule.getFreeNetUsage())
-			.setFreeNetLimit(freeNetLimit)
-			.setNetUsed(accountCapsule.getNetUsage())
-			.setNetLimit(netLimit)
-			.setTotalNetLimit(totalNetLimit)
-			.setTotalNetWeight(totalNetWeight)
-			.putAllAssetNetUsed(allFreeAssetNetUsage)
-			.putAllAssetNetLimit(assetNetLimitMap);
-		return builder.build();
-	}
-
 	public AccountResourceMessage getAccountResource(ByteString accountAddress) {
 		if (accountAddress == null || accountAddress.isEmpty()) {
 			return null;
@@ -965,41 +927,35 @@ public class Wallet {
 		EnergyProcessor energyProcessor = new EnergyProcessor(dbManager);
 		energyProcessor.updateUsage(accountCapsule);
 
-		long netLimit = processor
-			.calculateGlobalNetLimit(accountCapsule);
-		long freeNetLimit = dbManager.getDynamicPropertiesStore().getFreeNetLimit();
-		long totalNetLimit = dbManager.getDynamicPropertiesStore().getTotalNetLimit();
-		long totalNetWeight = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+		long bandwidthLimit = processor.calculateGlobalBandwidthLimit(accountCapsule);
+		long freeBandwidthLimit = dbManager.getDynamicPropertiesStore().getFreeBandwidthLimit();
+		long totalBandwidthLimit = dbManager.getDynamicPropertiesStore().getTotalBandwidthLimit();
+		long totalBandwidthWeight = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 		long energyLimit = energyProcessor
 			.calculateGlobalEnergyLimit(accountCapsule);
 		long totalEnergyLimit = dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit();
 		long totalEnergyWeight = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
 
-		long storageLimit = accountCapsule.getAccountResource().getStorageLimit();
-		long storageUsage = accountCapsule.getAccountResource().getStorageUsage();
+		Map<Long, Long> assetBandwidthLimitMap = new HashMap<>();
+		Map<Long, Long> allFreeAssetBandwidthUsage;
 
-		Map<Long, Long> assetNetLimitMap = new HashMap<>();
-		Map<Long, Long> allFreeAssetNetUsage;
-
-		allFreeAssetNetUsage = accountCapsule.getAllFreeAssetNetUsageV2();
-		allFreeAssetNetUsage.keySet().forEach(assetId -> {
-			assetNetLimitMap.put(assetId, dbManager.getAssetIssueStore().get(assetId).getFreeAssetNetLimit());
+		allFreeAssetBandwidthUsage = accountCapsule.getAllFreeAssetBandwidthUsage();
+		allFreeAssetBandwidthUsage.keySet().forEach(assetId -> {
+			assetBandwidthLimitMap.put(assetId, dbManager.getAssetIssueStore().get(assetId).getFreeAssetBandwidthLimit());
 		});
 
-		builder.setFreeNetUsed(accountCapsule.getFreeNetUsage())
-			.setFreeNetLimit(freeNetLimit)
-			.setNetUsed(accountCapsule.getNetUsage())
-			.setNetLimit(netLimit)
-			.setTotalNetLimit(totalNetLimit)
-			.setTotalNetWeight(totalNetWeight)
+		builder.setFreeBandwidthUsed(accountCapsule.getFreeBandwidthUsage())
+			.setFreeBandwidthLimit(freeBandwidthLimit)
+			.setBandwidthUsed(accountCapsule.getBandwidthUsage())
+			.setBandwidthLimit(bandwidthLimit)
+			.setTotalBandwidthLimit(totalBandwidthLimit)
+			.setTotalBandwidthWeight(totalBandwidthWeight)
 			.setEnergyLimit(energyLimit)
 			.setEnergyUsed(accountCapsule.getAccountResource().getEnergyUsage())
 			.setTotalEnergyLimit(totalEnergyLimit)
 			.setTotalEnergyWeight(totalEnergyWeight)
-			.setStorageLimit(storageLimit)
-			.setStorageUsed(storageUsage)
-			.putAllAssetNetUsed(allFreeAssetNetUsage)
-			.putAllAssetNetLimit(assetNetLimitMap);
+			.putAllAssetBandwidthUsed(allFreeAssetBandwidthUsage)
+			.putAllAssetBandwidthLimit(assetBandwidthLimitMap);
 		return builder.build();
 	}
 

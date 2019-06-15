@@ -239,7 +239,7 @@ public class UpdateAccount2Test {
 	public void testNoFreezeBalanceToUnfreezeBalance2() {
 		//Unfreeze account failed when no freeze balance
 		Account noFreezeAccount = queryAccount(lowBalTest, blockingStubFull);
-		if (noFreezeAccount.getFrozenCount() == 0) {
+		if (noFreezeAccount.hasFrozenForBandwidth()) {
 			GrpcAPI.Return ret1 = unFreezeBalance2(lowBalAddress, lowBalTest);
 			Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.CONTRACT_VALIDATE_ERROR);
 			Assert.assertEquals(ret1.getMessage().toStringUtf8(),

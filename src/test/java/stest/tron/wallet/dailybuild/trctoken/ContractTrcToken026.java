@@ -179,8 +179,8 @@ public class ContractTrcToken026 {
 		info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
 		long beforeBalance = info.getBalance();
 		long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		long beforeNetUsed = resourceInfo.getNetUsed();
-		long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		Long beforeAssetIssueDevAddress = PublicMethed.getAssetIssueValue(dev001Address, assetAccountId,
 				blockingStubFull);
 		Long beforeAssetIssueUserAddress = PublicMethed.getAssetIssueValue(user001Address, assetAccountId,
@@ -231,8 +231,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		long afterNetUsed = resourceInfoafter.getNetUsed();
-		long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		long afterNetUsed = resourceInfoafter.getBandwidthUsed();
+		long afterFreeNetUsed = resourceInfoafter.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -283,8 +283,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		long afterNetUsed = resourceInfoAfter.getNetUsed();
-		long afterFreeNetUsed = resourceInfoAfter.getFreeNetUsed();
+		long afterNetUsed = resourceInfoAfter.getBandwidthUsed();
+		long afterFreeNetUsed = resourceInfoAfter.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -342,8 +342,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress1 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		long afterNetUsed1 = resourceInfoafter1.getNetUsed();
-		long afterFreeNetUsed1 = resourceInfoafter1.getFreeNetUsed();
+		long afterNetUsed1 = resourceInfoafter1.getBandwidthUsed();
+		long afterFreeNetUsed1 = resourceInfoafter1.getFreeBandwidthUsed();
 		final Long afterAssetIssueContractAddress1 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -394,8 +394,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress1 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
-		Long afterFreeNetUsed1 = resourceInfoafter1.getFreeNetUsed();
+		Long afterNetUsed1 = resourceInfoafter1.getBandwidthUsed();
+		Long afterFreeNetUsed1 = resourceInfoafter1.getFreeBandwidthUsed();
 		final Long afterAssetIssueContractAddress1 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -435,8 +435,8 @@ public class ContractTrcToken026 {
 		long afterEnergyUsed2 = resourceInfoafter2.getEnergyUsed();
 		Long afterAssetIssueDevAddress2 = PublicMethed.getAssetIssueValue(dev001Address, assetAccountId,
 				blockingStubFull);
-		long afterNetUsed2 = resourceInfoafter2.getNetUsed();
-		long afterFreeNetUsed2 = resourceInfoafter2.getFreeNetUsed();
+		long afterNetUsed2 = resourceInfoafter2.getBandwidthUsed();
+		long afterFreeNetUsed2 = resourceInfoafter2.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress2 = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
 				assetAccountId,
 				blockingStubFull);
@@ -483,8 +483,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress2 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		Long afterNetUsed2 = resourceInfoafter2.getNetUsed();
-		Long afterFreeNetUsed2 = resourceInfoafter2.getFreeNetUsed();
+		Long afterNetUsed2 = resourceInfoafter2.getBandwidthUsed();
+		Long afterFreeNetUsed2 = resourceInfoafter2.getFreeBandwidthUsed();
 		final Long afterAssetIssueContractAddress2 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -525,8 +525,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress3 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		long afterNetUsed3 = resourceInfoafter3.getNetUsed();
-		long afterFreeNetUsed3 = resourceInfoafter3.getFreeNetUsed();
+		long afterNetUsed3 = resourceInfoafter3.getBandwidthUsed();
+		long afterFreeNetUsed3 = resourceInfoafter3.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress3 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -577,8 +577,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress3 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		Long afterNetUsed3 = resourceInfoafter3.getNetUsed();
-		Long afterFreeNetUsed3 = resourceInfoafter3.getFreeNetUsed();
+		Long afterNetUsed3 = resourceInfoafter3.getBandwidthUsed();
+		Long afterFreeNetUsed3 = resourceInfoafter3.getFreeBandwidthUsed();
 		final Long afterAssetIssueContractAddress3 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -618,8 +618,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress4 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		long afterNetUsed4 = resourceInfoafter4.getNetUsed();
-		long afterFreeNetUsed4 = resourceInfoafter4.getFreeNetUsed();
+		long afterNetUsed4 = resourceInfoafter4.getBandwidthUsed();
+		long afterFreeNetUsed4 = resourceInfoafter4.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress4 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -671,8 +671,8 @@ public class ContractTrcToken026 {
 		final Long afterAssetIssueDevAddress4 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		Long afterNetUsed4 = resourceInfoafter4.getNetUsed();
-		Long afterFreeNetUsed4 = resourceInfoafter4.getFreeNetUsed();
+		Long afterNetUsed4 = resourceInfoafter4.getBandwidthUsed();
+		Long afterFreeNetUsed4 = resourceInfoafter4.getFreeBandwidthUsed();
 		final Long afterAssetIssueContractAddress4 = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress,
 						assetAccountId,
@@ -713,8 +713,8 @@ public class ContractTrcToken026 {
 		Long afterAssetIssueDevAddress5 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId,
 						blockingStubFull);
-		long afterNetUsed5 = resourceInfoafter5.getNetUsed();
-		long afterFreeNetUsed5 = resourceInfoafter5.getFreeNetUsed();
+		long afterNetUsed5 = resourceInfoafter5.getBandwidthUsed();
+		long afterFreeNetUsed5 = resourceInfoafter5.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress5 = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
 				assetAccountId,
 				blockingStubFull);

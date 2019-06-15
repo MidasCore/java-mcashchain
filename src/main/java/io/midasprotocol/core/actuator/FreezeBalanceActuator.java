@@ -63,11 +63,11 @@ public class FreezeBalanceActuator extends AbstractActuator {
 					accountCapsule.addDelegatedFrozenBalanceForBandwidth(frozenBalance);
 				} else {
 					long newFrozenBalanceForBandwidth =
-						frozenBalance + accountCapsule.getFrozenBalance();
+						frozenBalance + accountCapsule.getFrozenBalanceForBandwidth();
 					accountCapsule.setFrozenForBandwidth(newFrozenBalanceForBandwidth, expireTime);
 				}
 				dbManager.getDynamicPropertiesStore()
-					.addTotalNetWeight(frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
+					.addTotalBandwidthWeight(frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 			case ENERGY:
 				if (!ArrayUtils.isEmpty(receiverAddress)
@@ -77,9 +77,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 					accountCapsule.addDelegatedFrozenBalanceForEnergy(frozenBalance);
 				} else {
 					long newFrozenBalanceForEnergy =
-						frozenBalance + accountCapsule.getAccountResource()
-							.getFrozenBalanceForEnergy()
-							.getFrozenBalance();
+						frozenBalance + accountCapsule.getFrozenBalanceForEnergy();
 					accountCapsule.setFrozenForEnergy(newFrozenBalanceForEnergy, expireTime);
 				}
 				dbManager.getDynamicPropertiesStore()
@@ -97,7 +95,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 
 
 	@Override
-	public boolean validate() throws ContractValidateException {
+	public boolean 	validate() throws ContractValidateException {
 		if (this.contract == null) {
 			throw new ContractValidateException("No contract!");
 		}
@@ -136,10 +134,6 @@ public class FreezeBalanceActuator extends AbstractActuator {
 			throw new ContractValidateException("frozenBalance must be more than 1 MCASH");
 		}
 
-		int frozenCount = accountCapsule.getFrozenCount();
-		if (!(frozenCount == 0 || frozenCount == 1)) {
-			throw new ContractValidateException("frozenCount must be 0 or 1");
-		}
 		if (frozenBalance > accountCapsule.getBalance()) {
 			throw new ContractValidateException("frozenBalance must be less than accountBalance");
 		}

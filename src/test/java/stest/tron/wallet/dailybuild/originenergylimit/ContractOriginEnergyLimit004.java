@@ -315,8 +315,8 @@ public class ContractOriginEnergyLimit004 {
 		long energyUsage = infoById.get().getReceipt().getEnergyUsage();
 		long originEnergyUsage = infoById.get().getReceipt().getOriginEnergyUsage();
 		long energyTotalUsage = infoById.get().getReceipt().getEnergyUsageTotal();
-		long netUsage = infoById.get().getReceipt().getNetUsage();
-		long netFee = infoById.get().getReceipt().getNetFee();
+		long netUsage = infoById.get().getReceipt().getBandwidthUsage();
+		long netFee = infoById.get().getReceipt().getBandwidthFee();
 
 		logger.info("fee: " + fee);
 		logger.info("energyFee: " + energyFee);

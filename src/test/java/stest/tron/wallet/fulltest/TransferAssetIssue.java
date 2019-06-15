@@ -191,7 +191,7 @@ public class TransferAssetIssue {
 		final Account participateInfo = PublicMethed.queryAccount(testKeyForParticipate,
 			blockingStubFull);
 
-		Map<Long, Long> assetIssueMap = createInfo.getAssetMap();
+		Map<Long, Long> assetIssueMap = createInfo.getAssetsMap();
 		Long temp = 0L;
 		for (Long key : assetIssueMap.keySet()) {
 			logger.info("Name is " + key);
@@ -242,7 +242,7 @@ public class TransferAssetIssue {
 
 		Long temp = 0L;
 		Account createInfo = PublicMethed.queryAccount(testKeyForCreate, blockingStubFull);
-		createAssetIssueMap = createInfo.getAssetMap();
+		createAssetIssueMap = createInfo.getAssetsMap();
 		for (Long key : createAssetIssueMap.keySet()) {
 			logger.info("Name is " + key);
 		}
@@ -254,7 +254,7 @@ public class TransferAssetIssue {
 
 		temp = 0L;
 		Account participateInfo = PublicMethed.queryAccount(testKeyForParticipate, blockingStubFull);
-		Map<Long, Long> participateAssetIssueMap = participateInfo.getAssetMap();
+		Map<Long, Long> participateAssetIssueMap = participateInfo.getAssetsMap();
 		for (Long key : participateAssetIssueMap.values()) {
 			logger.info("Balance are " + key);
 			temp = key;
@@ -307,7 +307,7 @@ public class TransferAssetIssue {
 		participateInfo = PublicMethed.queryAccount(testKeyForParticipate, blockingStubFull);
 
 		temp = 0L;
-		createAssetIssueMap = createInfo.getAssetMap();
+		createAssetIssueMap = createInfo.getAssetsMap();
 		for (Long key : createAssetIssueMap.keySet()) {
 			logger.info("Name is " + key);
 		}
@@ -318,7 +318,7 @@ public class TransferAssetIssue {
 		afterCreateAssetIssueBalance = temp;
 
 		temp = 0L;
-		participateAssetIssueMap = participateInfo.getAssetMap();
+		participateAssetIssueMap = participateInfo.getAssetsMap();
 		for (Long key : participateAssetIssueMap.values()) {
 			logger.info("Balance are " + key);
 			temp = key;

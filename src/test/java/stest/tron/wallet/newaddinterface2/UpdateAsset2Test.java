@@ -129,8 +129,8 @@ public class UpdateAsset2Test {
 		Assert.assertTrue(
 				ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(description));
 		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(url));
-		Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == freeAssetNetLimit);
-		Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == publicFreeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getFreeAssetBandwidthLimit() == freeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getPublicFreeAssetBandwidthLimit() == publicFreeAssetNetLimit);
 
 		//Test update asset issue
 		Return ret1 = PublicMethed
@@ -149,9 +149,9 @@ public class UpdateAsset2Test {
 		Assert.assertTrue(
 				ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
 		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(updateUrl));
-		Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == updateFreeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getFreeAssetBandwidthLimit() == updateFreeAssetNetLimit);
 		Assert
-				.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == updatePublicFreeAssetNetLimit);
+				.assertTrue(assetIssueByName.getPublicFreeAssetBandwidthLimit() == updatePublicFreeAssetNetLimit);
 	}
 
 	@Test(enabled = true)

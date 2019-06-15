@@ -102,32 +102,32 @@ public class AccountCapsuleTest {
 
 		long assetId = 1L;
 		long amountAdd = 222L;
-		boolean addBoolean = accountCapsuleTest.addAssetAmountV2(assetId, amountAdd);
+		boolean addBoolean = accountCapsuleTest.addAssetAmount(assetId, amountAdd);
 
 		Assert.assertTrue(addBoolean);
 
-		Map<Long, Long> assetMap = accountCapsuleTest.getAssetMapV2();
+		Map<Long, Long> assetMap = accountCapsuleTest.getAssetMap();
 		for (Map.Entry<Long, Long> entry : assetMap.entrySet()) {
 			Assert.assertEquals(assetId, entry.getKey().longValue());
 			Assert.assertEquals(amountAdd, entry.getValue().longValue());
 		}
 		long amountReduce = 22L;
 
-		boolean reduceBoolean = accountCapsuleTest.reduceAssetAmountV2(assetId, amountReduce);
+		boolean reduceBoolean = accountCapsuleTest.reduceAssetAmount(assetId, amountReduce);
 		Assert.assertTrue(reduceBoolean);
 
-		Map<Long, Long> assetMapAfter = accountCapsuleTest.getAssetMapV2();
+		Map<Long, Long> assetMapAfter = accountCapsuleTest.getAssetMap();
 		for (Map.Entry<Long, Long> entry : assetMapAfter.entrySet()) {
 			Assert.assertEquals(assetId, entry.getKey().longValue());
 			Assert.assertEquals(amountAdd - amountReduce, entry.getValue().longValue());
 		}
 		long value = 11L;
-		boolean addAsssetBoolean = accountCapsuleTest.addAssetV2(assetId, value);
+		boolean addAsssetBoolean = accountCapsuleTest.addAsset(assetId, value);
 		Assert.assertFalse(addAsssetBoolean);
 
 		long assetId2 = 2L;
 		long amountValue = 33L;
-		boolean addAssetTrue = accountCapsuleTest.addAssetV2(assetId2, amountValue);
+		boolean addAssetTrue = accountCapsuleTest.addAsset(assetId2, amountValue);
 		Assert.assertTrue(addAssetTrue);
 	}
 
@@ -179,30 +179,30 @@ public class AccountCapsuleTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						AccountType.Normal,
 						10000);
-		accountCapsule.addAssetV2(id, 1000L);
+		accountCapsule.addAsset(id, 1000L);
 		dbManager.getAccountStore().put(accountCapsule.getAddress().toByteArray(), accountCapsule);
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(id).longValue(), 1000L);
+		Assert.assertEquals(accountCapsule.getAssetMap().get(id).longValue(), 1000L);
 
-		//assetBalanceEnoughV2
-		Assert.assertTrue(accountCapsule.assetBalanceEnoughV2(id, 999));
+		//assetBalanceEnough
+		Assert.assertTrue(accountCapsule.assetBalanceEnough(id, 999));
 
-		Assert.assertFalse(accountCapsule.assetBalanceEnoughV2(id, 1001));
+		Assert.assertFalse(accountCapsule.assetBalanceEnough(id, 1001));
 
-		//reduceAssetAmountV2
-		Assert.assertTrue(accountCapsule.reduceAssetAmountV2(id, 999));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(id, 0));
-		Assert.assertFalse(accountCapsule.reduceAssetAmountV2(id, 1001));
+		//reduceAssetAmount
+		Assert.assertTrue(accountCapsule.reduceAssetAmount(id, 999));
+		Assert.assertFalse(accountCapsule.reduceAssetAmount(id, 0));
+		Assert.assertFalse(accountCapsule.reduceAssetAmount(id, 1001));
 		// abc
 		Assert.assertFalse(
-				accountCapsule.reduceAssetAmountV2(id + 1, 1001));
+				accountCapsule.reduceAssetAmount(id + 1, 1001));
 
-		//addAssetAmountV2
-		Assert.assertTrue(accountCapsule.addAssetAmountV2(id, 500));
+		//addAssetAmount
+		Assert.assertTrue(accountCapsule.addAssetAmount(id, 500));
 		// 1000-999 +500
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(id).longValue(), 501L);
+		Assert.assertEquals(accountCapsule.getAssetMap().get(id).longValue(), 501L);
 		//abc
-		Assert.assertTrue(accountCapsule.addAssetAmountV2(id + 1, 500));
-		Assert.assertEquals(accountCapsule.getAssetMapV2().get(id + 1).longValue(), 500L);
+		Assert.assertTrue(accountCapsule.addAssetAmount(id + 1, 500));
+		Assert.assertEquals(accountCapsule.getAssetMap().get(id + 1).longValue(), 500L);
 	}
 
 	@Test

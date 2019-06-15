@@ -380,7 +380,7 @@ public class DepositImpl implements Deposit {
 		if (accountCapsule == null) {
 			accountCapsule = createAccount(address, AccountType.Normal);
 		}
-		long balance = accountCapsule.getAssetMapV2().getOrDefault(tokenId, 0L);
+		long balance = accountCapsule.getAssetMap().getOrDefault(tokenId, 0L);
 		if (value == 0) {
 			return balance;
 		}
@@ -391,15 +391,15 @@ public class DepositImpl implements Deposit {
 					+ " insufficient balance");
 		}
 		if (value >= 0) {
-			accountCapsule.addAssetAmountV2(tokenId, value);
+			accountCapsule.addAssetAmount(tokenId, value);
 		} else {
-			accountCapsule.reduceAssetAmountV2(tokenId, -value);
+			accountCapsule.reduceAssetAmount(tokenId, -value);
 		}
 		Key key = Key.create(address);
 		Value V = Value.create(accountCapsule.getData(),
 			Type.VALUE_TYPE_DIRTY | accountCache.get(key).getType().getType());
 		accountCache.put(key, V);
-		return accountCapsule.getAssetMapV2().get(tokenId);
+		return accountCapsule.getAssetMap().get(tokenId);
 	}
 
 	@Override
@@ -439,7 +439,7 @@ public class DepositImpl implements Deposit {
 		if (accountCapsule == null) {
 			return 0;
 		}
-		return accountCapsule.getAssetMapV2().getOrDefault(tokenId, 0L);
+		return accountCapsule.getAssetMap().getOrDefault(tokenId, 0L);
 	}
 
 	@Override

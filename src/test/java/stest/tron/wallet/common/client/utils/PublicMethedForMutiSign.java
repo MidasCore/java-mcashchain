@@ -76,8 +76,8 @@ public class PublicMethedForMutiSign {
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -128,8 +128,8 @@ public class PublicMethedForMutiSign {
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);
@@ -439,12 +439,10 @@ public class PublicMethedForMutiSign {
 		Account beforeFronzen = queryAccount(priKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
 		//Long beforeBandwidth     = beforeFronzen.getBandwidth();
-		if (beforeFronzen.getFrozenCount() != 0) {
-			beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
+			beforeFrozenBalance = beforeFronzen.getFrozenForBandwidth().getFrozenBalance();
 			//beforeBandwidth     = beforeFronzen.getBandwidth();
 			//logger.info(Long.toString(beforeFronzen.getBandwidth()));
-			logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
-		}
+			logger.info(Long.toString(beforeFronzen.getFrozenForBandwidth().getFrozenBalance()));
 
 		Contract.FreezeBalanceContract.Builder builder = Contract.FreezeBalanceContract.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
@@ -492,12 +490,10 @@ public class PublicMethedForMutiSign {
 		Account beforeFronzen = queryAccount(priKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
 		//Long beforeBandwidth     = beforeFronzen.getBandwidth();
-		if (beforeFronzen.getFrozenCount() != 0) {
-			beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
-			//beforeBandwidth     = beforeFronzen.getBandwidth();
-			//logger.info(Long.toString(beforeFronzen.getBandwidth()));
-			logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
-		}
+		beforeFrozenBalance = beforeFronzen.getFrozenForBandwidth().getFrozenBalance();
+		//beforeBandwidth     = beforeFronzen.getBandwidth();
+		//logger.info(Long.toString(beforeFronzen.getBandwidth()));
+		logger.info(Long.toString(beforeFronzen.getFrozenForBandwidth().getFrozenBalance()));
 
 		Contract.FreezeBalanceContract.Builder builder = Contract.FreezeBalanceContract.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
@@ -1966,7 +1962,7 @@ public class PublicMethedForMutiSign {
 				&& TransactionExtension.getConstantResult(0) != null
 				&& TransactionExtension.getResult() != null) {
 			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
-			System.out.println("message:" + transaction.getRet(0).getRet());
+			System.out.println("message:" + transaction.getRet(0).getCode());
 			System.out.println(":" + ByteArray
 					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
@@ -3395,7 +3391,7 @@ public class PublicMethedForMutiSign {
 				&& TransactionExtension.getConstantResult(0) != null
 				&& TransactionExtension.getResult() != null) {
 			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
-			System.out.println("message:" + transaction.getRet(0).getRet());
+			System.out.println("message:" + transaction.getRet(0).getCode());
 			System.out.println(":" + ByteArray
 					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
@@ -3762,7 +3758,7 @@ public class PublicMethedForMutiSign {
 				&& TransactionExtension.getConstantResult(0) != null
 				&& TransactionExtension.getResult() != null) {
 			byte[] result = TransactionExtension.getConstantResult(0).toByteArray();
-			System.out.println("message:" + transaction.getRet(0).getRet());
+			System.out.println("message:" + transaction.getRet(0).getCode());
 			System.out.println(":" + ByteArray
 					.toStr(TransactionExtension.getResult().getMessage().toByteArray()));
 			System.out.println("Result:" + Hex.toHexString(result));
@@ -4158,8 +4154,8 @@ public class PublicMethedForMutiSign {
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
-			builder.setFreeAssetNetLimit(freeAssetNetLimit);
-			builder.setPublicFreeAssetNetLimit(publicFreeAssetNetLimit);
+			builder.setFreeAssetBandwidthLimit(freeAssetNetLimit);
+			builder.setPublicFreeAssetBandwidthLimit(publicFreeAssetNetLimit);
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply.newBuilder();
 			frozenBuilder.setFrozenAmount(fronzenAmount);

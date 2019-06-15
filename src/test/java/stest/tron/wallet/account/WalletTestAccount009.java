@@ -80,16 +80,15 @@ public class WalletTestAccount009 {
 
 		Account account009Info = PublicMethed.queryAccount(account009Key, blockingStubFull);
 		logger.info(Long.toString(
-				account009Info.getAccountResource().getFrozenBalanceForEnergy().getExpireTime()));
+				account009Info.getFrozenForEnergy().getExpireTime()));
 		Assert.assertTrue(account009Info.getAccountResource().getEnergyUsage() == 0);
-		Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEnergy()
-				.getExpireTime() == 0);
+		Assert.assertTrue(account009Info.getFrozenForEnergy().getExpireTime() == 0);
 
 		Assert.assertTrue(PublicMethed.freezeBalanceGetEnergy(account009Address, 1000000L,
 				3, 1, account009Key, blockingStubFull));
 		account009Info = PublicMethed.queryAccount(account009Key, blockingStubFull);
 		Assert.assertTrue(account009Info.getAccountResource().getEnergyUsage() == 0);
-		Assert.assertTrue(account009Info.getAccountResource().getFrozenBalanceForEnergy()
+		Assert.assertTrue(account009Info.getFrozenForEnergy()
 				.getFrozenBalance() == 1000000L);
 
 		AccountResourceMessage account009Resource = PublicMethed.getAccountResource(account009Address,

@@ -136,7 +136,7 @@ public class WalletTestMutiSign012 {
 
 		long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		long energyFee = infoById.get().getReceipt().getEnergyFee();
-		long netFee = infoById.get().getReceipt().getNetFee();
+		long netFee = infoById.get().getReceipt().getBandwidthFee();
 		long fee = infoById.get().getFee();
 
 		logger.info("balanceAfter: " + balanceAfter);
@@ -165,7 +165,7 @@ public class WalletTestMutiSign012 {
 				.getTransactionInfoById(txid, blockingStubFull);
 		balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		energyFee = infoById.get().getReceipt().getEnergyFee();
-		netFee = infoById.get().getReceipt().getNetFee();
+		netFee = infoById.get().getReceipt().getBandwidthFee();
 		fee = infoById.get().getFee();
 
 		logger.info("balanceAfter: " + balanceAfter);
@@ -205,7 +205,7 @@ public class WalletTestMutiSign012 {
 				.getTransactionInfoById(txid, blockingStubFull);
 		long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		long energyFee = infoById.get().getReceipt().getEnergyFee();
-		long netFee = infoById.get().getReceipt().getNetFee();
+		long netFee = infoById.get().getReceipt().getBandwidthFee();
 		long fee = infoById.get().getFee();
 
 		logger.info("balanceAfter: " + balanceAfter);
@@ -264,7 +264,7 @@ public class WalletTestMutiSign012 {
 		long balanceAfter = PublicMethed.queryAccount(participateAddress, blockingStubFull)
 				.getBalance();
 		long energyFee = infoById.get().getReceipt().getEnergyFee();
-		long netFee = infoById.get().getReceipt().getNetFee();
+		long netFee = infoById.get().getReceipt().getBandwidthFee();
 		long fee = infoById.get().getFee();
 
 		logger.info("balanceAfter: " + balanceAfter);
@@ -288,7 +288,7 @@ public class WalletTestMutiSign012 {
 		balanceAfter = PublicMethed.queryAccount(participateAddress, blockingStubFull)
 				.getBalance();
 		energyFee = infoById.get().getReceipt().getEnergyFee();
-		netFee = infoById.get().getReceipt().getNetFee();
+		netFee = infoById.get().getReceipt().getBandwidthFee();
 		fee = infoById.get().getFee();
 
 		logger.info("balanceAfter: " + balanceAfter);
@@ -324,7 +324,7 @@ public class WalletTestMutiSign012 {
 				.getTransactionInfoById(txid, blockingStubFull);
 		long balanceAfter = PublicMethed.queryAccount(ownerAddress, blockingStubFull).getBalance();
 		long energyFee = infoById.get().getReceipt().getEnergyFee();
-		long netFee = infoById.get().getReceipt().getNetFee();
+		long netFee = infoById.get().getReceipt().getBandwidthFee();
 		long fee = infoById.get().getFee();
 
 		logger.info("balanceAfter: " + balanceAfter);

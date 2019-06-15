@@ -80,7 +80,7 @@ public class TransferAssetActuator extends AbstractActuator {
 		}
 
 		Map<Long, Long> asset;
-		asset = ownerAccount.getAssetMapV2();
+		asset = ownerAccount.getAssetMap();
 		if (asset.isEmpty()) {
 			throw new ContractValidateException("Owner no asset!");
 		}
@@ -95,7 +95,7 @@ public class TransferAssetActuator extends AbstractActuator {
 
 		AccountCapsule toAccount = deposit.getAccount(toAddress);
 		if (toAccount != null) {
-			assetBalance = toAccount.getAssetMapV2().get(tokenId);
+			assetBalance = toAccount.getAssetMap().get(tokenId);
 			if (assetBalance != null) {
 				try {
 					assetBalance = Math.addExact(assetBalance, amount); //check if overflow
@@ -138,12 +138,12 @@ public class TransferAssetActuator extends AbstractActuator {
 			dbManager.adjustBalance(dbManager.getAccountStore().getBlackhole().createDbKey(), fee);
 
 			AccountCapsule ownerAccountCapsule = accountStore.get(ownerAddress);
-			if (!ownerAccountCapsule.reduceAssetAmountV2(assetId, amount)) {
+			if (!ownerAccountCapsule.reduceAssetAmount(assetId, amount)) {
 				throw new ContractExeException("reduceAssetAmount failed !");
 			}
 			accountStore.put(ownerAddress, ownerAccountCapsule);
 
-			toAccountCapsule.addAssetAmountV2(assetId, amount);
+			toAccountCapsule.addAssetAmount(assetId, amount);
 			accountStore.put(toAddress, toAccountCapsule);
 
 			ret.setStatus(fee, Code.SUCCESS);
@@ -215,7 +215,7 @@ public class TransferAssetActuator extends AbstractActuator {
 			throw new ContractValidateException("No asset !");
 		}
 
-		Map<Long, Long> asset = ownerAccount.getAssetMapV2();
+		Map<Long, Long> asset = ownerAccount.getAssetMap();
 		if (asset.isEmpty()) {
 			throw new ContractValidateException("Owner no asset!");
 		}
@@ -230,7 +230,7 @@ public class TransferAssetActuator extends AbstractActuator {
 
 		AccountCapsule toAccount = this.dbManager.getAccountStore().get(toAddress);
 		if (toAccount != null) {
-			assetBalance = toAccount.getAssetMapV2().get(assetId);
+			assetBalance = toAccount.getAssetMap().get(assetId);
 			if (assetBalance != null) {
 				try {
 					assetBalance = Math.addExact(assetBalance, amount); //check if overflow

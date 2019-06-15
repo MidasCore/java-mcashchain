@@ -247,8 +247,8 @@ public class WalletTestAssetIssue003 {
 			builder.setEndTime(endTime);
 			builder.setVoteScore(voteScore);
 			builder.setDescription(ByteString.copyFrom(description.getBytes()));
-			builder.setFreeAssetNetLimit(10000);
-			builder.setPublicFreeAssetNetLimit(10000);
+			builder.setFreeAssetBandwidthLimit(10000);
+			builder.setPublicFreeAssetBandwidthLimit(10000);
 			builder.setUrl(ByteString.copyFrom(url.getBytes()));
 			Contract.AssetIssueContract.FrozenSupply.Builder frozenBuilder =
 					Contract.AssetIssueContract.FrozenSupply

@@ -178,12 +178,12 @@ public class WalletTestTransfer003 {
 
 		while (!(netUsed1.equals(netUsed2))) {
 			sendAccountInfo = PublicMethed.queryAccount(testKeyForSendCoin, blockingStubFull);
-			netUsed1 = sendAccountInfo.getFreeNetUsage();
+			netUsed1 = sendAccountInfo.getAccountResource().getFreeBandwidthUsage();
 			sendCoinTransaction = sendcoin(fromAddress, 1L, sendCoinAddress,
 					testKeyForSendCoin, blockingStubFull);
 
 			sendAccountInfo = PublicMethed.queryAccount(testKeyForSendCoin, blockingStubFull);
-			netUsed2 = sendAccountInfo.getFreeNetUsage();
+			netUsed2 = sendAccountInfo.getAccountResource().getFreeBandwidthUsage();
 
 			if (times++ < 1) {
 				PublicMethed.waitProduceNextBlock(blockingStubFull);

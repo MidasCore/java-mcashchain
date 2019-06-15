@@ -173,7 +173,7 @@ public class VoteWitnessActuatorTest {
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteCount());
 			Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteAddress().toByteArray());
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 					.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -404,7 +404,7 @@ public class VoteWitnessActuatorTest {
 			Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteAddress().toByteArray());
 
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 					.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));
@@ -449,7 +449,7 @@ public class VoteWitnessActuatorTest {
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS))
 							.getVote().getVoteAddress().toByteArray());
 
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			witnessController.updateWitness();
 
 			WitnessCapsule witnessCapsule = witnessController
@@ -490,7 +490,7 @@ public class VoteWitnessActuatorTest {
 				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteCount());
 			Assert.assertArrayEquals(ByteArray.fromHexString(WITNESS_ADDRESS),
 				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS)).getVote().getVoteAddress().toByteArray());
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			witnessController.updateWitness();
 			WitnessCapsule witnessCapsule = witnessController
 				.getWitnessByAddress(StringUtil.hexString2ByteString(WITNESS_ADDRESS));

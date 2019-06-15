@@ -72,7 +72,7 @@ public class EnergyProcessorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(CONTRACT_PROVIDER_ADDRESS)),
 						AccountType.Normal,
 						0L);
-		contractProvierCapsule.addAssetV2(ASSET_ID, 100L);
+		contractProvierCapsule.addAsset(ASSET_ID, 100L);
 
 		AccountCapsule userCapsule =
 				new AccountCapsule(
@@ -94,8 +94,8 @@ public class EnergyProcessorTest {
 		return Contract.AssetIssueContract.newBuilder()
 				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(USER_ADDRESS)))
 				.setName(ByteString.copyFromUtf8(ASSET_NAME))
-				.setFreeAssetNetLimit(1000L)
-				.setPublicFreeAssetNetLimit(1000L)
+				.setFreeAssetBandwidthLimit(1000L)
+				.setPublicFreeAssetBandwidthLimit(1000L)
 				.build();
 	}
 
@@ -124,7 +124,7 @@ public class EnergyProcessorTest {
 
 		Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
 		Assert.assertEquals(1526647838000L,
-				ownerCapsuleNew.getAccountResource().getLatestConsumeTimeForEnergy());
+				ownerCapsuleNew.getAccountResource().getLatestEnergyConsumeTime());
 		Assert.assertEquals(10000L, ownerCapsuleNew.getAccountResource().getEnergyUsage());
 
 	}

@@ -69,14 +69,10 @@ public class TvmContract {
 		AccountResourceMessage accountResource = PublicMethed.getAccountResource(contract008Address,
 				blockingStubFull);
 		Long energyLimit = accountResource.getEnergyLimit();
-		Long storageLimit = accountResource.getStorageLimit();
 		Long energyUsage = accountResource.getEnergyUsed();
-		Long storageUsage = accountResource.getStorageUsed();
 
 		logger.info("before energy limit is " + Long.toString(energyLimit));
 		logger.info("before energy usage is " + Long.toString(energyUsage));
-		logger.info("before storage limit is " + Long.toString(storageLimit));
-		logger.info("before storage usaged is " + Long.toString(storageUsage));
 		Long maxFeeLimit = 50000000L;
 		String contractName = "ERC721";
 		String code = Configuration.getByPath("testng.conf")
@@ -86,9 +82,9 @@ public class TvmContract {
 		Long m = 0L;
 		Long freeNet;
 		accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-		Long net = accountResource.getFreeNetUsed();
+		Long net = accountResource.getFreeBandwidthUsed();
 		Account account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
-		Long netUsed = account.getNetUsage();
+		Long netUsed = account.getAccountResource().getBandwidthUsage();
 		logger.info("before net used is " + Long.toString(netUsed));
 		logger.info("before balance is " + account.getBalance());
 
@@ -96,7 +92,7 @@ public class TvmContract {
 			byte[] contractAddress = PublicMethed.deployContract("1", abi, code, "",
 					30000000L, 0L, 1, null, contract008Key, contract008Address, blockingStubFull);
 			accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
-			freeNet = accountResource.getFreeNetUsed();
+			freeNet = accountResource.getFreeBandwidthUsed();
 			energyUsage = accountResource.getEnergyUsed();
 			logger.info(
 					"Time " + Integer.toString(i) + ": energy usage is " + Long.toString(energyUsage - m));
@@ -104,7 +100,7 @@ public class TvmContract {
 					.toString(freeNet - net));
 			account = PublicMethed.queryAccount(contract008Key, blockingStubFull);
 			logger.info("after balance is " + account.getBalance());
-			netUsed = account.getNetUsage();
+			netUsed = account.getAccountResource().getBandwidthUsage();
 			logger.info("after net used is " + Long.toString(netUsed));
 			net = freeNet;
 			m = energyUsage;
@@ -124,9 +120,7 @@ public class TvmContract {
 		//logger.info(smartContract.getAbi().toString());
 		accountResource = PublicMethed.getAccountResource(contract008Address, blockingStubFull);
 		energyLimit = accountResource.getEnergyLimit();
-		storageLimit = accountResource.getStorageLimit();
 		energyUsage = accountResource.getEnergyUsed();
-		storageUsage = accountResource.getStorageUsed();
 		//Assert.assertTrue(storageUsage > 0);
 		//Assert.assertTrue(storageLimit > 0);
 		//Assert.assertTrue(energyLimit > 0);
@@ -134,8 +128,6 @@ public class TvmContract {
 
 		logger.info("after energy limit is " + Long.toString(energyLimit));
 		logger.info("after energy usage is " + Long.toString(energyUsage));
-		logger.info("after storage limit is " + Long.toString(storageLimit));
-		logger.info("after storage usaged is " + Long.toString(storageUsage));
 	}
 
 	/**

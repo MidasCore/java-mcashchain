@@ -72,13 +72,13 @@ public class ExchangeWithdrawActuator extends AbstractActuator {
 			if (tokenID == 0) {
 				accountCapsule.setBalance(newBalance + tokenQuant);
 			} else {
-				accountCapsule.addAssetAmountV2(tokenID, tokenQuant);
+				accountCapsule.addAssetAmount(tokenID, tokenQuant);
 			}
 
 			if (anotherTokenID == 0) {
 				accountCapsule.setBalance(newBalance + anotherTokenQuant);
 			} else {
-				accountCapsule.addAssetAmountV2(anotherTokenID, anotherTokenQuant);
+				accountCapsule.addAssetAmount(anotherTokenID, anotherTokenQuant);
 			}
 
 			dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);

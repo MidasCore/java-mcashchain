@@ -104,22 +104,22 @@ public class WalletTestAccount013 {
 		AccountResourceMessage account013Resource = PublicMethed
 				.getAccountResource(account013Address, blockingStubFull);
 		logger.info("013 energy limit is " + account013Resource.getEnergyLimit());
-		logger.info("013 net limit is " + account013Resource.getNetLimit());
+		logger.info("013 net limit is " + account013Resource.getBandwidthLimit());
 		//getAccountResource receiver
 		AccountResourceMessage receiverResource = PublicMethed
 				.getAccountResource(receiverDelegateAddress, blockingStubFull);
 		logger.info("receiver energy limit is " + receiverResource.getEnergyLimit());
-		logger.info("receiver net limit is " + receiverResource.getNetLimit());
+		logger.info("receiver net limit is " + receiverResource.getBandwidthLimit());
 		Protocol.Account account013infoBefore =
 				PublicMethed.queryAccount(account013Address, blockingStubFull);
 		//get resources of account013 before DelegateResource
 		account013BeforeBalance = account013infoBefore.getBalance();
 		AccountResourceMessage account013ResBefore = PublicMethed
 				.getAccountResource(account013Address, blockingStubFull);
-		final long account013BeforeBandWidth = account013ResBefore.getNetLimit();
+		final long account013BeforeBandWidth = account013ResBefore.getBandwidthLimit();
 		AccountResourceMessage receiverResourceBefore = PublicMethed
 				.getAccountResource(receiverDelegateAddress, blockingStubFull);
-		long receiverBeforeBandWidth = receiverResourceBefore.getNetLimit();
+		long receiverBeforeBandWidth = receiverResourceBefore.getBandwidthLimit();
 		//Account013 DelegateResource for BandWidth to receiver
 		Assert.assertTrue(PublicMethed.freezeBalanceForReceiver(
 				account013Address, freezeAmount, freezeDuration, 0,
@@ -131,11 +131,11 @@ public class WalletTestAccount013 {
 		AccountResourceMessage account013ResAfter = PublicMethed
 				.getAccountResource(account013Address, blockingStubFull);
 		//get BandWidth of account013 after DelegateResource
-		long account013AfterBandWidth = account013ResAfter.getNetLimit();
+		long account013AfterBandWidth = account013ResAfter.getBandwidthLimit();
 		AccountResourceMessage receiverResourceAfter = PublicMethed
 				.getAccountResource(receiverDelegateAddress, blockingStubFull);
 		//Bandwidth of receiver after DelegateResource
-		long receiverAfterBandWidth = receiverResourceAfter.getNetLimit();
+		long receiverAfterBandWidth = receiverResourceAfter.getBandwidthLimit();
 		//Balance of Account013 reduced amount same as DelegateResource
 		Assert.assertTrue(account013BeforeBalance == account013AfterBalance + freezeAmount);
 		//Bandwidth of account013 is equally before and after DelegateResource
@@ -186,11 +186,11 @@ public class WalletTestAccount013 {
 				ByteString.copyFrom(account013Address), testKeyForAccount013, blockingStubFull));
 		account013Resource = PublicMethed.getAccountResource(account013Address, blockingStubFull);
 		logger.info("After 013 energy limit is " + account013Resource.getEnergyLimit());
-		logger.info("After 013 net limit is " + account013Resource.getNetLimit());
+		logger.info("After 013 net limit is " + account013Resource.getBandwidthLimit());
 
 		receiverResource = PublicMethed.getAccountResource(receiverDelegateAddress, blockingStubFull);
 		logger.info("After receiver energy limit is " + receiverResource.getEnergyLimit());
-		logger.info("After receiver net limit is " + receiverResource.getNetLimit());
+		logger.info("After receiver net limit is " + receiverResource.getBandwidthLimit());
 	}
 
 	@Test(enabled = true)
@@ -272,7 +272,7 @@ public class WalletTestAccount013 {
 				.getBalance() == account013BeforeBalance - 2 * freezeAmount);
 		//bandwidth from Account013 to  Account4 gone
 		Assert.assertTrue(PublicMethed.getAccountResource(account4DelegatedResourceAddress,
-				blockingStubFull).getNetLimit() == 0);
+				blockingStubFull).getBandwidthLimit() == 0);
 
 		//unfreezebalance of Energy from Account4 to Account5
 		Assert.assertTrue(PublicMethed.unFreezeBalance(
@@ -336,11 +336,11 @@ public class WalletTestAccount013 {
 				account5DelegatedResourceAddress, account5DelegatedResourceKey, blockingStubFull));
 		//get account013，accountForAssetIssue，Account5 account resources before transferAssets
 		final long account013CurrentBandwidth = PublicMethed.getAccountResource(
-				account013Address, blockingStubFull).getNetUsed();
+				account013Address, blockingStubFull).getBandwidthUsed();
 		long accountForAssetIssueCurrentBandwidth = PublicMethed.getAccountResource(
-				accountForAssetIssueAddress, blockingStubFull).getNetUsed();
+				accountForAssetIssueAddress, blockingStubFull).getBandwidthUsed();
 		final long account5CurrentBandwidth = PublicMethed.getAccountResource(
-				account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
+				account5DelegatedResourceAddress, blockingStubFull).getBandwidthUsed();
 		//Account5 transfer Assets receiver
 		Assert.assertTrue(PublicMethed.transferAsset(receiverDelegateAddress,
 				assetAccountId, 100000, account5DelegatedResourceAddress,
@@ -351,20 +351,20 @@ public class WalletTestAccount013 {
 
 		//get account013，accountForAssetIssue，Account5 resource after transferAsset
 		final long account013CurrentBandwidthAfterTrans = PublicMethed.getAccountResource(
-				account013Address, blockingStubFull).getNetUsed();
+				account013Address, blockingStubFull).getBandwidthUsed();
 		final long accountForAssetIssueCurrentBandwidthAfterTrans = PublicMethed.getAccountResource(
-				accountForAssetIssueAddress, blockingStubFull).getFreeNetUsed();
+				accountForAssetIssueAddress, blockingStubFull).getFreeBandwidthUsed();
 		final long account5CurrentBandwidthAfterTrans = PublicMethed.getAccountResource(
-				account5DelegatedResourceAddress, blockingStubFull).getNetUsed();
+				account5DelegatedResourceAddress, blockingStubFull).getBandwidthUsed();
 		AccountResourceMessage account5ResourceAfterTrans = PublicMethed.getAccountResource(
 				account5DelegatedResourceAddress, blockingStubFull);
 
 		long result = 0;
-		if (account5ResourceAfterTrans.getAssetNetLimitCount() > 0) {
-			logger.info("getAssetNetLimitCount > 0 ");
-			for (long id : account5ResourceAfterTrans.getAssetNetLimitMap().keySet()) {
+		if (account5ResourceAfterTrans.getAssetBandwidthLimitCount() > 0) {
+			logger.info("getAssetBandwidthLimitCount > 0 ");
+			for (long id : account5ResourceAfterTrans.getAssetBandwidthLimitMap().keySet()) {
 				logger.info(String.valueOf(id));
-				result += account5ResourceAfterTrans.getAssetNetUsedMap().get(id);
+				result += account5ResourceAfterTrans.getAssetBandwidthUsedMap().get(id);
 
 			}
 		}
@@ -419,7 +419,7 @@ public class WalletTestAccount013 {
 		final long account013CurrentEnergyUsed = PublicMethed.getAccountResource(
 				account013Address, blockingStubFull).getEnergyUsed();
 		final long account013CurrentBandwidthUsed = PublicMethed.getAccountResource(
-				account013Address, blockingStubFull).getFreeNetUsed();
+				account013Address, blockingStubFull).getFreeBandwidthUsed();
 		final long account4CurrentEnergyUsed = PublicMethed.getAccountResource(
 				account4DelegatedResourceAddress, blockingStubFull).getEnergyUsed();
 		final long contractCurrentEnergyUsed = PublicMethed.getAccountResource(
@@ -437,13 +437,13 @@ public class WalletTestAccount013 {
 		Assert.assertTrue(infoById.get().getResultValue() == 0);
 		//get transaction info of Energy used and Bandwidth used
 		final long contractTriggerEnergyUsed = infoById.get().getReceipt().getOriginEnergyUsage();
-		final long contractTriggerBandwidthUsed = infoById.get().getReceipt().getNetUsage();
+		final long contractTriggerBandwidthUsed = infoById.get().getReceipt().getBandwidthUsage();
 
 		//get Energy of Account013，Account4，Contract after trigger contract
 		final long account013CurrentEnergyUsedAfterTrig = PublicMethed.getAccountResource(
 				account013Address, blockingStubFull).getEnergyUsed();
 		final long account013CurrentBandwidthUsedAfterTrig = PublicMethed.getAccountResource(
-				account013Address, blockingStubFull).getFreeNetUsed();
+				account013Address, blockingStubFull).getFreeBandwidthUsed();
 		final long account4CurrentEnergyUsedAfterTrig = PublicMethed.getAccountResource(
 				account4DelegatedResourceAddress, blockingStubFull).getEnergyUsed();
 		final long contractCurrentEnergyUsedAfterTrig = PublicMethed.getAccountResource(

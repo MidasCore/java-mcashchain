@@ -295,7 +295,7 @@ public class TransactionStoreTest {
 						ConversionUtil.McashToMatoshi(1_000_000));
 		long frozenBalance = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
-		ownerAccountFirstCapsule.setFrozen(frozenBalance, duration);
+		ownerAccountFirstCapsule.setFrozenForBandwidth(frozenBalance, duration);
 		dbManager.getAccountStore()
 				.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
 		VoteWitnessContract actuator = getVoteWitnessContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L);

@@ -1,6 +1,5 @@
 package io.midasprotocol.core;
 
-import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +99,7 @@ public class BandwidthProcessorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						AccountType.Normal,
 						0L);
-		ownerCapsule.addAssetV2(ASSET_ID_V2, 100L);
+		ownerCapsule.addAsset(ASSET_ID_V2, 100L);
 
 		AccountCapsule toAccountCapsule =
 				new AccountCapsule(
@@ -140,8 +139,8 @@ public class BandwidthProcessorTest {
 				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ASSET_ADDRESS_V2)))
 				.setName(ByteString.copyFromUtf8(ASSET_NAME_V2))
 				.setId(ASSET_ID_V2)
-				.setFreeAssetNetLimit(1000L)
-				.setPublicFreeAssetNetLimit(1000L)
+				.setFreeAssetBandwidthLimit(1000L)
+				.setPublicFreeAssetBandwidthLimit(1000L)
 				.build();
 	}
 
@@ -167,7 +166,7 @@ public class BandwidthProcessorTest {
 				.get(ByteArray.fromHexString(TO_ADDRESS));
 		dbManager.getAssetIssueStore()
 				.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
-		toAccountCapsule.addAssetV2(id, TOTAL_SUPPLY);
+		toAccountCapsule.addAsset(id, TOTAL_SUPPLY);
 		dbManager.getAccountStore().put(toAccountCapsule.getAddress().toByteArray(), toAccountCapsule);
 	}
 
@@ -175,7 +174,7 @@ public class BandwidthProcessorTest {
 	public void testConsumeAssetAccountV2() throws Exception {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
 		dbManager.getDynamicPropertiesStore()
-				.saveTotalNetWeight(1_000_000_000L);//only assetAccount has frozen balance
+				.saveTotalBandwidthWeight(1_000_000_000L);//only assetAccount has frozen balance
 
 		TransferAssetContract contract = getTransferAssetV2Contract();
 		TransactionCapsule trx = new TransactionCapsule(contract);
@@ -183,7 +182,7 @@ public class BandwidthProcessorTest {
 		// issuer freeze balance for bandwidth
 		AccountCapsule issuerCapsuleV2 = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(ASSET_ADDRESS_V2));
-		issuerCapsuleV2.setFrozen(ConversionUtil.McashToMatoshi(10), 0L);
+		issuerCapsuleV2.setFrozenForBandwidth(ConversionUtil.McashToMatoshi(10), 0L);
 		dbManager.getAccountStore().put(issuerCapsuleV2.getAddress().toByteArray(), issuerCapsuleV2);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
@@ -195,17 +194,17 @@ public class BandwidthProcessorTest {
 		AccountCapsule issuerCapsuleNew = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(ASSET_ADDRESS_V2));
 
-		Assert.assertEquals(508882612, issuerCapsuleNew.getLatestConsumeTime());
+		Assert.assertEquals(508882612, issuerCapsuleNew.getLatestBandwidthConsumeTime());
 		Assert.assertEquals(1526647838000L, ownerCapsuleNew.getLatestOperationTime());
-		Assert.assertEquals(508882612, ownerCapsuleNew.getLatestAssetOperationTimeV2(ASSET_ID_V2));
+		Assert.assertEquals(508882612, ownerCapsuleNew.getLatestAssetOperationTime(ASSET_ID_V2));
 		Assert.assertEquals(112L + (dbManager.getDynamicPropertiesStore().supportVM()
 						? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-				issuerCapsuleNew.getNetUsage());
+				issuerCapsuleNew.getBandwidthUsage());
 		Assert.assertEquals(112L + (dbManager.getDynamicPropertiesStore().supportVM()
 						? Constant.MAX_RESULT_SIZE_IN_TX : 0),
-				ownerCapsuleNew.getFreeAssetNetUsageV2(ASSET_ID_V2));
+				ownerCapsuleNew.getFreeAssetBandwidthUsage(ASSET_ID_V2));
 
-		Assert.assertEquals(508882612L, ownerCapsuleNew.getLatestAssetOperationTimeV2(ASSET_ID_V2));
+		Assert.assertEquals(508882612L, ownerCapsuleNew.getLatestAssetOperationTime(ASSET_ID_V2));
 		Assert.assertEquals(0L, ret.getFee());
 
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526691038000L); // + 12h
@@ -217,16 +216,16 @@ public class BandwidthProcessorTest {
 		issuerCapsuleNew = dbManager.getAccountStore()
 				.get(ByteArray.fromHexString(ASSET_ADDRESS_V2));
 
-		Assert.assertEquals(508897012L, issuerCapsuleNew.getLatestConsumeTime());
+		Assert.assertEquals(508897012L, issuerCapsuleNew.getLatestBandwidthConsumeTime());
 		Assert.assertEquals(1526691038000L, ownerCapsuleNew.getLatestOperationTime());
 		Assert.assertEquals(508897012L,
-				ownerCapsuleNew.getLatestAssetOperationTimeV2(ASSET_ID_V2));
+				ownerCapsuleNew.getLatestAssetOperationTime(ASSET_ID_V2));
 		Assert.assertEquals(56L + 112L + (dbManager.getDynamicPropertiesStore().supportVM() ?
 						Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-				ownerCapsuleNew.getFreeAssetNetUsageV2(ASSET_ID_V2));
+				ownerCapsuleNew.getFreeAssetBandwidthUsage(ASSET_ID_V2));
 		Assert.assertEquals(56L + 112L + (dbManager.getDynamicPropertiesStore().supportVM() ?
 						Constant.MAX_RESULT_SIZE_IN_TX / 2 * 3 : 0),
-				issuerCapsuleNew.getNetUsage());
+				issuerCapsuleNew.getBandwidthUsage());
 		Assert.assertEquals(0L, ret.getFee());
 
 	}
@@ -237,7 +236,7 @@ public class BandwidthProcessorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenConsumeSuccess() {
-		dbManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+		dbManager.getDynamicPropertiesStore().saveTotalBandwidthWeight(10_000_000L);
 
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
@@ -254,8 +253,8 @@ public class BandwidthProcessorTest {
 						.setVoteScore(VOTE_SCORE)
 						.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
 						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-						.setPublicFreeAssetNetLimit(2000)
-						.setFreeAssetNetLimit(2000)
+						.setPublicFreeAssetBandwidthLimit(2000)
+						.setFreeAssetBandwidthLimit(2000)
 						.build();
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
 		dbManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
@@ -299,23 +298,23 @@ public class BandwidthProcessorTest {
 
 		try {
 			processor.consume(trx, trace);
-			Assert.assertEquals(trace.getReceipt().getNetFee(), 0);
-			Assert.assertEquals(trace.getReceipt().getNetUsage(), byteSize);
+			Assert.assertEquals(trace.getReceipt().getBandwidthFee(), 0);
+			Assert.assertEquals(trace.getReceipt().getBandwidthUsage(), byteSize);
 			AccountCapsule ownerAccount =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			Assert.assertNotNull(ownerAccount);
-			Assert.assertEquals(ownerAccount.getNetUsage(), byteSize);
+			Assert.assertEquals(ownerAccount.getBandwidthUsage(), byteSize);
 
 			AssetIssueCapsule assetIssueCapsuleV2 =
 					dbManager.getAssetIssueStore().get(assetIssueCapsule.createDbKey());
 			Assert.assertNotNull(assetIssueCapsuleV2);
-			Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetUsage(), byteSize);
+			Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetBandwidthUsage(), byteSize);
 
 			AccountCapsule fromAccount =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertNotNull(fromAccount);
-			Assert.assertEquals(fromAccount.getFreeAssetNetUsageV2(id), byteSize);
-			Assert.assertEquals(fromAccount.getFreeAssetNetUsageV2(id), byteSize);
+			Assert.assertEquals(fromAccount.getFreeAssetBandwidthUsage(id), byteSize);
+			Assert.assertEquals(fromAccount.getFreeAssetBandwidthUsage(id), byteSize);
 
 		} catch (ContractValidateException e) {
 			Assert.assertFalse(e instanceof ContractValidateException);
@@ -336,7 +335,7 @@ public class BandwidthProcessorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseTransferToAccountNotExist() {
-		dbManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+		dbManager.getDynamicPropertiesStore().saveTotalBandwidthWeight(10_000_000L);
 
 		AccountCapsule ownerCapsule =
 				new AccountCapsule(
@@ -377,12 +376,12 @@ public class BandwidthProcessorTest {
 		try {
 			processor.consume(trx, trace);
 
-			Assert.assertEquals(trace.getReceipt().getNetFee(), 0);
-			Assert.assertEquals(trace.getReceipt().getNetUsage(), byteSize);
+			Assert.assertEquals(trace.getReceipt().getBandwidthFee(), 0);
+			Assert.assertEquals(trace.getReceipt().getBandwidthUsage(), byteSize);
 			AccountCapsule fromAccount =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertNotNull(fromAccount);
-			Assert.assertEquals(fromAccount.getNetUsage(), byteSize);
+			Assert.assertEquals(fromAccount.getBandwidthUsage(), byteSize);
 		} catch (ContractValidateException e) {
 			Assert.assertFalse(e instanceof ContractValidateException);
 		} catch (TooBigTransactionResultException e) {

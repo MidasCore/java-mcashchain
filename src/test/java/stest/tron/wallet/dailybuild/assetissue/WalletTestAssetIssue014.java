@@ -9,7 +9,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import io.midasprotocol.api.GrpcAPI.AccountNetMessage;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
@@ -111,12 +111,12 @@ public class WalletTestAssetIssue014 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		//Before use transfer net, query the net used from creator and transfer.
-		AccountNetMessage assetCreatorNet = PublicMethed
-				.getAccountNet(asset014Address, blockingStubFull);
-		AccountNetMessage assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
-		Long creatorBeforeNetUsed = assetCreatorNet.getNetUsed();
-		Long transferBeforeFreeNetUsed = assetTransferNet.getFreeNetUsed();
+		AccountResourceMessage assetCreatorNet = PublicMethed
+				.getAccountResource(asset014Address, blockingStubFull);
+		AccountResourceMessage assetTransferNet = PublicMethed
+				.getAccountResource(transferAssetAddress, blockingStubFull);
+		Long creatorBeforeNetUsed = assetCreatorNet.getBandwidthUsed();
+		Long transferBeforeFreeNetUsed = assetTransferNet.getFreeBandwidthUsed();
 		logger.info(Long.toString(creatorBeforeNetUsed));
 		logger.info(Long.toString(transferBeforeFreeNetUsed));
 
@@ -126,11 +126,11 @@ public class WalletTestAssetIssue014 {
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetCreatorNet = PublicMethed
-				.getAccountNet(asset014Address, blockingStubFull);
+				.getAccountResource(asset014Address, blockingStubFull);
 		assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
-		Long creatorAfterNetUsed = assetCreatorNet.getNetUsed();
-		Long transferAfterFreeNetUsed = assetTransferNet.getFreeNetUsed();
+				.getAccountResource(transferAssetAddress, blockingStubFull);
+		Long creatorAfterNetUsed = assetCreatorNet.getBandwidthUsed();
+		Long transferAfterFreeNetUsed = assetTransferNet.getFreeBandwidthUsed();
 		logger.info(Long.toString(creatorAfterNetUsed));
 		logger.info(Long.toString(transferAfterFreeNetUsed));
 
