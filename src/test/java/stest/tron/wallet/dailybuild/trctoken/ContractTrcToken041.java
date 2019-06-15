@@ -137,8 +137,8 @@ public class ContractTrcToken041 {
 		info = PublicMethed.queryAccount(user001Address, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeBandwidthUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeBandwidthUsed = resourceInfo.getFreeBandwidthUsed();
 		Long beforeAssetIssueCount = PublicMethed
 				.getAssetIssueValue(user001Address, assetAccountId, blockingStubFull);
 		Long beforeAssetIssueContractAddress = PublicMethed
@@ -147,8 +147,8 @@ public class ContractTrcToken041 {
 
 		logger.info("beforeBalance:" + beforeBalance);
 		logger.info("beforeEnergyUsed:" + beforeEnergyUsed);
-		logger.info("beforeNetUsed:" + beforeNetUsed);
-		logger.info("beforeFreeNetUsed:" + beforeFreeNetUsed);
+		logger.info("beforeBandwidthUsed:" + beforeBandwidthUsed);
+		logger.info("beforeFreeBandwidthUsed:" + beforeFreeBandwidthUsed);
 		logger.info("beforeAssetIssueCount:" + beforeAssetIssueCount);
 		logger.info("beforeAssetIssueContractAddress:" + beforeAssetIssueContractAddress);
 
@@ -170,16 +170,16 @@ public class ContractTrcToken041 {
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
 		Long afterAssetIssueCount = PublicMethed
 				.getAssetIssueValue(user001Address, assetAccountId, blockingStubFull);
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterBandwidthUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeBandwidthUsed = resourceInfoafter.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress = PublicMethed
 				.getAssetIssueValue(transferTokenContractAddress, assetAccountId,
 						blockingStubFull);
 
 		logger.info("afterBalance:" + afterBalance);
 		logger.info("afterEnergyUsed:" + afterEnergyUsed);
-		logger.info("afterNetUsed:" + afterNetUsed);
-		logger.info("afterFreeNetUsed:" + afterFreeNetUsed);
+		logger.info("afterBandwidthUsed:" + afterBandwidthUsed);
+		logger.info("afterFreeBandwidthUsed:" + afterFreeBandwidthUsed);
 		logger.info("afterAssetIssueCount:" + afterAssetIssueCount);
 		logger.info("afterAssetIssueContractAddress:" + afterAssetIssueContractAddress);
 

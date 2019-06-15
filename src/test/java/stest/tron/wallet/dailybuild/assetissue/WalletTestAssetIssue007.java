@@ -9,7 +9,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import io.midasprotocol.api.GrpcAPI.AccountNetMessage;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
@@ -101,8 +101,8 @@ public class WalletTestAssetIssue007 {
 
 		ByteString addressBs = ByteString.copyFrom(asset007Address);
 		Account request = Account.newBuilder().setAddress(addressBs).build();
-		AccountNetMessage asset007NetMessage = blockingStubFull.getAccountNet(request);
-		final Long asset007BeforeFreeNetUsed = asset007NetMessage.getFreeNetUsed();
+		AccountResourceMessage asset007NetMessage = blockingStubFull.getAccountResource(request);
+		final Long asset007BeforeFreeNetUsed = asset007NetMessage.getFreeBandwidthUsed();
 
 		//SendCoin to participate account.
 		Assert.assertTrue(PublicMethed.sendcoin(participateAssetAddress, 10000000L,
@@ -110,8 +110,8 @@ public class WalletTestAssetIssue007 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		addressBs = ByteString.copyFrom(participateAssetAddress);
 		request = Account.newBuilder().setAddress(addressBs).build();
-		AccountNetMessage participateAccountNetMessage = blockingStubFull.getAccountNet(request);
-		final Long participateAccountBeforeNetUsed = participateAccountNetMessage.getFreeNetUsed();
+		AccountResourceMessage participateAccountNetMessage = blockingStubFull.getAccountResource(request);
+		final Long participateAccountBeforeNetUsed = participateAccountNetMessage.getFreeBandwidthUsed();
 		Assert.assertEquals(participateAccountBeforeNetUsed.longValue(), 0);
 
 		//Participate an assetIssue, then query the net information.
@@ -121,13 +121,13 @@ public class WalletTestAssetIssue007 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		addressBs = ByteString.copyFrom(asset007Address);
 		request = Account.newBuilder().setAddress(addressBs).build();
-		asset007NetMessage = blockingStubFull.getAccountNet(request);
-		final Long asset007AfterFreeNetUsed = asset007NetMessage.getFreeNetUsed();
+		asset007NetMessage = blockingStubFull.getAccountResource(request);
+		final Long asset007AfterFreeNetUsed = asset007NetMessage.getFreeBandwidthUsed();
 
 		addressBs = ByteString.copyFrom(participateAssetAddress);
 		request = Account.newBuilder().setAddress(addressBs).build();
-		participateAccountNetMessage = blockingStubFull.getAccountNet(request);
-		final Long participateAccountAfterNetUsed = participateAccountNetMessage.getFreeNetUsed();
+		participateAccountNetMessage = blockingStubFull.getAccountResource(request);
+		final Long participateAccountAfterNetUsed = participateAccountNetMessage.getFreeBandwidthUsed();
 
 		logger.info(Long.toString(asset007BeforeFreeNetUsed));
 		logger.info(Long.toString(asset007AfterFreeNetUsed));

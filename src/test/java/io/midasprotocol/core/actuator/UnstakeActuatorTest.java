@@ -121,12 +121,12 @@ public class UnstakeActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			Assert.assertEquals(owner.getBalance(), initBalance + stakeAmount);
-			Assert.assertEquals(owner.getFrozenBalance(), 0);
+			Assert.assertEquals(owner.getFrozenBalanceForBandwidth(), 0);
 			Assert.assertEquals(owner.getVotingPower(), 0L);
 			Assert.assertEquals(dbManager.getStakeAccountStore().size(), stakeAccountListSizeBefore - 1);
 

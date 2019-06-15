@@ -12,6 +12,7 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UnfreezeBalanceContract;
+import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Account.AccountResource;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
 import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
@@ -119,33 +120,17 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		} else {
 			switch (unfreezeBalanceContract.getResource()) {
 				case BANDWIDTH:
-
-					List<Frozen> frozenList = Lists.newArrayList();
-					frozenList.addAll(accountCapsule.getFrozenList());
-					Iterator<Frozen> iterator = frozenList.iterator();
-					long now = dbManager.getHeadBlockTimeStamp();
-					while (iterator.hasNext()) {
-						Frozen next = iterator.next();
-						if (next.getExpireTime() <= now) {
-							unfreezeBalance += next.getFrozenBalance();
-							iterator.remove();
-						}
-					}
-
+					unfreezeBalance = accountCapsule.getFrozenBalanceForBandwidth();
 					accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
 						.setBalance(oldBalance + unfreezeBalance)
-						.clearFrozen().addAllFrozen(frozenList).build());
+						.clearFrozenForBandwidth().build());
 
 					break;
 				case ENERGY:
-					unfreezeBalance = accountCapsule.getAccountResource().getFrozenBalanceForEnergy()
-						.getFrozenBalance();
-
-					AccountResource newAccountResource = accountCapsule.getAccountResource().toBuilder()
-						.clearFrozenBalanceForEnergy().build();
+					unfreezeBalance = accountCapsule.getFrozenBalanceForEnergy();
 					accountCapsule.setInstance(accountCapsule.getInstance().toBuilder()
 						.setBalance(oldBalance + unfreezeBalance)
-						.setAccountResource(newAccountResource).build());
+						.clearFrozenForEnergy().build());
 
 					break;
 				default:
@@ -291,26 +276,23 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		} else {
 			switch (unfreezeBalanceContract.getResource()) {
 				case BANDWIDTH:
-					if (accountCapsule.getFrozenCount() <= 0) {
+					Frozen frozenForBandwidth = accountCapsule.getFrozenForBandwidth();
+					if (frozenForBandwidth == null || frozenForBandwidth.getFrozenBalance() <= 0) {
 						throw new ContractValidateException("No frozenBalance (Bandwidth)");
 					}
 
-					long allowedUnfreezeCount = accountCapsule.getFrozenList().stream()
-						.filter(frozen -> frozen.getExpireTime() <= now).count();
-					if (allowedUnfreezeCount <= 0) {
+					if (frozenForBandwidth.getExpireTime() > now) {
 						throw new ContractValidateException("It's not time to unfreeze (Bandwidth).");
 					}
 					break;
 				case ENERGY:
-					Frozen frozenBalanceForEnergy = accountCapsule.getAccountResource()
-						.getFrozenBalanceForEnergy();
-					if (frozenBalanceForEnergy.getFrozenBalance() <= 0) {
+					Frozen frozenForEnergy = accountCapsule.getFrozenForEnergy();
+					if (frozenForEnergy == null || frozenForEnergy.getFrozenBalance() <= 0) {
 						throw new ContractValidateException("No frozenBalance (Energy)");
 					}
-					if (frozenBalanceForEnergy.getExpireTime() > now) {
+					if (frozenForEnergy.getExpireTime() > now) {
 						throw new ContractValidateException("It's not time to unfreeze (Energy).");
 					}
-
 					break;
 				default:
 					throw new ContractValidateException(

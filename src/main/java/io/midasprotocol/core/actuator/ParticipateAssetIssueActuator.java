@@ -63,13 +63,13 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 
 			long exchangeAmount = Math.multiplyExact(cost, assetIssueCapsule.getNum());
 			exchangeAmount = Math.floorDiv(exchangeAmount, assetIssueCapsule.getMcashNum());
-			ownerAccount.addAssetAmountV2(key, exchangeAmount);
+			ownerAccount.addAssetAmount(key, exchangeAmount);
 
 			//add to to_address
 			byte[] toAddress = participateAssetIssueContract.getToAddress().toByteArray();
 			AccountCapsule toAccount = this.dbManager.getAccountStore().get(toAddress);
 			toAccount.setBalance(Math.addExact(toAccount.getBalance(), cost));
-			if (!toAccount.reduceAssetAmountV2(key, exchangeAmount)) {
+			if (!toAccount.reduceAssetAmount(key, exchangeAmount)) {
 				throw new ContractExeException("reduceAssetAmount failed !");
 			}
 
@@ -172,7 +172,7 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 				throw new ContractValidateException("To account does not exist");
 			}
 
-			if (!toAccount.assetBalanceEnoughV2(assetId, exchangeAmount)) {
+			if (!toAccount.assetBalanceEnough(assetId, exchangeAmount)) {
 				throw new ContractValidateException("Asset balance is not enough");
 			}
 		} catch (ArithmeticException e) {

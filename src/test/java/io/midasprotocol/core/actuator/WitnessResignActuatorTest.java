@@ -169,13 +169,13 @@ public class WitnessResignActuatorTest {
 		try {
 			witnessCreateActuator.validate();
 			witnessCreateActuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			dbManager.getWitnessController().updateWitness();
 			Assert.assertTrue(dbManager.getWitnessScheduleStore().getActiveWitnesses().contains(witnessAddressByteString));
 
 			witnessResignActuator.validate();
 			witnessResignActuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			Assert.assertFalse(dbManager.getWitnessScheduleStore().getActiveWitnesses().contains(witnessAddressByteString));
 			dbManager.getWitnessController().updateWitness();
 		} catch (ContractValidateException | ContractExeException e) {
@@ -199,7 +199,7 @@ public class WitnessResignActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			Assert.assertTrue(dbManager.getWitnessStore().has(witnessAddress));
 			WitnessCapsule witnessCapsule = dbManager.getWitnessStore().get(witnessAddress);
 			Assert.assertEquals(Protocol.Witness.Status.RESIGNED, witnessCapsule.getStatus());

@@ -167,8 +167,7 @@ public class WalletTestAccount012 {
 				e.printStackTrace();
 			}
 			account = PublicMethed.queryAccount(testKeyForAssetIssue011, blockingStubFull);
-			Float energyrate = (float) (beforeEnergyLimit) / account.getAccountResource()
-					.getFrozenBalanceForEnergy().getFrozenBalance();
+			Float energyrate = (float) (beforeEnergyLimit) / account.getFrozenForEnergy().getFrozenBalance();
 			//logger.info("energy rate is " + energyrate);
 			if (i % 20 == 0) {
 				PublicMethed.freezeBalanceForReceiver(fromAddress, 1000000L, 3, 1,

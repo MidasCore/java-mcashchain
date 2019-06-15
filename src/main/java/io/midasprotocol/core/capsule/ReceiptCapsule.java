@@ -46,8 +46,8 @@ public class ReceiptCapsule {
 		return this.receiptAddress;
 	}
 
-	public void addNetFee(long netFee) {
-		this.receipt = this.receipt.toBuilder().setNetFee(getNetFee() + netFee).build();
+	public void addBandwidthFee(long bandwidthFee) {
+		this.receipt = this.receipt.toBuilder().setBandwidthFee(getBandwidthFee() + bandwidthFee).build();
 	}
 
 	public long getEnergyUsage() {
@@ -82,20 +82,20 @@ public class ReceiptCapsule {
 		this.receipt = this.receipt.toBuilder().setEnergyUsageTotal(energyUsage).build();
 	}
 
-	public long getNetUsage() {
-		return this.receipt.getNetUsage();
+	public long getBandwidthUsage() {
+		return this.receipt.getBandwidthUsage();
 	}
 
-	public void setNetUsage(long netUsage) {
-		this.receipt = this.receipt.toBuilder().setNetUsage(netUsage).build();
+	public void setBandwidthUsage(long bandwidthUsage) {
+		this.receipt = this.receipt.toBuilder().setBandwidthUsage(bandwidthUsage).build();
 	}
 
-	public long getNetFee() {
-		return this.receipt.getNetFee();
+	public long getBandwidthFee() {
+		return this.receipt.getBandwidthFee();
 	}
 
-	public void setNetFee(long netFee) {
-		this.receipt = this.receipt.toBuilder().setNetFee(netFee).build();
+	public void setBandwidthFee(long bandwidthFee) {
+		this.receipt = this.receipt.toBuilder().setBandwidthFee(bandwidthFee).build();
 	}
 
 	/**

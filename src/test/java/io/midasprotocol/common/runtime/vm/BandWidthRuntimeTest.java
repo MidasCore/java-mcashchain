@@ -121,8 +121,8 @@ public class BandWidthRuntimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerTwoAddress)),
 				AccountType.Normal,
 				totalBalance);
-		accountCapsule3.setNetUsage(5000L);
-		accountCapsule3.setLatestConsumeFreeTime(dbManager.getWitnessController().getHeadSlot());
+		accountCapsule3.setBandwidthUsage(5000L);
+		accountCapsule3.setLatestFreeBandwidthConsumeTime(dbManager.getWitnessController().getHeadSlot());
 		accountCapsule3.setFrozenForEnergy(10_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(TriggerOwnerTwoAddress), accountCapsule3);
@@ -205,7 +205,7 @@ public class BandWidthRuntimeTest {
 			long balance = triggerOwnerTwo.getBalance();
 			ReceiptCapsule receipt = trace.getReceipt();
 
-			Assert.assertEquals(bandWidth, receipt.getNetUsage());
+			Assert.assertEquals(bandWidth, receipt.getBandwidthUsage());
 			Assert.assertEquals(522850, receipt.getEnergyUsageTotal());
 			Assert.assertEquals(0, receipt.getEnergyUsage());
 			Assert.assertEquals(47285000, receipt.getEnergyFee());

@@ -8,7 +8,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import io.midasprotocol.api.GrpcAPI.AccountNetMessage;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
@@ -75,9 +75,9 @@ public class WalletTestAccount007 {
 		Account accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
 		final Long beforeBalance = accountInfo.getBalance();
 
-		AccountNetMessage accountNetInfo = PublicMethed.getAccountNet(account007Address,
+		AccountResourceMessage accountNetInfo = PublicMethed.getAccountResource(account007Address,
 				blockingStubFull);
-		final Long beforeFreeNet = accountNetInfo.getFreeNetUsed();
+		final Long beforeFreeNet = accountNetInfo.getFreeBandwidthUsed();
 
 		Assert.assertTrue(PublicMethed.createAccount(account007Address, newAccountAddress,
 				account007Key, blockingStubFull));
@@ -85,9 +85,9 @@ public class WalletTestAccount007 {
 		accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
 		Long afterBalance = accountInfo.getBalance();
 
-		accountNetInfo = PublicMethed.getAccountNet(account007Address,
+		accountNetInfo = PublicMethed.getAccountResource(account007Address,
 				blockingStubFull);
-		Long afterFreeNet = accountNetInfo.getFreeNetUsed();
+		Long afterFreeNet = accountNetInfo.getFreeBandwidthUsed();
 
 		logger.info(Long.toString(beforeBalance));
 		logger.info(Long.toString(afterBalance));

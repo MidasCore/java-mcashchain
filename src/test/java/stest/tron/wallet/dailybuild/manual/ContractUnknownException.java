@@ -89,8 +89,8 @@ public class ContractUnknownException {
 		info = PublicMethed.queryAccount(grammarAddress, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long beforeenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("beforeBalance:" + beforeBalance);
@@ -125,8 +125,8 @@ public class ContractUnknownException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfo.getNetUsed();
-		Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long afterNetUsed = resourceInfo.getBandwidthUsed();
+		Long afterFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long aftereenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("afterBalance:" + afterBalance);
@@ -152,8 +152,8 @@ public class ContractUnknownException {
 		info = PublicMethed.queryAccount(grammarAddress2, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long beforeenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("beforeBalance:" + beforeBalance);
@@ -191,8 +191,8 @@ public class ContractUnknownException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfo.getNetUsed();
-		Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long afterNetUsed = resourceInfo.getBandwidthUsed();
+		Long afterFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long aftereenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("afterBalance:" + afterBalance);
@@ -221,8 +221,8 @@ public class ContractUnknownException {
 		info = PublicMethed.queryAccount(grammarAddress3, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long beforeenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("beforeBalance:" + beforeBalance);
@@ -257,8 +257,8 @@ public class ContractUnknownException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfo.getNetUsed();
-		Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long afterNetUsed = resourceInfo.getBandwidthUsed();
+		Long afterFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long aftereenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("afterBalance:" + afterBalance);
@@ -288,8 +288,8 @@ public class ContractUnknownException {
 		info = PublicMethed.queryAccount(grammarAddress4, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long beforeenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("beforeBalance:" + beforeBalance);
@@ -325,8 +325,8 @@ public class ContractUnknownException {
 				blockingStubFull);
 		Long afterBalance = infoafter.getBalance();
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
-		Long afterNetUsed = resourceInfo.getNetUsed();
-		Long afterFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long afterNetUsed = resourceInfo.getBandwidthUsed();
+		Long afterFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		long aftereenergyLimit = resourceInfo.getEnergyLimit();
 
 		logger.info("afterBalance:" + afterBalance);

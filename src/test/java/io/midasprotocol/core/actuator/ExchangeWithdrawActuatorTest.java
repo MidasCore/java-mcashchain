@@ -25,7 +25,6 @@ import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Map;
 
 import static org.testng.Assert.fail;
@@ -174,7 +173,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetV2Map.containsKey(firstTokenId));
 		Assert.assertFalse(assetV2Map.containsKey(secondTokenId));
@@ -187,7 +186,7 @@ public class ExchangeWithdrawActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
 			Assert.assertNotNull(exchangeCapsuleV2);
 			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
@@ -199,7 +198,7 @@ public class ExchangeWithdrawActuatorTest {
 			Assert.assertEquals(0L, exchangeCapsuleV2.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			assetV2Map = accountCapsule.getAssetMapV2();
+			assetV2Map = accountCapsule.getAssetMap();
 			Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 			Assert.assertEquals(firstTokenQuant, assetV2Map.get(firstTokenId).longValue());
 			Assert.assertEquals(secondTokenQuant, assetV2Map.get(secondTokenId).longValue());
@@ -231,7 +230,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetV2Map.containsKey(secondTokenId));
 
@@ -243,7 +242,7 @@ public class ExchangeWithdrawActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			ExchangeCapsule exchangeCapsuleV2 = dbManager.getExchangeStore().get(ByteArray.fromLong(exchangeId));
 			Assert.assertNotNull(exchangeCapsuleV2);
 			Assert.assertEquals(ByteString.copyFrom(ownerAddress), exchangeCapsuleV2.getCreatorAddress());
@@ -255,7 +254,7 @@ public class ExchangeWithdrawActuatorTest {
 			Assert.assertEquals(0L, exchangeCapsuleV2.getSecondTokenBalance());
 
 			accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-			assetV2Map = accountCapsule.getAssetMapV2();
+			assetV2Map = accountCapsule.getAssetMap();
 			Assert.assertEquals(firstTokenQuant + 10000_000000L, accountCapsule.getBalance());
 			Assert.assertEquals(10_000_000L, assetV2Map.get(secondTokenId).longValue());
 
@@ -286,7 +285,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetV2Map.containsKey(firstTokenId));
 		Assert.assertFalse(assetV2Map.containsKey(secondTokenId));
@@ -326,7 +325,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetV2Map.containsKey(firstTokenId));
 		Assert.assertFalse(assetV2Map.containsKey(secondTokenId));
@@ -366,7 +365,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetMap = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetMap = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetMap.containsKey(firstTokenId));
 		Assert.assertFalse(assetMap.containsKey(secondTokenId));
@@ -406,8 +405,8 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_SECOND);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -446,7 +445,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(firstTokenQuant);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -485,8 +484,8 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, firstTokenQuant);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, firstTokenQuant);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -532,8 +531,8 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, 1000L);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, 1000L);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -572,8 +571,8 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		accountCapsule.addAssetAmountV2(firstTokenId, 1000L);
-		accountCapsule.addAssetAmountV2(secondTokenId, secondTokenQuant);
+		accountCapsule.addAssetAmount(firstTokenId, 1000L);
+		accountCapsule.addAssetAmount(secondTokenId, secondTokenQuant);
 		accountCapsule.setBalance(10000_000000L);
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -634,7 +633,7 @@ public class ExchangeWithdrawActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 		} catch (ContractValidateException e) {
 			Assert.assertFalse(e instanceof ContractValidateException);
 			Assert.assertEquals("Not precise enough",
@@ -684,7 +683,7 @@ public class ExchangeWithdrawActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Not precise enough",
@@ -712,7 +711,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetV2Map.containsKey(firstTokenId));
 		Assert.assertFalse(assetV2Map.containsKey(secondTokenId));
@@ -752,7 +751,7 @@ public class ExchangeWithdrawActuatorTest {
 
 		byte[] ownerAddress = ByteArray.fromHexString(OWNER_ADDRESS_FIRST);
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(ownerAddress);
-		Map<Long, Long> assetV2Map = accountCapsule.getAssetMapV2();
+		Map<Long, Long> assetV2Map = accountCapsule.getAssetMap();
 		Assert.assertEquals(10000_000000L, accountCapsule.getBalance());
 		Assert.assertFalse(assetV2Map.containsKey(secondTokenId));
 

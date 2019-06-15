@@ -130,8 +130,8 @@ public class ContractTrcToken034 {
 		info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		long beforeNetUsed = resourceInfo.getNetUsed();
-		long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		Long beforeAssetIssueDevAddress = PublicMethed.getAssetIssueValue(dev001Address, assetAccountId,
 				blockingStubFull);
 		Long beforeAssetIssueUserAddress = PublicMethed.getAssetIssueValue(user001Address, assetAccountId,
@@ -169,8 +169,8 @@ public class ContractTrcToken034 {
 		long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
 		Long afterAssetIssueDevAddress = PublicMethed.getAssetIssueValue(dev001Address, assetAccountId,
 				blockingStubFull);
-		long afterNetUsed = resourceInfoafter.getNetUsed();
-		long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		long afterNetUsed = resourceInfoafter.getBandwidthUsed();
+		long afterFreeNetUsed = resourceInfoafter.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress = PublicMethed.getAssetIssueValue(transferTokenContractAddress,
 				assetAccountId,
 				blockingStubFull);

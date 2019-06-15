@@ -169,12 +169,10 @@ public class WalletTestTransfer001 {
 		Account beforeFronzen = queryAccount(ecKey, blockingStubFull);
 		Long beforeFrozenBalance = 0L;
 		//Long beforeBandwidth     = beforeFronzen.getBandwidth();
-		if (beforeFronzen.getFrozenCount() != 0) {
-			beforeFrozenBalance = beforeFronzen.getFrozen(0).getFrozenBalance();
-			//beforeBandwidth     = beforeFronzen.getBandwidth();
-			//logger.info(Long.toString(beforeFronzen.getBandwidth()));
-			logger.info(Long.toString(beforeFronzen.getFrozen(0).getFrozenBalance()));
-		}
+		beforeFrozenBalance = beforeFronzen.getFrozenForBandwidth().getFrozenBalance();
+		//beforeBandwidth     = beforeFronzen.getBandwidth();
+		//logger.info(Long.toString(beforeFronzen.getBandwidth()));
+		logger.info(Long.toString(beforeFronzen.getFrozenForBandwidth().getFrozenBalance()));
 
 		FreezeBalanceContract.Builder builder = FreezeBalanceContract.newBuilder();
 		ByteString byteAddreess = ByteString.copyFrom(address);
@@ -215,10 +213,10 @@ public class WalletTestTransfer001 {
 		}
 
 		Account afterFronzen = queryAccount(ecKey, searchBlockingStubFull);
-		Long afterFrozenBalance = afterFronzen.getFrozen(0).getFrozenBalance();
+		Long afterFrozenBalance = afterFronzen.getFrozenForBandwidth().getFrozenBalance();
 		//Long afterBandwidth     = afterFronzen.getBandwidth();
 		//logger.info(Long.toString(afterFronzen.getBandwidth()));
-		logger.info(Long.toString(afterFronzen.getFrozen(0).getFrozenBalance()));
+		logger.info(Long.toString(afterFronzen.getFrozenForBandwidth().getFrozenBalance()));
 		//logger.info(Integer.toString(search.getFrozenCount()));
 		logger.info(
 			"beforefronen" + beforeFrozenBalance.toString() + "    afterfronzen" + afterFrozenBalance

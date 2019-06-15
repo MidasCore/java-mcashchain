@@ -125,8 +125,8 @@ public class WalletTestAssetIssue010 {
 		Assert.assertTrue(
 				ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(description));
 		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(url));
-		Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == freeAssetNetLimit);
-		Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == publicFreeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getFreeAssetBandwidthLimit() == freeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getPublicFreeAssetBandwidthLimit() == publicFreeAssetNetLimit);
 
 		//Test update asset issue
 		Assert.assertTrue(PublicMethed
@@ -141,8 +141,8 @@ public class WalletTestAssetIssue010 {
 
 		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
 		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(updateUrl));
-		Assert.assertTrue(assetIssueByName.getFreeAssetNetLimit() == updateFreeAssetNetLimit);
-		Assert.assertTrue(assetIssueByName.getPublicFreeAssetNetLimit() == updatePublicFreeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getFreeAssetBandwidthLimit() == updateFreeAssetNetLimit);
+		Assert.assertTrue(assetIssueByName.getPublicFreeAssetBandwidthLimit() == updatePublicFreeAssetNetLimit);
 	}
 
 	@Test(enabled = true, description = "Update asset issue with exception condition")

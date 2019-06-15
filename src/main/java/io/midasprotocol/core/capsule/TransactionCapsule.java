@@ -730,9 +730,9 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	}
 
 	public void setResultCode(ContractResult code) {
-		Result ret = Result.newBuilder().setContractRet(code).build();
+		Result ret = Result.newBuilder().setContractResult(code).build();
 		if (this.transaction.getRetCount() > 0) {
-			ret = this.transaction.getRet(0).toBuilder().setContractRet(code).build();
+			ret = this.transaction.getRet(0).toBuilder().setContractResult(code).build();
 
 			this.transaction = transaction.toBuilder().setRet(0, ret).build();
 			return;
@@ -744,6 +744,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 		if (this.transaction.getRetCount() <= 0) {
 			return null;
 		}
-		return this.transaction.getRet(0).getContractRet();
+		return this.transaction.getRet(0).getContractResult();
 	}
 }

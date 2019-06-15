@@ -137,7 +137,7 @@ public class UpdateAssetActuatorTest {
 		dbManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 
 		accountCapsule.setAssetIssuedId(assetIssueCapsule.getId());
-		accountCapsule.addAssetV2(assetIssueCapsule.getId(), TOTAL_SUPPLY);
+		accountCapsule.addAsset(assetIssueCapsule.getId(), TOTAL_SUPPLY);
 
 		dbManager.getAccountStore().put(ByteArray.fromHexString(OWNER_ADDRESS), accountCapsule);
 	}
@@ -153,15 +153,15 @@ public class UpdateAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Protocol.Transaction.Result.Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Protocol.Transaction.Result.Code.SUCCESS);
 			AssetIssueCapsule assetIssueCapsuleV2 =
 					dbManager.getAssetIssueStore().get(tokenId);
 			Assert.assertNotNull(assetIssueCapsuleV2);
 			Assert.assertEquals(
 					DESCRIPTION, assetIssueCapsuleV2.getInstance().getDescription().toStringUtf8());
 			Assert.assertEquals(URL, assetIssueCapsuleV2.getInstance().getUrl().toStringUtf8());
-			Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetNetLimit(), 500L);
-			Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetNetLimit(), 8000L);
+			Assert.assertEquals(assetIssueCapsuleV2.getFreeAssetBandwidthLimit(), 500L);
+			Assert.assertEquals(assetIssueCapsuleV2.getPublicFreeAssetBandwidthLimit(), 8000L);
 
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());

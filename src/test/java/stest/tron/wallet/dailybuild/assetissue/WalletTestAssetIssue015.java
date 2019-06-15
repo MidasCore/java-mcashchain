@@ -2,7 +2,7 @@ package stest.tron.wallet.dailybuild.assetissue;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.midasprotocol.api.GrpcAPI.AccountNetMessage;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
@@ -111,12 +111,12 @@ public class WalletTestAssetIssue015 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		//Before use transfer net, query the net used from creator and transfer.
-		AccountNetMessage assetCreatorNet = PublicMethed
-				.getAccountNet(asset015Address, blockingStubFull);
-		AccountNetMessage assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
-		Long creatorBeforeFreeNetUsed = assetCreatorNet.getFreeNetUsed();
-		Long transferBeforeFreeNetUsed = assetTransferNet.getFreeNetUsed();
+		AccountResourceMessage assetCreatorNet = PublicMethed
+				.getAccountResource(asset015Address, blockingStubFull);
+		AccountResourceMessage assetTransferNet = PublicMethed
+				.getAccountResource(transferAssetAddress, blockingStubFull);
+		Long creatorBeforeFreeNetUsed = assetCreatorNet.getFreeBandwidthUsed();
+		Long transferBeforeFreeNetUsed = assetTransferNet.getFreeBandwidthUsed();
 		logger.info(Long.toString(creatorBeforeFreeNetUsed));
 		logger.info(Long.toString(transferBeforeFreeNetUsed));
 
@@ -126,11 +126,11 @@ public class WalletTestAssetIssue015 {
 				transferAssetAddress, transferAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 		assetCreatorNet = PublicMethed
-				.getAccountNet(asset015Address, blockingStubFull);
+				.getAccountResource(asset015Address, blockingStubFull);
 		assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
-		Long creatorAfterFreeNetUsed = assetCreatorNet.getFreeNetUsed();
-		Long transferAfterFreeNetUsed = assetTransferNet.getFreeNetUsed();
+				.getAccountResource(transferAssetAddress, blockingStubFull);
+		Long creatorAfterFreeNetUsed = assetCreatorNet.getFreeBandwidthUsed();
+		Long transferAfterFreeNetUsed = assetTransferNet.getFreeBandwidthUsed();
 		logger.info(Long.toString(creatorAfterFreeNetUsed));
 		logger.info(Long.toString(transferAfterFreeNetUsed));
 
@@ -141,17 +141,17 @@ public class WalletTestAssetIssue015 {
 	@Test(enabled = true, description = "Use balance when transfer has not enough net")
 	public void btestWhenTransferHasNoEnoughBandwidthUseBalance() {
 		Integer i = 0;
-		AccountNetMessage assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
-		while (assetTransferNet.getNetUsed() < 4700 && i++ < 200) {
+		AccountResourceMessage assetTransferNet = PublicMethed
+				.getAccountResource(transferAssetAddress, blockingStubFull);
+		while (assetTransferNet.getBandwidthUsed() < 4700 && i++ < 200) {
 			PublicMethed.transferAsset(toAddress, assetAccountId, 1L,
 					transferAssetAddress, transferAssetCreateKey, blockingStubFull);
 			assetTransferNet = PublicMethed
-					.getAccountNet(transferAssetAddress, blockingStubFull);
+					.getAccountResource(transferAssetAddress, blockingStubFull);
 		}
 
-		logger.info(Long.toString(assetTransferNet.getFreeNetUsed()));
-		Assert.assertTrue(assetTransferNet.getFreeNetUsed() >= 4700);
+		logger.info(Long.toString(assetTransferNet.getFreeBandwidthUsed()));
+		Assert.assertTrue(assetTransferNet.getFreeBandwidthUsed() >= 4700);
 
 		Assert.assertTrue(PublicMethed.sendcoin(transferAssetAddress,
 				20000000, fromAddress, testKey002, blockingStubFull));
@@ -176,11 +176,11 @@ public class WalletTestAssetIssue015 {
 		Assert.assertTrue(PublicMethed.freezeBalance(transferAssetAddress, 5000000,
 				3, transferAssetCreateKey, blockingStubFull));
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
-		AccountNetMessage assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
+		AccountResourceMessage assetTransferNet = PublicMethed
+				.getAccountResource(transferAssetAddress, blockingStubFull);
 		Account transferAccount = PublicMethed.queryAccount(transferAssetCreateKey, blockingStubFull);
 
-		final Long transferNetUsedBefore = assetTransferNet.getNetUsed();
+		final Long transferNetUsedBefore = assetTransferNet.getBandwidthUsed();
 		final Long transferBalanceBefore = transferAccount.getBalance();
 		logger.info("before  " + transferBalanceBefore);
 
@@ -189,9 +189,9 @@ public class WalletTestAssetIssue015 {
 		PublicMethed.waitProduceNextBlock(blockingStubFull);
 
 		assetTransferNet = PublicMethed
-				.getAccountNet(transferAssetAddress, blockingStubFull);
+				.getAccountResource(transferAssetAddress, blockingStubFull);
 		transferAccount = PublicMethed.queryAccount(transferAssetCreateKey, blockingStubFull);
-		final Long transferNetUsedAfter = assetTransferNet.getNetUsed();
+		final Long transferNetUsedAfter = assetTransferNet.getBandwidthUsed();
 		final Long transferBalanceAfter = transferAccount.getBalance();
 		logger.info("after " + transferBalanceAfter);
 

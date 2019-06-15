@@ -131,7 +131,7 @@ public class UnfreezeAssetActuatorTest {
 				.setFrozenBalance(frozenBalance + 1)
 				.setExpireTime(now + 600000)
 				.build();
-		account = account.toBuilder().addFrozenSupply(newFrozen0).addFrozenSupply(newFrozen1).build();
+		account = account.toBuilder().addFrozenAssets(newFrozen0).addFrozenAssets(newFrozen1).build();
 		AccountCapsule accountCapsule = new AccountCapsule(account);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeAssetActuator actuator = new UnfreezeAssetActuator(getContract(OWNER_ADDRESS),
@@ -140,10 +140,10 @@ public class UnfreezeAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
-			Assert.assertEquals(owner.getAssetMapV2().get(tokenId).longValue(), frozenBalance);
+			Assert.assertEquals(owner.getAssetMap().get(tokenId).longValue(), frozenBalance);
 			Assert.assertEquals(owner.getFrozenSupplyCount(), 1);
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
@@ -170,7 +170,7 @@ public class UnfreezeAssetActuatorTest {
 				.setFrozenBalance(frozenBalance + 1)
 				.setExpireTime(now + 600000)
 				.build();
-		account = account.toBuilder().addFrozenSupply(newFrozen0).addFrozenSupply(newFrozen1).build();
+		account = account.toBuilder().addFrozenAssets(newFrozen0).addFrozenAssets(newFrozen1).build();
 		AccountCapsule accountCapsule = new AccountCapsule(account);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeAssetActuator actuator = new UnfreezeAssetActuator(getContract(OWNER_ADDRESS),
@@ -179,10 +179,10 @@ public class UnfreezeAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
-			Assert.assertEquals(owner.getAssetMapV2().get(tokenId).longValue(), frozenBalance);
+			Assert.assertEquals(owner.getAssetMap().get(tokenId).longValue(), frozenBalance);
 			Assert.assertEquals(owner.getFrozenSupplyCount(), 1);
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
@@ -233,7 +233,7 @@ public class UnfreezeAssetActuatorTest {
 				.setFrozenBalance(frozenBalance)
 				.setExpireTime(now)
 				.build();
-		account = account.toBuilder().addFrozenSupply(newFrozen).setAssetIssuedId(0).build();
+		account = account.toBuilder().addFrozenAssets(newFrozen).setAssetIssuedId(0).build();
 		AccountCapsule accountCapsule = new AccountCapsule(account);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeAssetActuator actuator = new UnfreezeAssetActuator(getContract(OWNER_ADDRESS),
@@ -276,7 +276,7 @@ public class UnfreezeAssetActuatorTest {
 				.setFrozenBalance(frozenBalance)
 				.setExpireTime(now + 60000)
 				.build();
-		account = account.toBuilder().addFrozenSupply(newFrozen).build();
+		account = account.toBuilder().addFrozenAssets(newFrozen).build();
 		AccountCapsule accountCapsule = new AccountCapsule(account);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeAssetActuator actuator = new UnfreezeAssetActuator(getContract(OWNER_ADDRESS),

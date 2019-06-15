@@ -156,8 +156,8 @@ public class ContractTrcToken039 {
 		info = PublicMethed.queryAccount(dev001Address, blockingStubFull);
 		Long beforeBalance = info.getBalance();
 		Long beforeEnergyUsed = resourceInfo.getEnergyUsed();
-		Long beforeNetUsed = resourceInfo.getNetUsed();
-		Long beforeFreeNetUsed = resourceInfo.getFreeNetUsed();
+		Long beforeNetUsed = resourceInfo.getBandwidthUsed();
+		Long beforeFreeNetUsed = resourceInfo.getFreeBandwidthUsed();
 		Long beforeAssetIssueDevAddress = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 		Long beforeAssetIssueUserAddress = PublicMethed
@@ -213,8 +213,8 @@ public class ContractTrcToken039 {
 		Long afterEnergyUsed = resourceInfoafter.getEnergyUsed();
 		Long afterAssetIssueDevAddress = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
-		Long afterNetUsed = resourceInfoafter.getNetUsed();
-		Long afterFreeNetUsed = resourceInfoafter.getFreeNetUsed();
+		Long afterNetUsed = resourceInfoafter.getBandwidthUsed();
+		Long afterFreeNetUsed = resourceInfoafter.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress = PublicMethed
 				.getAssetIssueValue(proxyTestAddress, assetAccountId,
 						blockingStubFull);
@@ -262,8 +262,8 @@ public class ContractTrcToken039 {
 		info1 = PublicMethed.queryAccount(dev001Address, blockingStubFull);
 		Long beforeBalance1 = info1.getBalance();
 		Long beforeEnergyUsed1 = resourceInfo1.getEnergyUsed();
-		Long beforeNetUsed1 = resourceInfo1.getNetUsed();
-		Long beforeFreeNetUsed1 = resourceInfo1.getFreeNetUsed();
+		Long beforeNetUsed1 = resourceInfo1.getBandwidthUsed();
+		Long beforeFreeNetUsed1 = resourceInfo1.getFreeBandwidthUsed();
 		Long beforeAssetIssueDevAddress1 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
 		Long beforeAssetIssueUserAddress1 = PublicMethed
@@ -312,8 +312,8 @@ public class ContractTrcToken039 {
 		Long afterEnergyUsed1 = resourceInfoafter1.getEnergyUsed();
 		Long afterAssetIssueDevAddress1 = PublicMethed
 				.getAssetIssueValue(dev001Address, assetAccountId, blockingStubFull);
-		Long afterNetUsed1 = resourceInfoafter1.getNetUsed();
-		Long afterFreeNetUsed1 = resourceInfoafter1.getFreeNetUsed();
+		Long afterNetUsed1 = resourceInfoafter1.getBandwidthUsed();
+		Long afterFreeNetUsed1 = resourceInfoafter1.getFreeBandwidthUsed();
 		Long afterAssetIssueContractAddress1 = PublicMethed
 				.getAssetIssueValue(proxyTestAddress, assetAccountId,
 						blockingStubFull);

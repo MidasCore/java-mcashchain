@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import io.midasprotocol.api.GrpcAPI;
-import io.midasprotocol.api.GrpcAPI.AccountNetMessage;
+import io.midasprotocol.api.GrpcAPI.AccountResourceMessage;
 import io.midasprotocol.api.WalletGrpc;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.utils.ByteArray;
@@ -70,18 +70,18 @@ public class CreateAccount2Test {
 	public void testCreateAccount2() {
 		Account accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
 		final Long beforeBalance = accountInfo.getBalance();
-		AccountNetMessage accountNetInfo = PublicMethed.getAccountNet(account007Address,
+		AccountResourceMessage accountNetInfo = PublicMethed.getAccountResource(account007Address,
 				blockingStubFull);
-		final Long beforeFreeNet = accountNetInfo.getFreeNetUsed();
+		final Long beforeFreeNet = accountNetInfo.getFreeBandwidthUsed();
 		GrpcAPI.Return ret1 = PublicMethed.createAccount2(account007Address, newAccountAddress,
 				account007Key, blockingStubFull);
 		Assert.assertEquals(ret1.getCode(), GrpcAPI.Return.ResponseCode.SUCCESS);
 		Assert.assertEquals(ret1.getMessage().toStringUtf8(), "");
 		accountInfo = PublicMethed.queryAccount(account007Key, blockingStubFull);
 		Long afterBalance = accountInfo.getBalance();
-		accountNetInfo = PublicMethed.getAccountNet(account007Address,
+		accountNetInfo = PublicMethed.getAccountResource(account007Address,
 				blockingStubFull);
-		Long afterFreeNet = accountNetInfo.getFreeNetUsed();
+		Long afterFreeNet = accountNetInfo.getFreeBandwidthUsed();
 		logger.info(Long.toString(beforeBalance));
 		logger.info(Long.toString(afterBalance));
 		//When creator has no bandwidth, he can't use the free net.

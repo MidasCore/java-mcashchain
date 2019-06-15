@@ -132,40 +132,40 @@ public class AssetIssueCapsule implements ProtoCapsule<AssetIssueContract> {
 		return frozenBalance[0];
 	}
 
-	public long getFreeAssetNetLimit() {
-		return this.assetIssueContract.getFreeAssetNetLimit();
+	public long getFreeAssetBandwidthLimit() {
+		return this.assetIssueContract.getFreeAssetBandwidthLimit();
 	}
 
-	public void setFreeAssetNetLimit(long newLimit) {
+	public void setFreeAssetBandwidthLimit(long newLimit) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-			.setFreeAssetNetLimit(newLimit).build();
+			.setFreeAssetBandwidthLimit(newLimit).build();
 	}
 
-	public long getPublicFreeAssetNetLimit() {
-		return this.assetIssueContract.getPublicFreeAssetNetLimit();
+	public long getPublicFreeAssetBandwidthLimit() {
+		return this.assetIssueContract.getPublicFreeAssetBandwidthLimit();
 	}
 
-	public void setPublicFreeAssetNetLimit(long newPublicLimit) {
+	public void setPublicFreeAssetBandwidthLimit(long newPublicLimit) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-			.setPublicFreeAssetNetLimit(newPublicLimit).build();
+			.setPublicFreeAssetBandwidthLimit(newPublicLimit).build();
 	}
 
-	public long getPublicFreeAssetNetUsage() {
-		return this.assetIssueContract.getPublicFreeAssetNetUsage();
+	public long getPublicFreeAssetBandwidthUsage() {
+		return this.assetIssueContract.getPublicFreeAssetBandwidthUsage();
 	}
 
-	public void setPublicFreeAssetNetUsage(long value) {
+	public void setPublicFreeAssetBandwidthUsage(long value) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-			.setPublicFreeAssetNetUsage(value).build();
+			.setPublicFreeAssetBandwidthUsage(value).build();
 	}
 
-	public long getPublicLatestFreeNetTime() {
-		return this.assetIssueContract.getPublicLatestFreeNetTime();
+	public long getPublicLatestFreeBandwidthTime() {
+		return this.assetIssueContract.getPublicLatestFreeBandwidthTime();
 	}
 
-	public void setPublicLatestFreeNetTime(long time) {
+	public void setPublicLatestFreeBandwidthTime(long time) {
 		this.assetIssueContract = this.assetIssueContract.toBuilder()
-			.setPublicLatestFreeNetTime(time).build();
+			.setPublicLatestFreeBandwidthTime(time).build();
 	}
 
 	public void setUrl(ByteString newUrl) {

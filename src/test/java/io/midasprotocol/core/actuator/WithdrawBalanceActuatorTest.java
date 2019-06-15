@@ -125,7 +125,7 @@ public class WithdrawBalanceActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
 					dbManager.getAccountStore().get(ByteArray.fromHexString(WITNESS_ADDRESS));
 
@@ -181,7 +181,7 @@ public class WithdrawBalanceActuatorTest {
 
 //    AccountCapsule accountCapsule = dbManager.getAccountStore()
 //        .get(ByteArray.fromHexString(WITNESS_ADDRESS));
-//    accountCapsule.setFrozen(1_000_000_000L, now);
+//    accountCapsule.setFrozenForBandwidth(1_000_000_000L, now);
 //    dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		WithdrawBalanceActuator actuator = new WithdrawBalanceActuator(
 				getContract(WITNESS_ADDRESS), dbManager);

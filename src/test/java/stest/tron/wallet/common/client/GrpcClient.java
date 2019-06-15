@@ -137,16 +137,6 @@ public class GrpcClient {
 	 * constructor.
 	 */
 
-	public AccountNetMessage getAccountNet(byte[] address) {
-		ByteString addressBs = ByteString.copyFrom(address);
-		Account request = Account.newBuilder().setAddress(addressBs).build();
-		return blockingStubFull.getAccountNet(request);
-	}
-
-	/**
-	 * constructor.
-	 */
-
 	public BlockExtension getBlock(long blockNum) {
 		if (blockNum < 0) {
 			if (blockingStubSolidity != null) {

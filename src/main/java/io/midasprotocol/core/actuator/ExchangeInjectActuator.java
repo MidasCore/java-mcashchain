@@ -70,13 +70,13 @@ public class ExchangeInjectActuator extends AbstractActuator {
 			if (tokenID == 0) {
 				accountCapsule.setBalance(newBalance - tokenQuant);
 			} else {
-				accountCapsule.reduceAssetAmountV2(tokenID, tokenQuant);
+				accountCapsule.reduceAssetAmount(tokenID, tokenQuant);
 			}
 
 			if (anotherTokenID == 0) {
 				accountCapsule.setBalance(newBalance - anotherTokenQuant);
 			} else {
-				accountCapsule.reduceAssetAmountV2(anotherTokenID, anotherTokenQuant);
+				accountCapsule.reduceAssetAmount(anotherTokenID, anotherTokenQuant);
 			}
 			dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 
@@ -202,7 +202,7 @@ public class ExchangeInjectActuator extends AbstractActuator {
 				throw new ContractValidateException("balance is not enough");
 			}
 		} else {
-			if (!accountCapsule.assetBalanceEnoughV2(tokenID, tokenQuant)) {
+			if (!accountCapsule.assetBalanceEnough(tokenID, tokenQuant)) {
 				throw new ContractValidateException("token balance is not enough");
 			}
 		}
@@ -212,7 +212,7 @@ public class ExchangeInjectActuator extends AbstractActuator {
 				throw new ContractValidateException("balance is not enough");
 			}
 		} else {
-			if (!accountCapsule.assetBalanceEnoughV2(anotherTokenID, anotherTokenQuant)) {
+			if (!accountCapsule.assetBalanceEnough(anotherTokenID, anotherTokenQuant)) {
 				throw new ContractValidateException("another token balance is not enough");
 			}
 		}

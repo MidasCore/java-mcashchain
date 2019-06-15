@@ -444,10 +444,6 @@ public class WalletClient {
 		return builder.build();
 	}
 
-	public static AccountNetMessage getAccountNet(byte[] address) {
-		return rpcCli.getAccountNet(address);
-	}
-
 	private static String loadPassword() {
 		char[] buf = new char[0x100];
 		int len = FileUtil.readData(FilePath, buf);

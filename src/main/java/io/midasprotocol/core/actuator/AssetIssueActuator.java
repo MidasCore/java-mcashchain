@@ -81,9 +81,9 @@ public class AssetIssueActuator extends AbstractActuator {
 				remainSupply -= next.getFrozenAmount();
 			}
 
-			accountCapsule.addAssetV2(assetIssueCapsule.getId(), remainSupply);
+			accountCapsule.addAsset(assetIssueCapsule.getId(), remainSupply);
 			accountCapsule.setAssetIssuedId(assetIssueCapsule.getId());
-			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder().addAllFrozenSupply(frozenList).build());
+			accountCapsule.setInstance(accountCapsule.getInstance().toBuilder().addAllFrozenAssets(frozenList).build());
 
 			dbManager.getAccountStore().put(ownerAddress, accountCapsule);
 
@@ -177,8 +177,8 @@ public class AssetIssueActuator extends AbstractActuator {
 			throw new ContractValidateException("Num must greater than 0!");
 		}
 
-		if (assetIssueContract.getPublicFreeAssetNetUsage() != 0) {
-			throw new ContractValidateException("PublicFreeAssetNetUsage must be 0!");
+		if (assetIssueContract.getPublicFreeAssetBandwidthUsage() != 0) {
+			throw new ContractValidateException("PublicFreeAssetBandwidthUsage must be 0!");
 		}
 
 		if (assetIssueContract.getFrozenSupplyCount()
@@ -186,16 +186,16 @@ public class AssetIssueActuator extends AbstractActuator {
 			throw new ContractValidateException("Frozen supply list length is too long");
 		}
 
-		if (assetIssueContract.getFreeAssetNetLimit() < 0
-			|| assetIssueContract.getFreeAssetNetLimit() >=
+		if (assetIssueContract.getFreeAssetBandwidthLimit() < 0
+			|| assetIssueContract.getFreeAssetBandwidthLimit() >=
 			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
-			throw new ContractValidateException("Invalid FreeAssetNetLimit");
+			throw new ContractValidateException("Invalid FreeAssetBandwidthLimit");
 		}
 
-		if (assetIssueContract.getPublicFreeAssetNetLimit() < 0
-			|| assetIssueContract.getPublicFreeAssetNetLimit() >=
+		if (assetIssueContract.getPublicFreeAssetBandwidthLimit() < 0
+			|| assetIssueContract.getPublicFreeAssetBandwidthLimit() >=
 			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
-			throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
+			throw new ContractValidateException("Invalid PublicFreeAssetBandwidthLimit");
 		}
 
 		long remainSupply = assetIssueContract.getTotalSupply();

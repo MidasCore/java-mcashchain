@@ -106,7 +106,7 @@ public class UpdateAccountActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(ACCOUNT_NAME, accountCapsule.getAccountName().toStringUtf8());
@@ -161,7 +161,7 @@ public class UpdateAccountActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(ACCOUNT_NAME, accountCapsule.getAccountName().toStringUtf8());
@@ -194,7 +194,7 @@ public class UpdateAccountActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(ACCOUNT_NAME, accountCapsule.getAccountName().toStringUtf8());
@@ -237,7 +237,7 @@ public class UpdateAccountActuatorTest {
 					getContract("testname0123456789abcdefghijgklm", OWNER_ADDRESS), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule accountCapsule = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals("testname0123456789abcdefghijgklm",
@@ -256,7 +256,7 @@ public class UpdateAccountActuatorTest {
 					getContract("testname", OWNER_ADDRESS), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			accountCapsule = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals("testname",
@@ -271,7 +271,7 @@ public class UpdateAccountActuatorTest {
 					getContract(ByteString.EMPTY, OWNER_ADDRESS), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.assertEquals(ret.getInstance().getRet(), Code.SUCCESS);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Invalid accountName", e.getMessage());
 		} catch (ContractExeException e) {

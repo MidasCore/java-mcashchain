@@ -44,8 +44,8 @@ public class UpdateAssetActuator extends AbstractActuator {
 			AssetIssueStore assetIssueStore = dbManager.getAssetIssueStore();
 			assetIssueCapsuleV2 = assetIssueStore.get(accountCapsule.getAssetIssuedId());
 
-			assetIssueCapsuleV2.setFreeAssetNetLimit(newLimit);
-			assetIssueCapsuleV2.setPublicFreeAssetNetLimit(newPublicLimit);
+			assetIssueCapsuleV2.setFreeAssetBandwidthLimit(newLimit);
+			assetIssueCapsuleV2.setPublicFreeAssetBandwidthLimit(newPublicLimit);
 			assetIssueCapsuleV2.setUrl(newUrl);
 			assetIssueCapsuleV2.setDescription(newDescription);
 

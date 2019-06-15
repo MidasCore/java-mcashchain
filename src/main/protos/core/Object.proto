@@ -73,6 +73,12 @@ message Account {
         int64 frozen_balance = 1; // the frozen trx balance
         int64 expire_time = 2; // the expire time
     }
+
+    message DelegatedFrozen {
+        int64 acquired_delegated_balance = 1;
+        int64 delegated_balance = 2;
+    }
+
     // account nick name
     bytes account_name = 1;
     AccountType type = 2;
@@ -83,69 +89,51 @@ message Account {
     // the vote
     Vote vote = 5;
     // the other asset owned by this account
-    map<int64, int64> asset = 6;
+    map<int64, int64> assets = 6;
 
-    // the frozen balance for bandwidth
-    repeated Frozen frozen = 7;
-    // bandwidth, get from frozen
-    int64 net_usage = 8;
-    //Frozen balance provided by other accounts to this account
-    int64 acquired_delegated_frozen_balance_for_bandwidth = 41;
-    //Freeze and provide balances to other accounts
-    int64 delegated_frozen_balance_for_bandwidth = 42;
+    Frozen frozen_for_bandwidth = 7;
+    Frozen frozen_for_energy = 8;
+    repeated Frozen frozen_assets = 9;
+    DelegatedFrozen delegated_frozen_for_bandwidth = 10;
+    DelegatedFrozen delegated_frozen_for_energy = 11;
 
     // this account create time
-    int64 create_time = 0x09;
+    int64 create_time = 12;
     // this last operation time, including transfer, voting and so on
-    int64 latest_operation_time = 10;
-    // witness block producing allowance
-    int64 allowance = 0x0B;
+    int64 latest_operation_time = 13;
+    // reward balance
+    int64 allowance = 14;
     // last withdraw time
-    int64 latest_withdraw_time = 0x0C;
-    // not used so far
-    bytes code = 13;
-    bool is_witness = 14;
-    bool is_committee = 15;
-    // frozen asset(for asset issuer)
-    repeated Frozen frozen_supply = 16;
+    int64 latest_withdraw_time = 15;
+    bool is_witness = 16;
+    bool is_committee = 17;
     // asset_issued_id
-    int64 asset_issued_id = 17;
-    map<int64, int64> latest_asset_operation_time = 18;
-    int64 free_net_usage = 19;
-    map<int64, int64> free_asset_net_usage = 20;
-    int64 latest_consume_time = 21;
-    int64 latest_consume_free_time = 22;
+    int64 asset_issued_id = 18;
 
     // the identity of this account, case insensitive
-    bytes account_id = 23;
+    bytes account_id = 20;
 
     message AccountResource {
-        // energy resource, get from frozen
-        int64 energy_usage = 1;
-        // the frozen balance for energy
-        Frozen frozen_balance_for_energy = 2;
-        int64 latest_consume_time_for_energy = 3;
-
-        //Frozen balance provided by other accounts to this account
-        int64 acquired_delegated_frozen_balance_for_energy = 4;
-        //Frozen balances provided to other accounts
-        int64 delegated_frozen_balance_for_energy = 5;
-
-        // storage resource, get from market
-        int64 storage_limit = 6;
-        int64 storage_usage = 7;
-        int64 latest_exchange_storage_time = 8;
-
+        int64 bandwidth_usage = 1;
+        int64 latest_bandwidth_consume_time = 2;
+        int64 free_bandwidth_usage = 3;
+        int64 latest_free_bandwidth_consume_time = 4;
+        int64 energy_usage = 5;
+        int64 latest_energy_consume_time = 6;
+        map<int64, int64> asset_free_bandwidth_usage = 7;
+        map<int64, int64> latest_asset_operation_time = 8;
     }
-    AccountResource account_resource = 26;
+
+    AccountResource account_resource = 21;
+
     bytes codeHash = 30;
     Permission owner_permission = 31;
     Permission witness_permission = 32;
     repeated Permission active_permission = 33;
 
     // stakes
-    Stake stake = 60;
-    Stake witness_stake = 61;
+    Stake stake = 40;
+    Stake witness_stake = 41;
 }
 
 
@@ -276,8 +264,8 @@ message ResourceReceipt {
     int64 energy_fee = 2;
     int64 origin_energy_usage = 3;
     int64 energy_usage_total = 4;
-    int64 net_usage = 5;
-    int64 net_fee = 6;
+    int64 bandwidth_usage = 5;
+    int64 bandwidth_fee = 6;
     Transaction.Result.ContractResult result = 7;
 }
 
@@ -350,10 +338,10 @@ message Transaction {
             UNKNOWN = 13;
         }
         int64 fee = 1;
-        Code ret = 2;
-        ContractResult contractRet = 3;
+        Code code = 2;
+        ContractResult contract_result = 3;
 
-        int64 asset_issue_i_d = 14;
+        int64 asset_issue_id = 14;
         int64 withdraw_amount = 15;
         int64 unfreeze_amount = 16;
         int64 exchange_received_amount = 18;
@@ -543,9 +531,9 @@ message HelloMessage {
     Endpoint from = 1;
     int32 version = 2;
     int64 timestamp = 3;
-    BlockId genesisBlockId = 4;
-    BlockId solidBlockId = 5;
-    BlockId headBlockId = 6;
+    BlockId genesis_block_id = 4;
+    BlockId solid_block_id = 5;
+    BlockId head_block_id = 6;
 }
 
 message SmartContract {
