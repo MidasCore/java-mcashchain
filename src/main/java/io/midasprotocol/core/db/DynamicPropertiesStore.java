@@ -76,11 +76,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	private static final byte[] TOTAL_TRANSACTION_COST = "TOTAL_TRANSACTION_COST".getBytes();
 	private static final byte[] TOTAL_CREATE_ACCOUNT_COST = "TOTAL_CREATE_ACCOUNT_COST".getBytes();
 	private static final byte[] TOTAL_CREATE_WITNESS_COST = "TOTAL_CREATE_WITNESS_FEE".getBytes();
-	private static final byte[] TOTAL_STORAGE_POOL = "TOTAL_STORAGE_POOL".getBytes();
-	private static final byte[] TOTAL_STORAGE_TAX = "TOTAL_STORAGE_TAX".getBytes();
-	private static final byte[] TOTAL_STORAGE_RESERVED = "TOTAL_STORAGE_RESERVED".getBytes();
 	private static final byte[] TOTAL_STAKE = "TOTAL_STAKE".getBytes();
-	private static final byte[] STORAGE_EXCHANGE_TAX_RATE = "STORAGE_EXCHANGE_TAX_RATE".getBytes();
 	private static final byte[] FORK_CONTROLLER = "FORK_CONTROLLER".getBytes();
 	private static final String FORK_PREFIX = "FORK_VERSION_";
 	//This value is only allowed to be 0, 1, -1
@@ -239,45 +235,45 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		}
 
 		try {
-			this.getPublicNetUsage();
+			this.getPublicBandwidthUsage();
 		} catch (IllegalArgumentException e) {
-			this.savePublicNetUsage(0L);
+			this.savePublicBandwidthUsage(0L);
 		}
 
 		try {
-			this.getOneDayNetLimit();
+			this.getOneDayBandwidthLimit();
 		} catch (IllegalArgumentException e) {
-			this.saveOneDayNetLimit(57_600_000_000L);
+			this.saveOneDayBandwidthLimit(57_600_000_000L);
 		}
 
 		try {
-			this.getPublicNetLimit();
+			this.getPublicBandwidthLimit();
 		} catch (IllegalArgumentException e) {
-			this.savePublicNetLimit(14_400_000_000L);
+			this.savePublicBandwidthLimit(14_400_000_000L);
 		}
 
 		try {
-			this.getPublicNetTime();
+			this.getPublicBandwidthTime();
 		} catch (IllegalArgumentException e) {
-			this.savePublicNetTime(0L);
+			this.savePublicBandwidthTime(0L);
 		}
 
 		try {
-			this.getFreeNetLimit();
+			this.getFreeBandwidthLimit();
 		} catch (IllegalArgumentException e) {
-			this.saveFreeNetLimit(10000L);
+			this.saveFreeBandwidthLimit(10000L);
 		}
 
 		try {
-			this.getTotalNetWeight();
+			this.getTotalBandwidthWeight();
 		} catch (IllegalArgumentException e) {
-			this.saveTotalNetWeight(0L);
+			this.saveTotalBandwidthWeight(0L);
 		}
 
 		try {
-			this.getTotalNetLimit();
+			this.getTotalBandwidthLimit();
 		} catch (IllegalArgumentException e) {
-			this.saveTotalNetLimit(43_200_000_000L);
+			this.saveTotalBandwidthLimit(43_200_000_000L);
 		}
 
 		try {
@@ -331,7 +327,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		try {
 			this.getTransactionFee();
 		} catch (IllegalArgumentException e) {
-			this.saveTransactionFee(1000L); // 10 matoshi/byte
+			this.saveTransactionFee(1000L); // 1000 matoshi/byte
 		}
 
 		try {
@@ -380,30 +376,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			this.getTotalCreateAccountCost();
 		} catch (IllegalArgumentException e) {
 			this.saveTotalCreateAccountFee(0L);
-		}
-
-		try {
-			this.getTotalStoragePool();
-		} catch (IllegalArgumentException e) {
-			this.saveTotalStoragePool(100_000_000_000_000L);
-		}
-
-		try {
-			this.getTotalStorageTax();
-		} catch (IllegalArgumentException e) {
-			this.saveTotalStorageTax(0);
-		}
-
-		try {
-			this.getTotalStorageReserved();
-		} catch (IllegalArgumentException e) {
-			this.saveTotalStorageReserved(128L * 1024 * 1024 * 1024); // 137438953472 bytes
-		}
-
-		try {
-			this.getStorageExchangeTaxRate();
-		} catch (IllegalArgumentException e) {
-			this.saveStorageExchangeTaxRate(10);
 		}
 
 		try {
@@ -700,82 +672,82 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 				() -> new IllegalArgumentException("not found STAKING_REWARD_PER_EPOCH"));
 	}
 
-	public void saveOneDayNetLimit(long oneDayNetLimit) {
-		this.put(DynamicResourceProperties.ONE_DAY_NET_LIMIT,
-			new BytesCapsule(ByteArray.fromLong(oneDayNetLimit)));
+	public void saveOneDayBandwidthLimit(long oneDayBandwidthLimit) {
+		this.put(DynamicResourceProperties.ONE_DAY_BANDWIDTH_LIMIT,
+			new BytesCapsule(ByteArray.fromLong(oneDayBandwidthLimit)));
 	}
 
-	public long getOneDayNetLimit() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ONE_DAY_NET_LIMIT))
+	public long getOneDayBandwidthLimit() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.ONE_DAY_BANDWIDTH_LIMIT))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found ONE_DAY_NET_LIMIT"));
+				() -> new IllegalArgumentException("not found ONE_DAY_BANDWIDTH_LIMIT"));
 	}
 
-	public void savePublicNetUsage(long publicNetUsage) {
-		this.put(DynamicResourceProperties.PUBLIC_NET_USAGE,
-			new BytesCapsule(ByteArray.fromLong(publicNetUsage)));
+	public void savePublicBandwidthUsage(long publicBandwidthUsage) {
+		this.put(DynamicResourceProperties.PUBLIC_BANDWIDTH_USAGE,
+			new BytesCapsule(ByteArray.fromLong(publicBandwidthUsage)));
 	}
 
-	public long getPublicNetUsage() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_USAGE))
+	public long getPublicBandwidthUsage() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_BANDWIDTH_USAGE))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found PUBLIC_NET_USAGE"));
+				() -> new IllegalArgumentException("not found PUBLIC_BANDWIDTH_USAGE"));
 	}
 
-	public void savePublicNetLimit(long publicNetLimit) {
-		this.put(DynamicResourceProperties.PUBLIC_NET_LIMIT,
-			new BytesCapsule(ByteArray.fromLong(publicNetLimit)));
+	public void savePublicBandwidthLimit(long publicBandwidthLimit) {
+		this.put(DynamicResourceProperties.PUBLIC_BANDWIDTH_LIMIT,
+			new BytesCapsule(ByteArray.fromLong(publicBandwidthLimit)));
 	}
 
-	public long getPublicNetLimit() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_LIMIT))
+	public long getPublicBandwidthLimit() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_BANDWIDTH_LIMIT))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found PUBLIC_NET_LIMIT"));
+				() -> new IllegalArgumentException("not found PUBLIC_BANDWIDTH_LIMIT"));
 	}
 
-	public void savePublicNetTime(long publicNetTime) {
-		this.put(DynamicResourceProperties.PUBLIC_NET_TIME,
-			new BytesCapsule(ByteArray.fromLong(publicNetTime)));
+	public void savePublicBandwidthTime(long publicBandwidthTime) {
+		this.put(DynamicResourceProperties.PUBLIC_BANDWIDTH_TIME,
+			new BytesCapsule(ByteArray.fromLong(publicBandwidthTime)));
 	}
 
-	public long getPublicNetTime() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_NET_TIME))
+	public long getPublicBandwidthTime() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.PUBLIC_BANDWIDTH_TIME))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found PUBLIC_NET_TIME"));
+				() -> new IllegalArgumentException("not found PUBLIC_BANDWIDTH_TIME"));
 	}
 
-	public void saveFreeNetLimit(long freeNetLimit) {
-		this.put(DynamicResourceProperties.FREE_NET_LIMIT,
-			new BytesCapsule(ByteArray.fromLong(freeNetLimit)));
+	public void saveFreeBandwidthLimit(long freeBandwidthLimit) {
+		this.put(DynamicResourceProperties.FREE_BANDWIDTH_LIMIT,
+			new BytesCapsule(ByteArray.fromLong(freeBandwidthLimit)));
 	}
 
-	public long getFreeNetLimit() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREE_NET_LIMIT))
+	public long getFreeBandwidthLimit() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.FREE_BANDWIDTH_LIMIT))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found FREE_NET_LIMIT"));
+				() -> new IllegalArgumentException("not found FREE_BANDWIDTH_LIMIT"));
 	}
 
-	public void saveTotalNetWeight(long totalNetWeight) {
-		this.put(DynamicResourceProperties.TOTAL_NET_WEIGHT,
-			new BytesCapsule(ByteArray.fromLong(totalNetWeight)));
+	public void saveTotalBandwidthWeight(long totalBandwidthWeight) {
+		this.put(DynamicResourceProperties.TOTAL_BANDWIDTH_WEIGHT,
+			new BytesCapsule(ByteArray.fromLong(totalBandwidthWeight)));
 	}
 
-	public long getTotalNetWeight() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_NET_WEIGHT))
+	public long getTotalBandwidthWeight() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_BANDWIDTH_WEIGHT))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found TOTAL_NET_WEIGHT"));
+				() -> new IllegalArgumentException("not found TOTAL_BANDWIDTH_WEIGHT"));
 	}
 
 	public void saveTotalEnergyWeight(long totalEnergyWeight) {
@@ -791,17 +763,17 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 				() -> new IllegalArgumentException("not found TOTAL_ENERGY_WEIGHT"));
 	}
 
-	public void saveTotalNetLimit(long totalNetLimit) {
-		this.put(DynamicResourceProperties.TOTAL_NET_LIMIT,
-			new BytesCapsule(ByteArray.fromLong(totalNetLimit)));
+	public void saveTotalBandwidthLimit(long totalBandwidthLimit) {
+		this.put(DynamicResourceProperties.TOTAL_BANDWIDTH_LIMIT,
+			new BytesCapsule(ByteArray.fromLong(totalBandwidthLimit)));
 	}
 
-	public long getTotalNetLimit() {
-		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_NET_LIMIT))
+	public long getTotalBandwidthLimit() {
+		return Optional.ofNullable(getUnchecked(DynamicResourceProperties.TOTAL_BANDWIDTH_LIMIT))
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found TOTAL_NET_LIMIT"));
+				() -> new IllegalArgumentException("not found TOTAL_BANDWIDTH_LIMIT"));
 	}
 
 	public void saveTotalEnergyLimit(long totalEnergyLimit) {
@@ -878,7 +850,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(
-				() -> new IllegalArgumentException("not found TOTAL_NET_AVERAGE_TIME"));
+				() -> new IllegalArgumentException("not found TOTAL_ENERGY_AVERAGE_TIME"));
 	}
 
 	public void saveBlockEnergyUsage(long blockEnergyUsage) {
@@ -1075,58 +1047,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			.map(ByteArray::toLong)
 			.orElseThrow(
 				() -> new IllegalArgumentException("not found TOTAL_CREATE_WITNESS_COST"));
-	}
-
-	public void saveTotalStoragePool(long trx) {
-		this.put(TOTAL_STORAGE_POOL,
-			new BytesCapsule(ByteArray.fromLong(trx)));
-	}
-
-	public long getTotalStoragePool() {
-		return Optional.ofNullable(getUnchecked(TOTAL_STORAGE_POOL))
-			.map(BytesCapsule::getData)
-			.map(ByteArray::toLong)
-			.orElseThrow(
-				() -> new IllegalArgumentException("not found TOTAL_STORAGE_POOL"));
-	}
-
-	public void saveTotalStorageTax(long trx) {
-		this.put(TOTAL_STORAGE_TAX,
-			new BytesCapsule(ByteArray.fromLong(trx)));
-	}
-
-	public long getTotalStorageTax() {
-		return Optional.ofNullable(getUnchecked(TOTAL_STORAGE_TAX))
-			.map(BytesCapsule::getData)
-			.map(ByteArray::toLong)
-			.orElseThrow(
-				() -> new IllegalArgumentException("not found TOTAL_STORAGE_TAX"));
-	}
-
-	public void saveTotalStorageReserved(long bytes) {
-		this.put(TOTAL_STORAGE_RESERVED,
-			new BytesCapsule(ByteArray.fromLong(bytes)));
-	}
-
-	public long getTotalStorageReserved() {
-		return Optional.ofNullable(getUnchecked(TOTAL_STORAGE_RESERVED))
-			.map(BytesCapsule::getData)
-			.map(ByteArray::toLong)
-			.orElseThrow(
-				() -> new IllegalArgumentException("not found TOTAL_STORAGE_RESERVED"));
-	}
-
-	public void saveStorageExchangeTaxRate(long rate) {
-		this.put(STORAGE_EXCHANGE_TAX_RATE,
-			new BytesCapsule(ByteArray.fromLong(rate)));
-	}
-
-	public long getStorageExchangeTaxRate() {
-		return Optional.ofNullable(getUnchecked(STORAGE_EXCHANGE_TAX_RATE))
-			.map(BytesCapsule::getData)
-			.map(ByteArray::toLong)
-			.orElseThrow(
-				() -> new IllegalArgumentException("not found STORAGE_EXCHANGE_TAX_RATE"));
 	}
 
 	public void saveTotalStake(long value) {
@@ -1468,14 +1388,14 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		);
 	}
 
-	//The unit is trx
-	public void addTotalNetWeight(long amount) {
-		long totalNetWeight = getTotalNetWeight();
-		totalNetWeight += amount;
-		saveTotalNetWeight(totalNetWeight);
+	//The unit is mcash
+	public void addTotalBandwidthWeight(long amount) {
+		long totalBandwidthWeight = getTotalBandwidthWeight();
+		totalBandwidthWeight += amount;
+		saveTotalBandwidthWeight(totalBandwidthWeight);
 	}
 
-	//The unit is trx
+	//The unit is mcash
 	public void addTotalEnergyWeight(long amount) {
 		long totalEnergyWeight = getTotalEnergyWeight();
 		totalEnergyWeight += amount;
@@ -1524,16 +1444,16 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
 	private static class DynamicResourceProperties {
 
-		private static final byte[] ONE_DAY_NET_LIMIT = "ONE_DAY_NET_LIMIT".getBytes();
+		private static final byte[] ONE_DAY_BANDWIDTH_LIMIT = "ONE_DAY_BANDWIDTH_LIMIT".getBytes();
 		//public free bandwidth
-		private static final byte[] PUBLIC_NET_USAGE = "PUBLIC_NET_USAGE".getBytes();
+		private static final byte[] PUBLIC_BANDWIDTH_USAGE = "PUBLIC_BANDWIDTH_USAGE".getBytes();
 		//fixed
-		private static final byte[] PUBLIC_NET_LIMIT = "PUBLIC_NET_LIMIT".getBytes();
-		private static final byte[] PUBLIC_NET_TIME = "PUBLIC_NET_TIME".getBytes();
-		private static final byte[] FREE_NET_LIMIT = "FREE_NET_LIMIT".getBytes();
-		private static final byte[] TOTAL_NET_WEIGHT = "TOTAL_NET_WEIGHT".getBytes();
-		//ONE_DAY_NET_LIMIT - PUBLIC_NET_LIMIT，current TOTAL_NET_LIMIT
-		private static final byte[] TOTAL_NET_LIMIT = "TOTAL_NET_LIMIT".getBytes();
+		private static final byte[] PUBLIC_BANDWIDTH_LIMIT = "PUBLIC_BANDWIDTH_LIMIT".getBytes();
+		private static final byte[] PUBLIC_BANDWIDTH_TIME = "PUBLIC_BANDWIDTH_TIME".getBytes();
+		private static final byte[] FREE_BANDWIDTH_LIMIT = "FREE_BANDWIDTH_LIMIT".getBytes();
+		private static final byte[] TOTAL_BANDWIDTH_WEIGHT = "TOTAL_BANDWIDTH_WEIGHT".getBytes();
+		//ONE_DAY_BANDWIDTH_LIMIT - PUBLIC_BANDWIDTH_LIMIT，current TOTAL_BANDWIDTH_LIMIT
+		private static final byte[] TOTAL_BANDWIDTH_LIMIT = "TOTAL_BANDWIDTH_LIMIT".getBytes();
 		private static final byte[] TOTAL_ENERGY_TARGET_LIMIT = "TOTAL_ENERGY_TARGET_LIMIT".getBytes();
 		private static final byte[] TOTAL_ENERGY_CURRENT_LIMIT = "TOTAL_ENERGY_CURRENT_LIMIT"
 			.getBytes();
@@ -1543,7 +1463,5 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		private static final byte[] TOTAL_ENERGY_WEIGHT = "TOTAL_ENERGY_WEIGHT".getBytes();
 		private static final byte[] TOTAL_ENERGY_LIMIT = "TOTAL_ENERGY_LIMIT".getBytes();
 		private static final byte[] BLOCK_ENERGY_USAGE = "BLOCK_ENERGY_USAGE".getBytes();
-
-		private static final byte[] TOTAL_STAKE_AMOUNT = "TOTAL_STAKE_AMOUNT".getBytes();
 	}
 }

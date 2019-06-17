@@ -115,12 +115,12 @@ public class UpdateAssetActuator extends AbstractActuator {
 			throw new ContractValidateException("Invalid description");
 		}
 
-		if (newLimit < 0 || newLimit >= dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+		if (newLimit < 0 || newLimit >= dbManager.getDynamicPropertiesStore().getOneDayBandwidthLimit()) {
 			throw new ContractValidateException("Invalid FreeAssetNetLimit");
 		}
 
 		if (newPublicLimit < 0 || newPublicLimit >=
-			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			dbManager.getDynamicPropertiesStore().getOneDayBandwidthLimit()) {
 			throw new ContractValidateException("Invalid PublicFreeAssetNetLimit");
 		}
 

@@ -188,13 +188,13 @@ public class AssetIssueActuator extends AbstractActuator {
 
 		if (assetIssueContract.getFreeAssetBandwidthLimit() < 0
 			|| assetIssueContract.getFreeAssetBandwidthLimit() >=
-			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			dbManager.getDynamicPropertiesStore().getOneDayBandwidthLimit()) {
 			throw new ContractValidateException("Invalid FreeAssetBandwidthLimit");
 		}
 
 		if (assetIssueContract.getPublicFreeAssetBandwidthLimit() < 0
 			|| assetIssueContract.getPublicFreeAssetBandwidthLimit() >=
-			dbManager.getDynamicPropertiesStore().getOneDayNetLimit()) {
+			dbManager.getDynamicPropertiesStore().getOneDayBandwidthLimit()) {
 			throw new ContractValidateException("Invalid PublicFreeAssetBandwidthLimit");
 		}
 

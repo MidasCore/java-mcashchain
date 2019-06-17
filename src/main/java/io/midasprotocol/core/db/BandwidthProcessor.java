@@ -297,8 +297,8 @@ public class BandwidthProcessor extends ResourceProcessor {
 			return 0;
 		}
 		long netWeight = frozeBalance / Parameter.ChainConstant.TEN_POW_DECIMALS;
-		long totalNetLimit = dbManager.getDynamicPropertiesStore().getTotalNetLimit();
-		long totalNetWeight = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+		long totalNetLimit = dbManager.getDynamicPropertiesStore().getTotalBandwidthLimit();
+		long totalNetWeight = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 		if (totalNetWeight == 0) {
 			return 0;
 		}
@@ -331,7 +331,7 @@ public class BandwidthProcessor extends ResourceProcessor {
 
 	private boolean useFreeNet(AccountCapsule accountCapsule, long bytes, long now) {
 
-		long freeNetLimit = dbManager.getDynamicPropertiesStore().getFreeNetLimit();
+		long freeNetLimit = dbManager.getDynamicPropertiesStore().getFreeBandwidthLimit();
 		long freeNetUsage = accountCapsule.getFreeBandwidthUsage();
 		long latestConsumeFreeTime = accountCapsule.getLatestFreeBandwidthConsumeTime();
 		long newFreeNetUsage = increase(freeNetUsage, 0, latestConsumeFreeTime, now);
@@ -341,9 +341,9 @@ public class BandwidthProcessor extends ResourceProcessor {
 			return false;
 		}
 
-		long publicNetLimit = dbManager.getDynamicPropertiesStore().getPublicNetLimit();
-		long publicNetUsage = dbManager.getDynamicPropertiesStore().getPublicNetUsage();
-		long publicNetTime = dbManager.getDynamicPropertiesStore().getPublicNetTime();
+		long publicNetLimit = dbManager.getDynamicPropertiesStore().getPublicBandwidthLimit();
+		long publicNetUsage = dbManager.getDynamicPropertiesStore().getPublicBandwidthUsage();
+		long publicNetTime = dbManager.getDynamicPropertiesStore().getPublicBandwidthTime();
 
 		long newPublicNetUsage = increase(publicNetUsage, 0, publicNetTime, now);
 
@@ -361,8 +361,8 @@ public class BandwidthProcessor extends ResourceProcessor {
 		accountCapsule.setLatestFreeBandwidthConsumeTime(latestConsumeFreeTime);
 		accountCapsule.setLatestOperationTime(latestOperationTime);
 
-		dbManager.getDynamicPropertiesStore().savePublicNetUsage(newPublicNetUsage);
-		dbManager.getDynamicPropertiesStore().savePublicNetTime(publicNetTime);
+		dbManager.getDynamicPropertiesStore().savePublicBandwidthUsage(newPublicNetUsage);
+		dbManager.getDynamicPropertiesStore().savePublicBandwidthTime(publicNetTime);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		return true;
 

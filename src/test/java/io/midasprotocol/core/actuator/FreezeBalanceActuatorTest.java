@@ -196,7 +196,7 @@ public class FreezeBalanceActuatorTest {
 				getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS, frozenBalance, duration),
 				dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
-		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 
 		try {
 			actuator.validate();
@@ -222,7 +222,7 @@ public class FreezeBalanceActuatorTest {
 									ByteArray.fromHexString(RECEIVER_ADDRESS)));
 
 			Assert.assertEquals(frozenBalance, delegatedResourceCapsule.getFrozenBalanceForBandwidth());
-			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 			Assert.assertEquals(totalNetWeightBefore + frozenBalance / ChainConstant.TEN_POW_DECIMALS, totalNetWeightAfter);
 
 			//check DelegatedResourceAccountIndex

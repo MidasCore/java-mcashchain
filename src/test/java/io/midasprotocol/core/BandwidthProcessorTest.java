@@ -174,7 +174,7 @@ public class BandwidthProcessorTest {
 	public void testConsumeAssetAccountV2() throws Exception {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
 		dbManager.getDynamicPropertiesStore()
-				.saveTotalNetWeight(1_000_000_000L);//only assetAccount has frozen balance
+				.saveTotalBandwidthWeight(1_000_000_000L);//only assetAccount has frozen balance
 
 		TransferAssetContract contract = getTransferAssetV2Contract();
 		TransactionCapsule trx = new TransactionCapsule(contract);
@@ -236,7 +236,7 @@ public class BandwidthProcessorTest {
 	 */
 	@Test
 	public void sameTokenNameOpenConsumeSuccess() {
-		dbManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+		dbManager.getDynamicPropertiesStore().saveTotalBandwidthWeight(10_000_000L);
 
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
@@ -335,7 +335,7 @@ public class BandwidthProcessorTest {
 	 */
 	@Test
 	public void sameTokenNameCloseTransferToAccountNotExist() {
-		dbManager.getDynamicPropertiesStore().saveTotalNetWeight(10_000_000L);
+		dbManager.getDynamicPropertiesStore().saveTotalBandwidthWeight(10_000_000L);
 
 		AccountCapsule ownerCapsule =
 				new AccountCapsule(

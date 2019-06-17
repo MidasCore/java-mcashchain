@@ -1,6 +1,5 @@
 package io.midasprotocol.core.actuator;
 
-import com.google.common.collect.Lists;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -12,8 +11,6 @@ import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract.UnfreezeBalanceContract;
-import io.midasprotocol.protos.Protocol;
-import io.midasprotocol.protos.Protocol.Account.AccountResource;
 import io.midasprotocol.protos.Protocol.Account.Frozen;
 import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +18,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 @Slf4j(topic = "actuator")
@@ -143,7 +139,7 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 		switch (unfreezeBalanceContract.getResource()) {
 			case BANDWIDTH:
 				dbManager.getDynamicPropertiesStore()
-					.addTotalNetWeight(-unfreezeBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
+					.addTotalBandwidthWeight(-unfreezeBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 			case ENERGY:
 				dbManager.getDynamicPropertiesStore()

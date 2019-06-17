@@ -67,7 +67,7 @@ public class FreezeBalanceActuator extends AbstractActuator {
 					accountCapsule.setFrozenForBandwidth(newFrozenBalanceForBandwidth, expireTime);
 				}
 				dbManager.getDynamicPropertiesStore()
-					.addTotalNetWeight(frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
+					.addTotalBandwidthWeight(frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 				break;
 			case ENERGY:
 				if (!ArrayUtils.isEmpty(receiverAddress)

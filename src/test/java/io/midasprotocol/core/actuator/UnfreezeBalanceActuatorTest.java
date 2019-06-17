@@ -152,7 +152,7 @@ public class UnfreezeBalanceActuatorTest {
 				getContractForBandwidth(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
-		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 
 		try {
 			actuator.validate();
@@ -164,7 +164,7 @@ public class UnfreezeBalanceActuatorTest {
 			Assert.assertEquals(owner.getBalance(), initBalance + frozenBalance);
 			Assert.assertEquals(owner.getFrozenBalanceForBandwidth(), 0);
 
-			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 			Assert.assertEquals(totalNetWeightBefore,
 					totalNetWeightAfter + frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 
@@ -501,7 +501,7 @@ public class UnfreezeBalanceActuatorTest {
 //  public void InvalidTotalNetWeight(){
 //    long now = System.currentTimeMillis();
 //    dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
-//    dbManager.getDynamicPropertiesStore().saveTotalNetWeight(smallTatalResource);
+//    dbManager.getDynamicPropertiesStore().saveTotalBandwidthWeight(smallTatalResource);
 //
 //    AccountCapsule accountCapsule = dbManager.getAccountStore()
 //            .get(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -516,7 +516,7 @@ public class UnfreezeBalanceActuatorTest {
 //      actuator.validate();
 //      actuator.execute(ret);
 //
-//      Assert.assertTrue(dbManager.getDynamicPropertiesStore().getTotalNetWeight() >= 0);
+//      Assert.assertTrue(dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight() >= 0);
 //    } catch (ContractValidateException e) {
 //      Assert.assertTrue(e instanceof ContractValidateException);
 //    } catch (ContractExeException e) {

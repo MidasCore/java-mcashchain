@@ -928,9 +928,9 @@ public class Wallet {
 		energyProcessor.updateUsage(accountCapsule);
 
 		long bandwidthLimit = processor.calculateGlobalBandwidthLimit(accountCapsule);
-		long freeBandwidthLimit = dbManager.getDynamicPropertiesStore().getFreeNetLimit();
-		long totalBandwidthLimit = dbManager.getDynamicPropertiesStore().getTotalNetLimit();
-		long totalBandwidthWeight = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+		long freeBandwidthLimit = dbManager.getDynamicPropertiesStore().getFreeBandwidthLimit();
+		long totalBandwidthLimit = dbManager.getDynamicPropertiesStore().getTotalBandwidthLimit();
+		long totalBandwidthWeight = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 		long energyLimit = energyProcessor
 			.calculateGlobalEnergyLimit(accountCapsule);
 		long totalEnergyLimit = dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit();

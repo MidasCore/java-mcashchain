@@ -115,7 +115,7 @@ public class UnstakeActuatorTest {
 		UnstakeActuator actuator = new UnstakeActuator(
 				getContract(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
-//		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+//		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 
 		long stakeAccountListSizeBefore = dbManager.getStakeAccountStore().size();
 		try {
@@ -130,7 +130,7 @@ public class UnstakeActuatorTest {
 			Assert.assertEquals(owner.getVotingPower(), 0L);
 			Assert.assertEquals(dbManager.getStakeAccountStore().size(), stakeAccountListSizeBefore - 1);
 
-//			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalNetWeight();
+//			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 //			Assert.assertEquals(totalNetWeightBefore, totalNetWeightAfter + frozenBalance / 1000_000L);
 
 		} catch (ContractValidateException | ContractExeException e) {
