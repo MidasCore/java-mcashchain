@@ -47,11 +47,4 @@ public class AccountStore extends TronStoreWithRevoking<AccountCapsule> {
 		return getUnchecked(assertsAddress.get("Blackhole"));
 	}
 
-	/**
-	 * Get foundation account info.
-	 */
-	public AccountCapsule getZion() {
-		return getUnchecked(assertsAddress.get("Zion"));
-	}
-
 }

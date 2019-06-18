@@ -1,23 +1,24 @@
 package io.midasprotocol.core.witness;
 
 import com.google.protobuf.ByteString;
-import io.midasprotocol.core.Wallet;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.testng.collections.Lists;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.ProposalCapsule;
+import io.midasprotocol.core.capsule.WitnessCapsule;
 import io.midasprotocol.core.config.DefaultConfig;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.DynamicPropertiesStore;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol.Proposal;
 import io.midasprotocol.protos.Protocol.Proposal.State;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.testng.collections.Lists;
 
 import java.io.File;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class ProposalControllerTest {
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
 		proposalController = ProposalController
-				.createInstance(dbManager);
+			.createInstance(dbManager);
 	}
 
 	@AfterClass
@@ -54,7 +55,7 @@ public class ProposalControllerTest {
 	public void testSetDynamicParameters() {
 
 		ProposalCapsule proposalCapsule = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		Map<Long, Long> parameters = new HashMap<>();
 		DynamicPropertiesStore dynamicPropertiesStore = dbManager.getDynamicPropertiesStore();
 		long accountUpgradeCostDefault = dynamicPropertiesStore.getAccountUpgradeCost();
@@ -67,7 +68,7 @@ public class ProposalControllerTest {
 
 		proposalController.setDynamicParameters(proposalCapsule);
 		Assert.assertEquals(accountUpgradeCostDefault + 1,
-				dynamicPropertiesStore.getAccountUpgradeCost());
+			dynamicPropertiesStore.getAccountUpgradeCost());
 		Assert.assertEquals(createAccountFeeDefault + 1, dynamicPropertiesStore.getCreateAccountFee());
 		Assert.assertEquals(transactionFeeDefault + 1, dynamicPropertiesStore.getTransactionFee());
 
@@ -76,9 +77,9 @@ public class ProposalControllerTest {
 	@Test
 	public void testProcessProposal() {
 		ProposalCapsule proposalCapsule = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule.setState(State.PENDING);
-		proposalCapsule.setID(1);
+		proposalCapsule.setId(1);
 
 		byte[] key = proposalCapsule.createDbKey();
 		dbManager.getProposalStore().put(key, proposalCapsule);
@@ -108,12 +109,17 @@ public class ProposalControllerTest {
 		List<ByteString> activeWitnesses = Lists.newArrayList();
 		String prefix = Wallet.getAddressPreFixString() + "548794500882809695a8a687866e76d4271a1a";
 		for (int i = 0; i < 27; i++) {
-			activeWitnesses
-					.add(ByteString.copyFrom(ByteArray.fromHexString(prefix + (i >= 10 ? i : "0" + i))));
+			ByteString witnessAddress = ByteString.copyFrom(ByteArray.fromHexString(prefix + (i >= 10 ? i : "0" + i)));
+			activeWitnesses.add(witnessAddress);
+			WitnessCapsule witnessCapsule = new WitnessCapsule(
+				witnessAddress,
+				witnessAddress,
+				10, "");
+			dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 		}
 		for (int i = 0; i < 18; i++) {
 			proposalCapsule.addApproval(
-					ByteString.copyFrom(ByteArray.fromHexString(prefix + (i >= 10 ? i : "0" + i))));
+				ByteString.copyFrom(ByteArray.fromHexString(prefix + (i >= 10 ? i : "0" + i))));
 		}
 		dbManager.getWitnessScheduleStore().saveActiveWitnesses(activeWitnesses);
 		proposalCapsule.setState(State.PENDING);
@@ -131,31 +137,31 @@ public class ProposalControllerTest {
 	@Test
 	public void testProcessProposals() {
 		ProposalCapsule proposalCapsule1 = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule1.setState(State.APPROVED);
-		proposalCapsule1.setID(1);
+		proposalCapsule1.setId(1);
 
 		ProposalCapsule proposalCapsule2 = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule2.setState(State.DISAPPROVED);
-		proposalCapsule2.setID(2);
+		proposalCapsule2.setId(2);
 
 		ProposalCapsule proposalCapsule3 = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule3.setState(State.PENDING);
-		proposalCapsule3.setID(3);
+		proposalCapsule3.setId(3);
 		proposalCapsule3.setExpirationTime(10000L);
 
 		ProposalCapsule proposalCapsule4 = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule4.setState(State.CANCELED);
-		proposalCapsule4.setID(4);
+		proposalCapsule4.setId(4);
 		proposalCapsule4.setExpirationTime(11000L);
 
 		ProposalCapsule proposalCapsule5 = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule5.setState(State.PENDING);
-		proposalCapsule5.setID(5);
+		proposalCapsule5.setId(5);
 		proposalCapsule5.setExpirationTime(12000L);
 
 		dbManager.getDynamicPropertiesStore().saveLatestProposalNum(5);
@@ -178,20 +184,26 @@ public class ProposalControllerTest {
 
 	@Test
 	public void testHasMostApprovals() {
+		dbManager.getWitnessStore().reset();
 		ProposalCapsule proposalCapsule = new ProposalCapsule(
-				Proposal.newBuilder().build());
+			Proposal.newBuilder().build());
 		proposalCapsule.setState(State.APPROVED);
-		proposalCapsule.setID(1);
+		proposalCapsule.setId(1);
 
 		List<ByteString> activeWitnesses = Lists.newArrayList();
 		for (int i = 0; i < 27; i++) {
 			activeWitnesses.add(ByteString.copyFrom(new byte[]{(byte) i}));
+			WitnessCapsule witnessCapsule = new WitnessCapsule(
+				ByteString.copyFrom(new byte[]{(byte) i}),
+				ByteString.copyFrom(new byte[]{(byte) i}),
+				10, "");
+			dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 		}
 		for (int i = 0; i < 18; i++) {
 			proposalCapsule.addApproval(ByteString.copyFrom(new byte[]{(byte) i}));
 		}
 
-		Assert.assertTrue(proposalCapsule.hasMostApprovals(activeWitnesses));
+		Assert.assertTrue(proposalController.hasMostApprovals(proposalCapsule, activeWitnesses));
 
 		proposalCapsule.clearApproval();
 		for (int i = 1; i < 18; i++) {
@@ -206,7 +218,7 @@ public class ProposalControllerTest {
 		for (int i = 0; i < 3; i++) {
 			proposalCapsule.addApproval(ByteString.copyFrom(new byte[]{(byte) i}));
 		}
-		Assert.assertTrue(proposalCapsule.hasMostApprovals(activeWitnesses));
+		Assert.assertTrue(proposalController.hasMostApprovals(proposalCapsule, activeWitnesses));
 
 	}
 

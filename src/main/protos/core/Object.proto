@@ -126,7 +126,7 @@ message Account {
 
     AccountResource account_resource = 21;
 
-    bytes codeHash = 30;
+    bytes code_hash = 30;
     Permission owner_permission = 31;
     Permission witness_permission = 32;
     repeated Permission active_permission = 33;

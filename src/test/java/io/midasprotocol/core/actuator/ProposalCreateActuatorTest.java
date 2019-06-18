@@ -90,6 +90,13 @@ public class ProposalCreateActuatorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						10_000_000L,
 						URL);
+		AccountCapsule ownerAccountCapsule =
+			new AccountCapsule(
+				ByteString.copyFromUtf8(""),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(300));
+		ownerAccountCapsule.setIsCommittee(true);
 		AccountCapsule ownerAccountFirstCapsule =
 				new AccountCapsule(
 						ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
@@ -103,6 +110,8 @@ public class ProposalCreateActuatorTest {
 						AccountType.Normal,
 						ConversionUtil.McashToMatoshi(200_000));
 
+		dbManager.getAccountStore()
+			.put(ownerAccountCapsule.getAddress().toByteArray(), ownerAccountCapsule);
 		dbManager.getAccountStore()
 				.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
 		dbManager.getAccountStore()
@@ -132,7 +141,7 @@ public class ProposalCreateActuatorTest {
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(0L, 1000000L);
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 0);
 		try {
@@ -208,9 +217,9 @@ public class ProposalCreateActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Witness " + SUPERNODE_ADDRESS_SECOND + " does not exist");
+			Assert.fail("Account " + SUPERNODE_ADDRESS_SECOND + " does not have right");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Witness " + SUPERNODE_ADDRESS_SECOND + " does not exist",
+			Assert.assertEquals("Account " + SUPERNODE_ADDRESS_SECOND + " does not have right",
 					e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
@@ -225,7 +234,7 @@ public class ProposalCreateActuatorTest {
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(24L, 10000L);
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -241,7 +250,7 @@ public class ProposalCreateActuatorTest {
 		paras = new HashMap<>();
 		paras.put(3L, 1 + 100_000_000_000_000_000L);
 		actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		try {
 			actuator.validate();
 			actuator.execute(ret);
@@ -256,7 +265,7 @@ public class ProposalCreateActuatorTest {
 		paras = new HashMap<>();
 		paras.put(9L, -1L);
 		actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(-1);
 		try {
 			actuator.validate();
@@ -270,7 +279,7 @@ public class ProposalCreateActuatorTest {
 		paras.put(9L, -1L);
 		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(0);
 		actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(0);
 		try {
 			actuator.validate();
@@ -288,7 +297,7 @@ public class ProposalCreateActuatorTest {
 	public void emptyProposal() {
 		HashMap<Long, Long> paras = new HashMap<>();
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -308,7 +317,7 @@ public class ProposalCreateActuatorTest {
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(9L, 1000L);
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -346,9 +355,9 @@ public class ProposalCreateActuatorTest {
 		paras.put(12L, 64L);
 
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		ProposalCreateActuator actuatorSecond =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 
 		dbManager.getDynamicPropertiesStore().saveLatestProposalNum(0L);
 		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 0);

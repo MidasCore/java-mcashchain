@@ -50,11 +50,7 @@ public class HttpApiOnSolidityService implements Service {
 	@Autowired
 	private GetTransactionCountByBlockNumOnSolidityServlet getTransactionCountByBlockNumOnSolidityServlet;
 	@Autowired
-	private GetAssetIssueByNameOnSolidityServlet getAssetIssueByNameOnSolidityServlet;
-	@Autowired
 	private GetAssetIssueByIdOnSolidityServlet getAssetIssueByIdOnSolidityServlet;
-	@Autowired
-	private GetAssetIssueListByNameOnSolidityServlet getAssetIssueListByNameOnSolidityServlet;
 
 	@Override
 	public void init() {
@@ -82,12 +78,8 @@ public class HttpApiOnSolidityService implements Service {
 				"/walletsolidity/getassetissuelist");
 			context.addServlet(new ServletHolder(getPaginatedAssetIssueListOnSolidityServlet),
 				"/walletsolidity/getpaginatedassetissuelist");
-			context.addServlet(new ServletHolder(getAssetIssueByNameOnSolidityServlet),
-				"/walletsolidity/getassetissuebyname");
 			context.addServlet(new ServletHolder(getAssetIssueByIdOnSolidityServlet),
 				"/walletsolidity/getassetissuebyid");
-			context.addServlet(new ServletHolder(getAssetIssueListByNameOnSolidityServlet),
-				"/walletsolidity/getassetissuelistbyname");
 			context.addServlet(new ServletHolder(getNowBlockOnSolidityServlet),
 				"/walletsolidity/getnowblock");
 			context.addServlet(new ServletHolder(getBlockByNumOnSolidityServlet),

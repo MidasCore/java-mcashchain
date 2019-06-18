@@ -959,51 +959,6 @@ public class Wallet {
 		return builder.build();
 	}
 
-	public AssetIssueContract getAssetIssueByName(ByteString assetName)
-		throws NonUniqueObjectException {
-		if (assetName == null || assetName.isEmpty()) {
-			return null;
-		}
-
-		// get asset issue by name from new DB
-		List<AssetIssueCapsule> assetIssueCapsuleList = dbManager.getAssetIssueStore().getAllAssetIssues();
-		AssetIssueList.Builder builder = AssetIssueList.newBuilder();
-		assetIssueCapsuleList
-			.stream()
-			.filter(assetIssueCapsule -> assetIssueCapsule.getName().equals(assetName))
-			.forEach(issueCapsule -> {
-				builder.addAssetIssue(issueCapsule.getInstance());
-			});
-
-		// check count
-		if (builder.getAssetIssueCount() > 1) {
-			throw new NonUniqueObjectException("get more than one asset, please use getassetissuebyid");
-		}
-
-		if (builder.getAssetIssueCount() > 0) {
-			return builder.getAssetIssue(0);
-		} else {
-			return null;
-		}
-	}
-
-	public AssetIssueList getAssetIssueListByName(ByteString assetName) {
-		if (assetName == null || assetName.isEmpty()) {
-			return null;
-		}
-
-		List<AssetIssueCapsule> assetIssueCapsuleList = dbManager.getAssetIssueStore().getAllAssetIssues();
-
-		AssetIssueList.Builder builder = AssetIssueList.newBuilder();
-		assetIssueCapsuleList.stream()
-			.filter(assetIssueCapsule -> assetIssueCapsule.getName().equals(assetName))
-			.forEach(issueCapsule -> {
-				builder.addAssetIssue(issueCapsule.getInstance());
-			});
-
-		return builder.build();
-	}
-
 	public AssetIssueContract getAssetIssueById(long assetId) {
 		if (assetId < 0) {
 			return null;

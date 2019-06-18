@@ -406,6 +406,12 @@ public class WitnessController {
 				if (witnessCapsule.getStatus() == Protocol.Witness.Status.SUPERNODE)
 					witnessCapsule.setStatus(Protocol.Witness.Status.ACTIVE);
 				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+
+				AccountCapsule ownerAccountCapsule = accountStore.get(witnessCapsule.getOwnerAddress().toByteArray());
+				if (ownerAccountCapsule != null) {
+					ownerAccountCapsule.setIsCommittee(false);
+					accountStore.put(ownerAccountCapsule.createDbKey(), ownerAccountCapsule);
+				}
 			});
 
 			newWits.forEach(address -> {
@@ -414,6 +420,12 @@ public class WitnessController {
 				if (witnessCapsule.getStatus() == Protocol.Witness.Status.ACTIVE)
 					witnessCapsule.setStatus(Protocol.Witness.Status.SUPERNODE);
 				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
+
+				AccountCapsule ownerAccountCapsule = accountStore.get(witnessCapsule.getOwnerAddress().toByteArray());
+				if (ownerAccountCapsule != null) {
+					ownerAccountCapsule.setIsCommittee(true);
+					accountStore.put(ownerAccountCapsule.createDbKey(), ownerAccountCapsule);
+				}
 			});
 		}
 

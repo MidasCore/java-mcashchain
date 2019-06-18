@@ -113,25 +113,25 @@ public class WalletTestAssetIssue005 {
 		GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder()
 				.setValue(ByteString.copyFrom(ByteArray.fromLong(assetAccountId)))
 				.build();
-		Contract.AssetIssueContract assetIssueByName =
-				blockingStubFull.getAssetIssueByName(request);
+		Contract.AssetIssueContract assetIssue =
+				blockingStubFull.getAssetIssueById(request);
 
-		Assert.assertFalse(assetIssueByName.getUrl().isEmpty());
-		Assert.assertFalse(assetIssueByName.getDescription().isEmpty());
-		Assert.assertTrue(assetIssueByName.getTotalSupply() > 0);
-		Assert.assertTrue(assetIssueByName.getMcashNum() > 0);
+		Assert.assertFalse(assetIssue.getUrl().isEmpty());
+		Assert.assertFalse(assetIssue.getDescription().isEmpty());
+		Assert.assertTrue(assetIssue.getTotalSupply() > 0);
+		Assert.assertTrue(assetIssue.getMcashNum() > 0);
 
 		//Get asset issue by name failed when the name is not correct.There is no exception.
 		String wrongName = name + "_wrong";
 		ByteString assetNameBs = ByteString.copyFrom(name.getBytes());
 		assetNameBs = ByteString.copyFrom(wrongName.getBytes());
 		request = GrpcAPI.BytesMessage.newBuilder().setValue(assetNameBs).build();
-		assetIssueByName = blockingStubFull.getAssetIssueByName(request);
+		assetIssue = blockingStubFull.getAssetIssueById(request);
 
-		Assert.assertFalse(assetIssueByName.getTotalSupply() > 0);
-		Assert.assertFalse(assetIssueByName.getMcashNum() > 0);
-		Assert.assertTrue(assetIssueByName.getUrl().isEmpty());
-		Assert.assertTrue(assetIssueByName.getDescription().isEmpty());
+		Assert.assertFalse(assetIssue.getTotalSupply() > 0);
+		Assert.assertFalse(assetIssue.getMcashNum() > 0);
+		Assert.assertTrue(assetIssue.getUrl().isEmpty());
+		Assert.assertTrue(assetIssue.getDescription().isEmpty());
 	}
 
 	/**

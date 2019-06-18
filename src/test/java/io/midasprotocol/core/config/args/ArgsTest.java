@@ -45,7 +45,7 @@ public class ArgsTest {
 
 		GenesisBlock genesisBlock = args.getGenesisBlock();
 
-		Assert.assertEquals(4, genesisBlock.getAssets().size());
+		Assert.assertEquals(3, genesisBlock.getAssets().size());
 
 		Assert.assertEquals(3, genesisBlock.getWitnesses().size());
 

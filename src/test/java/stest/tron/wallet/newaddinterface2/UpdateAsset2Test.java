@@ -123,14 +123,6 @@ public class UpdateAsset2Test {
 
 		//Query the description and url,freeAssetNetLimit and publicFreeAssetNetLimit
 		ByteString assetNameBs = ByteString.copyFrom(name.getBytes());
-		GrpcAPI.BytesMessage request = GrpcAPI.BytesMessage.newBuilder().setValue(assetNameBs).build();
-		Contract.AssetIssueContract assetIssueByName = blockingStubFull.getAssetIssueByName(request);
-
-		Assert.assertTrue(
-				ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(description));
-		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(url));
-		Assert.assertTrue(assetIssueByName.getFreeAssetBandwidthLimit() == freeAssetNetLimit);
-		Assert.assertTrue(assetIssueByName.getPublicFreeAssetBandwidthLimit() == publicFreeAssetNetLimit);
 
 		//Test update asset issue
 		Return ret1 = PublicMethed
@@ -143,15 +135,6 @@ public class UpdateAsset2Test {
 		//After update asset issue ,query the description and url,
 		// freeAssetNetLimit and publicFreeAssetNetLimit
 		assetNameBs = ByteString.copyFrom(name.getBytes());
-		request = GrpcAPI.BytesMessage.newBuilder().setValue(assetNameBs).build();
-		assetIssueByName = blockingStubFull.getAssetIssueByName(request);
-
-		Assert.assertTrue(
-				ByteArray.toStr(assetIssueByName.getDescription().toByteArray()).equals(updateDescription));
-		Assert.assertTrue(ByteArray.toStr(assetIssueByName.getUrl().toByteArray()).equals(updateUrl));
-		Assert.assertTrue(assetIssueByName.getFreeAssetBandwidthLimit() == updateFreeAssetNetLimit);
-		Assert
-				.assertTrue(assetIssueByName.getPublicFreeAssetBandwidthLimit() == updatePublicFreeAssetNetLimit);
 	}
 
 	@Test(enabled = true)

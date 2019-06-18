@@ -48,11 +48,7 @@ public class SolidityNodeHttpApiService implements Service {
 	@Autowired
 	private GetPaginatedAssetIssueListServlet getPaginatedAssetIssueListServlet;
 	@Autowired
-	private GetAssetIssueByNameServlet getAssetIssueByNameServlet;
-	@Autowired
 	private GetAssetIssueByIdServlet getAssetIssueByIdServlet;
-	@Autowired
-	private GetAssetIssueListByNameServlet getAssetIssueListByNameServlet;
 	@Autowired
 	private GetNowBlockServlet getNowBlockServlet;
 	@Autowired
@@ -87,12 +83,8 @@ public class SolidityNodeHttpApiService implements Service {
 				"/walletsolidity/getassetissuelist");
 			context.addServlet(new ServletHolder(getPaginatedAssetIssueListServlet),
 				"/walletsolidity/getpaginatedassetissuelist");
-			context.addServlet(new ServletHolder(getAssetIssueByNameServlet),
-				"/walletsolidity/getassetissuebyname");
 			context.addServlet(new ServletHolder(getAssetIssueByIdServlet),
 				"/walletsolidity/getassetissuebyid");
-			context.addServlet(new ServletHolder(getAssetIssueListByNameServlet),
-				"/walletsolidity/getassetissuelistbyname");
 			context.addServlet(new ServletHolder(getNowBlockServlet), "/walletsolidity/getnowblock");
 			context.addServlet(new ServletHolder(getBlockByNumServlet), "/walletsolidity/getblockbynum");
 			context.addServlet(new ServletHolder(getDelegatedResourceServlet),

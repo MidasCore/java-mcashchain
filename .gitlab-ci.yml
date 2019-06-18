@@ -35,7 +35,7 @@ push_dev:
     - echo Pushed $DOCKER_REGISTRY_URL:$IMAGE_TAG
     - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock $DEPLOY_IMAGE docker push $DOCKER_REGISTRY_URL:$IMAGE_TAG
   only:
-    - develop
+    - /^(develop|dev-.*)$/
   variables:
     IMAGE_TAG: b$CI_PIPELINE_ID
 

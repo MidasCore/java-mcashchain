@@ -2594,29 +2594,6 @@ public class PublicMethed {
 	 * constructor.
 	 */
 
-	public static Contract.AssetIssueContract getAssetIssueByName(String assetName,
-																  WalletGrpc.WalletBlockingStub blockingStubFull) {
-		ByteString assetNameBs = ByteString.copyFrom(assetName.getBytes());
-		BytesMessage request = BytesMessage.newBuilder().setValue(assetNameBs).build();
-		return blockingStubFull.getAssetIssueByName(request);
-	}
-
-	/**
-	 * constructor.
-	 */
-
-	public static Optional<AssetIssueList> getAssetIssueListByName(String assetName,
-																   WalletGrpc.WalletBlockingStub blockingStubFull) {
-		ByteString assetNameBs = ByteString.copyFrom(assetName.getBytes());
-		BytesMessage request = BytesMessage.newBuilder().setValue(assetNameBs).build();
-		AssetIssueList assetIssueList = blockingStubFull.getAssetIssueListByName(request);
-		return Optional.ofNullable(assetIssueList);
-	}
-
-	/**
-	 * constructor.
-	 */
-
 	public static Contract.AssetIssueContract getAssetIssueById(long assetId,
 																WalletGrpc.WalletBlockingStub blockingStubFull) {
 		ByteString assetIdBs = ByteString.copyFrom(ByteArray.fromLong(assetId));

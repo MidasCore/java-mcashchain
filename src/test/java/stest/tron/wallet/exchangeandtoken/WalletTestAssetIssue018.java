@@ -180,13 +180,6 @@ public class WalletTestAssetIssue018 {
 
 		BytesMessage request = BytesMessage.newBuilder().setValue(assetNameBs).build();
 
-		AssetIssueList assetIssueList = blockingStubFull.getAssetIssueListByName(request);
-		Assert.assertTrue(assetIssueList.getAssetIssueCount() == 3);
-		for (AssetIssueContract assetIssue : assetIssueList.getAssetIssueList()) {
-			Assert.assertTrue(assetIssue.getTotalSupply() == totalSupply);
-
-		}
-
 		Account getAssetIdFromThisAccount;
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(assetAccount1Key, blockingStubFull);
 		final long assetAccount1Id = getAssetIdFromThisAccount.getAssetIssuedId();

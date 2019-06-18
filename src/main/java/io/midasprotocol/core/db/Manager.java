@@ -484,6 +484,7 @@ public class Manager {
 					if (!this.accountStore.has(keyOwnerAddress)) {
 						AccountCapsule ownerAccountCapsule = new AccountCapsule(ByteString.EMPTY,
 							ownerAddress, AccountType.AssetIssue, 0L);
+						ownerAccountCapsule.setIsCommittee(true);
 						this.accountStore.put(keyOwnerAddress, ownerAccountCapsule);
 					}
 

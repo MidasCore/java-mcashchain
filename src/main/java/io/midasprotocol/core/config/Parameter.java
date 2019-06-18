@@ -67,7 +67,7 @@ public interface Parameter {
 	interface ChainConstant {
 
 		long TRANSFER_FEE = 0; // free
-		int SOLIDIFIED_THRESHOLD = 70; // 70%
+		int SOLIDIFIED_THRESHOLD = 60;
 		int PRIVATE_KEY_LENGTH = 64;
 		int MAX_ACTIVE_WITNESS_NUM = 64;
 		int BLOCK_SIZE = 2_000_000;
@@ -144,12 +144,5 @@ public interface Parameter {
 		int PERIODS_MS = 60_000;
 		int LIMIT_MULTIPLIER = 1000; //s
 	}
-
-//	@Deprecated
-//	interface ForkBlockVersionConsts {
-//
-//		int START_NEW_TRANSACTION = 4;
-//		int ENERGY_LIMIT = 5;
-//	}
 
 }

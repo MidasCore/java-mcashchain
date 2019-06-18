@@ -5,6 +5,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.ProposalCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
 import io.midasprotocol.core.config.Parameter.ChainParameters;
@@ -104,24 +105,25 @@ public class ProposalCreateActuator extends AbstractActuator {
 			throw new ContractValidateException("Invalid address");
 		}
 
+		AccountCapsule ownerAccountCapsule;
+
 		if (!Objects.isNull(deposit)) {
-			if (Objects.isNull(deposit.getAccount(ownerAddress))) {
+			ownerAccountCapsule = deposit.getAccount(ownerAddress);
+			if (Objects.isNull(ownerAccountCapsule)) {
 				throw new ContractValidateException(
 					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
 			}
-		} else if (!dbManager.getAccountStore().has(ownerAddress)) {
-			throw new ContractValidateException(
-				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+		} else {
+			ownerAccountCapsule = dbManager.getAccountStore().get(ownerAddress);
+			if (Objects.isNull(ownerAccountCapsule)) {
+				throw new ContractValidateException(
+					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+			}
 		}
 
-		if (!Objects.isNull(getDeposit())) {
-			if (Objects.isNull(getDeposit().getWitness(ownerAddress))) {
-				throw new ContractValidateException(
-					WITNESS_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
-			}
-		} else if (!dbManager.getWitnessStore().has(ownerAddress)) {
+		if (!ownerAccountCapsule.getIsCommittee()) {
 			throw new ContractValidateException(
-				WITNESS_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " does not have right");
 		}
 
 		if (contract.getParametersMap().size() == 0) {

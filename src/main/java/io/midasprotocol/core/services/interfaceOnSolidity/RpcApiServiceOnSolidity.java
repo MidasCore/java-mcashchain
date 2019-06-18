@@ -189,27 +189,10 @@ public class RpcApiServiceOnSolidity implements Service {
 		}
 
 		@Override
-		public void getAssetIssueByName(BytesMessage request,
-										StreamObserver<AssetIssueContract> responseObserver) {
-			walletOnSolidity.futureGet(
-				() -> rpcApiService.getWalletSolidityApi().getAssetIssueByName(request, responseObserver)
-			);
-		}
-
-		@Override
 		public void getAssetIssueList(EmptyMessage request,
 									  StreamObserver<AssetIssueList> responseObserver) {
 			walletOnSolidity.futureGet(
 				() -> rpcApiService.getWalletSolidityApi().getAssetIssueList(request, responseObserver)
-			);
-		}
-
-		@Override
-		public void getAssetIssueListByName(BytesMessage request,
-											StreamObserver<AssetIssueList> responseObserver) {
-			walletOnSolidity.futureGet(
-				() -> rpcApiService.getWalletSolidityApi()
-					.getAssetIssueListByName(request, responseObserver)
 			);
 		}
 

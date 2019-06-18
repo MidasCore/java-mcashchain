@@ -110,37 +110,16 @@ public class WalletTestAssetIssue020 {
 		getAssetIdFromThisAccount = PublicMethed.queryAccount(asset020Address, blockingStubFull);
 		assetAccountId = getAssetIdFromThisAccount.getAssetIssuedId();
 
-		Contract.AssetIssueContract assetIssueInfo = PublicMethed
-				.getAssetIssueByName(name, blockingStubFull);
-		final Integer preCisionByName = assetIssueInfo.getPrecision();
-		final Long TotalSupplyByName = assetIssueInfo.getTotalSupply();
-
-		assetIssueInfo = PublicMethed.getAssetIssueById(assetAccountId, blockingStubFull);
-		final Integer preCisionById = assetIssueInfo.getPrecision();
-		final Long TotalSupplyById = assetIssueInfo.getTotalSupply();
-
-		assetIssueInfo = PublicMethed.getAssetIssueListByName(name, blockingStubFull)
-				.get().getAssetIssue(0);
-		final Integer preCisionByListName = assetIssueInfo.getPrecision();
-		final Long TotalSupplyByListName = assetIssueInfo.getTotalSupply();
-
-		logger.info("precision is " + preCisionByName);
-		logger.info("precision is " + preCisionById);
-		logger.info("precision is " + preCisionByListName);
-		logger.info("totalsupply is " + TotalSupplyByName);
-		logger.info("totalsupply is " + TotalSupplyById);
-		logger.info("totalsupply is " + TotalSupplyByListName);
-		Assert.assertEquals(preCisionById, preCisionByListName);
-		Assert.assertEquals(preCisionById, preCisionByName);
-		Assert.assertEquals(TotalSupplyById, TotalSupplyByListName);
-		Assert.assertEquals(TotalSupplyById, TotalSupplyByName);
-
 		//When precision is 6, is equal to default.
 		Assert.assertTrue(PublicMethed.createAssetIssue(asset020SecondAddress,
 				name, totalSupply, 1, 1, 1, start, end, 1, description, url,
 				2000L, 2000L, 1L, 1L, asset020SecondKey, blockingStubFull));
 
-		assetIssueInfo = PublicMethed.getAssetIssueByName(name, blockingStubFull);
+		Account account;
+		account = PublicMethed.queryAccount(asset020SecondAddress, blockingStubFull);
+		assetAccountId = account.getAssetIssuedId();
+
+		Contract.AssetIssueContract assetIssueInfo = PublicMethed.getAssetIssueById(assetAccountId, blockingStubFull);
 		Assert.assertTrue(assetIssueInfo.getName().isEmpty());
 
 	}

@@ -6,6 +6,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.ProposalCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
 import io.midasprotocol.core.db.Manager;
@@ -87,24 +88,25 @@ public class ProposalApproveActuator extends AbstractActuator {
 			throw new ContractValidateException("Invalid address");
 		}
 
-		if (!Objects.isNull(getDeposit())) {
-			if (Objects.isNull(getDeposit().getAccount(ownerAddress))) {
+		AccountCapsule ownerAccountCapsule;
+
+		if (!Objects.isNull(deposit)) {
+			ownerAccountCapsule = deposit.getAccount(ownerAddress);
+			if (Objects.isNull(ownerAccountCapsule)) {
 				throw new ContractValidateException(
 					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
 			}
-		} else if (!dbManager.getAccountStore().has(ownerAddress)) {
-			throw new ContractValidateException(ACCOUNT_EXCEPTION_STR + readableOwnerAddress
-				+ NOT_EXIST_STR);
+		} else {
+			ownerAccountCapsule = dbManager.getAccountStore().get(ownerAddress);
+			if (Objects.isNull(ownerAccountCapsule)) {
+				throw new ContractValidateException(
+					ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
+			}
 		}
 
-		if (!Objects.isNull(getDeposit())) {
-			if (Objects.isNull(getDeposit().getWitness(ownerAddress))) {
-				throw new ContractValidateException(
-					WITNESS_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
-			}
-		} else if (!dbManager.getWitnessStore().has(ownerAddress)) {
-			throw new ContractValidateException(WITNESS_EXCEPTION_STR + readableOwnerAddress
-				+ NOT_EXIST_STR);
+		if (!ownerAccountCapsule.getIsCommittee()) {
+			throw new ContractValidateException(
+				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " does not have right");
 		}
 
 		long latestProposalNum = Objects.isNull(getDeposit()) ? dbManager.getDynamicPropertiesStore()

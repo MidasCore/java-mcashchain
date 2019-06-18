@@ -3,6 +3,7 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.util.ConversionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
@@ -86,6 +87,14 @@ public class ProposalDeleteActuatorTest {
 						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
 						10_000_000L,
 						URL);
+		AccountCapsule ownerAccountCapsule =
+			new AccountCapsule(
+				ByteString.copyFromUtf8(""),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(300));
+		ownerAccountCapsule.setIsCommittee(true);
+
 		AccountCapsule ownerAccountFirstCapsule =
 				new AccountCapsule(
 						ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
@@ -99,6 +108,8 @@ public class ProposalDeleteActuatorTest {
 						AccountType.Normal,
 						200_000_000_000L);
 
+		dbManager.getAccountStore()
+			.put(ownerAccountCapsule.getAddress().toByteArray(), ownerAccountCapsule);
 		dbManager.getAccountStore()
 				.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
 		dbManager.getAccountStore()
@@ -118,7 +129,7 @@ public class ProposalDeleteActuatorTest {
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(0L, 3 * 27 * 1000L);
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 0);
 		try {
@@ -162,7 +173,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id), dbManager);
+				getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -270,7 +281,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 2;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id), dbManager);
+				getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -293,7 +304,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id), dbManager);
+				getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -316,7 +327,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id), dbManager);
+				getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {

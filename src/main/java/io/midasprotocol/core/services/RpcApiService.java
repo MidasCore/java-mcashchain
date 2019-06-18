@@ -280,36 +280,6 @@ public class RpcApiService implements Service {
 		}
 
 		@Override
-		public void getAssetIssueByName(BytesMessage request,
-										StreamObserver<AssetIssueContract> responseObserver) {
-			ByteString assetName = request.getValue();
-			if (assetName != null) {
-				try {
-					responseObserver.onNext(wallet.getAssetIssueByName(assetName));
-				} catch (NonUniqueObjectException e) {
-					responseObserver.onNext(null);
-					logger.error("Solidity NonUniqueObjectException: {}", e.getMessage());
-				}
-			} else {
-				responseObserver.onNext(null);
-			}
-			responseObserver.onCompleted();
-		}
-
-		@Override
-		public void getAssetIssueListByName(BytesMessage request,
-											StreamObserver<AssetIssueList> responseObserver) {
-			ByteString assetName = request.getValue();
-
-			if (assetName != null) {
-				responseObserver.onNext(wallet.getAssetIssueListByName(assetName));
-			} else {
-				responseObserver.onNext(null);
-			}
-			responseObserver.onCompleted();
-		}
-
-		@Override
 		public void getAssetIssueById(BytesMessage request,
 									  StreamObserver<AssetIssueContract> responseObserver) {
 			ByteString assetId = request.getValue();
@@ -984,36 +954,6 @@ public class RpcApiService implements Service {
 
 			if (fromBs != null) {
 				responseObserver.onNext(wallet.getAccountResource(fromBs));
-			} else {
-				responseObserver.onNext(null);
-			}
-			responseObserver.onCompleted();
-		}
-
-		@Override
-		public void getAssetIssueByName(BytesMessage request,
-										StreamObserver<AssetIssueContract> responseObserver) {
-			ByteString assetName = request.getValue();
-			if (assetName != null) {
-				try {
-					responseObserver.onNext(wallet.getAssetIssueByName(assetName));
-				} catch (NonUniqueObjectException e) {
-					responseObserver.onNext(null);
-					logger.debug("FullNode NonUniqueObjectException: {}", e.getMessage());
-				}
-			} else {
-				responseObserver.onNext(null);
-			}
-			responseObserver.onCompleted();
-		}
-
-		@Override
-		public void getAssetIssueListByName(BytesMessage request,
-											StreamObserver<AssetIssueList> responseObserver) {
-			ByteString assetName = request.getValue();
-
-			if (assetName != null) {
-				responseObserver.onNext(wallet.getAssetIssueListByName(assetName));
 			} else {
 				responseObserver.onNext(null);
 			}

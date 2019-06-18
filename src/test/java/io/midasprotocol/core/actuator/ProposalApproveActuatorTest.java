@@ -2,14 +2,12 @@ package io.midasprotocol.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import io.midasprotocol.core.Wallet;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.ProposalCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
@@ -25,6 +23,8 @@ import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Proposal.State;
 import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -82,31 +82,40 @@ public class ProposalApproveActuatorTest {
 	@Before
 	public void initTest() {
 		WitnessCapsule ownerWitnessFirstCapsule =
-				new WitnessCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						10_000_000L,
-						URL);
-		AccountCapsule ownerAccountFirstCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
-						AccountType.Normal,
-						ConversionUtil.McashToMatoshi(300));
-		AccountCapsule ownerAccountSecondCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
-						AccountType.Normal,
-						ConversionUtil.McashToMatoshi(200_000));
+			new WitnessCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				10_000_000L,
+				URL);
+		AccountCapsule ownerAccountCapsule =
+			new AccountCapsule(
+				ByteString.copyFromUtf8(""),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(300));
+		ownerAccountCapsule.setIsCommittee(true);
+		AccountCapsule supernodeAccountFirstCapsule =
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(300));
+		AccountCapsule supernodeAccountSecondCapsule =
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(200_000));
 
 		dbManager.getAccountStore()
-				.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
+			.put(ownerAccountCapsule.getAddress().toByteArray(), ownerAccountCapsule);
 		dbManager.getAccountStore()
-				.put(ownerAccountSecondCapsule.getAddress().toByteArray(), ownerAccountSecondCapsule);
+			.put(supernodeAccountFirstCapsule.getAddress().toByteArray(), supernodeAccountFirstCapsule);
+		dbManager.getAccountStore()
+			.put(supernodeAccountSecondCapsule.getAddress().toByteArray(), supernodeAccountSecondCapsule);
 
 		dbManager.getWitnessStore().put(ownerWitnessFirstCapsule.getAddress().toByteArray(),
-				ownerWitnessFirstCapsule);
+			ownerWitnessFirstCapsule);
 
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1000000);
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderNumber(10);
@@ -119,7 +128,7 @@ public class ProposalApproveActuatorTest {
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(0L, 6 * 27 * 1000L);
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, paras), dbManager);
+			new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 0);
 		try {
@@ -132,7 +141,7 @@ public class ProposalApproveActuatorTest {
 			Assert.assertEquals(proposalCapsule.getApprovals().size(), 0);
 			Assert.assertEquals(proposalCapsule.getCreateTime(), 1000000);
 			Assert.assertEquals(proposalCapsule.getExpirationTime(),
-					261200000); // 2000000 + 3 * 4 * 21600000
+				261200000); // 2000000 + 3 * 4 * 21600000
 		} catch (ContractValidateException | ContractExeException | ItemNotFoundException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -140,19 +149,19 @@ public class ProposalApproveActuatorTest {
 
 	private Any getContract(String address, HashMap<Long, Long> paras) {
 		return Any.pack(
-				Contract.ProposalCreateContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.putAllParameters(paras)
-						.build());
+			Contract.ProposalCreateContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.putAllParameters(paras)
+				.build());
 	}
 
 	private Any getContract(String address, long id, boolean isAddApproval) {
 		return Any.pack(
-				Contract.ProposalApproveContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setProposalId(id)
-						.setIsAddApproval(isAddApproval)
-						.build());
+			Contract.ProposalApproveContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.setProposalId(id)
+				.setIsAddApproval(isAddApproval)
+				.build());
 	}
 
 	/**
@@ -165,7 +174,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id, true), dbManager);
+			getContract(OWNER_ADDRESS, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -187,14 +196,14 @@ public class ProposalApproveActuatorTest {
 			}
 			Assert.assertEquals(proposalCapsule.getApprovals().size(), 1);
 			Assert.assertEquals(proposalCapsule.getApprovals().get(0),
-					ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)));
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
 
 		// isAddApproval == false
 		ProposalApproveActuator actuator2 = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, 1, false), dbManager);
+			getContract(OWNER_ADDRESS, 1, false), dbManager);
 		TransactionResultCapsule ret2 = new TransactionResultCapsule();
 		try {
 			proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(id));
@@ -229,7 +238,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_INVALID, id, true), dbManager);
+			getContract(SUPERNODE_ADDRESS_INVALID, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -260,7 +269,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_NOACCOUNT, id, true), dbManager);
+			getContract(SUPERNODE_ADDRESS_NOACCOUNT, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -291,7 +300,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_SECOND, id, true), dbManager);
+			getContract(SUPERNODE_ADDRESS_SECOND, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -304,10 +313,10 @@ public class ProposalApproveActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail("Witness " + SUPERNODE_ADDRESS_SECOND + " does not exist");
+			Assert.fail("Account " + SUPERNODE_ADDRESS_SECOND + " does not have right");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("Witness " + SUPERNODE_ADDRESS_SECOND + " does not exist",
-					e.getMessage());
+			Assert.assertEquals("Account " + SUPERNODE_ADDRESS_SECOND + " does not have right",
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -323,7 +332,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id, true), dbManager);
+			getContract(OWNER_ADDRESS, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -345,7 +354,7 @@ public class ProposalApproveActuatorTest {
 		long id = 1;
 
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id, true), dbManager);
+			getContract(OWNER_ADDRESS, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -355,18 +364,18 @@ public class ProposalApproveActuatorTest {
 			return;
 		}
 		proposalCapsule
-				.addApproval(ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)));
+			.addApproval(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
 		dbManager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
 		String readableOwnerAddress = StringUtil.createReadableString(
-				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)));
+			ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
 		try {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.fail("Witness " + readableOwnerAddress + " has approved "
-					+ "proposal " + id + " before");
+				+ "proposal " + id + " before");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Witness " + readableOwnerAddress + " has approved "
-					+ "proposal " + id + " before", e.getMessage());
+				+ "proposal " + id + " before", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -382,7 +391,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id, true), dbManager);
+			getContract(OWNER_ADDRESS, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -405,7 +414,7 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id, true), dbManager);
+			getContract(OWNER_ADDRESS, id, true), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -423,7 +432,7 @@ public class ProposalApproveActuatorTest {
 			Assert.fail("Proposal " + id + " canceled");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Proposal " + id + " canceled",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -440,10 +449,10 @@ public class ProposalApproveActuatorTest {
 
 		// isAddApproval == true
 		ProposalApproveActuator actuator = new ProposalApproveActuator(
-				getContract(SUPERNODE_ADDRESS_FIRST, id, false), dbManager);
+			getContract(OWNER_ADDRESS, id, false), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		String readableOwnerAddress = StringUtil.createReadableString(
-				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)));
+			ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
 		ProposalCapsule proposalCapsule;
 		try {
 			proposalCapsule = dbManager.getProposalStore().get(ByteArray.fromLong(id));
@@ -459,7 +468,7 @@ public class ProposalApproveActuatorTest {
 			Assert.fail("Witness " + readableOwnerAddress + " has not approved " + "proposal " + id + " before");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Witness " + readableOwnerAddress + " has not approved "
-					+ "proposal " + id + " before", e.getMessage());
+				+ "proposal " + id + " before", e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

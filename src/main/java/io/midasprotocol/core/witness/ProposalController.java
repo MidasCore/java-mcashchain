@@ -1,7 +1,9 @@
 package io.midasprotocol.core.witness;
 
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.capsule.ProposalCapsule;
+import io.midasprotocol.core.capsule.WitnessCapsule;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.protos.Protocol.Proposal.State;
 import lombok.Getter;
@@ -46,13 +48,13 @@ public class ProposalController {
 			}
 
 			if (proposalCapsule.hasProcessed()) {
-				logger.info("Proposal has processed，id:[{}], skip it and before it", proposalCapsule.getID());
+				logger.info("Proposal has processed，id:[{}], skip it and before it", proposalCapsule.getId());
 				//proposals with number less than this one, have been processed before
 				break;
 			}
 
 			if (proposalCapsule.hasCanceled()) {
-				logger.info("Proposal has canceled，id:[{}], skip it", proposalCapsule.getID());
+				logger.info("Proposal has canceled，id:[{}], skip it", proposalCapsule.getId());
 				proposalNum--;
 				continue;
 			}
@@ -65,20 +67,32 @@ public class ProposalController {
 			}
 
 			proposalNum--;
-			logger.info("Proposal has not expired，id:[{}], skip it", proposalCapsule.getID());
+			logger.info("Proposal has not expired，id:[{}], skip it", proposalCapsule.getId());
 		}
 		logger.info("Processing proposals done, oldest proposal[{}]", proposalNum);
 	}
 
-	public void processProposal(ProposalCapsule proposalCapsule) {
+	public boolean hasMostApprovals(ProposalCapsule proposalCapsule, List<ByteString> activeWitnesses) {
+		long count = 0;
+		List<ByteString> approvals = proposalCapsule.getApprovals();
+		for (ByteString witness: activeWitnesses) {
+			logger.info(StringUtil.createReadableString(witness));
+			WitnessCapsule witnessCapsule = this.manager.getWitnessStore().get(witness.toByteArray());
+			if (witnessCapsule != null && approvals.contains(witnessCapsule.getOwnerAddress())) {
+				count++;
+			}
+		}
+		return count > activeWitnesses.size() / 2;
+	}
 
+	public void processProposal(ProposalCapsule proposalCapsule) {
 		List<ByteString> activeWitnesses = this.manager.getWitnessScheduleStore().getActiveWitnesses();
-		if (proposalCapsule.hasMostApprovals(activeWitnesses)) {
+		if (this.hasMostApprovals(proposalCapsule, activeWitnesses)) {
 			logger.info(
 				"Processing proposal, id: {}, it has received most approvals, "
 					+ "begin to set dynamic parameter: {}, "
 					+ "and set proposal state as APPROVED",
-				proposalCapsule.getID(), proposalCapsule.getParameters());
+				proposalCapsule.getId(), proposalCapsule.getParameters());
 			setDynamicParameters(proposalCapsule);
 			proposalCapsule.setState(State.APPROVED);
 			manager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
@@ -86,7 +100,7 @@ public class ProposalController {
 			logger.info(
 				"Processing proposal, id: {}, "
 					+ "it has not received enough approvals, set proposal state as DISAPPROVED",
-				proposalCapsule.getID());
+				proposalCapsule.getId());
 			proposalCapsule.setState(State.DISAPPROVED);
 			manager.getProposalStore().put(proposalCapsule.createDbKey(), proposalCapsule);
 		}

@@ -4,15 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.StringUtil;
-import io.midasprotocol.core.config.Parameter.ChainConstant;
 import io.midasprotocol.protos.Protocol.Proposal;
 import io.midasprotocol.protos.Protocol.Proposal.State;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j(topic = "capsule")
 public class ProposalCapsule implements ProtoCapsule<Proposal> {
@@ -42,11 +39,11 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 		return ByteArray.fromLong(number);
 	}
 
-	public long getID() {
+	public long getId() {
 		return this.proposal.getProposalId();
 	}
 
-	public void setID(long id) {
+	public void setId(long id) {
 		this.proposal = this.proposal.toBuilder()
 			.setProposalId(id)
 			.build();
@@ -139,7 +136,7 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 	}
 
 	public byte[] createDbKey() {
-		return calculateDbKey(getID());
+		return calculateDbKey(getId());
 	}
 
 	@Override
@@ -150,19 +147,5 @@ public class ProposalCapsule implements ProtoCapsule<Proposal> {
 	@Override
 	public Proposal getInstance() {
 		return this.proposal;
-	}
-
-	public boolean hasMostApprovals(List<ByteString> activeWitnesses) {
-		long count = this.proposal.getApprovalsList().stream()
-			.filter(activeWitnesses::contains).count();
-		if (count != this.proposal.getApprovalsCount()) {
-			List<ByteString> InvalidApprovalList = this.proposal.getApprovalsList().stream()
-				.filter(witness -> !activeWitnesses.contains(witness)).collect(Collectors.toList());
-			logger.info("InvalidApprovalList: " + StringUtil.getAddressStringList(InvalidApprovalList));
-		}
-		if (activeWitnesses.size() != ChainConstant.MAX_ACTIVE_WITNESS_NUM) {
-			logger.info("activeWitnesses size = {}", activeWitnesses.size());
-		}
-		return count > activeWitnesses.size() / 2;
 	}
 }

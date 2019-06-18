@@ -101,24 +101,6 @@ public class WalletGrpcClient {
 		return Optional.empty();
 	}
 
-	public AssetIssueContract getAssetIssueByName(String assetName) {
-		ByteString assetNameBs = ByteString.copyFrom(assetName.getBytes());
-		BytesMessage request = BytesMessage.newBuilder().setValue(assetNameBs).build();
-		return walletBlockingStub.getAssetIssueByName(request);
-	}
-
-	public Optional<AssetIssueList> getAssetIssueListByName(String assetName) {
-		ByteString assetNameBs = ByteString.copyFrom(assetName.getBytes());
-		BytesMessage request = BytesMessage.newBuilder().setValue(assetNameBs).build();
-
-		AssetIssueList assetIssueList = walletBlockingStub
-			.getAssetIssueListByName(request);
-		if (assetIssueList != null) {
-			return Optional.of(assetIssueList);
-		}
-		return Optional.empty();
-	}
-
 	public AssetIssueContract getAssetIssueById(String assetId) {
 		ByteString assetIdBs = ByteString.copyFrom(assetId.getBytes());
 		BytesMessage request = BytesMessage.newBuilder().setValue(assetIdBs).build();
