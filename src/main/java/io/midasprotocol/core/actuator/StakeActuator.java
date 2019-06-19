@@ -50,7 +50,7 @@ public class StakeActuator extends AbstractActuator {
 		long newBalance = accountCapsule.getBalance() - stakeContract.getStakeAmount();
 
 		long stakeAmount = stakeContract.getStakeAmount();
-		long expireTime = now + duration;
+		long expireTime = Math.max(now + duration, accountCapsule.getStakeExpirationTime());
 		byte[] ownerAddress = stakeContract.getOwnerAddress().toByteArray();
 
 		long newStakeAmount = stakeAmount + accountCapsule.getNormalStakeAmount();

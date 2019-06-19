@@ -598,6 +598,13 @@ public class AccountCapsule implements ProtoCapsule<Account>, Comparable<Account
 		return 0;
 	}
 
+	public long getStakeExpirationTime() {
+		if (this.account.hasStake()) {
+			return getStake().getExpirationTime();
+		}
+		return 0;
+	}
+
 	public void clearWitnessStake() {
 		this.account = this.account.toBuilder().clearWitnessStake().build();
 	}
