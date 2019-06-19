@@ -481,12 +481,15 @@ public class Manager {
 					byte[] keyOwnerAddress = key.getOwnerAddress();
 					ByteString ownerAddress = ByteString.copyFrom(keyOwnerAddress);
 
+					AccountCapsule ownerAccountCapsule;
 					if (!this.accountStore.has(keyOwnerAddress)) {
-						AccountCapsule ownerAccountCapsule = new AccountCapsule(ByteString.EMPTY,
+						ownerAccountCapsule = new AccountCapsule(ByteString.EMPTY,
 							ownerAddress, AccountType.AssetIssue, 0L);
-						ownerAccountCapsule.setIsCommittee(true);
-						this.accountStore.put(keyOwnerAddress, ownerAccountCapsule);
+					} else {
+						ownerAccountCapsule = this.accountStore.get(keyOwnerAddress);
 					}
+					ownerAccountCapsule.setIsCommittee(true);
+					this.accountStore.put(keyOwnerAddress, ownerAccountCapsule);
 
 					final WitnessCapsule witnessCapsule =
 						new WitnessCapsule(address, ownerAddress, key.getVoteCount(), key.getUrl());
