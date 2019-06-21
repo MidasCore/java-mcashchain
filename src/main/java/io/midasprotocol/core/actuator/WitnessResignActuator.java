@@ -48,10 +48,14 @@ public class WitnessResignActuator extends AbstractActuator {
 		long now = dbManager.getHeadBlockTimeStamp();
 		long duration = dbManager.getDynamicPropertiesStore().getResignStakeTimeInDay()
 			* Parameter.TimeConstant.MS_PER_DAY;
-		long newStake = owner.getTotalStakeAmount();
+		long newStake = owner.getNormalStakeAmount() + Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT;
 		long expirationTime = Math.max(now + duration, owner.getStakeExpirationTime());
 
-		owner.clearWitnessStake();
+		if (owner.getWitnessStakeAmount() == Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT) {
+			owner.clearWitnessStake();
+		} else {
+			owner.setWitnessStake(owner.getWitnessStakeAmount() - Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT);
+		}
 		owner.setStake(newStake, expirationTime);
 
 		this.dbManager.getAccountStore().put(ownerAddress.toByteArray(), owner);

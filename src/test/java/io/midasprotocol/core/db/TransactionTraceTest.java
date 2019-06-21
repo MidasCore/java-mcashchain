@@ -63,17 +63,8 @@ public class TransactionTraceTest {
 	private static ByteString ownerAddress = ByteString.copyFrom(ByteArray.fromInt(1));
 	private static ByteString contractAddress = ByteString.copyFrom(ByteArray.fromInt(2));
 
-	/*
-	 * DeployContract tracetestContract [{"constant":false,"inputs":[{"name":"account_id","type":"uint256"}],"name":"getVoters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"voters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"vote","type":"uint256"}],"name":"addVoters","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}] 608060405234801561001057600080fd5b5060015b620186a0811015610038576000818152602081905260409020819055600a01610014565b5061010b806100486000396000f30060806040526004361060525763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166386b646f281146057578063da58c7d914607e578063eb91a5ff146093575b600080fd5b348015606257600080fd5b50606c60043560aa565b60408051918252519081900360200190f35b348015608957600080fd5b50606c60043560bc565b348015609e57600080fd5b5060a860043560ce565b005b60009081526020819052604090205490565b60006020819052908152604090205481565b6000818152602081905260409020555600a165627a7a72305820f9935f89890e51bcf3ea98fa4841c91ac5957a197d99eeb7879a775b30ee9a2d0029   1000000000 100
-	 * */
-	/*
-	 * DeployContract tracetestContract [{"constant":false,"inputs":[{"name":"account_id","type":"uint256"}],"name":"getVoters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"voters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"vote","type":"uint256"}],"name":"addVoters","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}] 608060405234801561001057600080fd5b5060015b620186a0811015610038576000818152602081905260409020819055600a01610014565b5061010b806100486000396000f30060806040526004361060525763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166386b646f281146057578063da58c7d914607e578063eb91a5ff146093575b600080fd5b348015606257600080fd5b50606c60043560aa565b60408051918252519081900360200190f35b348015608957600080fd5b50606c60043560bc565b348015609e57600080fd5b5060a860043560ce565b005b60009081526020819052604090205490565b60006020819052908152604090205481565b6000818152602081905260409020555600a165627a7a72305820f9935f89890e51bcf3ea98fa4841c91ac5957a197d99eeb7879a775b30ee9a2d0029   1000000000 40
-	 * */
 	private static String OwnerAddress = "MJsKN8eHy6rH19B688QfKNfnhTDJUc1mX8";
 	private static String TriggerOwnerAddress = "MRBGoSSnzSfrqvFJkaP11B3WockyiDknoU";
-	/*
-	 * triggercontract TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj addVoters(uint256) 113 false 1000000000 0
-	 * */
 
 	static {
 		Args.setParam(
@@ -249,8 +240,8 @@ public class TransactionTraceTest {
 		trace.exec();
 		trace.pay();
 		Assert.assertEquals(0, trace.getReceipt().getEnergyUsage());
-		Assert.assertEquals(202520000, trace.getReceipt().getEnergyFee());
-		Assert.assertEquals(202520000,
+		Assert.assertEquals(20252000, trace.getReceipt().getEnergyFee());
+		Assert.assertEquals(20252000,
 			trace.getReceipt().getEnergyUsage() * Constant.MATOSHI_PER_ENERGY + trace.getReceipt().getEnergyFee());
 		accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
 		Assert.assertEquals(totalBalance,
@@ -274,7 +265,7 @@ public class TransactionTraceTest {
 		trace.exec();
 		trace.pay();
 		Assert.assertEquals(0, trace.getReceipt().getEnergyUsage());
-		Assert.assertEquals(20508310000L, trace.getReceipt().getEnergyFee());
+		Assert.assertEquals(2050831000L, trace.getReceipt().getEnergyFee());
 		accountCapsule = dbManager.getAccountStore().get(accountCapsule.getAddress().toByteArray());
 		Assert.assertEquals(totalBalance,
 			trace.getReceipt().getEnergyFee() + accountCapsule

@@ -44,7 +44,7 @@ public class AccountStore extends TronStoreWithRevoking<AccountCapsule> {
 	 * Min TRX account.
 	 */
 	public AccountCapsule getBlackhole() {
-		return getUnchecked(assertsAddress.get("Blackhole"));
+		return getUnchecked(assertsAddress.get("Mcash Burn"));
 	}
 
 }

@@ -1,5 +1,6 @@
 package io.midasprotocol.common.runtime;
 
+import io.midasprotocol.common.runtime.vm.DataWord;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -22,7 +23,6 @@ import io.midasprotocol.core.exception.ReceiptCheckErrException;
 import io.midasprotocol.core.exception.VMIllegalException;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction;
-import stest.tron.wallet.common.client.utils.DataWord;
 
 import java.io.File;
 

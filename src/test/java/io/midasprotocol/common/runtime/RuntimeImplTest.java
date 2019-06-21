@@ -43,9 +43,9 @@ public class RuntimeImplTest {
 	private String dbPath = "output_RuntimeImplTest";
 	private Application AppT;
 	private byte[] callerAddress;
-	private long callerTotalBalance = 400_000_000_000L;
+	private long callerTotalBalance = 40_000_000_000L;
 	private byte[] creatorAddress;
-	private long creatorTotalBalance = 300_000_000_000L;
+	private long creatorTotalBalance = 30_000_000_000L;
 
 	/**
 	 * Init data.
@@ -59,7 +59,7 @@ public class RuntimeImplTest {
 		creatorAddress = Hex.decode(Wallet.getAddressPreFixString() + "abd4b9367799eaa3197fecb144eb71de1e049abd");
 		dbManager = context.getBean(Manager.class);
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647838000L);
-		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(5_000_000_000L); // unit is trx
+		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(500_000_000L); // unit is trx
 		deposit = DepositImpl.createRoot(dbManager);
 		deposit.createAccount(callerAddress, AccountType.Normal);
 		deposit.addBalance(callerAddress, callerTotalBalance);
@@ -95,8 +95,8 @@ public class RuntimeImplTest {
 	@Test
 	public void getCreatorEnergyLimit2Test() {
 
-		long value = 1000L;
-		long feeLimit = 100_000_000_000L;
+		long value = 100L;
+		long feeLimit = 10_000_000_000L;
 		long consumeUserResourcePercent = 0L;
 		String contractName = "test";
 		String ABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],\"name\":\"testConstant\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],\"name\":\"testNotConstant\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]";
@@ -116,41 +116,41 @@ public class RuntimeImplTest {
 				runtimeImpl.getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
 				expectEnergyLimit1);
 
-		value = 250_000_000_000L;
+		value = 25_000_000_000L;
 		long expectEnergyLimit2 = 5_000_000L;
 		Assert.assertEquals(
 				runtimeImpl.getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
 				expectEnergyLimit2);
 
-		value = 1000L;
-		feeLimit = 100_000_000L;
+		value = 100L;
+		feeLimit = 10_000_000L;
 		long expectEnergyLimit3 = 10_000L;
 		Assert.assertEquals(
 				runtimeImpl.getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
 				expectEnergyLimit3);
 
-		long frozenBalance = 100_000_000_000L;
+		long frozenBalance = 10_000_000_000L;
 		long newBalance = creatorAccount.getBalance() - frozenBalance;
 		creatorAccount.setFrozenForEnergy(frozenBalance, 0L);
 		creatorAccount.setBalance(newBalance);
 		deposit.putAccountValue(creatorAddress, creatorAccount);
 		deposit.commit();
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		long expectEnergyLimit4 = 10_000_000L;
 		Assert.assertEquals(
 				runtimeImpl.getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
 				expectEnergyLimit4);
 
-		feeLimit = 300_000_000_000L;
-		value = 1000L;
-		long expectEnergyLimit5 = 20_009_999L;
+		feeLimit = 30_000_000_000L;
+		value = 100L;
+		long expectEnergyLimit5 = 20_009_999;
 		Assert.assertEquals(
 				runtimeImpl.getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
 				expectEnergyLimit5);
 
-		feeLimit = 300_000L;
-		value = 1000L;
+		feeLimit = 30_000L;
+		value = 100L;
 		long expectEnergyLimit6 = 30L;
 		Assert.assertEquals(
 				runtimeImpl.getAccountEnergyLimitWithFixRatio(creatorAccount, feeLimit, value),
@@ -163,7 +163,7 @@ public class RuntimeImplTest {
 			throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
 
 		long value = 0;
-		long feeLimit = 100_000_000_000L; // sun
+		long feeLimit = 10_000_000_000L;
 		long consumeUserResourcePercent = 0L;
 		long creatorEnergyLimit = 5_000L;
 		String contractName = "test";
@@ -189,7 +189,7 @@ public class RuntimeImplTest {
 		AccountCapsule callerAccount = deposit.getAccount(callerAddress);
 		Contract.TriggerSmartContract contract = ContractCapsule.getTriggerContractFromTransaction(trx);
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		value = 0L;
 		long expectEnergyLimit1 = 10_000_000L;
 		Assert.assertEquals(
@@ -198,14 +198,14 @@ public class RuntimeImplTest {
 								value),
 				expectEnergyLimit1);
 
-		long creatorFrozenBalance = 100_000_000_000L;
+		long creatorFrozenBalance = 10_000_000_000L;
 		long newBalance = creatorAccount.getBalance() - creatorFrozenBalance;
 		creatorAccount.setFrozenForEnergy(creatorFrozenBalance, 0L);
 		creatorAccount.setBalance(newBalance);
 		deposit.putAccountValue(creatorAddress, creatorAccount);
 		deposit.commit();
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		value = 0L;
 		long expectEnergyLimit2 = 10_005_000L;
 		Assert.assertEquals(
@@ -214,7 +214,7 @@ public class RuntimeImplTest {
 								value),
 				expectEnergyLimit2);
 
-		value = 350_000_000_000L;
+		value = 35_000_000_000L;
 		long expectEnergyLimit3 = 5_005_000L;
 		Assert.assertEquals(
 				runtimeImpl
@@ -222,8 +222,8 @@ public class RuntimeImplTest {
 								value),
 				expectEnergyLimit3);
 
-		value = 1000L;
-		feeLimit = 500_000_000_000L;
+		value = 100L;
+		feeLimit = 50_000_000_000L;
 		long expectEnergyLimit4 = 40_004_999L;
 		Assert.assertEquals(
 				runtimeImpl
@@ -231,14 +231,14 @@ public class RuntimeImplTest {
 								value),
 				expectEnergyLimit4);
 
-		long callerFrozenBalance = 100_000_000_000L;
+		long callerFrozenBalance = 10_000_000_000L;
 		callerAccount.setFrozenForEnergy(callerFrozenBalance, 0L);
 		callerAccount.setBalance(callerAccount.getBalance() - callerFrozenBalance);
 		deposit.putAccountValue(callerAddress, callerAccount);
 		deposit.commit();
 
-		value = 1000L;
-		feeLimit = 500_000_000_000L;
+		value = 100L;
+		feeLimit = 50_000_000_000L;
 		long expectEnergyLimit5 = 30_014_999L;
 		Assert.assertEquals(
 				runtimeImpl.getTotalEnergyLimitWithFixRatio(creatorAccount, callerAccount, contract, feeLimit, value),
@@ -251,7 +251,7 @@ public class RuntimeImplTest {
 			throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
 
 		long value = 0;
-		long feeLimit = 100_000_000_000L; // sun
+		long feeLimit = 10_000_000_000L; // matoshi
 		long consumeUserResourcePercent = 40L;
 		long creatorEnergyLimit = 5_000L;
 		String contractName = "test";
@@ -277,7 +277,7 @@ public class RuntimeImplTest {
 		AccountCapsule callerAccount = deposit.getAccount(callerAddress);
 		Contract.TriggerSmartContract contract = ContractCapsule.getTriggerContractFromTransaction(trx);
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		value = 0L;
 		long expectEnergyLimit1 = 10_000_000L;
 		Assert.assertEquals(
@@ -293,7 +293,7 @@ public class RuntimeImplTest {
 		deposit.putAccountValue(creatorAddress, creatorAccount);
 		deposit.commit();
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		value = 0L;
 		long expectEnergyLimit2 = 10_005_000L;
 		Assert.assertEquals(
@@ -302,7 +302,7 @@ public class RuntimeImplTest {
 								value),
 				expectEnergyLimit2);
 
-		value = 399_995_000_000L;
+		value = 39_999_500_000L;
 		long expectEnergyLimit3 = 1_250L;
 		Assert.assertEquals(
 				runtimeImpl
@@ -343,7 +343,7 @@ public class RuntimeImplTest {
 		AccountCapsule callerAccount = deposit.getAccount(callerAddress);
 		Contract.TriggerSmartContract contract = ContractCapsule.getTriggerContractFromTransaction(trx);
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		value = 0L;
 		long expectEnergyLimit1 = 10_000_000L;
 		Assert.assertEquals(
@@ -359,7 +359,7 @@ public class RuntimeImplTest {
 		deposit.putAccountValue(creatorAddress, creatorAccount);
 		deposit.commit();
 
-		feeLimit = 100_000_000_000L;
+		feeLimit = 10_000_000_000L;
 		value = 0L;
 		long expectEnergyLimit2 = 10_000_000L;
 		Assert.assertEquals(
@@ -368,7 +368,7 @@ public class RuntimeImplTest {
 								value),
 				expectEnergyLimit2);
 
-		value = 399_995_000_000L;
+		value = 399_995_000_00L;
 		long expectEnergyLimit3 = 500L;
 		Assert.assertEquals(
 				runtimeImpl

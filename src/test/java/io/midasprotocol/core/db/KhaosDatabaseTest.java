@@ -86,7 +86,7 @@ public class KhaosDatabaseTest {
 	}
 
 
-//	@Test
+	@Test
 	@Ignore
 	public void checkWeakReference() throws UnLinkedBlockException, BadNumberBlockException {
 		BlockCapsule blockCapsule = new BlockCapsule(Block.newBuilder().setBlockHeader(

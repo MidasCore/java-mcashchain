@@ -107,7 +107,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule.setFrozenForEnergy(1000_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
@@ -115,7 +115,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule2.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule2.setFrozenForEnergy(1000_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
 		dbManager.getDynamicPropertiesStore()
@@ -146,7 +146,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 					0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
 			Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
 					Contract.newBuilder().setParameter(Any.pack(triggerContract))
-							.setType(ContractType.TriggerSmartContract)).setFeeLimit(100000000000L)).build();
+							.setType(ContractType.TriggerSmartContract)).setFeeLimit(10000000000L)).build();
 			TransactionCapsule trxCap = new TransactionCapsule(transaction);
 			TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
 			dbManager.consumeBandwidth(trxCap, trace);
@@ -188,7 +188,7 @@ public class BandWidthRuntimeOutOfTimeTest {
 				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
 		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
 				Contract.newBuilder().setParameter(Any.pack(smartContract))
-						.setType(ContractType.CreateSmartContract)).setFeeLimit(100000000000L)).build();
+						.setType(ContractType.CreateSmartContract)).setFeeLimit(10000000000L)).build();
 		TransactionCapsule trxCap = new TransactionCapsule(transaction);
 		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
 		dbManager.consumeBandwidth(trxCap, trace);
@@ -203,8 +203,8 @@ public class BandWidthRuntimeOutOfTimeTest {
 		energy = owner.getEnergyUsage() - energy;
 		balance = balance - owner.getBalance();
 		Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(0, energy);
-		Assert.assertEquals(885290000, balance);
+		Assert.assertEquals(50000, energy);
+		Assert.assertEquals(38529000, balance);
 		Assert.assertEquals(88529 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
 		if (runtime.getRuntimeError() != null) {
 			return runtime.getResult().getContractAddress();

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.utils.AbiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.Hash;
@@ -25,15 +26,12 @@ import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.SmartContract;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
-import org.testng.Assert;
-import stest.tron.wallet.common.client.WalletClient;
-import stest.tron.wallet.common.client.utils.AbiUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static stest.tron.wallet.common.client.utils.PublicMethed.jsonStr2Abi;
+import static io.midasprotocol.utils.ContractUtil.jsonStr2Abi;
 
 
 /**
@@ -455,7 +453,7 @@ public class TVMTestUtils {
 			String addr = cur.substring(lastPosition + 1);
 			String libraryAddressHex;
 			try {
-				libraryAddressHex = (new String(Hex.encode(WalletClient.decodeFromBase58Check(addr)),
+				libraryAddressHex = (new String(Hex.encode(Wallet.decodeFromBase58Check(addr)),
 						"US-ASCII")).substring(2);
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);  // now ignore

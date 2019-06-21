@@ -104,7 +104,7 @@ public class BandWidthRuntimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule.setFrozenForEnergy(100_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
@@ -113,7 +113,7 @@ public class BandWidthRuntimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule2.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule2.setFrozenForEnergy(100_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
 		AccountCapsule accountCapsule3 = new AccountCapsule(
@@ -246,8 +246,8 @@ public class BandWidthRuntimeTest {
 		balance = balance - owner.getBalance();
 		Assert.assertNull(runtime.getRuntimeError());
 		Assert.assertEquals(52299, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(0, energy);
-		Assert.assertEquals(522990000, balance);
+		Assert.assertEquals(5000, energy);
+		Assert.assertEquals(47299000, balance);
 		Assert.assertEquals(52299 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
 		Assert.assertNull(runtime.getRuntimeError());
 		return runtime.getResult().getContractAddress();

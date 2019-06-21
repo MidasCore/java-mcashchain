@@ -297,9 +297,6 @@ public class RuntimeImpl implements Runtime {
 				originEnergyLimit);
 		} else {
 			if (consumeUserResourcePercent < Constant.ONE_HUNDRED) {
-				// creatorEnergyLimit =
-				// min(callerEnergyLimit * (100 - percent) / percent, creatorLeftFrozenEnergy, originEnergyLimit)
-
 				creatorEnergyLimit = min(
 					BigInteger.valueOf(callerEnergyLimit)
 						.multiply(BigInteger.valueOf(Constant.ONE_HUNDRED - consumeUserResourcePercent))
@@ -314,12 +311,7 @@ public class RuntimeImpl implements Runtime {
 	public long getTotalEnergyLimit(AccountCapsule creator, AccountCapsule caller,
 									TriggerSmartContract contract, long feeLimit, long callValue)
 		throws ContractValidateException {
-		//  according to version
-//		if (VMConfig.getEnergyLimitHardFork()) {
 		return getTotalEnergyLimitWithFixRatio(creator, caller, contract, feeLimit, callValue);
-//		} else {
-//			return getTotalEnergyLimitWithFloatRatio(creator, caller, contract, feeLimit, callValue);
-//		}
 	}
 
 	private boolean isCheckTransaction() {

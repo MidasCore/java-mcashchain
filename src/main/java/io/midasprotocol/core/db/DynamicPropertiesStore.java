@@ -297,7 +297,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		try {
 			this.getEnergyFee();
 		} catch (IllegalArgumentException e) {
-			this.saveEnergyFee(10000L);// 10000 matoshi per energy
+			this.saveEnergyFee(1000L);// 1000 matoshi per energy
 		}
 
 		try {

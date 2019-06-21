@@ -67,6 +67,11 @@ public class TransferAssetActuator extends AbstractActuator {
 			throw new ContractValidateException("Cannot transfer asset to yourself.");
 		}
 
+
+		if (Arrays.equals(ownerAddress, deposit.getBlackHoleAddress())) {
+			throw new ContractValidateException("Cannot transfer mcash from burn account");
+		}
+
 		AccountCapsule ownerAccount = deposit.getAccount(ownerAddress);
 		if (ownerAccount == null) {
 			throw new ContractValidateException("No owner account!");
@@ -204,6 +209,10 @@ public class TransferAssetActuator extends AbstractActuator {
 
 		if (Arrays.equals(ownerAddress, toAddress)) {
 			throw new ContractValidateException("Cannot transfer asset to yourself.");
+		}
+
+		if (dbManager.getAccountStore().getBlackhole().getAddress().equals(transferAssetContract.getOwnerAddress())) {
+			throw new ContractValidateException("Cannot transfer mcash from burn account");
 		}
 
 		AccountCapsule ownerAccount = this.dbManager.getAccountStore().get(ownerAddress);

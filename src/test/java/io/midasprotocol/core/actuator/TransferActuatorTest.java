@@ -251,11 +251,11 @@ public class TransferActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Cannot transfer trx to yourself.");
+			fail("Cannot transfer mcash to yourself.");
 
 		} catch (ContractValidateException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertEquals("Cannot transfer trx to yourself.", e.getMessage());
+			Assert.assertEquals("Cannot transfer mcash to yourself.", e.getMessage());
 			AccountCapsule owner = dbManager.getAccountStore()
 					.get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount = dbManager.getAccountStore()

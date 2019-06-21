@@ -92,8 +92,6 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 		context = new ApplicationContext(DefaultConfig.class);
 	}
 
-	private String trx2ContractAddress = "TPMBUANrTwwQAPwShn7ZZjTJz1f3F8jknj";
-
 	/**
 	 * Init data.
 	 */
@@ -110,7 +108,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule.setFrozenForEnergy(100_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
@@ -118,7 +116,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule2.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule2.setFrozenForEnergy(100_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
 		dbManager.getDynamicPropertiesStore()
@@ -209,8 +207,8 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 		energy = owner.getEnergyUsage() - energy;
 		balance = balance - owner.getBalance();
 		Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(0, energy);
-		Assert.assertEquals(885290000, balance);
+		Assert.assertEquals(5000, energy);
+		Assert.assertEquals(83529000, balance);
 		Assert.assertEquals(88529 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
 		if (runtime.getRuntimeError() != null) {
 			return runtime.getResult().getContractAddress();
