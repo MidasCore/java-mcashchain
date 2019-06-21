@@ -35,7 +35,7 @@ RUN ./gradlew build || return 0
 
 COPY . .
 
-RUN ./gradlew build -x checkstyleMain -x checkstyleTest
+RUN ./gradlew build
 
 FROM openjdk:8
 

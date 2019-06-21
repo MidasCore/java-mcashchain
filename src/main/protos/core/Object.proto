@@ -16,7 +16,7 @@ enum AccountType {
     Contract = 2;
 }
 
-// AccountId, (name, address) use name, (null, address) use address, (name, null) use name,
+// AccountId, (name, address) use name, (null, address) use address, (name, null) use name
 message AccountId {
     bytes name = 1;
     bytes address = 2;
@@ -24,9 +24,9 @@ message AccountId {
 
 // vote message
 message Vote {
-    // the super rep address
+    // witness address
     bytes vote_address = 1;
-    // the vote num to this super rep.
+    // the vote num to this witness
     int64 vote_count = 2;
 }
 
@@ -70,7 +70,7 @@ message ChainParameters {
 message Account {
     /* frozen balance */
     message Frozen {
-        int64 frozen_balance = 1; // the frozen trx balance
+        int64 frozen_balance = 1; // the frozen balance
         int64 expire_time = 2; // the expire time
     }
 
@@ -292,9 +292,6 @@ message Transaction {
             ProposalDeleteContract = 18;
             SetAccountIdContract = 19;
             CustomContract = 20;
-            // BuyStorageContract = 21;
-            // BuyStorageBytesContract = 22;
-            // SellStorageContract = 23;
             CreateSmartContract = 30;
             TriggerSmartContract = 31;
             GetContract = 32;
@@ -586,14 +583,13 @@ message InternalTransaction {
     // internalTransaction identity, the root InternalTransaction hash
     // should equals to root transaction id.
     bytes hash = 1;
-    // the one send trx (TBD: or token) via function
+    // the one send mcash (TBD: or token) via function
     bytes caller_address = 2;
-    // the one recieve trx (TBD: or token) via function
+    // the one receive mcash (TBD: or token) via function
     bytes transfer_to_address = 3;
     message CallValueInfo {
-        // trx (TBD: or token) value
         int64 call_value = 1;
-        // TBD: tokenName, trx should be empty
+        // TBD: token_id, trx should be empty
         int64 token_id = 2;
     }
     repeated CallValueInfo call_value_info = 4;

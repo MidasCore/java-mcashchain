@@ -304,7 +304,7 @@ public class WitnessController {
 		AccountStore accountStore = manager.getAccountStore();
 		BannedWitnessStore bannedWitnessStore = manager.getBannedWitnessStore();
 
-		tryRemoveThePowerOfTheGr();
+//		tryRemoveThePowerOfTheGr();
 
 		Map<ByteString, Long> countWitness = countVote(voteChangeStore);
 

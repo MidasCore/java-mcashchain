@@ -16,7 +16,7 @@
 
 	<appender name="FILE"
 			  class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>./logs/tron.log</file>
+		<file>./logs/mcashchain.log</file>
 		<rollingPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!-- rollover daily -->

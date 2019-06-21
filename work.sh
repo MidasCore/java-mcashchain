@@ -8,7 +8,7 @@
 # Since: 2018/5/27 
 # Version: 1.0
 
-if [ $# -ne 1 ]; then
+if [[ $# -ne 1 ]]; then
     echo "Usage: bash work.sh start|stop|restart."
     exit 1
 fi
@@ -18,9 +18,9 @@ fi
 # By default there, JVM initializes with 1g memory and can use 32g at most.
 JVM_OPTIONS="-Xms1g -Xmx32g"
 
-JAR_FILE_PATH="./build/libs/java-tron.jar"
-PID_FILE_PATH="java-tron.pid"
-LOG_FILE_PATH="java-tron.log"
+JAR_FILE_PATH="./build/libs/FullNode.jar"
+PID_FILE_PATH="java-mcash.pid"
+LOG_FILE_PATH="java-mcash.log"
 
 CONF_FILE_PATH="./build/resources/main/config.conf"
 
@@ -29,7 +29,7 @@ PRIVATE_KEY="650950B193DDDDB35B6E48912DD28F7AB0E7140C1BFDEFD493348F02295BD812"
 case "${1}" in
     start)
         # Already running
-        if [ -f ${PID_FILE_PATH} ]; then
+        if [[ -f ${PID_FILE_PATH} ]]; then
             pid=$(cat ${PID_FILE_PATH})
             if $(ps -p ${pid} > /dev/null); then
                 echo "Already running [PID: ${pid}], you can stop it and retry."
@@ -44,7 +44,7 @@ case "${1}" in
             > ${LOG_FILE_PATH} 2>&1 \
             & echo $! > ${PID_FILE_PATH}
 
-        if [ $? -eq 0 ]; then
+        if [[ $? -eq 0 ]]; then
             echo "Succeeded to start java-tron."
         else
             echo "Failed to start java-tron."
@@ -53,7 +53,7 @@ case "${1}" in
     stop)
         kill $(cat ${PID_FILE_PATH})
 
-        if [ $? -eq 0 ]; then
+        if [[ $? -eq 0 ]]; then
             rm ${PID_FILE_PATH}
             echo "Succeeded to stop java-tron."
         else
