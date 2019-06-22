@@ -51,6 +51,8 @@ RUN chmod +x /entrypoint.sh
 
 WORKDIR $APP_HOME
 
+VOLUME $APP_HOME/output
+
 EXPOSE 11399 8090 8091 50051
 
 ENTRYPOINT [ "/entrypoint.sh" ]

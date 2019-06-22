@@ -5,7 +5,7 @@ OPT=""
 JVM_OPT="-XX:+HeapDumpOnOutOfMemoryError"
 
 if [[ -z ${OUTPUT_DIRECTORY} ]]; then
-	OUTPUT_DIRECTORY=${APP_HOME}/output-directory
+	OUTPUT_DIRECTORY=${APP_HOME}/output
 fi
 
 if [[ -z ${APP} ]]; then
