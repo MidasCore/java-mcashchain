@@ -100,21 +100,6 @@ public class WithdrawBalanceActuator extends AbstractActuator {
 				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + NOT_EXIST_STR);
 		}
 
-		String readableOwnerAddress = StringUtil.createReadableString(ownerAddress);
-		if (!dbManager.getStakeAccountStore().has(ownerAddress)) {
-			throw new ContractValidateException(
-				ACCOUNT_EXCEPTION_STR + readableOwnerAddress + " is not a stakeAccount");
-		}
-
-		// todo: remove???
-		boolean isGP = Args.getInstance().getGenesisBlock().getWitnesses().stream().anyMatch(witness ->
-			Arrays.equals(ownerAddress, witness.getAddress()));
-		if (isGP) {
-			throw new ContractValidateException(
-				ACCOUNT_EXCEPTION_STR + readableOwnerAddress
-					+ " is a guard representative and is not allowed to withdraw Balance");
-		}
-
 		long latestWithdrawTime = accountCapsule.getLatestWithdrawTime();
 		long now = dbManager.getHeadBlockTimeStamp();
 		long witnessAllowanceFrozenTime = Objects.isNull(getDeposit()) ?
