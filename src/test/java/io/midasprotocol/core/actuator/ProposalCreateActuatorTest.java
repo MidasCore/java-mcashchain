@@ -261,33 +261,6 @@ public class ProposalCreateActuatorTest {
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
-
-		paras = new HashMap<>();
-		paras.put(9L, -1L);
-		actuator =
-				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
-		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(-1);
-		try {
-			actuator.validate();
-			Assert.fail("This proposal has been executed before and is only allowed to be executed once");
-		} catch (ContractValidateException e) {
-			Assert.assertEquals(
-					"This proposal has been executed before and is only allowed to be executed once",
-					e.getMessage());
-		}
-
-		paras.put(9L, -1L);
-		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(0);
-		actuator =
-				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
-		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(0);
-		try {
-			actuator.validate();
-			Assert.fail("This value REMOVE_THE_POWER_OF_THE_GR is only allowed to be 1");
-		} catch (ContractValidateException e) {
-			Assert.assertEquals("This value REMOVE_THE_POWER_OF_THE_GR is only allowed to be 1",
-					e.getMessage());
-		}
 	}
 
 	/**
@@ -315,7 +288,7 @@ public class ProposalCreateActuatorTest {
 	@Test
 	public void InvalidParaValue() {
 		HashMap<Long, Long> paras = new HashMap<>();
-		paras.put(9L, 1000L);
+		paras.put(8L, 1000L);
 		ProposalCreateActuator actuator =
 				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
@@ -323,9 +296,9 @@ public class ProposalCreateActuatorTest {
 			actuator.validate();
 			actuator.execute(ret);
 
-			fail("This value REMOVE_THE_POWER_OF_THE_GR is only allowed to be 1");
+			fail("This value ALLOW_CREATION_OF_CONTRACTS is only allowed to be 1");
 		} catch (ContractValidateException e) {
-			Assert.assertEquals("This value REMOVE_THE_POWER_OF_THE_GR is only allowed to be 1",
+			Assert.assertEquals("This value ALLOW_CREATION_OF_CONTRACTS is only allowed to be 1",
 					e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
@@ -337,8 +310,6 @@ public class ProposalCreateActuatorTest {
 	 */
 	@Test
 	public void duplicateProposalCreateSame() {
-		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(0L);
-
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(0L, 23 * 3600 * 1000L);
 		paras.put(1L, 8_888_000_000L);
@@ -349,10 +320,9 @@ public class ProposalCreateActuatorTest {
 		paras.put(6L, 64_000_000L);
 		paras.put(7L, 64_000_000L);
 		paras.put(8L, 1L);
-		paras.put(9L, 1L);
+		paras.put(9L, 64L);
 		paras.put(10L, 64L);
 		paras.put(11L, 64L);
-		paras.put(12L, 64L);
 
 		ProposalCreateActuator actuator =
 				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);

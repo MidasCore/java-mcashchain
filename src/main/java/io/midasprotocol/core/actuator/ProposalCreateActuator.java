@@ -179,34 +179,21 @@ public class ProposalCreateActuator extends AbstractActuator {
 				}
 				break;
 			}
-			// GR Genesis votes
-			case (9): {
-				if (dbManager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr() == -1) {
-					throw new ContractValidateException(
-						"This proposal has been executed before and is only allowed to be executed once");
-				}
-
-				if (entry.getValue() != 1) {
-					throw new ContractValidateException(
-						"This value REMOVE_THE_POWER_OF_THE_GR is only allowed to be 1");
-				}
-				break;
-			}
 			// fee of 1 energy
-			case (10):
+			case (9):
 				break;
 			// cost of trading pair creation
-			case (11):
+			case (10):
 				break;
 			// maximum execution time of one transaction
-			case (12):
+			case (11):
 				if (entry.getValue() < 10 || entry.getValue() > 100) {
 					throw new ContractValidateException(
 						"Bad chain parameter value,valid range is [10,100]");
 				}
 				break;
 			// change the account name
-			case (13): {
+			case (12): {
 				if (entry.getValue() != 1) {
 					throw new ContractValidateException(
 						"This value ALLOW_UPDATE_ACCOUNT_NAME is only allowed to be 1");
@@ -214,7 +201,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// resource delegation
-			case (14): {
+			case (13): {
 				if (entry.getValue() != 1) {
 					throw new ContractValidateException(
 						"This value ALLOW_DELEGATE_RESOURCE is only allowed to be 1");
@@ -222,7 +209,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// total energy limit
-			case (15): { // deprecated
+			case (14): { // deprecated
 //				if (!dbManager.getForkController().pass(ForkBlockVersionConsts.ENERGY_LIMIT)) {
 //					throw new ContractValidateException("Bad chain parameter id");
 //				}
@@ -235,8 +222,8 @@ public class ProposalCreateActuator extends AbstractActuator {
 				}
 				break;
 			}
-			// TRC-10 token transfer in smart contracts
-			case (16): {
+			// M1 token transfer in smart contracts
+			case (15): {
 				if (entry.getValue() != 1) {
 					throw new ContractValidateException(
 						"This value ALLOW_TVM_TRANSFER_TRC10 is only allowed to be 1");
@@ -244,7 +231,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// total energy limit
-			case (17): {
+			case (16): {
 //				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_2_2)) {
 //					throw new ContractValidateException("Bad chain parameter id");
 //				}
@@ -255,7 +242,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// initiation of multi-signature
-			case (18): {
+			case (17): {
 //				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
 //					throw new ContractValidateException("Bad chain parameter id: ALLOW_MULTI_SIGN");
 //				}
@@ -266,7 +253,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// adaptive adjustment for total Energy
-			case (19): {
+			case (18): {
 //				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
 //					throw new ContractValidateException("Bad chain parameter id: ALLOW_ADAPTIVE_ENERGY");
 //				}
@@ -277,7 +264,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// fee for updating account permission
-			case (20): {
+			case (19): {
 //				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
 //					throw new ContractValidateException(
 //							"Bad chain parameter id: UPDATE_ACCOUNT_PERMISSION_FEE");
@@ -289,7 +276,7 @@ public class ProposalCreateActuator extends AbstractActuator {
 				break;
 			}
 			// fee for multi-signature
-			case (21): {
+			case (20): {
 //				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
 //					throw new ContractValidateException("Bad chain parameter id: MULTI_SIGN_FEE");
 //				}

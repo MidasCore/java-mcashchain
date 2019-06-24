@@ -780,67 +780,61 @@ public class Wallet {
 				.setKey("getAllowCreationOfContracts")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowCreationOfContracts())
 				.build());
-		//    REMOVE_THE_POWER_OF_THE_GR,  // 1 ,9
-		builder.addChainParameter(
-			Protocol.ChainParameters.ChainParameter.newBuilder()
-				.setKey("getRemoveThePowerOfTheGr")
-				.setValue(dbManager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr())
-				.build());
-		//    ENERGY_FEE, // drop, 10
+		//    ENERGY_FEE, // drop, 9
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getEnergyFee")
 				.setValue(dbManager.getDynamicPropertiesStore().getEnergyFee())
 				.build());
-		//    EXCHANGE_CREATE_FEE, // drop, 11
+		//    EXCHANGE_CREATE_FEE, // drop, 10
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getExchangeCreateFee")
 				.setValue(dbManager.getDynamicPropertiesStore().getExchangeCreateFee())
 				.build());
-		//    MAX_CPU_TIME_OF_ONE_TX, // ms, 12
+		//    MAX_CPU_TIME_OF_ONE_TX, // ms, 11
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getMaxCpuTimeOfOneTx")
 				.setValue(dbManager.getDynamicPropertiesStore().getMaxCpuTimeOfOneTx())
 				.build());
-		//    ALLOW_UPDATE_ACCOUNT_NAME, // 1, 13
+		//    ALLOW_UPDATE_ACCOUNT_NAME, // 1, 12
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getAllowUpdateAccountName")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowUpdateAccountName())
 				.build());
-		//    ALLOW_DELEGATE_RESOURCE, // 0, 14
+		//    ALLOW_DELEGATE_RESOURCE, // 0, 13
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getAllowDelegateResource")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowDelegateResource())
 				.build());
-		//    TOTAL_ENERGY_LIMIT, // 50,000,000,000, 15
+		//    TOTAL_ENERGY_LIMIT, // 50,000,000,000, 14
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getTotalEnergyLimit")
 				.setValue(dbManager.getDynamicPropertiesStore().getTotalEnergyLimit())
 				.build());
-		//    ALLOW_TVM_TRANSFER_M1, // 1, 16
+		//    ALLOW_TVM_TRANSFER_M1, // 1, 15
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getAllowTvmTransferM1")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1())
 				.build());
-		//    TOTAL_CURRENT_ENERGY_LIMIT, // 50,000,000,000, 17
+		//    TOTAL_CURRENT_ENERGY_LIMIT, // 50,000,000,000, 16
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getTotalEnergyCurrentLimit")
 				.setValue(dbManager.getDynamicPropertiesStore().getTotalEnergyCurrentLimit())
 				.build());
-		//    ALLOW_MULTI_SIGN, // 1, 18
+		//    ALLOW_MULTI_SIGN, // 1, 17
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getAllowMultiSign")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowMultiSign())
 				.build());
-		//    ALLOW_ADAPTIVE_ENERGY, // 1, 19
+		//    ALLOW_ADAPTIVE_ENERGY, // 1, 18
 		builder.addChainParameter(
 			Protocol.ChainParameters.ChainParameter.newBuilder()
 				.setKey("getAllowAdaptiveEnergy")

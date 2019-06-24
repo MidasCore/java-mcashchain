@@ -109,25 +109,4 @@ public class WitnessControllerTest {
 		assertEquals(b, dbManager.getWitnessController().getScheduledWitness(4));
 	}
 
-	@Test
-	public void testTryRemoveThePowerOfTheGr() {
-
-		Witness witness = Args.getInstance().getGenesisBlock().getWitnesses().get(0);
-		assertEquals(105, witness.getVoteCount());
-
-		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(-1);
-		dbManager.getWitnessController().tryRemoveThePowerOfTheGr();
-		assertEquals(105, dbManager.getWitnessStore().get(witness.getAddress()).getVoteCount());
-
-		dbManager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(1);
-		dbManager.getWitnessController().tryRemoveThePowerOfTheGr();
-		assertEquals(0, dbManager.getWitnessStore().get(witness.getAddress()).getVoteCount());
-
-		dbManager.getWitnessController().tryRemoveThePowerOfTheGr();
-		assertEquals(0, dbManager.getWitnessStore().get(witness.getAddress()).getVoteCount());
-
-
-	}
-
-
 }

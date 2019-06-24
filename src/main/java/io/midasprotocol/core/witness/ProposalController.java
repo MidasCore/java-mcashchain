@@ -150,60 +150,54 @@ public class ProposalController {
 					break;
 				}
 				case (9): {
-					if (manager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr() == 0) {
-						manager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(entry.getValue());
-					}
-					break;
-				}
-				case (10): {
 					manager.getDynamicPropertiesStore().saveEnergyFee(entry.getValue());
 					break;
 				}
-				case (11): {
+				case (10): {
 					manager.getDynamicPropertiesStore().saveExchangeCreateFee(entry.getValue());
 					break;
 				}
-				case (12): {
+				case (11): {
 					manager.getDynamicPropertiesStore().saveMaxCpuTimeOfOneTx(entry.getValue());
 					break;
 				}
-				case (13): {
+				case (12): {
 					manager.getDynamicPropertiesStore().saveAllowUpdateAccountName(entry.getValue());
 					break;
 				}
-				case (14): {
+				case (13): {
 					manager.getDynamicPropertiesStore().saveAllowDelegateResource(entry.getValue());
 					break;
 				}
-				case (15): {
+				case (14): {
 					manager.getDynamicPropertiesStore().saveTotalEnergyLimit(entry.getValue());
 					break;
 				}
-				case (16): {
+				case (15): {
 					manager.getDynamicPropertiesStore().saveAllowTvmTransferM1(entry.getValue());
 					break;
 				}
-				case (17): {
+				case (16): {
 					manager.getDynamicPropertiesStore().saveTotalEnergyLimit2(entry.getValue());
 					break;
 				}
-				case (18): {
+				case (17): {
 					if (manager.getDynamicPropertiesStore().getAllowMultiSign() == 0) {
 						manager.getDynamicPropertiesStore().saveAllowMultiSign(entry.getValue());
 					}
 					break;
 				}
-				case (19): {
+				case (18): {
 					if (manager.getDynamicPropertiesStore().getAllowAdaptiveEnergy() == 0) {
 						manager.getDynamicPropertiesStore().saveAllowAdaptiveEnergy(entry.getValue());
 					}
 					break;
 				}
-				case (20): {
+				case (19): {
 					manager.getDynamicPropertiesStore().saveUpdateAccountPermissionFee(entry.getValue());
 					break;
 				}
-				case (21): {
+				case (20): {
 					manager.getDynamicPropertiesStore().saveMultiSignFee(entry.getValue());
 					break;
 				}

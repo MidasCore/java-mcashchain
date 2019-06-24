@@ -80,8 +80,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	private static final byte[] FORK_CONTROLLER = "FORK_CONTROLLER".getBytes();
 	private static final String FORK_PREFIX = "FORK_VERSION_";
 	//This value is only allowed to be 0, 1, -1
-	private static final byte[] REMOVE_THE_POWER_OF_THE_GR = "REMOVE_THE_POWER_OF_THE_GR".getBytes();
-	//This value is only allowed to be 0, 1, -1
 	private static final byte[] ALLOW_DELEGATE_RESOURCE = "ALLOW_DELEGATE_RESOURCE".getBytes();
 	//This value is only allowed to be 0, 1, -1
 	private static final byte[] ALLOW_ADAPTIVE_ENERGY = "ALLOW_ADAPTIVE_ENERGY".getBytes();
@@ -394,12 +392,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			this.getResignStakeTimeInDay();
 		} catch (IllegalArgumentException e) {
 			this.saveResignStakeTimeInDay(30);
-		}
-
-		try {
-			this.getRemoveThePowerOfTheGr();
-		} catch (IllegalArgumentException e) {
-			this.saveRemoveThePowerOfTheGr(0);
 		}
 
 		try {
@@ -1081,19 +1073,6 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			.map(BytesCapsule::getData)
 			.map(ByteArray::toLong)
 			.orElseThrow(() -> new IllegalArgumentException("not found RESIGN_STAKE_TIME_IN_DAY"));
-	}
-
-	public void saveRemoveThePowerOfTheGr(long rate) {
-		this.put(REMOVE_THE_POWER_OF_THE_GR,
-			new BytesCapsule(ByteArray.fromLong(rate)));
-	}
-
-	public long getRemoveThePowerOfTheGr() {
-		return Optional.ofNullable(getUnchecked(REMOVE_THE_POWER_OF_THE_GR))
-			.map(BytesCapsule::getData)
-			.map(ByteArray::toLong)
-			.orElseThrow(
-				() -> new IllegalArgumentException("not found REMOVE_THE_POWER_OF_THE_GR"));
 	}
 
 	public void saveAllowDelegateResource(long value) {

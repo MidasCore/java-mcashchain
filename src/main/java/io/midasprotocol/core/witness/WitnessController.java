@@ -304,8 +304,6 @@ public class WitnessController {
 		AccountStore accountStore = manager.getAccountStore();
 		BannedWitnessStore bannedWitnessStore = manager.getBannedWitnessStore();
 
-//		tryRemoveThePowerOfTheGr();
-
 		Map<ByteString, Long> countWitness = countVote(voteChangeStore);
 
 		//Only possible during the initialization phase
@@ -433,23 +431,6 @@ public class WitnessController {
 			"updateWitness,before:{} ", StringUtil.getAddressStringList(currentWits)
 				+ ",\nafter:{} " + StringUtil.getAddressStringList(newWits));
 //		}
-	}
-
-	public void tryRemoveThePowerOfTheGr() {
-		if (manager.getDynamicPropertiesStore().getRemoveThePowerOfTheGr() == 1) {
-
-			WitnessStore witnessStore = manager.getWitnessStore();
-
-			Args.getInstance().getGenesisBlock().getWitnesses().forEach(witnessInGenesisBlock -> {
-				WitnessCapsule witnessCapsule = witnessStore.get(witnessInGenesisBlock.getAddress());
-				witnessCapsule
-					.setVoteCount(witnessCapsule.getVoteCount() - witnessInGenesisBlock.getVoteCount());
-
-				witnessStore.put(witnessCapsule.createDbKey(), witnessCapsule);
-			});
-
-			manager.getDynamicPropertiesStore().saveRemoveThePowerOfTheGr(-1);
-		}
 	}
 
 	public int calculateParticipationRate() {
