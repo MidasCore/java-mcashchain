@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://t.me/McashchainDeveloper">
-    <img src="https://img.shields.io/badge/chat-on%20discord-brightgreen.svg">
+    <img src="https://img.shields.io/badge/chat-on%20telegram-brightgreen.svg">
   </a>
 
   <a href="https://github.com/MidasCore/java-mcashchain/issues">
@@ -48,8 +48,8 @@ MCashChain aims to provide a solution for one of our ambitious projects which ai
 * MCash dApp Studio - 1st IDE for intuitive dapp programming
 
 # Deploy
-* [Build](doc/build.md) Build java-mcashchain
-* [Run](doc/run.md) Run java-mcashchain
+* [Build](docs/build.md) Build java-mcashchain
+* [Run](docs/run.md) Run java-mcashchain
 
 # Community
 
@@ -64,7 +64,7 @@ MCashChain aims to provide a solution for one of our ambitious projects which ai
 
 # Resource
 * [Website](https://mcash.network/)
-* [Documentation](https://github.com/MidasCore/mcashchain/wiki)
+* [Documentation](https://github.com/MidasCore/mcashchain-wiki/wiki)
 * [Blog](https://medium.com/mcashchain)
 * [Mcashscan](https://mcashscan.io/)
 * [White Paper 0.8.3](http://bit.ly/mcashchain-wp-graphic)
