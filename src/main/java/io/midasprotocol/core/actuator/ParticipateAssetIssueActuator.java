@@ -15,14 +15,17 @@
 
 package io.midasprotocol.core.actuator;
 
+import com.google.common.math.LongMath;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.midasprotocol.common.utils.ByteArray;
+import io.midasprotocol.common.utils.ForkController;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.AssetIssueCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
+import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractExeException;
 import io.midasprotocol.core.exception.ContractValidateException;
@@ -63,6 +66,12 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 
 			long exchangeAmount = Math.multiplyExact(cost, assetIssueCapsule.getNum());
 			exchangeAmount = Math.floorDiv(exchangeAmount, assetIssueCapsule.getMcashNum());
+
+			if (ForkController.instance().pass(Parameter.ForkBlockVersionEnum.VERSION_0_1_1)) {
+				int decimal = Parameter.ChainConstant.DECIMALS - assetIssueCapsule.getPrecision();
+				exchangeAmount = Math.floorDiv(exchangeAmount, LongMath.pow(10L, decimal));
+			}
+
 			ownerAccount.addAssetAmount(key, exchangeAmount);
 
 			//add to to_address
@@ -159,10 +168,14 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
 				throw new ContractValidateException("No longer valid period");
 			}
 
-			int trxNum = assetIssueCapsule.getMcashNum();
+			int mcashNum = assetIssueCapsule.getMcashNum();
 			int num = assetIssueCapsule.getNum();
 			long exchangeAmount = Math.multiplyExact(amount, num);
-			exchangeAmount = Math.floorDiv(exchangeAmount, trxNum);
+			exchangeAmount = Math.floorDiv(exchangeAmount, mcashNum);
+			if (ForkController.instance().pass(Parameter.ForkBlockVersionEnum.VERSION_0_1_1)) {
+				int decimal = Parameter.ChainConstant.DECIMALS - assetIssueCapsule.getPrecision();
+				exchangeAmount = Math.floorDiv(exchangeAmount, LongMath.pow(10L, decimal));
+			}
 			if (exchangeAmount <= 0) {
 				throw new ContractValidateException("Can not process the exchange");
 			}

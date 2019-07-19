@@ -695,7 +695,7 @@ public class ParticipateAssetIssueActuatorTest {
 
 		toAccount.reduceAssetAmount(id, TOTAL_SUPPLY - 10000);
 		dbManager.getAccountStore().put(toAccount.getAddress().toByteArray(), toAccount);
-		ParticipateAssetIssueActuator actuator = new ParticipateAssetIssueActuator(getContract(1),
+		ParticipateAssetIssueActuator actuator = new ParticipateAssetIssueActuator(getContract(1000),
 				dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {

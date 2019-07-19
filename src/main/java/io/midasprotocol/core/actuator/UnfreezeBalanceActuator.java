@@ -3,6 +3,7 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.midasprotocol.common.utils.ForkController;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.*;
@@ -150,19 +151,20 @@ public class UnfreezeBalanceActuator extends AbstractActuator {
 				break;
 		}
 
-		VoteChangeCapsule voteChangeCapsule;
-		if (!dbManager.getVoteChangeStore().has(ownerAddress)) {
-			voteChangeCapsule = new VoteChangeCapsule(unfreezeBalanceContract.getOwnerAddress(),
-				accountCapsule.getVote());
-		} else {
-			voteChangeCapsule = dbManager.getVoteChangeStore().get(ownerAddress);
+		if (!ForkController.instance().pass(Parameter.ForkBlockVersionEnum.VERSION_0_1_1)) {
+			VoteChangeCapsule voteChangeCapsule;
+			if (!dbManager.getVoteChangeStore().has(ownerAddress)) {
+				voteChangeCapsule = new VoteChangeCapsule(unfreezeBalanceContract.getOwnerAddress(),
+						accountCapsule.getVote());
+			} else {
+				voteChangeCapsule = dbManager.getVoteChangeStore().get(ownerAddress);
+			}
+			accountCapsule.clearVote();
+			voteChangeCapsule.clearNewVote();
+			dbManager.getVoteChangeStore().put(ownerAddress, voteChangeCapsule);
 		}
-		accountCapsule.clearVote();
-		voteChangeCapsule.clearNewVote();
 
 		dbManager.getAccountStore().put(ownerAddress, accountCapsule);
-
-		dbManager.getVoteChangeStore().put(ownerAddress, voteChangeCapsule);
 
 		ret.setUnfreezeAmount(unfreezeBalance);
 		ret.setStatus(fee, Code.SUCCESS);

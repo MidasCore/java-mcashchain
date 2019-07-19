@@ -6,7 +6,6 @@ import com.google.protobuf.ByteString;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.config.Parameter.ForkBlockVersionEnum;
-import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-//import io.midasprotocol.core.config.Parameter.ForkBlockVersionConsts;
 
 @Slf4j(topic = "utils")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,19 +49,8 @@ public class ForkController {
 	}
 
 	public synchronized boolean pass(int version) {
-//		if (version == ForkBlockVersionConsts.ENERGY_LIMIT) {
-//			return checkForEnergyLimit();
-//		}
 		byte[] stats = manager.getDynamicPropertiesStore().statsByVersion(version);
 		return check(stats);
-	}
-
-	// when block.version = 5,
-	// it make block use new energy to handle transaction when block number >= 4727890L.
-	// version !=5, skip this.
-	private boolean checkForEnergyLimit() {
-		long blockNum = manager.getDynamicPropertiesStore().getLatestBlockHeaderNumber();
-		return blockNum >= Args.getInstance().getBlockNumForEneryLimit();
 	}
 
 	private boolean check(byte[] stats) {
@@ -119,9 +105,6 @@ public class ForkController {
 		}
 
 		int version = blockCapsule.getInstance().getBlockHeader().getRawData().getVersion();
-//		if (version < ForkBlockVersionConsts.ENERGY_LIMIT) {
-//			return;
-//		}
 
 		downgrade(version, slot);
 

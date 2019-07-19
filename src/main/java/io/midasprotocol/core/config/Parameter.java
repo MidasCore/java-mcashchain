@@ -33,7 +33,9 @@ public interface Parameter {
 	}
 
 	enum ForkBlockVersionEnum {
-		GENESIS(0);
+		GENESIS(1),
+		VERSION_0_1_1(2);
+
 		@Getter
 		private int value;
 
@@ -64,7 +66,7 @@ public interface Parameter {
 		int SINGLE_REPEAT = 1;
 		int BLOCK_FILLED_SLOTS_NUMBER = 128;
 		int MAX_FROZEN_NUMBER = 1;
-		int BLOCK_VERSION = 1;
+		int BLOCK_VERSION = 2;
 
 		int DECIMALS = 8;
 		long TEN_POW_DECIMALS = 100000000L;
