@@ -147,8 +147,8 @@ public class FreezeBalanceActuator extends AbstractActuator {
 		long minFrozenTime = dbManager.getDynamicPropertiesStore().getMinFrozenTime();
 		long maxFrozenTime = dbManager.getDynamicPropertiesStore().getMaxFrozenTime();
 
-		boolean needCheckFrozeTime = Args.getInstance().getCheckFrozenTime() == 1;//for test
-		if (needCheckFrozeTime && !(frozenDuration >= minFrozenTime
+		boolean needCheckFrozenTime = Args.getInstance().getCheckFrozenTime() == 1;//for test
+		if (needCheckFrozenTime && !(frozenDuration >= minFrozenTime
 			&& frozenDuration <= maxFrozenTime)) {
 			throw new ContractValidateException(
 				"frozenDuration must be less than " + maxFrozenTime + " days "
