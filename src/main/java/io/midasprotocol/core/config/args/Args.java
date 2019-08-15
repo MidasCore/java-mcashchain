@@ -339,7 +339,11 @@ public class Args {
 	@Setter
 	private long allowTvmTransferTrc10; //committee parameter
 
-	@Getter
+    @Getter
+    @Setter
+    private long allowVmConstantinople; //committee parameter
+
+    @Getter
 	@Setter
 	private int tcpNettyWorkThreadNum;
 
@@ -488,6 +492,7 @@ public class Args {
 		INSTANCE.allowCreationOfContracts = 0;
 		INSTANCE.allowAdaptiveEnergy = 0;
 		INSTANCE.allowTvmTransferTrc10 = 0;
+        INSTANCE.allowVmConstantinople = 0;
 		INSTANCE.allowDelegateResource = 0;
 		INSTANCE.allowSameTokenName = 0;
 		INSTANCE.tcpNettyWorkThreadNum = 0;
@@ -823,6 +828,10 @@ public class Args {
 		INSTANCE.allowTvmTransferTrc10 =
 			config.hasPath("committee.allowTvmTransferM1") ? config
 				.getInt("committee.allowTvmTransferM1") : 0;
+
+        INSTANCE.allowVmConstantinople =
+            config.hasPath("committee.allowVmConstantinople") ? config
+                .getInt("committee.allowVmConstantinople") : 0;
 
 		INSTANCE.tcpNettyWorkThreadNum = config.hasPath("node.tcpNettyWorkThreadNum") ? config
 			.getInt("node.tcpNettyWorkThreadNum") : 0;

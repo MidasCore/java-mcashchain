@@ -38,6 +38,8 @@ public class VMConfig {
 	private static boolean ALLOW_TVM_TRANSFER_M1 = false;
 	@Setter
 	private static boolean ALLOW_MULTI_SIGN = false;
+	@Setter
+	private static boolean ALLOW_TVM_CONSTANTINOPLE = false;
 
 	//  @Getter
 //  @Setter
@@ -65,12 +67,16 @@ public class VMConfig {
 		ALLOW_TVM_TRANSFER_M1 = allow == 1;
 	}
 
-//	public static boolean getEnergyLimitHardFork() {
-//		return ENERGY_LIMIT_HARD_FORK;
-//	}
+	public static void initAllowVmConstantinople(long allow) {
+		ALLOW_TVM_CONSTANTINOPLE = allow == 1;
+	}
 
 	public static boolean allowTvmTransferM1() {
 		return ALLOW_TVM_TRANSFER_M1;
+	}
+
+	public static boolean allowTvmConstantinople() {
+		return ALLOW_TVM_CONSTANTINOPLE;
 	}
 
 	public static boolean allowMultiSign() {

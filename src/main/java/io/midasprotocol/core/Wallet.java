@@ -860,6 +860,11 @@ public class Wallet {
 			.setKey("getMultiSignFee")
 			.setValue(dbManager.getDynamicPropertiesStore().getMultiSignFee())
 			.build());
+		//    ALLOW_TVM_CONSTANTINOPLE, // 1, 20
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("getAllowVmConstantinople")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople())
+			.build());
 
 		return builder.build();
 	}

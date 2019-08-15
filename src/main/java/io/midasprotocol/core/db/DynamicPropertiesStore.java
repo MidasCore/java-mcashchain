@@ -97,6 +97,8 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	private static final byte[] TOKEN_UPDATE_DONE = "TOKEN_UPDATE_DONE".getBytes();
 	//This value is only allowed to be 0, 1, -1
 	private static final byte[] ALLOW_TVM_TRANSFER_M1 = "ALLOW_TVM_TRANSFER_M1".getBytes();
+	private static final byte[] ALLOW_VM_CONSTANTINOPLE = "ALLOW_VM_CONSTANTINOPLE".getBytes();
+
 	private static final byte[] AVAILABLE_CONTRACT_TYPE = "AVAILABLE_CONTRACT_TYPE".getBytes();
 	private static final byte[] ACTIVE_DEFAULT_OPERATIONS = "ACTIVE_DEFAULT_OPERATIONS".getBytes();
 	private static final byte[] STAKE_TIME_IN_DAY = "STAKE_TIME_IN_DAY".getBytes();
@@ -405,6 +407,13 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		} catch (IllegalArgumentException e) {
 			this.saveAllowTvmTransferM1(Args.getInstance().getAllowTvmTransferTrc10());
 		}
+
+		try {
+			this.getAllowVmConstantinople();
+		} catch (IllegalArgumentException e) {
+			this.saveAllowVmConstantinople(Args.getInstance().getAllowVmConstantinople());
+		}
+
 
 		try {
 			this.getAvailableContractType();
@@ -1112,6 +1121,19 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			.map(ByteArray::toLong)
 			.orElseThrow(
 				() -> new IllegalArgumentException("not found ALLOW_TVM_TRANSFER_M1"));
+	}
+
+	public void saveAllowVmConstantinople(long value) {
+		this.put(ALLOW_VM_CONSTANTINOPLE,
+			new BytesCapsule(ByteArray.fromLong(value)));
+	}
+
+	public long getAllowVmConstantinople() {
+		return Optional.ofNullable(getUnchecked(ALLOW_VM_CONSTANTINOPLE))
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(
+				() -> new IllegalArgumentException("not found ALLOW_VM_CONSTANTINOPLE"));
 	}
 
 	public void saveAvailableContractType(byte[] value) {

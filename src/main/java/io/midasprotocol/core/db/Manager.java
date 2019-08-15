@@ -1148,6 +1148,7 @@ public class Manager {
 		VMConfig.initVmHardFork();
 		VMConfig.initAllowMultiSign(dynamicPropertiesStore.getAllowMultiSign());
 		VMConfig.initAllowTvmTransferM1(dynamicPropertiesStore.getAllowTvmTransferM1());
+		VMConfig.initAllowVmConstantinople(dynamicPropertiesStore.getAllowVmConstantinople());
 		trace.init(blockCap, eventPluginLoaded);
 		trace.checkIsConstant();
 		trace.exec();
