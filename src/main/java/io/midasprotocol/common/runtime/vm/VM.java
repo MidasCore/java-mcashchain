@@ -97,6 +97,12 @@ public class VM {
 				}
 			}
 
+			if (!VMConfig.allowTvmConstantinople()) {
+				if (op == SHL || op == SHR || op == SAR) {
+					throw Program.Exception.invalidOpCode(program.getCurrentOp());
+				}
+			}
+
 			program.setLastOp(op.val());
 			program.verifyStackSize(op.require());
 			program.verifyStackOverflow(op.require(), op.ret()); //Check not exceeding stack limits
@@ -591,6 +597,45 @@ public class VM {
 					}
 
 					if (logger.isDebugEnabled()) {
+						hint = "" + result.value();
+					}
+
+					program.stackPush(result);
+					program.step();
+				}
+				break;
+				case SHL: {
+					DataWord word1 = program.stackPop();
+					DataWord word2 = program.stackPop();
+					final DataWord result = word2.shiftLeft(word1);
+
+					if (logger.isInfoEnabled()) {
+						hint = "" + result.value();
+					}
+
+					program.stackPush(result);
+					program.step();
+				}
+				break;
+				case SHR: {
+					DataWord word1 = program.stackPop();
+					DataWord word2 = program.stackPop();
+					final DataWord result = word2.shiftRight(word1);
+
+					if (logger.isInfoEnabled()) {
+						hint = "" + result.value();
+					}
+
+					program.stackPush(result);
+					program.step();
+				}
+				break;
+				case SAR: {
+					DataWord word1 = program.stackPop();
+					DataWord word2 = program.stackPop();
+					final DataWord result = word2.shiftRightSigned(word1);
+
+					if (logger.isInfoEnabled()) {
 						hint = "" + result.value();
 					}
 

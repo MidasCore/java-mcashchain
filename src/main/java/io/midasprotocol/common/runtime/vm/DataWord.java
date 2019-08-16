@@ -28,6 +28,8 @@ import org.spongycastle.util.encoders.Hex;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
+import static io.midasprotocol.common.utils.ByteUtil.numberOfLeadingZeros;
+
 /**
  * DataWord is the 32-byte array representation of a 256-bit number Calculations can be done on this
  * word with other DataWords
@@ -39,12 +41,20 @@ public class DataWord implements Comparable<DataWord> {
 
 	/* Maximum value of the DataWord */
 	public static final int DATAWORD_UNIT_SIZE = 32;
+	public static final int MAX_POW = 256;
 	public static final BigInteger _2_256 = BigInteger.valueOf(2).pow(256);
 	public static final BigInteger MAX_VALUE = _2_256.subtract(BigInteger.ONE);
 	public static final DataWord ZERO = new DataWord(
 		new byte[32]);      // don't push it in to the stack
 	public static final DataWord ZERO_EMPTY_ARRAY = new DataWord(
 		new byte[0]);      // don't push it in to the stack
+
+	public static DataWord ONE() {
+		return DataWord.of((byte)1);
+	}
+	public static DataWord ZERO() {
+		return new DataWord(new byte[32]);
+	}
 
 	private byte[] data = new byte[32];
 
@@ -64,6 +74,36 @@ public class DataWord implements Comparable<DataWord> {
 		final byte[] array = buffer.array();
 		System.arraycopy(array, 0, targetByteBuffer.array(), 32 - array.length, array.length);
 		this.data = targetByteBuffer.array();
+	}
+
+	public static DataWord of(byte[] data) {
+		if (data == null || data.length == 0) {
+			return DataWord.ZERO();
+		}
+
+		int leadingZeroBits = numberOfLeadingZeros(data);
+		int valueBits = 8 * data.length - leadingZeroBits;
+		if (valueBits <= 8) {
+			if (data[data.length - 1] == 0) return DataWord.ZERO();
+			if (data[data.length - 1] == 1) return DataWord.ONE();
+		}
+
+		if (data.length == 32)
+			return new DataWord(java.util.Arrays.copyOf(data, data.length));
+		else if (data.length <= 32) {
+			byte[] bytes = new byte[32];
+			System.arraycopy(data, 0, bytes, 32 - data.length, data.length);
+			return new DataWord(bytes);
+		} else {
+			throw new RuntimeException(String.format("Data word can't exceed 32 bytes: 0x%s", ByteUtil.toHexString(data)));
+		}
+	}
+
+	public static DataWord of(byte num) {
+		byte[] bb = new byte[32];
+		bb[31] = num;
+		return new DataWord(bb);
+
 	}
 
 	@JsonCreator
@@ -466,5 +506,53 @@ public class DataWord implements Comparable<DataWord> {
 
 	public String toHexString() {
 		return Hex.toHexString(data);
+	}
+
+	/**
+	 * Shift left, both this and input arg are treated as unsigned
+	 * @param arg
+	 * @return this << arg
+	 */
+	public DataWord shiftLeft(DataWord arg) {
+		if (arg.value().compareTo(BigInteger.valueOf(MAX_POW)) >= 0) {
+			return DataWord.ZERO();
+		}
+
+		BigInteger result = value().shiftLeft(arg.intValueSafe());
+		return new DataWord(ByteUtil.copyToArray(result.and(MAX_VALUE)));
+	}
+
+	/**
+	 * Shift right, both this and input arg are treated as unsigned
+	 * @param arg
+	 * @return this >> arg
+	 */
+	public DataWord shiftRight(DataWord arg) {
+		if (arg.value().compareTo(BigInteger.valueOf(MAX_POW)) >= 0) {
+			return DataWord.ZERO();
+		}
+
+		BigInteger result = value().shiftRight(arg.intValueSafe());
+		return new DataWord(ByteUtil.copyToArray(result.and(MAX_VALUE)));
+	}
+
+	/**
+	 * Shift right, this is signed, while input arg is treated as unsigned
+	 * @param arg
+	 * @return this >> arg
+	 */
+	public DataWord shiftRightSigned(DataWord arg) {
+		if (arg.value().compareTo(BigInteger.valueOf(MAX_POW)) >= 0) {
+			if (this.isNegative()) {
+				DataWord result = ONE();
+				result.negate();
+				return result;
+			} else {
+				return ZERO();
+			}
+		}
+
+		BigInteger result = sValue().shiftRight(arg.intValueSafe());
+		return new DataWord(ByteUtil.copyToArray(result.and(MAX_VALUE)));
 	}
 }
