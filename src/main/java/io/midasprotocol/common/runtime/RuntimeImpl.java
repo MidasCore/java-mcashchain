@@ -626,6 +626,9 @@ public class RuntimeImpl implements Runtime {
 						}
 					} else {
 						result.spendEnergy(saveCodeEnergy);
+						if (VMConfig.allowTvmConstantinople()) {
+							deposit.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
+						}
 					}
 				}
 

@@ -41,10 +41,7 @@ import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.program.ProgramResult;
 import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvokeFactoryImpl;
 import io.midasprotocol.common.storage.DepositImpl;
-import io.midasprotocol.common.utils.Base58;
-import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.Sha256Hash;
-import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.common.utils.*;
 import io.midasprotocol.core.actuator.Actuator;
 import io.midasprotocol.core.actuator.ActuatorFactory;
 import io.midasprotocol.core.capsule.*;
@@ -174,6 +171,13 @@ public class Wallet {
 		return null;
 	}
 
+	// for `CREATE2`
+	public static byte[] generateContractAddress2(byte[] address, byte[] code, byte[] salt) {
+		byte[] mergedData = ByteUtil.merge(address, code, salt);
+		return Hash.sha3omit12(mergedData);
+	}
+
+	// for `CREATE`
 	public static byte[] generateContractAddress(Transaction trx) {
 
 		CreateSmartContract contract = ContractCapsule.getSmartContractFromTransaction(trx);

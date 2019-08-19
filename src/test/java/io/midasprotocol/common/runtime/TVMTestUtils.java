@@ -267,6 +267,8 @@ public class TVMTestUtils {
 
 		trace.finalization();
 
+		trace.setResult();
+
 		return new TVMTestResult(trace.getRuntime(), trace.getReceipt(), null);
 	}
 
@@ -633,6 +635,7 @@ public class TVMTestUtils {
 															 String argsStr,
 															 Boolean isHex, long callValue, byte[] ownerAddress) {
 
+		Wallet.setAddressPreFixByte(Constant.ADD_PRE_FIX_BYTE_MAINNET);
 		byte[] owner = ownerAddress;
 		byte[] input = Hex.decode(AbiUtil.parseMethod(method, argsStr, isHex));
 

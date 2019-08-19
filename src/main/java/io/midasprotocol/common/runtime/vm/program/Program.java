@@ -553,24 +553,27 @@ public class Program {
 			return;
 		}
 
-		byte[] senderAddress = convertToTronAddress(this.getContractAddress().getLast20Bytes());
-
-		long endowment = value.value().longValueExact();
-		if (getContractState().getBalance(senderAddress) < endowment) {
-			stackPushZero();
-			return;
-		}
-
 		// [1] FETCH THE CODE FROM THE MEMORY
 		byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
+		byte[] newAddress = Wallet
+			.generateContractAddress(rootTransactionId, nonce);
+
+		createContractImpl(value, programCode, newAddress);
+	}
+
+	private void createContractImpl(DataWord value, byte[] programCode, byte[] newAddress) {
+		byte[] senderAddress = convertToTronAddress(this.getContractAddress().getLast20Bytes());
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("creating a new contract inside contract run: [{}]",
 				Hex.toHexString(senderAddress));
 		}
 
-		byte[] newAddress = Wallet
-			.generateContractAddress(rootTransactionId, nonce);
+		long endowment = value.value().longValueExact();
+		if (getContractState().getBalance(senderAddress) < endowment) {
+			stackPushZero();
+			return;
+		}
 
 		AccountCapsule existingAddr = getContractState().getAccount(newAddress);
 		boolean contractAlreadyExists = existingAddr != null;
@@ -1403,6 +1406,14 @@ public class Program {
 	public interface ProgramOutListener {
 
 		void output(String out);
+	}
+
+	public void createContract2(DataWord value, DataWord memStart, DataWord memSize, DataWord salt) {
+		byte[] senderAddress = convertToTronAddress(this.getCallerAddress().getLast20Bytes());
+		byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
+
+		byte[] contractAddress = Wallet.generateContractAddress2(senderAddress, programCode, salt.getData());
+		createContractImpl(value, programCode, contractAddress);
 	}
 
 	static class ByteCodeIterator {

@@ -555,4 +555,8 @@ public class DataWord implements Comparable<DataWord> {
 		BigInteger result = sValue().shiftRight(arg.intValueSafe());
 		return new DataWord(ByteUtil.copyToArray(result.and(MAX_VALUE)));
 	}
+
+	public static long sizeInWords(long bytesSize) {
+		return bytesSize == 0 ? 0 : (bytesSize - 1) / DATAWORD_UNIT_SIZE + 1;
+	}
 }
