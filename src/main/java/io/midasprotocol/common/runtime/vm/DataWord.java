@@ -44,19 +44,16 @@ public class DataWord implements Comparable<DataWord> {
 	public static final int MAX_POW = 256;
 	public static final BigInteger _2_256 = BigInteger.valueOf(2).pow(256);
 	public static final BigInteger MAX_VALUE = _2_256.subtract(BigInteger.ONE);
-	public static final DataWord ZERO = new DataWord(
-		new byte[32]);      // don't push it in to the stack
-	public static final DataWord ZERO_EMPTY_ARRAY = new DataWord(
-		new byte[0]);      // don't push it in to the stack
+	public static final DataWord ZERO = new DataWord(new byte[32]);      // don't push it in to the stack
 
 	public static DataWord ONE() {
 		return DataWord.of((byte)1);
 	}
 	public static DataWord ZERO() {
-		return new DataWord(new byte[32]);
+		return new DataWord(new byte[DATAWORD_UNIT_SIZE]);
 	}
 
-	private byte[] data = new byte[32];
+	private byte[] data = new byte[DATAWORD_UNIT_SIZE];
 
 	public DataWord() {
 	}
@@ -70,33 +67,10 @@ public class DataWord implements Comparable<DataWord> {
 	}
 
 	private DataWord(ByteBuffer buffer) {
-		final ByteBuffer targetByteBuffer = ByteBuffer.allocate(32);
+		final ByteBuffer targetByteBuffer = ByteBuffer.allocate(DATAWORD_UNIT_SIZE);
 		final byte[] array = buffer.array();
-		System.arraycopy(array, 0, targetByteBuffer.array(), 32 - array.length, array.length);
+		System.arraycopy(array, 0, targetByteBuffer.array(), DATAWORD_UNIT_SIZE - array.length, array.length);
 		this.data = targetByteBuffer.array();
-	}
-
-	public static DataWord of(byte[] data) {
-		if (data == null || data.length == 0) {
-			return DataWord.ZERO();
-		}
-
-		int leadingZeroBits = numberOfLeadingZeros(data);
-		int valueBits = 8 * data.length - leadingZeroBits;
-		if (valueBits <= 8) {
-			if (data[data.length - 1] == 0) return DataWord.ZERO();
-			if (data[data.length - 1] == 1) return DataWord.ONE();
-		}
-
-		if (data.length == 32)
-			return new DataWord(java.util.Arrays.copyOf(data, data.length));
-		else if (data.length <= 32) {
-			byte[] bytes = new byte[32];
-			System.arraycopy(data, 0, bytes, 32 - data.length, data.length);
-			return new DataWord(bytes);
-		} else {
-			throw new RuntimeException(String.format("Data word can't exceed 32 bytes: 0x%s", ByteUtil.toHexString(data)));
-		}
 	}
 
 	public static DataWord of(byte num) {
@@ -118,12 +92,12 @@ public class DataWord implements Comparable<DataWord> {
 	public DataWord(byte[] data) {
 		if (data == null) {
 			this.data = ByteUtil.EMPTY_BYTE_ARRAY;
-		} else if (data.length == 32) {
+		} else if (data.length == DATAWORD_UNIT_SIZE) {
 			this.data = data;
-		} else if (data.length <= 32) {
-			System.arraycopy(data, 0, this.data, 32 - data.length, data.length);
+		} else if (data.length < DATAWORD_UNIT_SIZE) {
+			System.arraycopy(data, 0, this.data, DATAWORD_UNIT_SIZE - data.length, data.length);
 		} else {
-			throw new RuntimeException("Data word can't exceed 32 bytes: " + data);
+			throw new RuntimeException("Data word can't exceed 32 bytes: " + ByteUtil.toHexString(data));
 		}
 	}
 
