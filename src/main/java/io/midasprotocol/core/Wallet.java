@@ -1137,6 +1137,7 @@ public class Wallet {
 			VMConfig.initAllowTvmTransferM1(
 				dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1());
 			VMConfig.initAllowMultiSign(dbManager.getDynamicPropertiesStore().getAllowMultiSign());
+			VMConfig.initAllowVmConstantinople(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople());
 			runtime.execute();
 			runtime.go();
 			runtime.finalization();

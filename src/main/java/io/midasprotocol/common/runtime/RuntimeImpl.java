@@ -459,8 +459,9 @@ public class RuntimeImpl implements Runtime {
 
 		deposit.createContract(contractAddress, new ContractCapsule(newSmartContract));
 		byte[] code = newSmartContract.getBytecode().toByteArray();
-		deposit.saveCode(contractAddress, ProgramPrecompile.getCode(code));
-
+		if (!VMConfig.allowTvmConstantinople()) {
+			deposit.saveCode(contractAddress, ProgramPrecompile.getCode(code));
+		}
 		// transfer from callerAddress to contractAddress according to callValue
 		if (callValue > 0) {
 			transfer(this.deposit, callerAddress, contractAddress, callValue);
