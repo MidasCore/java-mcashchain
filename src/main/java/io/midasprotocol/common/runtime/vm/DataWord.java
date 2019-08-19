@@ -28,8 +28,6 @@ import org.spongycastle.util.encoders.Hex;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-import static io.midasprotocol.common.utils.ByteUtil.numberOfLeadingZeros;
-
 /**
  * DataWord is the 32-byte array representation of a 256-bit number Calculations can be done on this
  * word with other DataWords

@@ -18,6 +18,7 @@
 package io.midasprotocol.common.runtime.vm.program;
 
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.*;
 import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvoke;
@@ -954,6 +955,16 @@ public class Program {
 	public byte[] getCodeAt(DataWord address) {
 		byte[] code = invoke.getDeposit().getCode(convertToTronAddress(address.getLast20Bytes()));
 		return nullToEmpty(code);
+	}
+
+	public byte[] getCodeHashAt(DataWord address) {
+		AccountCapsule addr = getContractState().getAccount(convertToTronAddress(address.getLast20Bytes()));
+		if (addr != null) {
+			byte[] code = getCodeAt(address);
+			return Hash.sha3(code);
+		} else {
+			return EMPTY_BYTE_ARRAY;
+		}
 	}
 
 	public DataWord getContractAddress() {

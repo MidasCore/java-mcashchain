@@ -98,7 +98,7 @@ public class VM {
 			}
 
 			if (!VMConfig.allowTvmConstantinople()) {
-				if (op == SHL || op == SHR || op == SAR || op == CREATE2) {
+				if (op == SHL || op == SHR || op == SAR || op == CREATE2 || op == EXTCODEHASH) {
 					throw Program.Exception.invalidOpCode(program.getCurrentOp());
 				}
 			}
@@ -200,6 +200,9 @@ public class VM {
 					energyCost = energyCosts.getEXT_CODE_COPY() + calcMemEnergy(energyCosts, oldMemSize,
 						memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 4)),
 						stack.get(stack.size() - 4).longValueSafe(), op);
+					break;
+				case EXTCODEHASH:
+					energyCost = energyCosts.getEXT_CODE_HASH();
 					break;
 				case CALL:
 				case CALLCODE:
@@ -904,6 +907,13 @@ public class VM {
 					}
 
 					program.memorySave(memOffset, codeCopy);
+					program.step();
+				}
+				break;
+				case EXTCODEHASH:{
+					DataWord address = program.stackPop();
+					byte[] codeHash = program.getCodeHashAt(address);
+					program.stackPush(codeHash);
 					program.step();
 				}
 				break;
