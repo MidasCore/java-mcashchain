@@ -1416,7 +1416,9 @@ public class VM {
 			program.setPreviouslyExecutedOp(op.val());
 		} catch (RuntimeException e) {
 			logger.info("VM halted: [{}]", e.getMessage());
-			program.spendAllEnergy();
+			if (!(e instanceof Program.TransferException)) {
+				program.spendAllEnergy();
+			}
 			program.resetFutureRefund();
 			program.stop();
 			throw e;
@@ -1446,8 +1448,7 @@ public class VM {
 				program.setRuntimeFailure(e);
 			}
 		} catch (StackOverflowError soe) {
-			logger
-				.info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
+			logger.info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
 			throw new JVMStackOverFlowException();
 		}
 	}

@@ -640,7 +640,9 @@ public class RuntimeImpl implements Runtime {
 					result.rejectInternalTransactions();
 
 					if (result.getException() != null) {
-						program.spendAllEnergy();
+						if (!(result.getException() instanceof Program.TransferException)) {
+							program.spendAllEnergy();
+						}
 						runtimeError = result.getException().getMessage();
 						throw result.getException();
 					} else {
@@ -676,7 +678,9 @@ public class RuntimeImpl implements Runtime {
 		} catch (ContractValidateException e) {
 			logger.info("when check constant, {}", e.getMessage());
 		} catch (Throwable e) {
-			program.spendAllEnergy();
+			if (!(e instanceof Program.TransferException)) {
+				program.spendAllEnergy();
+			}
 			result = program.getResult();
 			result.rejectInternalTransactions();
 			if (Objects.isNull(result.getException())) {

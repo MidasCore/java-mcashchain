@@ -262,6 +262,10 @@ public class TransactionTrace {
 			receipt.setResult(ContractResult.JVM_STACK_OVER_FLOW);
 			return;
 		}
+		if (exception instanceof TransferException) {
+			receipt.setResult(ContractResult.TRANSFER_FAILED);
+			return;
+		}
 		receipt.setResult(ContractResult.UNKNOWN);
 	}
 

@@ -103,10 +103,10 @@ public class TVMTestUtils {
 	public static Transaction generateDeploySmartContractAndGetTransaction(String contractName,
 																		   byte[] callerAddress,
 																		   String ABI, String code, long value, long feeLimit, long consumeUserResourcePercent,
-																		   String libraryAddressPair, long orginEngeryLimit) {
+																		   String libraryAddressPair, long originEnergyLimit) {
 
 		CreateSmartContract contract = buildCreateSmartContract(contractName, callerAddress, ABI, code,
-				value, consumeUserResourcePercent, libraryAddressPair, orginEngeryLimit);
+				value, consumeUserResourcePercent, libraryAddressPair, originEnergyLimit);
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.CreateSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
@@ -122,10 +122,10 @@ public class TVMTestUtils {
 	public static Transaction generateDeploySmartContractAndGetTransaction(String contractName,
 																		   byte[] callerAddress,
 																		   String ABI, String code, long value, long feeLimit, long consumeUserResourcePercent,
-																		   String libraryAddressPair, long orginEngeryLimit, long tokenValue, long tokenId) {
+																		   String libraryAddressPair, long originEnergyLimit, long tokenValue, long tokenId) {
 
 		CreateSmartContract contract = buildCreateSmartContract(contractName, callerAddress, ABI, code,
-				value, consumeUserResourcePercent, libraryAddressPair, orginEngeryLimit, tokenValue,
+				value, consumeUserResourcePercent, libraryAddressPair, originEnergyLimit, tokenValue,
 				tokenId);
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.CreateSmartContract);
@@ -181,11 +181,11 @@ public class TVMTestUtils {
 	}
 
 	public static Runtime processTransactionAndReturnRuntime(Transaction trx,
-															 Manager dbmanager, BlockCapsule block)
+															 Manager dbManager, BlockCapsule block)
 			throws ContractExeException, ContractValidateException, ReceiptCheckErrException, VMIllegalException {
 		TransactionCapsule trxCap = new TransactionCapsule(trx);
 
-		TransactionTrace trace = new TransactionTrace(trxCap, dbmanager);
+		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
 		// init
 		trace.init(block);
 		//exec
@@ -307,7 +307,7 @@ public class TVMTestUtils {
 	public static CreateSmartContract buildCreateSmartContract(String contractName,
 															   byte[] address,
 															   String ABI, String code, long value, long consumeUserResourcePercent,
-															   String libraryAddressPair, long engeryLimit, long tokenValue, long tokenId) {
+															   String libraryAddressPair, long energyLimit, long tokenValue, long tokenId) {
 		SmartContract.ABI abi = jsonStr2ABI(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
@@ -319,7 +319,7 @@ public class TVMTestUtils {
 		builder.setOriginAddress(ByteString.copyFrom(address));
 		builder.setAbi(abi);
 		builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-		builder.setOriginEnergyLimit(engeryLimit);
+		builder.setOriginEnergyLimit(energyLimit);
 
 		if (value != 0) {
 			builder.setCallValue(value);
