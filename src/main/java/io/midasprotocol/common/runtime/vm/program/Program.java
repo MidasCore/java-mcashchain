@@ -76,7 +76,6 @@ public class Program {
 	private BlockCapsule blockCap;
 	private long nonce;
 	private byte[] rootTransactionId;
-	private Boolean isRootCallConstant;
 	private InternalTransaction internalTransaction;
 	private ProgramInvoke invoke;
 	private ProgramInvokeFactory programInvokeFactory = new ProgramInvokeFactoryImpl();
@@ -273,14 +272,6 @@ public class Program {
 
 	public void setNonce(long nonceValue) {
 		nonce = nonceValue;
-	}
-
-	public Boolean getRootCallConstant() {
-		return isRootCallConstant;
-	}
-
-	public void setRootCallConstant(Boolean rootCallConstant) {
-		isRootCallConstant = rootCallConstant;
 	}
 
 	public ProgramPrecompile getProgramPrecompile() {
@@ -632,7 +623,6 @@ public class Program {
 			VM vm = new VM(config);
 			Program program = new Program(programCode, programInvoke, internalTx, config, this.blockCap);
 			program.setRootTransactionId(this.rootTransactionId);
-			program.setRootCallConstant(this.isRootCallConstant);
 			vm.play(program);
 			createResult = program.getResult();
 			getTrace().merge(program.getTrace());
@@ -832,7 +822,6 @@ public class Program {
 			Program program = new Program(programCode, programInvoke, internalTx, config,
 				this.blockCap);
 			program.setRootTransactionId(this.rootTransactionId);
-			program.setRootCallConstant(this.isRootCallConstant);
 			vm.play(program);
 			callResult = program.getResult();
 
@@ -1321,7 +1310,7 @@ public class Program {
 			// this is the depositImpl, not contractState as above
 			contract.setDeposit(deposit);
 			contract.setResult(this.result);
-			contract.setRootCallConstant(getRootCallConstant().booleanValue());
+			contract.setStaticCall(isStaticCall());
 			Pair<Boolean, byte[]> out = contract.execute(data);
 
 			if (out.getLeft()) { // success

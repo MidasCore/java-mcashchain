@@ -37,7 +37,6 @@ import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.SmartContract;
-import io.midasprotocol.protos.Protocol.SmartContract.ABI;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
@@ -83,6 +82,9 @@ public class RuntimeImpl implements Runtime {
 
 	//tx trace
 	private TransactionTrace trace;
+
+	@Getter
+	@Setter
 	private boolean isStaticCall = false;
 
 	@Setter
@@ -439,7 +441,6 @@ public class RuntimeImpl implements Runtime {
 				this.blockCap);
 			byte[] txId = new TransactionCapsule(trx).getTransactionId().getBytes();
 			this.program.setRootTransactionId(txId);
-			this.program.setRootCallConstant(isCallConstant());
 			if (enableEventListener &&
 				(EventPluginLoader.getInstance().isContractEventTriggerEnable()
 					|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
@@ -560,7 +561,6 @@ public class RuntimeImpl implements Runtime {
 				this.blockCap);
 			byte[] txId = new TransactionCapsule(trx).getTransactionId().getBytes();
 			this.program.setRootTransactionId(txId);
-			this.program.setRootCallConstant(isCallConstant());
 
 			if (enableEventListener &&
 				(EventPluginLoader.getInstance().isContractEventTriggerEnable()
@@ -690,10 +690,6 @@ public class RuntimeImpl implements Runtime {
 			logger.info("runtime result is :{}", result.getException().getMessage());
 		}
 		trace.setBill(result.getEnergyUsed());
-	}
-
-	public boolean isCallConstant() {
-		return isStaticCall;
 	}
 
 	public void finalization() {

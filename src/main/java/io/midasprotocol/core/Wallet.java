@@ -1129,13 +1129,13 @@ public class Wallet {
 
 		ContractStore contractStore = dbManager.getContractStore();
 		byte[] contractAddress = triggerSmartContract.getContractAddress().toByteArray();
-		byte[] isContractExiste = contractStore.findContractByHash(contractAddress);
+		byte[] contract = contractStore.findContractByHash(contractAddress);
 
-		if (ArrayUtils.isEmpty(isContractExiste)) {
-			throw new ContractValidateException("No contract or not a smart contract");
+		if (ArrayUtils.isEmpty(contract)) {
+			throw new ContractValidateException("no contract or not a smart contract");
 		}
 		if (!Args.getInstance().isSupportConstant()) {
-			throw new ContractValidateException("this node don't support constant");
+			throw new ContractValidateException("not support constant");
 		}
 
 		return callConstantContract(trxCap, builder, retBuilder);
@@ -1146,7 +1146,7 @@ public class Wallet {
 		throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
 
 		if (!Args.getInstance().isSupportConstant()) {
-			throw new ContractValidateException("this node don't support constant");
+			throw new ContractValidateException("not support constant");
 		}
 		DepositImpl deposit = DepositImpl.createRoot(dbManager);
 

@@ -3,6 +3,7 @@ package io.midasprotocol.core.db;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.runtime.Runtime;
 import io.midasprotocol.common.runtime.RuntimeImpl;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.program.InternalTransaction;
 import io.midasprotocol.common.runtime.vm.program.Program.*;
 import io.midasprotocol.common.runtime.vm.program.ProgramResult;
@@ -11,10 +12,12 @@ import io.midasprotocol.common.storage.DepositImpl;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.*;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.exception.*;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
+import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
@@ -89,9 +92,21 @@ public class TransactionTrace {
 		runtime.setEnableEventListener(eventPluginLoaded);
 	}
 
-	public void checkIsConstant() throws VMIllegalException {
-		if (runtime.isCallConstant()) {
-			throw new VMIllegalException("cannot call constant method ");
+	public void checkIsConstant() throws ContractValidateException, VMIllegalException {
+		if (VMConfig.allowTvmConstantinople()) {
+			return;
+		}
+
+		TriggerSmartContract triggerContractFromTransaction = ContractCapsule
+			.getTriggerContractFromTransaction(this.getTrx().getInstance());
+		if (InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE == this.trxType) {
+			DepositImpl deposit = DepositImpl.createRoot(dbManager);
+			ContractCapsule contract = deposit
+				.getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
+			Protocol.SmartContract.ABI abi = contract.getInstance().getAbi();
+			if (Wallet.isConstant(abi, triggerContractFromTransaction)) {
+				throw new VMIllegalException("cannot call constant method");
+			}
 		}
 	}
 

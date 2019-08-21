@@ -36,6 +36,8 @@ import io.midasprotocol.core.exception.ContractValidateException;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.*;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.spongycastle.util.encoders.Hex;
@@ -207,7 +209,6 @@ public class PrecompiledContracts {
 		private byte[] callerAddress;
 		private Deposit deposit;
 		private ProgramResult result;
-		private boolean isRootCallConstant;
 
 		public abstract long getEnergyForData(byte[] data);
 
@@ -237,15 +238,9 @@ public class PrecompiledContracts {
 			this.result = result;
 		}
 
-		public boolean isRootCallConstant() {
-			return isRootCallConstant;
-		}
-
-		public void setRootCallConstant(boolean rootCallConstant) {
-			isRootCallConstant = rootCallConstant;
-		}
-
-
+		@Setter
+		@Getter
+		private boolean isStaticCall;
 	}
 
 	public static class Identity extends PrecompiledContract {
@@ -686,7 +681,7 @@ public class PrecompiledContracts {
 		@Override
 		public Pair<Boolean, byte[]> execute(byte[] data) {
 
-			if (isRootCallConstant()) {
+			if (isStaticCall()) {
 				return Pair.of(true, new DataWord(0).getData());
 			}
 			if (data == null || data.length != 2 * DataWord.DATAWORD_UNIT_SIZE) {
@@ -879,7 +874,7 @@ public class PrecompiledContracts {
 		@Override
 		public Pair<Boolean, byte[]> execute(byte[] data) {
 
-			if (isRootCallConstant()) {
+			if (isStaticCall()) {
 				return Pair.of(true, new DataWord(0).getData());
 			}
 
@@ -945,7 +940,7 @@ public class PrecompiledContracts {
 		@Override
 		public Pair<Boolean, byte[]> execute(byte[] data) {
 
-			if (isRootCallConstant()) {
+			if (isStaticCall()) {
 				return Pair.of(true, new DataWord(0).getData());
 			}
 
@@ -1021,7 +1016,7 @@ public class PrecompiledContracts {
 		@Override
 		public Pair<Boolean, byte[]> execute(byte[] data) {
 
-			if (isRootCallConstant()) {
+			if (isStaticCall()) {
 				return Pair.of(true, new DataWord(0).getData());
 			}
 
@@ -1106,7 +1101,7 @@ public class PrecompiledContracts {
 		@Override
 		public Pair<Boolean, byte[]> execute(byte[] data) {
 
-			if (isRootCallConstant()) {
+			if (isStaticCall()) {
 				return Pair.of(true, new DataWord(0).getData());
 			}
 
@@ -1233,7 +1228,7 @@ public class PrecompiledContracts {
 		@Override
 		public Pair<Boolean, byte[]> execute(byte[] data) {
 
-//      if (isRootCallConstant()){
+//      if (isStaticCall()){
 //        return Pair.of(true, new DataWord(0).getData());
 //      }
 //
