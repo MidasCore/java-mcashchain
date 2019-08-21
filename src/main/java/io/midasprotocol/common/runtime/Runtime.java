@@ -9,7 +9,7 @@ import io.midasprotocol.core.exception.VMIllegalException;
 
 public interface Runtime {
 
-	boolean isCallConstant() throws ContractValidateException;
+	boolean isCallConstant();
 
 	void execute() throws ContractValidateException, ContractExeException, VMIllegalException;
 
@@ -23,5 +23,5 @@ public interface Runtime {
 
 	String getRuntimeError();
 
-	void setEnableEventLinstener(boolean enableEventLinstener);
+	void setEnableEventListener(boolean enableEventListener);
 }
