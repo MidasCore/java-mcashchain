@@ -740,6 +740,12 @@ public class RpcApiService implements Service {
 		}
 
 		@Override
+		public void clearContractABI(ClearAbiContract request,
+									 StreamObserver<TransactionExtension> responseObserver) {
+			createTransactionExtension(request, ContractType.ClearAbiContract, responseObserver);
+		}
+
+		@Override
 		public void createWitness(WitnessCreateContract request,
 								  StreamObserver<TransactionExtension> responseObserver) {
 			createTransactionExtension(request, ContractType.WitnessCreateContract, responseObserver);

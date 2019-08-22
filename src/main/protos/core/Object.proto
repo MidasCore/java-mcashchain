@@ -305,6 +305,7 @@ message Transaction {
             StakeContract = 47;
             UnstakeContract = 48;
             WitnessResignContract = 49;
+            ClearAbiContract = 50;
         }
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
