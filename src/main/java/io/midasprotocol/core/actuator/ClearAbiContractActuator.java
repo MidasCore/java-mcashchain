@@ -3,6 +3,7 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
@@ -46,6 +47,11 @@ public class ClearAbiContractActuator extends AbstractActuator {
 
     @Override
     public boolean validate() throws ContractValidateException {
+        if (!VMConfig.allowVmConstantinople()) {
+            throw new ContractValidateException(
+                "Contract type error, unexpected ClearABIContract");
+        }
+
         if (this.contract == null) {
             throw new ContractValidateException("No contract!");
         }

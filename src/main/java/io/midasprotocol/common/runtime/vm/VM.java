@@ -97,7 +97,7 @@ public class VM {
 				}
 			}
 
-			if (!VMConfig.allowTvmConstantinople()) {
+			if (!VMConfig.allowVmConstantinople()) {
 				if (op == SHL || op == SHR || op == SAR || op == CREATE2 || op == EXTCODEHASH) {
 					throw Program.Exception.invalidOpCode(program.getCurrentOp());
 				}

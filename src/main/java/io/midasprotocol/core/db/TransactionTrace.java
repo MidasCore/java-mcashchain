@@ -93,7 +93,7 @@ public class TransactionTrace {
 	}
 
 	public void checkIsConstant() throws ContractValidateException, VMIllegalException {
-		if (VMConfig.allowTvmConstantinople()) {
+		if (VMConfig.allowVmConstantinople()) {
 			return;
 		}
 
@@ -103,6 +103,13 @@ public class TransactionTrace {
 			DepositImpl deposit = DepositImpl.createRoot(dbManager);
 			ContractCapsule contract = deposit
 				.getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
+			if (contract == null) {
+				String msg = "contract: " + Wallet
+					.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray())
+					+ " is not in contract store";
+				logger.info(msg);
+				throw new ContractValidateException(msg);
+			}
 			Protocol.SmartContract.ABI abi = contract.getInstance().getAbi();
 			if (Wallet.isConstant(abi, triggerContractFromTransaction)) {
 				throw new VMIllegalException("cannot call constant method");

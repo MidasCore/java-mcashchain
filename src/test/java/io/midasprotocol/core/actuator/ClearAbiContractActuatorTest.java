@@ -3,6 +3,7 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.application.ApplicationContext;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.common.utils.StringUtil;
@@ -59,6 +60,7 @@ public class ClearAbiContractActuatorTest {
      */
     @BeforeClass
     public static void init() {
+        VMConfig.initAllowVmConstantinople(1);
         dbManager = context.getBean(Manager.class);
     }
 
@@ -120,7 +122,7 @@ public class ClearAbiContractActuatorTest {
     }
 
     @Test
-    public void successClearABIContract() {
+    public void successClearAbiContract() {
         ClearAbiContractActuator actuator =
             new ClearAbiContractActuator(
                 getContract(OWNER_ADDRESS, CONTRACT_ADDRESS), dbManager);

@@ -214,7 +214,7 @@ contract Caller {
     @Test
     public void transferFailedAfterAllowVmConstantinople()
         throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
-        VMConfig.initAllowTvmTransferM1(1);
+        VMConfig.initAllowVmTransferM1(1);
         VMConfig.initAllowVmConstantinople(1);
 
         String contractName = "EnergyOfTransferFailedTest";
@@ -250,7 +250,7 @@ contract Caller {
     @Test
     public void transferFailedBeforeAllowVmConstantinople()
         throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
-        VMConfig.initAllowTvmTransferM1(1);
+        VMConfig.initAllowVmTransferM1(1);
         VMConfig.initAllowVmConstantinople(0);
 
         String contractName = "EnergyOfTransferFailedTest";

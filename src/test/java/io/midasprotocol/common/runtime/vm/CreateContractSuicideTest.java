@@ -109,7 +109,7 @@ contract D {
 			throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
 		byte[] stats = new byte[27];
 		Arrays.fill(stats, (byte) 1);
-		VMConfig.initAllowTvmTransferM1(1);
+		VMConfig.initAllowVmTransferM1(1);
 		byte[] address = Hex.decode(OWNER_ADDRESS);
 
 		VMConfig.initAllowMultiSign(1);

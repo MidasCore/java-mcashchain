@@ -526,7 +526,7 @@ public class Program {
 					transferAllToken(getContractState(), owner, obtainer);
 				}
 			} catch (ContractValidateException e) {
-				if (VMConfig.allowTvmConstantinople()) {
+				if (VMConfig.allowVmConstantinople()) {
 					throw new TransferException("transfer all token or transfer all mcash failed in suicide: %s", e.getMessage());
 				}
 				throw new BytecodeExecutionException("transfer failure");
@@ -773,7 +773,7 @@ public class Program {
 					TransferActuator
 						.validateForSmartContract(deposit, senderAddress, contextAddress, endowment);
 				} catch (ContractValidateException e) {
-					if (VMConfig.allowTvmConstantinople()) {
+					if (VMConfig.allowVmConstantinople()) {
 						refundEnergy(msg.getEnergy().longValue(), "refund energy from message call");
 						throw new TransferException("transfer mcash failed: %s", e.getMessage());
 					}
@@ -786,7 +786,7 @@ public class Program {
 					TransferAssetActuator.validateForSmartContract(deposit, senderAddress, contextAddress,
 						tokenId, endowment);
 				} catch (ContractValidateException e) {
-					if (VMConfig.allowTvmConstantinople()) {
+					if (VMConfig.allowVmConstantinople()) {
 						refundEnergy(msg.getEnergy().longValue(), "refund energy from message call");
 						throw new TransferException("transfer m1 failed: %s", e.getMessage());
 					}

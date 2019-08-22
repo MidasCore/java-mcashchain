@@ -460,7 +460,7 @@ public class RuntimeImpl implements Runtime {
 
 		deposit.createContract(contractAddress, new ContractCapsule(newSmartContract));
 		byte[] code = newSmartContract.getBytecode().toByteArray();
-		if (!VMConfig.allowTvmConstantinople()) {
+		if (!VMConfig.allowVmConstantinople()) {
 			deposit.saveCode(contractAddress, ProgramPrecompile.getCode(code));
 		}
 		// transfer from callerAddress to contractAddress according to callValue
@@ -626,7 +626,7 @@ public class RuntimeImpl implements Runtime {
 						}
 					} else {
 						result.spendEnergy(saveCodeEnergy);
-						if (VMConfig.allowTvmConstantinople()) {
+						if (VMConfig.allowVmConstantinople()) {
 							deposit.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
 						}
 					}

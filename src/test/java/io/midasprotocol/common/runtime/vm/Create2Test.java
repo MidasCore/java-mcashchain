@@ -64,7 +64,7 @@ triggercontract Txxxxxxxxxxx deploy(bytes,uint256) bytes,uint256 false 100000000
     @Test
     public void testCreate2()
         throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
-        VMConfig.initAllowTvmTransferM1(1);
+        VMConfig.initAllowVmTransferM1(1);
         VMConfig.initAllowVmConstantinople(1);
         String contractName = "Factory_0";
         byte[] address = Hex.decode(OWNER_ADDRESS);
