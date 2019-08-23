@@ -3,6 +3,7 @@ package io.midasprotocol.core.actuator;
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.utils.StringUtil;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.*;
@@ -139,6 +140,9 @@ public class UnstakeActuator extends AbstractActuator {
 		}
 
 		long stakeAmount = accountCapsule.getNormalStakeAmount();
+		if (dbManager.getDynamicPropertiesStore().getAllowVmConstantinople() == 1) {
+			stakeAmount = accountCapsule.getTotalStakeAmount();
+		}
 
 		StakeAccountCapsule stakeAccountCapsule = stakeAccountStore.get(address);
 		if (stakeAccountCapsule == null) {

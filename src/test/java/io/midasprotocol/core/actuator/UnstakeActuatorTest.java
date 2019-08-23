@@ -2,6 +2,7 @@ package io.midasprotocol.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
@@ -28,13 +29,13 @@ import java.io.File;
 
 @Slf4j
 public class UnstakeActuatorTest {
-
 	private static final String dbPath = "output_unstake_test";
 	private static final String OWNER_ADDRESS;
 	private static final String OWNER_ADDRESS_INVALID = "aaaa";
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000_000);
 	private static final long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
+	private static final long supernodeStakeAmount = ConversionUtil.McashToMatoshi(5_000_000);
 	private static Manager dbManager;
 	private static ApplicationContext context;
 
@@ -96,7 +97,7 @@ public class UnstakeActuatorTest {
 
 
 	@Test
-	public void testUnstake() {
+	public void normalUnstake() {
 		long now = System.currentTimeMillis();
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
@@ -132,6 +133,49 @@ public class UnstakeActuatorTest {
 
 //			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 //			Assert.assertEquals(totalNetWeightBefore, totalNetWeightAfter + frozenBalance / 1000_000L);
+
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void witnessOwnerUnstakeAfterConstantinople() {
+		dbManager.getDynamicPropertiesStore().saveAllowVmConstantinople(1);
+		long now = System.currentTimeMillis();
+		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
+
+		long totalStakeAmount = stakeAmount + supernodeStakeAmount;
+		AccountCapsule accountCapsule = dbManager.getAccountStore()
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
+		accountCapsule.setStake(stakeAmount, now);
+		accountCapsule.setWitnessStake(supernodeStakeAmount);
+		Assert.assertEquals(accountCapsule.getNormalStakeAmount(), stakeAmount);
+		Assert.assertEquals(accountCapsule.getTotalStakeAmount(), totalStakeAmount);
+		Assert.assertEquals(accountCapsule.getVotingPower(), StakeUtil.getVotingPowerFromStakeAmount(totalStakeAmount));
+		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
+
+		StakeAccountCapsule stakeAccountCapsule = new StakeAccountCapsule(accountCapsule.getAddress(),
+			StakeUtil.getStakeAmountWithBonusFromStakeAmount(totalStakeAmount),
+			StakeUtil.getVotingPowerFromStakeAmount(totalStakeAmount));
+		dbManager.getStakeAccountStore().put(stakeAccountCapsule.createDbKey(), stakeAccountCapsule);
+
+		UnstakeActuator actuator = new UnstakeActuator(
+			getContract(OWNER_ADDRESS), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+
+		long stakeAccountListSizeBefore = dbManager.getStakeAccountStore().size();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
+			AccountCapsule owner =
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+
+			Assert.assertEquals(initBalance + stakeAmount, owner.getBalance());
+			Assert.assertEquals(supernodeStakeAmount, owner.getTotalStakeAmount());
+			Assert.assertNotEquals(0L, owner.getVotingPower());
+			Assert.assertEquals(stakeAccountListSizeBefore, dbManager.getStakeAccountStore().size());
 
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
