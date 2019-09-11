@@ -43,13 +43,13 @@ public class WitnessStoreTest {
 	@Test
 	public void putAndGetWitness() {
 		WitnessCapsule witnessCapsule = new WitnessCapsule(
-				ByteString.copyFromUtf8("100000000x"),
-				ByteString.copyFromUtf8("100000000x"),
-				100L, "");
+			ByteString.copyFromUtf8("100000000x"),
+			ByteString.copyFromUtf8("100000000x"),
+			100L, "");
 
 		this.witnessStore.put(witnessCapsule.getAddress().toByteArray(), witnessCapsule);
 		WitnessCapsule witnessSource = this.witnessStore
-				.get(ByteString.copyFromUtf8("100000000x").toByteArray());
+			.get(ByteString.copyFromUtf8("100000000x").toByteArray());
 		Assert.assertEquals(witnessCapsule.getAddress(), witnessSource.getAddress());
 		Assert.assertEquals(witnessCapsule.getVoteCount(), witnessSource.getVoteCount());
 
@@ -57,9 +57,9 @@ public class WitnessStoreTest {
 		Assert.assertEquals(100L, witnessSource.getVoteCount());
 
 		witnessCapsule = new WitnessCapsule(
-				ByteString.copyFromUtf8(""),
-				ByteString.copyFromUtf8(""),
-				100L, "");
+			ByteString.copyFromUtf8(""),
+			ByteString.copyFromUtf8(""),
+			100L, "");
 
 		this.witnessStore.put(witnessCapsule.getAddress().toByteArray(), witnessCapsule);
 		witnessSource = this.witnessStore.get(ByteString.copyFromUtf8("").toByteArray());

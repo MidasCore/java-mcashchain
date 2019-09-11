@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class ByteArrayTest {
 
 	@Test
-	public void testToHexString() {
+	public void toHexString() {
 		//logger.info("Byte: byte 16 to hex string = {}", ByteArray.toHexString(new byte[]{16}));
 		assertEquals("byte to hex string is wrong", "10", ByteArray.toHexString(new byte[]{16}));
 	}
@@ -40,7 +40,7 @@ public class ByteArrayTest {
 	}
 
 	@Test
-	public void testHexStringToByte() {
+	public void hexStringToByte() {
 		//logger.info("Byte: hex string 0x11 to byte = {}", ByteArray.fromHexString("0x11"));
 		byte[] expectedfirst = new byte[]{17};
 		byte[] actualfirst = ByteArray.fromHexString("0x11");
@@ -56,14 +56,14 @@ public class ByteArrayTest {
 	}
 
 	@Test
-	public void testToLong() {
+	public void toLong() {
 		//logger.info("Byte: byte 13 to long = {}", ByteArray.toLong(new byte[]{13}));
 		assertEquals("byte to long is wrong", 13L, ByteArray.toLong(new byte[]{13}));
 
 	}
 
 	@Test
-	public void testFromLong() {
+	public void fromLong() {
 		//logger.info("Byte: long 127L to byte = {}", ByteArray.fromLong(127L));
 		byte[] expected = new byte[]{0, 0, 0, 0, 0, 0, 0, 127};
 		byte[] actual = ByteArray.fromLong(127L);
@@ -72,7 +72,7 @@ public class ByteArrayTest {
 	}
 
 	@Test
-	public void test2ToHexString() {
+	public void toHexString2() {
 		//byte[] bs = new byte[]{};
 		//logger.info("utils.ByteArray.toHexString: {}", ByteArray.toHexString(bs));
 		//logger.info("Hex.toHexString: {}", Hex.toHexString(bs));

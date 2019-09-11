@@ -69,12 +69,12 @@ public class ExchangeCapsuleTest {
 
 		long now = dbManager.getHeadBlockTimeStamp();
 		ExchangeCapsule exchangeCapsulee =
-				new ExchangeCapsule(
-						ByteString.copyFromUtf8("owner"),
-						1,
-						now,
-						1L,
-						2L);
+			new ExchangeCapsule(
+				ByteString.copyFromUtf8("owner"),
+				1,
+				now,
+				1L,
+				2L);
 
 		dbManager.getExchangeStore().put(exchangeCapsulee.createDbKey(), exchangeCapsulee);
 

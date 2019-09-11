@@ -36,7 +36,6 @@ public class UnfreezeBalanceActuatorTest {
 	private static final String OWNER_ACCOUNT_INVALID;
 	private static final long initBalance = ConversionUtil.McashToMatoshi(10_000);
 	private static final long frozenBalance = ConversionUtil.McashToMatoshi(1_000);
-	private static final long smallTatalResource = 100L;
 	private static Manager dbManager;
 	private static ApplicationContext context;
 
@@ -80,60 +79,60 @@ public class UnfreezeBalanceActuatorTest {
 	@Before
 	public void createAccountCapsule() {
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("owner"),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.Normal,
-						initBalance);
+			new AccountCapsule(
+				ByteString.copyFromUtf8("owner"),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				initBalance);
 		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
 
 		AccountCapsule receiverCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("receiver"),
-						ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS)),
-						AccountType.Normal,
-						initBalance);
+			new AccountCapsule(
+				ByteString.copyFromUtf8("receiver"),
+				ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS)),
+				AccountType.Normal,
+				initBalance);
 		dbManager.getAccountStore().put(receiverCapsule.getAddress().toByteArray(), receiverCapsule);
 	}
 
 	private Any getContractForBandwidth(String ownerAddress) {
 		return Any.pack(
-				Contract.UnfreezeBalanceContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.build());
+			Contract.UnfreezeBalanceContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.build());
 	}
 
-	private Any getContractForCpu(String ownerAddress) {
+	private Any getContractForEnergy(String ownerAddress) {
 		return Any.pack(
-				Contract.UnfreezeBalanceContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setResource(io.midasprotocol.protos.Contract.ResourceCode.ENERGY)
-						.build());
+			Contract.UnfreezeBalanceContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setResource(io.midasprotocol.protos.Contract.ResourceCode.ENERGY)
+				.build());
 	}
 
 	private Any getDelegatedContractForBandwidth(String ownerAddress, String receiverAddress) {
 		return Any.pack(
-				Contract.UnfreezeBalanceContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)))
-						.build());
+			Contract.UnfreezeBalanceContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)))
+				.build());
 	}
 
-	private Any getDelegatedContractForCpu(String ownerAddress, String receiverAddress) {
+	private Any getDelegatedContractForEnergy(String ownerAddress, String receiverAddress) {
 		return Any.pack(
-				Contract.UnfreezeBalanceContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)))
-						.setResource(io.midasprotocol.protos.Contract.ResourceCode.ENERGY)
-						.build());
+			Contract.UnfreezeBalanceContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setReceiverAddress(ByteString.copyFrom(ByteArray.fromHexString(receiverAddress)))
+				.setResource(io.midasprotocol.protos.Contract.ResourceCode.ENERGY)
+				.build());
 	}
 
 	private Any getContract(String ownerAddress, Contract.ResourceCode resourceCode) {
 		return Any.pack(
-				Contract.UnfreezeBalanceContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setResource(resourceCode)
-						.build());
+			Contract.UnfreezeBalanceContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setResource(resourceCode)
+				.build());
 	}
 
 
@@ -143,13 +142,13 @@ public class UnfreezeBalanceActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setFrozenForBandwidth(frozenBalance, now);
 		Assert.assertEquals(accountCapsule.getFrozenBalanceForBandwidth(), frozenBalance);
 
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getContractForBandwidth(OWNER_ADDRESS), dbManager);
+			getContractForBandwidth(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
 		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
@@ -159,14 +158,14 @@ public class UnfreezeBalanceActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			Assert.assertEquals(owner.getBalance(), initBalance + frozenBalance);
 			Assert.assertEquals(owner.getFrozenBalanceForBandwidth(), 0);
 
 			long totalNetWeightAfter = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 			Assert.assertEquals(totalNetWeightBefore,
-					totalNetWeightAfter + frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
+				totalNetWeightAfter + frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
@@ -180,13 +179,13 @@ public class UnfreezeBalanceActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setFrozenForEnergy(frozenBalance, now);
 		Assert.assertEquals(accountCapsule.getAllFrozenBalanceForEnergy(), frozenBalance);
 
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getContractForCpu(OWNER_ADDRESS), dbManager);
+			getContractForEnergy(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
 		long totalEnergyWeightBefore = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
@@ -195,13 +194,13 @@ public class UnfreezeBalanceActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			Assert.assertEquals(owner.getBalance(), initBalance + frozenBalance);
 			Assert.assertEquals(owner.getFrozenBalanceForEnergy(), 0);
 			long totalEnergyWeightAfter = dbManager.getDynamicPropertiesStore().getTotalEnergyWeight();
 			Assert.assertEquals(totalEnergyWeightBefore,
-					totalEnergyWeightAfter + frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
+				totalEnergyWeightAfter + frozenBalance / Parameter.ChainConstant.TEN_POW_DECIMALS);
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -214,11 +213,11 @@ public class UnfreezeBalanceActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule owner = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		owner.setDelegatedFrozenBalanceForBandwidth(frozenBalance);
 
 		AccountCapsule receiver = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(RECEIVER_ADDRESS));
+			.get(ByteArray.fromHexString(RECEIVER_ADDRESS));
 		receiver.setAcquiredDelegatedFrozenBalanceForBandwidth(frozenBalance);
 
 		dbManager.getAccountStore().put(owner.createDbKey(), owner);
@@ -226,37 +225,37 @@ public class UnfreezeBalanceActuatorTest {
 
 		//init DelegatedResourceCapsule
 		DelegatedResourceCapsule delegatedResourceCapsule = new DelegatedResourceCapsule(
-				owner.getAddress(),
-				receiver.getAddress()
+			owner.getAddress(),
+			receiver.getAddress()
 		);
 		delegatedResourceCapsule.setFrozenBalanceForBandwidth(
-				frozenBalance,
-				now - 100L);
+			frozenBalance,
+			now - 100L);
 		dbManager.getDelegatedResourceStore().put(DelegatedResourceCapsule
-				.createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
-						ByteArray.fromHexString(RECEIVER_ADDRESS)), delegatedResourceCapsule);
+			.createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
+				ByteArray.fromHexString(RECEIVER_ADDRESS)), delegatedResourceCapsule);
 
 		//init DelegatedResourceAccountIndex
 		{
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndex =
-					new DelegatedResourceAccountIndexCapsule(owner.getAddress());
+				new DelegatedResourceAccountIndexCapsule(owner.getAddress());
 			delegatedResourceAccountIndex
-					.addToAccount(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS)));
+				.addToAccount(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS)));
 			dbManager.getDelegatedResourceAccountIndexStore()
-					.put(ByteArray.fromHexString(OWNER_ADDRESS), delegatedResourceAccountIndex);
+				.put(ByteArray.fromHexString(OWNER_ADDRESS), delegatedResourceAccountIndex);
 		}
 
 		{
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndex =
-					new DelegatedResourceAccountIndexCapsule(receiver.getAddress());
+				new DelegatedResourceAccountIndexCapsule(receiver.getAddress());
 			delegatedResourceAccountIndex
-					.addFromAccount(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
+				.addFromAccount(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
 			dbManager.getDelegatedResourceAccountIndexStore()
-					.put(ByteArray.fromHexString(RECEIVER_ADDRESS), delegatedResourceAccountIndex);
+				.put(ByteArray.fromHexString(RECEIVER_ADDRESS), delegatedResourceAccountIndex);
 		}
 
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS), dbManager);
+			getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
 		try {
@@ -264,10 +263,10 @@ public class UnfreezeBalanceActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule ownerResult =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			AccountCapsule receiverResult =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
 
 			Assert.assertEquals(initBalance + frozenBalance, ownerResult.getBalance());
 			Assert.assertEquals(0L, ownerResult.getDelegatedFrozenBalanceForBandwidth());
@@ -275,120 +274,51 @@ public class UnfreezeBalanceActuatorTest {
 
 			//check DelegatedResourceAccountIndex
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndexCapsuleOwner = dbManager
-					.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleOwner.getFromAccountsList().size());
 			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleOwner.getToAccountsList().size());
 
 			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndexCapsuleReceiver = dbManager
-					.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
+				.getDelegatedResourceAccountIndexStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
 			Assert.assertEquals(0, delegatedResourceAccountIndexCapsuleReceiver.getToAccountsList().size());
 			Assert.assertEquals(0,
-					delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
+				delegatedResourceAccountIndexCapsuleReceiver.getFromAccountsList().size());
 
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
-
-	/**
-	 * when SameTokenName close, delegate balance frozen, unfreeze show error
-	 */
 	@Test
-	public void unfreezeDelegatedBalanceForBandwidthSameTokenNameClose() {
-		dbManager.getDynamicPropertiesStore().saveAllowDelegateResource(0);
-
-		long now = System.currentTimeMillis();
-		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
-
-		AccountCapsule owner = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
-		owner.setDelegatedFrozenBalanceForBandwidth(frozenBalance);
-
-		AccountCapsule receiver = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(RECEIVER_ADDRESS));
-		receiver.setAcquiredDelegatedFrozenBalanceForBandwidth(frozenBalance);
-
-		dbManager.getAccountStore().put(owner.createDbKey(), owner);
-		dbManager.getAccountStore().put(receiver.createDbKey(), receiver);
-
-		//init DelegatedResourceCapsule
-		DelegatedResourceCapsule delegatedResourceCapsule = new DelegatedResourceCapsule(
-				owner.getAddress(),
-				receiver.getAddress()
-		);
-		delegatedResourceCapsule.setFrozenBalanceForBandwidth(
-				frozenBalance,
-				now - 100L);
-		dbManager.getDelegatedResourceStore().put(DelegatedResourceCapsule
-				.createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
-						ByteArray.fromHexString(RECEIVER_ADDRESS)), delegatedResourceCapsule);
-
-		//init DelegatedResourceAccountIndex
-		{
-			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndex =
-					new DelegatedResourceAccountIndexCapsule(owner.getAddress());
-			delegatedResourceAccountIndex
-					.addToAccount(ByteString.copyFrom(ByteArray.fromHexString(RECEIVER_ADDRESS)));
-			dbManager.getDelegatedResourceAccountIndexStore()
-					.put(ByteArray.fromHexString(OWNER_ADDRESS), delegatedResourceAccountIndex);
-		}
-
-		{
-			DelegatedResourceAccountIndexCapsule delegatedResourceAccountIndex =
-					new DelegatedResourceAccountIndexCapsule(receiver.getAddress());
-			delegatedResourceAccountIndex
-					.addFromAccount(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
-			dbManager.getDelegatedResourceAccountIndexStore()
-					.put(ByteArray.fromHexString(RECEIVER_ADDRESS), delegatedResourceAccountIndex);
-		}
-
-		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getDelegatedContractForBandwidth(OWNER_ADDRESS, RECEIVER_ADDRESS), dbManager);
-		TransactionResultCapsule ret = new TransactionResultCapsule();
-
-		try {
-			actuator.validate();
-			actuator.execute(ret);
-			Assert.fail("No frozenBalance (Bandwidth)");
-		} catch (ContractValidateException e) {
-			Assert.assertEquals("No frozenBalance (Bandwidth)", e.getMessage());
-		} catch (ContractExeException e) {
-			Assert.fail(e.getMessage());
-		}
-	}
-
-
-	@Test
-	public void unfreezeDelegatedBalanceForCpu() {
+	public void unfreezeDelegatedBalanceForEnergy() {
 		dbManager.getDynamicPropertiesStore().saveAllowDelegateResource(1);
 		long now = System.currentTimeMillis();
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule owner = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		owner.addDelegatedFrozenBalanceForEnergy(frozenBalance);
 
 		AccountCapsule receiver = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(RECEIVER_ADDRESS));
+			.get(ByteArray.fromHexString(RECEIVER_ADDRESS));
 		receiver.addAcquiredDelegatedFrozenBalanceForEnergy(frozenBalance);
 
 		dbManager.getAccountStore().put(owner.createDbKey(), owner);
 		dbManager.getAccountStore().put(receiver.createDbKey(), receiver);
 
 		DelegatedResourceCapsule delegatedResourceCapsule = new DelegatedResourceCapsule(
-				owner.getAddress(),
-				receiver.getAddress()
+			owner.getAddress(),
+			receiver.getAddress()
 		);
 		delegatedResourceCapsule.setFrozenBalanceForEnergy(
-				frozenBalance,
-				now - 100L);
+			frozenBalance,
+			now - 100L);
 		dbManager.getDelegatedResourceStore().put(DelegatedResourceCapsule
-				.createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
-						ByteArray.fromHexString(RECEIVER_ADDRESS)), delegatedResourceCapsule);
+			.createDbKey(ByteArray.fromHexString(OWNER_ADDRESS),
+				ByteArray.fromHexString(RECEIVER_ADDRESS)), delegatedResourceCapsule);
 
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getDelegatedContractForCpu(OWNER_ADDRESS, RECEIVER_ADDRESS), dbManager);
+			getDelegatedContractForEnergy(OWNER_ADDRESS, RECEIVER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
 		try {
@@ -396,10 +326,10 @@ public class UnfreezeBalanceActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule ownerResult =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			AccountCapsule receiverResult =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(RECEIVER_ADDRESS));
 
 			Assert.assertEquals(initBalance + frozenBalance, ownerResult.getBalance());
 			Assert.assertEquals(0L, ownerResult.getDelegatedFrozenBalanceForEnergy());
@@ -415,11 +345,11 @@ public class UnfreezeBalanceActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setFrozenForBandwidth(frozenBalance, now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getContractForBandwidth(OWNER_ADDRESS_INVALID), dbManager);
+			getContractForBandwidth(OWNER_ADDRESS_INVALID), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -440,11 +370,11 @@ public class UnfreezeBalanceActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setFrozenForBandwidth(frozenBalance, now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getContractForBandwidth(OWNER_ACCOUNT_INVALID), dbManager);
+			getContractForBandwidth(OWNER_ACCOUNT_INVALID), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -460,7 +390,7 @@ public class UnfreezeBalanceActuatorTest {
 	@Test
 	public void noFrozenBalance() {
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getContractForBandwidth(OWNER_ADDRESS), dbManager);
+			getContractForBandwidth(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -480,11 +410,11 @@ public class UnfreezeBalanceActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setFrozenForBandwidth(frozenBalance, now + 60000);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnfreezeBalanceActuator actuator = new UnfreezeBalanceActuator(
-				getContractForBandwidth(OWNER_ADDRESS), dbManager);
+			getContractForBandwidth(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();

@@ -32,7 +32,7 @@ public class TxOutputCapsuleTest {
 
 		Assert.assertEquals(value, txOutputCapsule.getTxOutput().getValue());
 		Assert.assertEquals(address,
-				ByteArray.toHexString(txOutputCapsule.getTxOutput().getPubKeyHash().toByteArray()));
+			ByteArray.toHexString(txOutputCapsule.getTxOutput().getPubKeyHash().toByteArray()));
 		Assert.assertTrue(txOutputCapsule.validate());
 
 		long value3 = 9852448L;
@@ -42,7 +42,7 @@ public class TxOutputCapsuleTest {
 
 		Assert.assertEquals(value3, txOutputCapsule2.getTxOutput().getValue());
 		Assert.assertEquals(address4,
-				ByteArray.toHexString(txOutputCapsule2.getTxOutput().getPubKeyHash().toByteArray()));
+			ByteArray.toHexString(txOutputCapsule2.getTxOutput().getPubKeyHash().toByteArray()));
 		Assert.assertTrue(txOutputCapsule2.validate());
 
 		long value5 = 67549L;
@@ -51,7 +51,7 @@ public class TxOutputCapsuleTest {
 
 		Assert.assertEquals(value5, txOutputCapsule3.getTxOutput().getValue());
 		Assert.assertEquals("",
-				ByteArray.toHexString(txOutputCapsule3.getTxOutput().getPubKeyHash().toByteArray()));
+			ByteArray.toHexString(txOutputCapsule3.getTxOutput().getPubKeyHash().toByteArray()));
 		Assert.assertTrue(txOutputCapsule3.validate());
 
 	}

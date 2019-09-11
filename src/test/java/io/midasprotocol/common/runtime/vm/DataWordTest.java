@@ -56,7 +56,7 @@ public class DataWordTest {
 
 	@Test
 	public void testAddPerformance() {
-		boolean enabled = false;
+		boolean enabled = true;
 
 		if (enabled) {
 			byte[] one = new byte[]{0x01, 0x31, 0x54, 0x41, 0x01, 0x31, 0x54,

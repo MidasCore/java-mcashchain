@@ -96,7 +96,7 @@ public class ChargeTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testOverflow()", "");
+		byte[] triggerData = TVMTestUtils.parseAbi("testOverflow()", "");
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 2_000_000_000_000L, feeLimit, dbManager, null);
@@ -152,7 +152,7 @@ public class ChargeTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ======================================CALL testNegative() with 0 callvalue ================================ */
-		byte[] triggerData = TVMTestUtils.parseABI("testNegative()", "");
+		byte[] triggerData = TVMTestUtils.parseAbi("testNegative()", "");
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, value, feeLimit, dbManager, null);
@@ -167,7 +167,7 @@ public class ChargeTest {
 
 
 		/* ======================================CALL testNegative() with -100 callvalue ================================ */
-		triggerData = TVMTestUtils.parseABI("testNegative()", "");
+		triggerData = TVMTestUtils.parseAbi("testNegative()", "");
 		try {
 			result = TVMTestUtils
 					.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
@@ -234,8 +234,8 @@ public class ChargeTest {
 
 		/* ====================================================================== */
 		String params = "0000000000000000000000000000000000000000000000000000000000002710";
-		// byte[] triggerData = TVMTestUtils.parseABI("CallstackExploit(int)", params);
-		byte[] triggerData = TVMTestUtils.parseABI("Call(int256)", params);
+		// byte[] triggerData = TVMTestUtils.parseAbi("CallstackExploit(int)", params);
+		byte[] triggerData = TVMTestUtils.parseAbi("Call(int256)", params);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, value, feeLimit, dbManager, null);
@@ -317,8 +317,8 @@ public class ChargeTest {
 
 		/* ====================================================================== */
 		String params = "000000000000000000000000000000000000000000000000000000000000000a";
-		// byte[] triggerData = TVMTestUtils.parseABI("CallstackExploit(int)", params);
-		byte[] triggerData = TVMTestUtils.parseABI("Call(uint256)", params);
+		// byte[] triggerData = TVMTestUtils.parseAbi("CallstackExploit(int)", params);
+		byte[] triggerData = TVMTestUtils.parseAbi("Call(uint256)", params);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, value, feeLimit, dbManager, null);
@@ -359,8 +359,8 @@ public class ChargeTest {
 
 		/* ====================================================================== */
 		String params = "0000000000000000000000000000000000000000000000000000000000000001";
-		// byte[] triggerData = TVMTestUtils.parseABI("CallstackExploit(int)", params);
-		byte[] triggerData = TVMTestUtils.parseABI("testCreate(uint256)", params);
+		// byte[] triggerData = TVMTestUtils.parseAbi("CallstackExploit(int)", params);
+		byte[] triggerData = TVMTestUtils.parseAbi("testCreate(uint256)", params);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, value, feeLimit, dbManager, null);

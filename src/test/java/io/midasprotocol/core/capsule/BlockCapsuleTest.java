@@ -22,17 +22,17 @@ import java.io.File;
 public class BlockCapsuleTest {
 
 	private static BlockCapsule blockCapsule0 = new BlockCapsule(1,
-			Sha256Hash.wrap(ByteString
-					.copyFrom(ByteArray
-							.fromHexString("9938a342238077182498b464ac0292229938a342238077182498b464ac029222"))),
-			1234,
-			ByteString.copyFrom("1234567".getBytes()));
+		Sha256Hash.wrap(ByteString
+			.copyFrom(ByteArray
+				.fromHexString("9938a342238077182498b464ac0292229938a342238077182498b464ac029222"))),
+		1234,
+		ByteString.copyFrom("1234567".getBytes()));
 	private static String dbPath = "output_bloackcapsule_test";
 
 	@BeforeClass
 	public static void init() {
 		Args.setParam(new String[]{"-d", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 	}
 
 	@AfterClass
@@ -45,36 +45,36 @@ public class BlockCapsuleTest {
 	public void testCalcMerkleRoot() {
 		blockCapsule0.setMerkleRoot();
 		Assert.assertEquals(
-				Sha256Hash.wrap(Sha256Hash.ZERO_HASH.getByteString()).toString(),
-				blockCapsule0.getMerkleRoot().toString());
+			Sha256Hash.wrap(Sha256Hash.ZERO_HASH.getByteString()).toString(),
+			blockCapsule0.getMerkleRoot().toString());
 
 		logger.info("Transaction[X] Merkle Root : {}", blockCapsule0.getMerkleRoot().toString());
 
 		TransferContract transferContract1 = TransferContract.newBuilder()
-				.setAmount(1L)
-				.setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
-				.setToAddress(ByteString.copyFrom(
-						ByteArray.fromHexString((Wallet.getAddressPreFixString() +
-								"A389132D6639FBDA4FBC8B659264E6B7C90DB086"))))
-				.build();
+			.setAmount(1L)
+			.setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
+			.setToAddress(ByteString.copyFrom(
+				ByteArray.fromHexString((Wallet.getAddressPreFixString() +
+					"A389132D6639FBDA4FBC8B659264E6B7C90DB086"))))
+			.build();
 
 		TransferContract transferContract2 = TransferContract.newBuilder()
-				.setAmount(2L)
-				.setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
-				.setToAddress(ByteString.copyFrom(
-						ByteArray.fromHexString(Wallet.getAddressPreFixString() +
-								"ED738B3A0FE390EAA71B768B6D02CDBD18FB207B")))
-				.build();
+			.setAmount(2L)
+			.setOwnerAddress(ByteString.copyFrom("0x0000000000000000000".getBytes()))
+			.setToAddress(ByteString.copyFrom(
+				ByteArray.fromHexString(Wallet.getAddressPreFixString() +
+					"ED738B3A0FE390EAA71B768B6D02CDBD18FB207B")))
+			.build();
 
 		blockCapsule0
-				.addTransaction(new TransactionCapsule(transferContract1, ContractType.TransferContract));
+			.addTransaction(new TransactionCapsule(transferContract1, ContractType.TransferContract));
 		blockCapsule0
-				.addTransaction(new TransactionCapsule(transferContract2, ContractType.TransferContract));
+			.addTransaction(new TransactionCapsule(transferContract2, ContractType.TransferContract));
 		blockCapsule0.setMerkleRoot();
 
 		Assert.assertEquals(
-				"0afda51b978fd456a0e790f3498084039712b6e347037d2e8d3656af6f057e41",
-				blockCapsule0.getMerkleRoot().toString());
+			"0afda51b978fd456a0e790f3498084039712b6e347037d2e8d3656af6f057e41",
+			blockCapsule0.getMerkleRoot().toString());
 
 		logger.info("Transaction[O] Merkle Root : {}", blockCapsule0.getMerkleRoot().toString());
 	}
@@ -111,9 +111,9 @@ public class BlockCapsuleTest {
 	@Test
 	public void testGetInsHash() {
 		Assert.assertEquals(1,
-				blockCapsule0.getInstance().getBlockHeader().getRawData().getNumber());
+			blockCapsule0.getInstance().getBlockHeader().getRawData().getNumber());
 		Assert.assertEquals(blockCapsule0.getParentHash(),
-				Sha256Hash.wrap(blockCapsule0.getParentHashStr()));
+			Sha256Hash.wrap(blockCapsule0.getParentHashStr()));
 	}
 
 	@Test

@@ -9,7 +9,7 @@ import java.io.IOException;
 public class FileUtilTest {
 
 	@Test
-	public void testCreateFileIfNotExists() {
+	public void createFileIfNotExists() {
 		String existFile = "existsfile.txt";
 		File file1 = new File(existFile);
 		try {
@@ -31,7 +31,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCreateDirIfNotExists() {
+	public void createDirIfNotExists() {
 		String existDir = "existsdir";
 		File fileDir1 = new File(existDir);
 		fileDir1.mkdir();

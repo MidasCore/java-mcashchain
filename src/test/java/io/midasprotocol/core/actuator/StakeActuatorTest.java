@@ -80,22 +80,22 @@ public class StakeActuatorTest {
 	@Before
 	public void createCapsule() {
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("owner"),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.Normal,
-						initBalance);
+			new AccountCapsule(
+				ByteString.copyFromUtf8("owner"),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				initBalance);
 		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 		dbManager.getStakeAccountStore().delete(ByteArray.fromHexString(OWNER_ADDRESS));
 	}
 
 	private Any getContract(String ownerAddress, long stakeAmount, long duration) {
 		return Any.pack(
-				Contract.StakeContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setStakeAmount(stakeAmount)
-						.setStakeDuration(duration)
-						.build());
+			Contract.StakeContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setStakeAmount(stakeAmount)
+				.setStakeDuration(duration)
+				.build());
 	}
 
 	@Test
@@ -103,12 +103,12 @@ public class StakeActuatorTest {
 		long stakeAmount = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager
+			getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager
 		);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore().get(
-				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+			StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 		long beforeStakeSize = dbManager.getStakeAccountStore().size();
 		logger.info(String.valueOf(beforeStakeSize));
 		logger.info(String.valueOf(dbManager.getWitnessStore().size()));
@@ -118,7 +118,7 @@ public class StakeActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			long expectedBalanceAfterStaking = initBalance - stakeAmount - ChainConstant.TRANSFER_FEE;
 
@@ -130,19 +130,18 @@ public class StakeActuatorTest {
 				logger.info(StringUtil.createReadableString(sac.getAddress()));
 			}
 
-
 			Assert.assertEquals(beforeStakeSize, dbManager.getStakeAccountStore().size());
 
 			stakeAccountController.updateStakeAccount();
 			Assert.assertEquals(beforeStakeSize + 1, dbManager.getStakeAccountStore().size());
 
 			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertEquals(expectedBalanceAfterStaking, accountCapsule.getBalance());
 
 			stakeAccountController.updateStakeAccount();
 			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertNotEquals(0, accountCapsule.getAllowance());
 
 			long blockNumber = dbManager.getHeadBlockNum() + 1;
@@ -170,12 +169,12 @@ public class StakeActuatorTest {
 		long stakeAmount = ConversionUtil.McashToMatoshi(5_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager
+			getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager
 		);
 
 		long secondStakeAmount = ConversionUtil.McashToMatoshi(10_000);
 		StakeActuator secondActuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, secondStakeAmount, duration), dbManager
+			getContract(OWNER_ADDRESS, secondStakeAmount, duration), dbManager
 		);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
@@ -189,7 +188,7 @@ public class StakeActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			long expectedBalanceAfterStaking = initBalance - stakeAmount - ChainConstant.TRANSFER_FEE;
 
@@ -201,12 +200,12 @@ public class StakeActuatorTest {
 			Assert.assertEquals(beforeStakeSize + 1, dbManager.getStakeAccountStore().size());
 
 			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertEquals(expectedBalanceAfterStaking, accountCapsule.getBalance());
 
 			stakeAccountController.updateStakeAccount();
 			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertEquals(expectedBalanceAfterStaking, accountCapsule.getBalance());
 
 			secondActuator.validate();
@@ -214,19 +213,19 @@ public class StakeActuatorTest {
 
 			owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			expectedBalanceAfterStaking = initBalance - stakeAmount - secondStakeAmount
-					- 2 * ChainConstant.TRANSFER_FEE;
+				- 2 * ChainConstant.TRANSFER_FEE;
 			Assert.assertEquals(expectedBalanceAfterStaking, owner.getBalance());
 			Assert.assertEquals(owner.getNormalStakeAmount(), stakeAmount + secondStakeAmount);
 			stakeAccountController.updateStakeAccount();
 			Assert.assertEquals(beforeStakeSize + 1,
-					dbManager.getStakeAccountStore().size());
+				dbManager.getStakeAccountStore().size());
 
 			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertEquals(expectedBalanceAfterStaking, accountCapsule.getBalance());
 			stakeAccountController.updateStakeAccount();
 			accountCapsule = dbManager.getAccountStore().get(
-					StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
+				StringUtil.hexString2ByteString(OWNER_ADDRESS).toByteArray());
 			Assert.assertNotEquals(0, accountCapsule.getAllowance());
 
 
@@ -243,7 +242,7 @@ public class StakeActuatorTest {
 		long stakeAmount = ConversionUtil.McashToMatoshi(-1_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
+			getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -261,7 +260,7 @@ public class StakeActuatorTest {
 		long stakeAmount = ConversionUtil.McashToMatoshi(20_000_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
+			getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -279,7 +278,7 @@ public class StakeActuatorTest {
 		long stakeAmount = ConversionUtil.McashToMatoshi(1_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS_INVALID, stakeAmount, duration), dbManager);
+			getContract(OWNER_ADDRESS_INVALID, stakeAmount, duration), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -299,7 +298,7 @@ public class StakeActuatorTest {
 		long stakeAmount = ConversionUtil.McashToMatoshi(1_000);
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ACCOUNT_INVALID, stakeAmount, duration), dbManager);
+			getContract(OWNER_ACCOUNT_INVALID, stakeAmount, duration), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -307,7 +306,7 @@ public class StakeActuatorTest {
 			Assert.fail("cannot run here.");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Account [" + OWNER_ACCOUNT_INVALID + "] not exists",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -318,7 +317,7 @@ public class StakeActuatorTest {
 		long stakeAmount = 100000000;
 		long duration = 3;
 		StakeActuator actuator = new StakeActuator(
-				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
+			getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -331,26 +330,4 @@ public class StakeActuatorTest {
 		}
 	}
 
-//	@Test
-//	public void stakeNumTest() {
-//		AccountCapsule account = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-//		account.setStake(1_000_000L, 1_000_000_000L);
-//		account.setStake(2_000_000L, 1_000_000_000L);
-//		dbManager.getAccountStore().put(account.getAddress().toByteArray(), account);
-//
-//		long stakeAmount = 20_000_000L;
-//		long duration = 3L;
-//		StakeActuator actuator = new StakeActuator(
-//				getContract(OWNER_ADDRESS, stakeAmount, duration), dbManager);
-//		TransactionResultCapsule ret = new TransactionResultCapsule();
-//		try {
-//			actuator.validate();
-//			actuator.execute(ret);
-//			Assert.fail("cannot run here.");
-//		} catch (ContractValidateException e) {
-//			Assert.assertEquals("stakesCount must be 0 or 1", e.getMessage());
-//		} catch (ContractExeException e) {
-//			Assert.fail(e.getMessage());
-//		}
-//	}
 }

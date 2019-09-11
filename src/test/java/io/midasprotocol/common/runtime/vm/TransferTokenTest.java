@@ -142,7 +142,7 @@ public class TransferTokenTest {
 		String params = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc" +
 				Hex.toHexString(new DataWord(id).getData()) +
 				"0000000000000000000000000000000000000000000000000000000000000009"; //TRANSFER_TO, 100001, 9
-		byte[] triggerData = TVMTestUtils.parseABI(selectorStr, params);
+		byte[] triggerData = TVMTestUtils.parseAbi(selectorStr, params);
 
 		/*  2. Test trigger with tokenValue and tokenId, also test internal transaction transferToken function */
 		long triggerCallValue = 10000;
@@ -170,7 +170,7 @@ public class TransferTokenTest {
 		dbManager.getAccountStore().put(contractAddress, changeAccountCapsule);
 		String selectorStr2 = "suicide(address)";
 		String params2 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData2 = TVMTestUtils.parseABI(selectorStr2, params2);
+		byte[] triggerData2 = TVMTestUtils.parseAbi(selectorStr2, params2);
 		Transaction transaction2 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), contractAddress,
 						triggerData2,
@@ -231,7 +231,7 @@ public class TransferTokenTest {
 		String params = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc" +
 				Hex.toHexString(new DataWord(id).getData()) +
 				"0000000000000000000000000000000000000000000000000000000000000002"; //TRANSFER_TO, 100001, 9
-		byte[] triggerData = TVMTestUtils.parseABI(selectorStr, params);
+		byte[] triggerData = TVMTestUtils.parseAbi(selectorStr, params);
 		Transaction transaction = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), contractAddress,
 						triggerData,

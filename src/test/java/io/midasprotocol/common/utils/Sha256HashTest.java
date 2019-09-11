@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 public class Sha256HashTest {
 
 	@Test
-	public void testHash() {
+	public void hash() {
 		//Example from https://github.com/tronprotocol/tips/blob/master/TWP-001.md
 		byte[] input = ByteArray.fromHexString("A0E11973395042BA3C0B52B4CDF4E15EA77818F275");
 		byte[] hash0 = Sha256Hash.hash(input);
@@ -23,7 +23,7 @@ public class Sha256HashTest {
 	}
 
 	@Test
-	public void testMultiThreadingHash() {
+	public void multiThreadingHash() {
 		byte[] input = ByteArray.fromHexString("A0E11973395042BA3C0B52B4CDF4E15EA77818F275");
 		byte[] hash = ByteArray
 				.fromHexString("CD5D4A7E8BE869C00E17F8F7712F41DBE2DDBD4D8EC36A7280CD578863717084");

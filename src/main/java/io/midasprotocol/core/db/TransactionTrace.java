@@ -178,7 +178,7 @@ public class TransactionTrace {
 				// todo: check
 				TriggerSmartContract callContract = ContractCapsule
 					.getTriggerContractFromTransaction(trx.getInstance());
-				if (callContract.getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
+				if (callContract != null && callContract.getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
 					receipt.setEnergyUsageTotal(0);
 				}
 				ContractCapsule contractCapsule =

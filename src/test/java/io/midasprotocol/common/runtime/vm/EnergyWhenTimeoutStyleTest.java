@@ -107,7 +107,7 @@ public class EnergyWhenTimeoutStyleTest {
 
 		/* =================================== CALL setVote(uint256) =================================== */
 		String params = "0000000000000000000000000000000000000000000000000000000000000003";
-		byte[] triggerData = TVMTestUtils.parseABI("setVote(uint256)", params);
+		byte[] triggerData = TVMTestUtils.parseAbi("setVote(uint256)", params);
 		boolean haveException = false;
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS), contractAddress,

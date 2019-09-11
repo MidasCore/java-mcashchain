@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.core.Constant;
 import io.midasprotocol.utils.AbiUtil;
+import io.midasprotocol.utils.ContractUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.Hash;
@@ -30,8 +31,6 @@ import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static io.midasprotocol.utils.ContractUtil.jsonStr2Abi;
 
 
 /**
@@ -276,7 +275,7 @@ public class TVMTestUtils {
 															   byte[] address,
 															   String ABI, String code, long value, long consumeUserResourcePercent,
 															   String libraryAddressPair, long engeryLimit) {
-		SmartContract.ABI abi = jsonStr2ABI(ABI);
+		SmartContract.ABI abi = jsonStr2Abi(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
 			return null;
@@ -308,7 +307,7 @@ public class TVMTestUtils {
 															   byte[] address,
 															   String ABI, String code, long value, long consumeUserResourcePercent,
 															   String libraryAddressPair, long energyLimit, long tokenValue, long tokenId) {
-		SmartContract.ABI abi = jsonStr2ABI(ABI);
+		SmartContract.ABI abi = jsonStr2Abi(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
 			return null;
@@ -355,7 +354,7 @@ public class TVMTestUtils {
 			byte[] address,
 			String ABI, String code, long value, long consumeUserResourcePercent,
 			String libraryAddressPair, long creatorEnergyLimit) {
-		SmartContract.ABI abi = jsonStr2ABI(ABI);
+		SmartContract.ABI abi = jsonStr2Abi(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
 			return null;
@@ -500,7 +499,7 @@ public class TVMTestUtils {
 		}
 	}
 
-	public static SmartContract.ABI jsonStr2ABI(String jsonStr) {
+	public static SmartContract.ABI jsonStr2Abi(String jsonStr) {
 		if (jsonStr == null) {
 			return null;
 		}
@@ -597,7 +596,7 @@ public class TVMTestUtils {
 	}
 
 
-	public static byte[] parseABI(String selectorStr, String params) {
+	public static byte[] parseAbi(String selectorStr, String params) {
 		if (params == null) {
 			params = "";
 		}
@@ -611,7 +610,7 @@ public class TVMTestUtils {
 														  String abiString, String code, long value, long consumeUserResourcePercent,
 														  long originEnergyLimit) {
 
-		SmartContract.ABI abi = jsonStr2Abi(abiString);
+		SmartContract.ABI abi = ContractUtil.jsonStr2Abi(abiString);
 		if (abi == null) {
 			return null;
 		}

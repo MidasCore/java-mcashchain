@@ -107,7 +107,7 @@ public class StorageTest extends VMTestBase {
 		// 1,"abc"
 		String params1 = "0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000036162630000000000000000000000000000000000000000000000000000000000";
 		String params2 = "0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000033132330000000000000000000000000000000000000000000000000000000000";
-		byte[] triggerData = TVMTestUtils.parseABI("testPut(uint256,string)", params1);
+		byte[] triggerData = TVMTestUtils.parseAbi("testPut(uint256,string)", params1);
 		TVMTestResult result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, fee, manager, null);
@@ -116,7 +116,7 @@ public class StorageTest extends VMTestBase {
 
 		// overwrite storage with same value
 		// testPut(uint256,string) 1,"abc"
-		triggerData = TVMTestUtils.parseABI("testPut(uint256,string)", params1);
+		triggerData = TVMTestUtils.parseAbi("testPut(uint256,string)", params1);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, fee, manager, null);
@@ -127,7 +127,7 @@ public class StorageTest extends VMTestBase {
 		// overwrite storage with same value
 		// testPut(uint256,string) 1,"123"
 
-		triggerData = TVMTestUtils.parseABI("testPut(uint256,string)", params2);
+		triggerData = TVMTestUtils.parseAbi("testPut(uint256,string)", params2);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, fee, manager, null);
@@ -137,7 +137,7 @@ public class StorageTest extends VMTestBase {
 
 		// delete storage
 		// testDelete(uint256) 1
-		triggerData = TVMTestUtils.parseABI("testDelete(uint256)",
+		triggerData = TVMTestUtils.parseAbi("testDelete(uint256)",
 				"0000000000000000000000000000000000000000000000000000000000000001");
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),

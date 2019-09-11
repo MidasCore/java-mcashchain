@@ -49,13 +49,13 @@ public class TransactionStoreTest {
 
 	static {
 		Args.setParam(
-				new String[]{
-						"--output-directory", dbPath,
-						"--storage-db-directory", dbDirectory,
-						"--storage-index-directory", indexDirectory,
-						"-w"
-				},
-				Constant.TEST_CONF
+			new String[]{
+				"--output-directory", dbPath,
+				"--storage-db-directory", dbDirectory,
+				"--storage-index-directory", indexDirectory,
+				"-w"
+			},
+			Constant.TEST_CONF
 		);
 		context = new ApplicationContext(DefaultConfig.class);
 		AppT = ApplicationFactory.create(context);
@@ -92,8 +92,8 @@ public class TransactionStoreTest {
 	 */
 	private AccountCreateContract getContract(String name, String address) {
 		return AccountCreateContract.newBuilder()
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.build();
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+			.build();
 	}
 
 	/**
@@ -101,10 +101,10 @@ public class TransactionStoreTest {
 	 */
 	private TransferContract getContract(long count, String owneraddress, String toaddress) {
 		return TransferContract.newBuilder()
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(owneraddress)))
-				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toaddress)))
-				.setAmount(count)
-				.build();
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(owneraddress)))
+			.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toaddress)))
+			.setAmount(count)
+			.build();
 	}
 
 	/**
@@ -112,9 +112,9 @@ public class TransactionStoreTest {
 	 */
 	private WitnessCreateContract getWitnessContract(String address, String url) {
 		return WitnessCreateContract.newBuilder()
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.setUrl(ByteString.copyFrom(ByteArray.fromString(url)))
-				.build();
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+			.setUrl(ByteString.copyFrom(ByteArray.fromString(url)))
+			.build();
 	}
 
 	/**
@@ -122,9 +122,9 @@ public class TransactionStoreTest {
 	 */
 	private VoteWitnessContract getVoteWitnessContract(String address, String voteaddress, Long value) {
 		return VoteWitnessContract.newBuilder()
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
-				.build();
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+			.setVoteAddress(ByteString.copyFrom(ByteArray.fromHexString(voteaddress)))
+			.build();
 	}
 
 	@Test
@@ -134,48 +134,48 @@ public class TransactionStoreTest {
 		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
 
 		BlockCapsule blockCapsule = new BlockCapsule(
-				1,
-				Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
-				1,
-				ByteString.copyFrom(
-						ECKey.fromPrivate(
-								ByteArray.fromHexString(key)).getAddress()));
+			1,
+			Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
+			1,
+			ByteString.copyFrom(
+				ECKey.fromPrivate(
+					ByteArray.fromHexString(key)).getAddress()));
 
 		// save in database with block number
 		TransferContract tc = TransferContract.newBuilder()
-				.setAmount(10)
-				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-				.setToAddress(ByteString.copyFromUtf8("bbb"))
-				.build();
+			.setAmount(10)
+			.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+			.setToAddress(ByteString.copyFromUtf8("bbb"))
+			.build();
 		TransactionCapsule transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
 		blockCapsule.addTransaction(transactionCapsule);
 		transactionCapsule.setBlockNum(blockCapsule.getNum());
 		blockStore.put(blockCapsule.getBlockId().getBytes(), blockCapsule);
 		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				transactionStore.get(transactionCapsule.getTransactionId().getBytes()).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.get(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+			transactionCapsule.getInstance());
 
 		// no found in transaction store database
 		tc = TransferContract.newBuilder()
-				.setAmount(1000)
-				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-				.setToAddress(ByteString.copyFromUtf8("bbb"))
-				.build();
+			.setAmount(1000)
+			.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+			.setToAddress(ByteString.copyFromUtf8("bbb"))
+			.build();
 		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
 		Assert.assertNull(transactionStore.get(transactionCapsule.getTransactionId().getBytes()));
 
 		// no block number, directly save in database
 		tc = TransferContract.newBuilder()
-				.setAmount(10000)
-				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-				.setToAddress(ByteString.copyFromUtf8("bbb"))
-				.build();
+			.setAmount(10000)
+			.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+			.setToAddress(ByteString.copyFromUtf8("bbb"))
+			.build();
 		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
 		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				transactionStore.get(transactionCapsule.getTransactionId().getBytes()).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.get(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+			transactionCapsule.getInstance());
 	}
 
 	/**
@@ -184,13 +184,13 @@ public class TransactionStoreTest {
 	@Test
 	public void CreateAccountTransactionStoreTest() throws BadItemException {
 		AccountCreateContract accountCreateContract = getContract(ACCOUNT_NAME,
-				OWNER_ADDRESS);
+			OWNER_ADDRESS);
 		TransactionCapsule ret = new TransactionCapsule(accountCreateContract,
-				dbManager.getAccountStore());
+			dbManager.getAccountStore());
 		transactionStore.put(key1, ret);
 		Assert.assertEquals("Store CreateAccountTransaction is error",
-				transactionStore.get(key1).getInstance(),
-				ret.getInstance());
+			transactionStore.get(key1).getInstance(),
+			ret.getInstance());
 		Assert.assertTrue(transactionStore.has(key1));
 	}
 
@@ -201,48 +201,48 @@ public class TransactionStoreTest {
 		String key = "f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62";
 
 		BlockCapsule blockCapsule = new BlockCapsule(
-				1,
-				Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
-				1,
-				ByteString.copyFrom(
-						ECKey.fromPrivate(
-								ByteArray.fromHexString(key)).getAddress()));
+			1,
+			Sha256Hash.wrap(dbManager.getGenesisBlockId().getByteString()),
+			1,
+			ByteString.copyFrom(
+				ECKey.fromPrivate(
+					ByteArray.fromHexString(key)).getAddress()));
 
 		// save in database with block number
 		TransferContract tc = TransferContract.newBuilder()
-				.setAmount(10)
-				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-				.setToAddress(ByteString.copyFromUtf8("bbb"))
-				.build();
+			.setAmount(10)
+			.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+			.setToAddress(ByteString.copyFromUtf8("bbb"))
+			.build();
 		TransactionCapsule transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
 		blockCapsule.addTransaction(transactionCapsule);
 		transactionCapsule.setBlockNum(blockCapsule.getNum());
 		blockStore.put(blockCapsule.getBlockId().getBytes(), blockCapsule);
 		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+			transactionCapsule.getInstance());
 
 		// no found in transaction store database
 		tc = TransferContract.newBuilder()
-				.setAmount(1000)
-				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-				.setToAddress(ByteString.copyFromUtf8("bbb"))
-				.build();
+			.setAmount(1000)
+			.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+			.setToAddress(ByteString.copyFromUtf8("bbb"))
+			.build();
 		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
 		Assert.assertNull(transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()));
 
 		// no block number, directly save in database
 		tc = TransferContract.newBuilder()
-				.setAmount(10000)
-				.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
-				.setToAddress(ByteString.copyFromUtf8("bbb"))
-				.build();
+			.setAmount(10000)
+			.setOwnerAddress(ByteString.copyFromUtf8("aaa"))
+			.setToAddress(ByteString.copyFromUtf8("bbb"))
+			.build();
 		transactionCapsule = new TransactionCapsule(tc, ContractType.TransferContract);
 		transactionStore.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		Assert.assertEquals("Get transaction is error",
-				transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.getUnchecked(transactionCapsule.getTransactionId().getBytes()).getInstance(),
+			transactionCapsule.getInstance());
 	}
 
 	/**
@@ -254,8 +254,8 @@ public class TransactionStoreTest {
 		TransactionCapsule transactionCapsule = new TransactionCapsule(witnessContract);
 		transactionStore.put(key1, transactionCapsule);
 		Assert.assertEquals("Store CreateWitnessTransaction is error",
-				transactionStore.get(key1).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.get(key1).getInstance(),
+			transactionCapsule.getInstance());
 	}
 
 	/**
@@ -264,20 +264,20 @@ public class TransactionStoreTest {
 	@Test
 	public void TransferTransactionStorenTest() throws BadItemException {
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.AssetIssue,
-						1000000L
-				);
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.AssetIssue,
+				1000000L
+			);
 		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 		TransferContract transferContract = getContract(AMOUNT, OWNER_ADDRESS, TO_ADDRESS);
 		TransactionCapsule transactionCapsule = new TransactionCapsule(transferContract,
-				dbManager.getAccountStore());
+			dbManager.getAccountStore());
 		transactionStore.put(key1, transactionCapsule);
 		Assert.assertEquals("Store TransferTransaction is error",
-				transactionStore.get(key1).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.get(key1).getInstance(),
+			transactionCapsule.getInstance());
 	}
 
 	/**
@@ -288,22 +288,22 @@ public class TransactionStoreTest {
 	public void voteWitnessTransactionTest() throws BadItemException {
 
 		AccountCapsule ownerAccountFirstCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.Normal,
-						ConversionUtil.McashToMatoshi(1_000_000));
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(1_000_000));
 		long frozenBalance = ConversionUtil.McashToMatoshi(1_000_000);
 		long duration = 3;
 		ownerAccountFirstCapsule.setFrozenForBandwidth(frozenBalance, duration);
 		dbManager.getAccountStore()
-				.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
+			.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
 		VoteWitnessContract actuator = getVoteWitnessContract(OWNER_ADDRESS, WITNESS_ADDRESS, 1L);
 		TransactionCapsule transactionCapsule = new TransactionCapsule(actuator);
 		transactionStore.put(key1, transactionCapsule);
 		Assert.assertEquals("Store VoteWitnessTransaction is error",
-				transactionStore.get(key1).getInstance(),
-				transactionCapsule.getInstance());
+			transactionStore.get(key1).getInstance(),
+			transactionCapsule.getInstance());
 	}
 
 	/**
@@ -323,9 +323,9 @@ public class TransactionStoreTest {
 	@Test
 	public void TransactionKeyNullTest() throws BadItemException {
 		AccountCreateContract accountCreateContract = getContract(ACCOUNT_NAME,
-				OWNER_ADDRESS);
+			OWNER_ADDRESS);
 		TransactionCapsule ret = new TransactionCapsule(accountCreateContract,
-				dbManager.getAccountStore());
+			dbManager.getAccountStore());
 		byte[] key = null;
 		transactionStore.put(key, ret);
 		try {

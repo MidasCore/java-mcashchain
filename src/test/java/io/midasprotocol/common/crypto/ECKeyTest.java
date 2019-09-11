@@ -1,14 +1,9 @@
 package io.midasprotocol.common.crypto;
 
-import io.midasprotocol.common.utils.Base58;
-import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.Sha256Hash;
-import io.midasprotocol.common.utils.StringUtil;
-import io.midasprotocol.core.Wallet;
+import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.spongycastle.util.encoders.Hex;
-import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
 
 import java.math.BigInteger;
 import java.security.KeyPairGenerator;
@@ -42,15 +37,6 @@ public class ECKeyTest {
 		assertNotNull(key.getPrivKeyBytes());
 		logger.info(Hex.toHexString(key.getPrivKeyBytes()) + ": Generated privkey");
 		logger.info(Hex.toHexString(key.getPubKey()) + ": Generated pubkey");
-	}
-
-	public static String encode58Check(byte[] input) {
-		byte[] hash0 = Sha256Hash.hash(input);
-		byte[] hash1 = Sha256Hash.hash(hash0);
-		byte[] inputCheck = new byte[input.length + 4];
-		System.arraycopy(input, 0, inputCheck, 0, input.length);
-		System.arraycopy(hash1, 0, inputCheck, input.length, 4);
-		return Base58.encode(inputCheck);
 	}
 
 	@Test
@@ -200,9 +186,9 @@ public class ECKeyTest {
 		ECKey key1 = ECKey.fromPrivate(privateKey);
 		ECKey key2 = ECKey.fromPrivate(privateKey);
 
-		assertFalse(key0.equals(key1));
-		assertTrue(key1.equals(key1));
-		assertTrue(key1.equals(key2));
+		assertNotEquals(key0, key1);
+		assertEquals(key1, key1);
+		assertEquals(key1, key2);
 	}
 
 	@Test

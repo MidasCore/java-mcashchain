@@ -110,46 +110,46 @@ public class WalletTest {
 	 */
 	private static void initTransaction() {
 		transaction1 = getBuildTransaction(
-				getBuildTransferContract(ACCOUNT_ADDRESS_ONE, ACCOUNT_ADDRESS_TWO),
-				TRANSACTION_TIMESTAMP_ONE, BLOCK_NUM_ONE);
+			getBuildTransferContract(ACCOUNT_ADDRESS_ONE, ACCOUNT_ADDRESS_TWO),
+			TRANSACTION_TIMESTAMP_ONE, BLOCK_NUM_ONE);
 		addTransactionToStore(transaction1);
 		transaction2 = getBuildTransaction(
-				getBuildTransferContract(ACCOUNT_ADDRESS_TWO, ACCOUNT_ADDRESS_THREE),
-				TRANSACTION_TIMESTAMP_TWO, BLOCK_NUM_TWO);
+			getBuildTransferContract(ACCOUNT_ADDRESS_TWO, ACCOUNT_ADDRESS_THREE),
+			TRANSACTION_TIMESTAMP_TWO, BLOCK_NUM_TWO);
 		addTransactionToStore(transaction2);
 		transaction3 = getBuildTransaction(
-				getBuildTransferContract(ACCOUNT_ADDRESS_THREE, ACCOUNT_ADDRESS_FOUR),
-				TRANSACTION_TIMESTAMP_THREE, BLOCK_NUM_THREE);
+			getBuildTransferContract(ACCOUNT_ADDRESS_THREE, ACCOUNT_ADDRESS_FOUR),
+			TRANSACTION_TIMESTAMP_THREE, BLOCK_NUM_THREE);
 		addTransactionToStore(transaction3);
 		transaction4 = getBuildTransaction(
-				getBuildTransferContract(ACCOUNT_ADDRESS_FOUR, ACCOUNT_ADDRESS_FIVE),
-				TRANSACTION_TIMESTAMP_FOUR, BLOCK_NUM_FOUR);
+			getBuildTransferContract(ACCOUNT_ADDRESS_FOUR, ACCOUNT_ADDRESS_FIVE),
+			TRANSACTION_TIMESTAMP_FOUR, BLOCK_NUM_FOUR);
 		addTransactionToStore(transaction4);
 		transaction5 = getBuildTransaction(
-				getBuildTransferContract(ACCOUNT_ADDRESS_FIVE, ACCOUNT_ADDRESS_ONE),
-				TRANSACTION_TIMESTAMP_FIVE, BLOCK_NUM_FIVE);
+			getBuildTransferContract(ACCOUNT_ADDRESS_FIVE, ACCOUNT_ADDRESS_ONE),
+			TRANSACTION_TIMESTAMP_FIVE, BLOCK_NUM_FIVE);
 		addTransactionToStore(transaction5);
 	}
 
 	private static void addTransactionToStore(Transaction transaction) {
 		TransactionCapsule transactionCapsule = new TransactionCapsule(transaction);
 		manager.getTransactionStore()
-				.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
+			.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 	}
 
 	private static Transaction getBuildTransaction(
-			TransferContract transferContract, long transactionTimestamp, long refBlockNum) {
+		TransferContract transferContract, long transactionTimestamp, long refBlockNum) {
 		return Transaction.newBuilder().setRawData(
-				Transaction.Raw.newBuilder().setTimestamp(transactionTimestamp).setRefBlockNum(refBlockNum)
-						.addContract(
-								Contract.newBuilder().setType(ContractType.TransferContract)
-										.setParameter(Any.pack(transferContract)).build()).build()).build();
+			Transaction.Raw.newBuilder().setTimestamp(transactionTimestamp).setRefBlockNum(refBlockNum)
+				.addContract(
+					Contract.newBuilder().setType(ContractType.TransferContract)
+						.setParameter(Any.pack(transferContract)).build()).build()).build();
 	}
 
 	private static TransferContract getBuildTransferContract(String ownerAddress, String toAddress) {
 		return TransferContract.newBuilder().setAmount(10)
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toAddress))).build();
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+			.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toAddress))).build();
 	}
 
 	/**
@@ -158,19 +158,19 @@ public class WalletTest {
 	private static void initBlock() {
 
 		block1 = getBuildBlock(BLOCK_TIMESTAMP_ONE, BLOCK_NUM_ONE, BLOCK_WITNESS_ONE,
-				ACCOUNT_ADDRESS_ONE, transaction1, transaction2);
+			ACCOUNT_ADDRESS_ONE, transaction1, transaction2);
 		addBlockToStore(block1);
 		block2 = getBuildBlock(BLOCK_TIMESTAMP_TWO, BLOCK_NUM_TWO, BLOCK_WITNESS_TWO,
-				ACCOUNT_ADDRESS_TWO, transaction2, transaction3);
+			ACCOUNT_ADDRESS_TWO, transaction2, transaction3);
 		addBlockToStore(block2);
 		block3 = getBuildBlock(BLOCK_TIMESTAMP_THREE, BLOCK_NUM_THREE, BLOCK_WITNESS_THREE,
-				ACCOUNT_ADDRESS_THREE, transaction2, transaction4);
+			ACCOUNT_ADDRESS_THREE, transaction2, transaction4);
 		addBlockToStore(block3);
 		block4 = getBuildBlock(BLOCK_TIMESTAMP_FOUR, BLOCK_NUM_FOUR, BLOCK_WITNESS_FOUR,
-				ACCOUNT_ADDRESS_FOUR, transaction4, transaction5);
+			ACCOUNT_ADDRESS_FOUR, transaction4, transaction5);
 		addBlockToStore(block4);
 		block5 = getBuildBlock(BLOCK_TIMESTAMP_FIVE, BLOCK_NUM_FIVE, BLOCK_WITNESS_FIVE,
-				ACCOUNT_ADDRESS_FIVE, transaction5, transaction3);
+			ACCOUNT_ADDRESS_FIVE, transaction5, transaction3);
 		addBlockToStore(block5);
 	}
 
@@ -182,10 +182,10 @@ public class WalletTest {
 	private static Block getBuildBlock(long timestamp, long num, long witnessId,
 									   String witnessAddress, Transaction transaction, Transaction transactionNext) {
 		return Block.newBuilder().setBlockHeader(BlockHeader.newBuilder().setRawData(
-				Raw.newBuilder().setTimestamp(timestamp).setNumber(num).setWitnessId(witnessId)
-						.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(witnessAddress)))
-						.build()).build()).addTransactions(transaction).addTransactions(transactionNext)
-				.build();
+			Raw.newBuilder().setTimestamp(timestamp).setNumber(num).setWitnessId(witnessId)
+				.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(witnessAddress)))
+				.build()).build()).addTransactions(transaction).addTransactions(transactionNext)
+			.build();
 	}
 
 
@@ -234,9 +234,9 @@ public class WalletTest {
 		Wallet wallet1 = new Wallet();
 		Wallet wallet2 = new Wallet();
 		logger.info("wallet address = {}", ByteArray.toHexString(wallet1
-				.getAddress()));
+			.getAddress()));
 		logger.info("wallet2 address = {}", ByteArray.toHexString(wallet2
-				.getAddress()));
+			.getAddress()));
 		Assert.assertNotEquals(wallet1.getAddress(), wallet2.getAddress());
 	}
 
@@ -245,9 +245,9 @@ public class WalletTest {
 		ECKey ecKey = new ECKey(Utils.getRandom());
 		Wallet wallet1 = new Wallet(ecKey);
 		logger.info("ecKey address = {}", ByteArray.toHexString(ecKey
-				.getAddress()));
+			.getAddress()));
 		logger.info("wallet address = {}", ByteArray.toHexString(wallet1
-				.getAddress()));
+			.getAddress()));
 		Assert.assertArrayEquals(wallet1.getAddress(), ecKey.getAddress());
 	}
 
@@ -256,9 +256,9 @@ public class WalletTest {
 		ECKey ecKey = new ECKey(Utils.getRandom());
 		Wallet wallet1 = new Wallet(ecKey);
 		logger.info("ecKey address = {}", ByteArray.toHexString(ecKey
-				.getAddress()));
+			.getAddress()));
 		logger.info("wallet address = {}", ByteArray.toHexString(wallet1
-				.getAddress()));
+			.getAddress()));
 		assertEquals("Wallet ECKey should match provided ECKey", wallet1.getEcKey(), ecKey);
 	}
 
@@ -277,19 +277,19 @@ public class WalletTest {
 	@Test
 	public void getBlockById() {
 		Block blockById = wallet
-				.getBlockById(ByteString.copyFrom(new BlockCapsule(block1).getBlockId().getBytes()));
+			.getBlockById(ByteString.copyFrom(new BlockCapsule(block1).getBlockId().getBytes()));
 		Assert.assertEquals("getBlockById1", block1, blockById);
 		blockById = wallet
-				.getBlockById(ByteString.copyFrom(new BlockCapsule(block2).getBlockId().getBytes()));
+			.getBlockById(ByteString.copyFrom(new BlockCapsule(block2).getBlockId().getBytes()));
 		Assert.assertEquals("getBlockById2", block2, blockById);
 		blockById = wallet
-				.getBlockById(ByteString.copyFrom(new BlockCapsule(block3).getBlockId().getBytes()));
+			.getBlockById(ByteString.copyFrom(new BlockCapsule(block3).getBlockId().getBytes()));
 		Assert.assertEquals("getBlockById3", block3, blockById);
 		blockById = wallet
-				.getBlockById(ByteString.copyFrom(new BlockCapsule(block4).getBlockId().getBytes()));
+			.getBlockById(ByteString.copyFrom(new BlockCapsule(block4).getBlockId().getBytes()));
 		Assert.assertEquals("getBlockById4", block4, blockById);
 		blockById = wallet
-				.getBlockById(ByteString.copyFrom(new BlockCapsule(block5).getBlockId().getBytes()));
+			.getBlockById(ByteString.copyFrom(new BlockCapsule(block5).getBlockId().getBytes()));
 		Assert.assertEquals("getBlockById5", block5, blockById);
 	}
 
@@ -300,7 +300,7 @@ public class WalletTest {
 		Assert.assertTrue("getBlocksByLimit2", blocksByLimit.getBlockList().contains(block4));
 		blocksByLimit = wallet.getBlocksByLimitNext(0, 5);
 		Assert.assertTrue("getBlocksByLimit3",
-				blocksByLimit.getBlockList().contains(manager.getGenesisBlock().getInstance()));
+			blocksByLimit.getBlockList().contains(manager.getGenesisBlock().getInstance()));
 		Assert.assertTrue("getBlocksByLimit4", blocksByLimit.getBlockList().contains(block1));
 		Assert.assertTrue("getBlocksByLimit5", blocksByLimit.getBlockList().contains(block2));
 		Assert.assertTrue("getBlocksByLimit6", blocksByLimit.getBlockList().contains(block3));
@@ -312,19 +312,19 @@ public class WalletTest {
 	@Test
 	public void getTransactionById() {
 		Transaction transactionById = wallet.getTransactionById(
-				ByteString.copyFrom(new TransactionCapsule(transaction1).getTransactionId().getBytes()));
+			ByteString.copyFrom(new TransactionCapsule(transaction1).getTransactionId().getBytes()));
 		Assert.assertEquals("getTransactionById1", transaction1, transactionById);
 		transactionById = wallet.getTransactionById(
-				ByteString.copyFrom(new TransactionCapsule(transaction2).getTransactionId().getBytes()));
+			ByteString.copyFrom(new TransactionCapsule(transaction2).getTransactionId().getBytes()));
 		Assert.assertEquals("getTransactionById2", transaction2, transactionById);
 		transactionById = wallet.getTransactionById(
-				ByteString.copyFrom(new TransactionCapsule(transaction3).getTransactionId().getBytes()));
+			ByteString.copyFrom(new TransactionCapsule(transaction3).getTransactionId().getBytes()));
 		Assert.assertEquals("getTransactionById3", transaction3, transactionById);
 		transactionById = wallet.getTransactionById(
-				ByteString.copyFrom(new TransactionCapsule(transaction4).getTransactionId().getBytes()));
+			ByteString.copyFrom(new TransactionCapsule(transaction4).getTransactionId().getBytes()));
 		Assert.assertEquals("getTransactionById4", transaction4, transactionById);
 		transactionById = wallet.getTransactionById(
-				ByteString.copyFrom(new TransactionCapsule(transaction5).getTransactionId().getBytes()));
+			ByteString.copyFrom(new TransactionCapsule(transaction5).getTransactionId().getBytes()));
 		Assert.assertEquals("getTransactionById5", transaction5, transactionById);
 	}
 
@@ -362,16 +362,16 @@ public class WalletTest {
 
 		Assert.assertEquals(2, proposalList.getProposalsCount());
 		Assert.assertEquals("Address1",
-				proposalList.getProposalsList().get(0).getProposerAddress().toStringUtf8());
+			proposalList.getProposalsList().get(0).getProposerAddress().toStringUtf8());
 		Assert.assertEquals("Address2",
-				proposalList.getProposalsList().get(1).getProposerAddress().toStringUtf8());
+			proposalList.getProposalsList().get(1).getProposerAddress().toStringUtf8());
 
 		//
 		proposalList = wallet.getPaginatedProposalList(1, 100);
 
 		Assert.assertEquals(1, proposalList.getProposalsCount());
 		Assert.assertEquals("Address2",
-				proposalList.getProposalsList().get(0).getProposerAddress().toStringUtf8());
+			proposalList.getProposalsList().get(0).getProposerAddress().toStringUtf8());
 
 		//
 		proposalList = wallet.getPaginatedProposalList(-1, 100);
@@ -392,9 +392,9 @@ public class WalletTest {
 		buildExchange();
 		ExchangeList exchangeList = wallet.getPaginatedExchangeList(0, 100);
 		Assert.assertEquals("Address1",
-				exchangeList.getExchangesList().get(0).getCreatorAddress().toStringUtf8());
+			exchangeList.getExchangesList().get(0).getCreatorAddress().toStringUtf8());
 		Assert.assertEquals("Address2",
-				exchangeList.getExchangesList().get(1).getCreatorAddress().toStringUtf8());
+			exchangeList.getExchangesList().get(1).getCreatorAddress().toStringUtf8());
 	}
 
 }

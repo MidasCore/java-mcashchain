@@ -17,10 +17,13 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.protos.Protocol;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
@@ -63,7 +66,7 @@ import java.io.File;
  */
 public class BandWidthRuntimeTest {
 
-	public static final long totalBalance = 1000_0000_000_000L;
+	public static final long totalBalance = 100_000_0000_000_000L;
 	private static String dbPath = "output_BandWidthRuntimeTest_test";
 	private static String dbDirectory = "db_BandWidthRuntimeTest_test";
 	private static String indexDirectory = "index_BandWidthRuntimeTest_test";
@@ -73,6 +76,7 @@ public class BandWidthRuntimeTest {
 	private static String OwnerAddress = "MJsKN8eHy6rH19B688QfKNfnhTDJUc1mX8";
 	private static String TriggerOwnerAddress = "MRBGoSSnzSfrqvFJkaP11B3WockyiDknoU";
 	private static String TriggerOwnerTwoAddress = "MN12GTFGMTbqyhRiYpDRyoVFd1Mxbtsn9N";
+	private static byte[] contractAddress;
 
 	static {
 		Args.setParam(
@@ -92,7 +96,7 @@ public class BandWidthRuntimeTest {
 	 * Init data.
 	 */
 	@BeforeClass
-	public static void init() {
+	public static void init() throws ContractExeException, ReceiptCheckErrException, VMIllegalException, ContractValidateException {
 		dbManager = context.getBean(Manager.class);
 		//init energy
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526547838000L);
@@ -104,7 +108,7 @@ public class BandWidthRuntimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule.setFrozenForEnergy(100_000_000L, 0L);
+		accountCapsule.setFrozenForEnergy(1_000_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
@@ -113,7 +117,7 @@ public class BandWidthRuntimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
 				totalBalance);
 
-		accountCapsule2.setFrozenForEnergy(100_000_000L, 0L);
+		accountCapsule2.setFrozenForEnergy(1_000_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
 		AccountCapsule accountCapsule3 = new AccountCapsule(
@@ -121,14 +125,16 @@ public class BandWidthRuntimeTest {
 				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerTwoAddress)),
 				AccountType.Normal,
 				totalBalance);
-		accountCapsule3.setBandwidthUsage(5000L);
+		accountCapsule3.setBandwidthUsage(10000L);
 		accountCapsule3.setLatestFreeBandwidthConsumeTime(dbManager.getWitnessController().getHeadSlot());
-		accountCapsule3.setFrozenForEnergy(10_000_000L, 0L);
+		accountCapsule3.setFrozenForEnergy(1_000_000_000L, 0L);
 		dbManager.getAccountStore()
 				.put(Wallet.decodeFromBase58Check(TriggerOwnerTwoAddress), accountCapsule3);
 
 		dbManager.getDynamicPropertiesStore()
 				.saveLatestBlockHeaderTimestamp(System.currentTimeMillis() / 1000);
+
+		contractAddress = createContract();
 	}
 
 	/**
@@ -145,16 +151,12 @@ public class BandWidthRuntimeTest {
 	@Test
 	public void testSuccess() {
 		try {
-			byte[] contractAddress = createContract();
-			AccountCapsule triggerOwner = dbManager.getAccountStore()
-					.get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-			long energy = triggerOwner.getEnergyUsage();
 			TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
 					"setCoin(uint256)", "3", false,
 					0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
 			Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
 					Contract.newBuilder().setParameter(Any.pack(triggerContract))
-							.setType(ContractType.TriggerSmartContract)).setFeeLimit(1000000000)).build();
+							.setType(ContractType.TriggerSmartContract)).setFeeLimit(10000000000L)).build();
 			TransactionCapsule trxCap = new TransactionCapsule(transaction);
 			TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
 			dbManager.consumeBandwidth(trxCap, trace);
@@ -166,22 +168,21 @@ public class BandWidthRuntimeTest {
 			trace.exec();
 			trace.finalization();
 
-			triggerOwner = dbManager.getAccountStore()
+			AccountCapsule triggerOwner = dbManager.getAccountStore()
 					.get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-			energy = triggerOwner.getEnergyUsage();
+			long energy = triggerOwner.getEnergyUsage();
 			long balance = triggerOwner.getBalance();
 			Assert.assertEquals(45706, trace.getReceipt().getEnergyUsageTotal());
 			Assert.assertEquals(45706, energy);
 			Assert.assertEquals(totalBalance, balance);
 		} catch (TronException e) {
-			Assert.assertNotNull(e);
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
-	public void testSuccessNoBandd() {
+	public void testSuccessNoBandwidth() {
 		try {
-			byte[] contractAddress = createContract();
 			TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
 					"setCoin(uint256)", "50", false,
 					0, Wallet.decodeFromBase58Check(TriggerOwnerTwoAddress));
@@ -207,49 +208,27 @@ public class BandWidthRuntimeTest {
 
 			Assert.assertEquals(bandWidth, receipt.getBandwidthUsage());
 			Assert.assertEquals(522850, receipt.getEnergyUsageTotal());
-			Assert.assertEquals(0, receipt.getEnergyUsage());
-			Assert.assertEquals(47285000, receipt.getEnergyFee());
+			Assert.assertEquals(50000, receipt.getEnergyUsage());
+			Assert.assertEquals(472850000, receipt.getEnergyFee());
 			Assert.assertEquals(totalBalance - receipt.getEnergyFee(),
 					balance);
 		} catch (TronException e) {
-			Assert.assertNotNull(e);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	private byte[] createContract()
-			throws ContractValidateException, AccountResourceInsufficientException, TooBigTransactionResultException, ContractExeException, VMIllegalException {
-		AccountCapsule owner = dbManager.getAccountStore()
-				.get(Wallet.decodeFromBase58Check(OwnerAddress));
-		long energy = owner.getEnergyUsage();
-		long balance = owner.getBalance();
-
+	private static byte[] createContract()
+		throws ContractValidateException, ContractExeException, VMIllegalException, ReceiptCheckErrException {
 		String contractName = "foriContract";
 		String code = "608060405234801561001057600080fd5b50610105806100206000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680637bb98a6814604e578063866edb47146076575b600080fd5b348015605957600080fd5b50606060a0565b6040518082815260200191505060405180910390f35b348015608157600080fd5b50609e6004803603810190808035906020019092919050505060a6565b005b60005481565b60008090505b8181101560d55760008081548092919060010191905055600081905550808060010191505060ac565b50505600a165627a7a72305820f4020a69fb8504d7db776726b19e5101c3216413d7ab8e91a11c4f55f772caed0029";
 		String abi = "[{\"constant\":true,\"inputs\":[],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]";
-		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
-				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
-				Contract.newBuilder().setParameter(Any.pack(smartContract))
-						.setType(ContractType.CreateSmartContract)).setFeeLimit(1000000000)).build();
-		TransactionCapsule trxCap = new TransactionCapsule(transaction);
-		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
-		dbManager.consumeBandwidth(trxCap, trace);
-		BlockCapsule blockCapsule = null;
-		DepositImpl deposit = DepositImpl.createRoot(dbManager);
-		Runtime runtime = new RuntimeImpl(trace, blockCapsule, deposit, new ProgramInvokeFactoryImpl());
-		trace.init(blockCapsule);
-		trace.exec();
-		trace.finalization();
-		owner = dbManager.getAccountStore()
-				.get(Wallet.decodeFromBase58Check(OwnerAddress));
-		energy = owner.getEnergyUsage() - energy;
-		balance = balance - owner.getBalance();
-		Assert.assertNull(runtime.getRuntimeError());
-		Assert.assertEquals(52299, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(5000, energy);
-		Assert.assertEquals(47299000, balance);
-		Assert.assertEquals(52299 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
-		Assert.assertNull(runtime.getRuntimeError());
-		return runtime.getResult().getContractAddress();
+
+		Protocol.Transaction trx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
+			contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, Constant.CREATOR_DEFAULT_ENERGY_LIMIT, 100, null);
+		byte[] contractAddress = Wallet.generateContractAddress(trx);
+		DepositImpl rootDeposit = DepositImpl.createRoot(dbManager);
+		Runtime runtime = TVMTestUtils.processTransactionAndReturnRuntime(trx, rootDeposit, null);
+		org.testng.Assert.assertNull(runtime.getRuntimeError());
+		return contractAddress;
 	}
 }

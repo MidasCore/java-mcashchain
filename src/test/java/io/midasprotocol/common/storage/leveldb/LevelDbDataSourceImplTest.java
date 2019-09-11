@@ -76,7 +76,7 @@ public class LevelDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testPutGet() {
+	public void putGet() {
 		dataSourceTest.resetDb();
 		String key1 = "2c0937534dd1b3832d05d865e8e6f2bf23218300b33a992740d45ccab7d4f519";
 		byte[] key = key1.getBytes();
@@ -93,7 +93,7 @@ public class LevelDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testReset() {
+	public void reset() {
 		LevelDbDataSourceImpl dataSource = new LevelDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_reset");
 		dataSource.resetDb();
@@ -102,7 +102,7 @@ public class LevelDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testupdateByBatchInner() {
+	public void updateByBatchInner() {
 		LevelDbDataSourceImpl dataSource = new LevelDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_updateByBatch");
 		dataSource.initDB();
@@ -125,7 +125,7 @@ public class LevelDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testdeleteData() {
+	public void deleteData() {
 		LevelDbDataSourceImpl dataSource = new LevelDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_delete");
 		dataSource.initDB();
@@ -139,7 +139,7 @@ public class LevelDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testallKeys() {
+	public void allKeys() {
 		LevelDbDataSourceImpl dataSource = new LevelDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_find_key");
 		dataSource.initDB();
@@ -165,7 +165,7 @@ public class LevelDbDataSourceImplTest {
 	}
 
 	@Test(timeout = 1000)
-	public void testLockReleased() {
+	public void lockReleased() {
 		dataSourceTest.initDB();
 		// normal close
 		dataSourceTest.closeDB();

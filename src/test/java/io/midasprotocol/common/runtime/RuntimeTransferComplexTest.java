@@ -163,7 +163,7 @@ public class RuntimeTransferComplexTest {
 
 		String selectorStr = "transferTo(address)";
 		String params = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData = TVMTestUtils.parseABI(selectorStr, params);
+		byte[] triggerData = TVMTestUtils.parseAbi(selectorStr, params);
 
 		long triggerCallValue = 100;
 
@@ -232,7 +232,7 @@ public class RuntimeTransferComplexTest {
 		//==================================1. testCallTransferToInCalledContract====================================
 		String selectorStr1 = "testCallTransferToInCalledContract(address)";
 		String params1 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData1 = TVMTestUtils.parseABI(selectorStr1, params1);
+		byte[] triggerData1 = TVMTestUtils.parseAbi(selectorStr1, params1);
 
 		Transaction transaction1 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(msgSenderAddress, callerAddress,
@@ -250,7 +250,7 @@ public class RuntimeTransferComplexTest {
 		//==================================2. testRevertForCall =================================================
 		String selectorStr2 = "testRevertForCall(address)";
 		String params2 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData2 = TVMTestUtils.parseABI(selectorStr2, params2);
+		byte[] triggerData2 = TVMTestUtils.parseAbi(selectorStr2, params2);
 
 		Transaction transaction2 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(msgSenderAddress, callerAddress,
@@ -268,7 +268,7 @@ public class RuntimeTransferComplexTest {
 		//==================================3. testExceptionForCall =================================================
 		String selectorStr3 = "testExceptionForCall(address)";
 		String params3 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData3 = TVMTestUtils.parseABI(selectorStr3, params3);
+		byte[] triggerData3 = TVMTestUtils.parseAbi(selectorStr3, params3);
 
 		Transaction transaction3 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(msgSenderAddress, callerAddress,
@@ -286,7 +286,7 @@ public class RuntimeTransferComplexTest {
 		//==================================4. testTransferToInCreatedContract =================================================
 		String selectorStr4 = "testTransferToInCreatedContract(address)";
 		String params4 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData4 = TVMTestUtils.parseABI(selectorStr4, params4);
+		byte[] triggerData4 = TVMTestUtils.parseAbi(selectorStr4, params4);
 
 		Transaction transaction4 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(msgSenderAddress, callerAddress,
@@ -306,7 +306,7 @@ public class RuntimeTransferComplexTest {
 		//==================================5. testRevertForCreate =================================================
 		String selectorStr5 = "testRevertForCreate(address)";
 		String params5 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData5 = TVMTestUtils.parseABI(selectorStr5, params5);
+		byte[] triggerData5 = TVMTestUtils.parseAbi(selectorStr5, params5);
 
 		Transaction transaction5 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(msgSenderAddress, callerAddress,
@@ -328,7 +328,7 @@ public class RuntimeTransferComplexTest {
 		//==================================5. testExceptionForCreate =================================================
 		String selectorStr6 = "testExceptionForCreate(address)";
 		String params6 = "000000000000000000000000548794500882809695a8a687866e76d4271a1abc"; //TRANSFER_TO
-		byte[] triggerData6 = TVMTestUtils.parseABI(selectorStr6, params6);
+		byte[] triggerData6 = TVMTestUtils.parseAbi(selectorStr6, params6);
 
 		Transaction transaction6 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(msgSenderAddress, callerAddress,

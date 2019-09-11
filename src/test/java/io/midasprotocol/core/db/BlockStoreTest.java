@@ -20,7 +20,7 @@ public class BlockStoreTest {
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
 

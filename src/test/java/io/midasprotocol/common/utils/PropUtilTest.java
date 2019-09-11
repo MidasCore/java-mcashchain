@@ -9,7 +9,7 @@ import java.io.IOException;
 public class PropUtilTest {
 
 	@Test
-	public void testWriteProperty() {
+	public void writeProperty() {
 		String filename = "test_prop.properties";
 		File file = new File(filename);
 		try {
@@ -25,7 +25,7 @@ public class PropUtilTest {
 	}
 
 	@Test
-	public void testReadProperty() {
+	public void readProperty() {
 		String filename = "test_prop.properties";
 		File file = new File(filename);
 		try {

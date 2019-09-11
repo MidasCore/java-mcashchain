@@ -41,13 +41,13 @@ public class MerkleTreeTest {
 			pareTree(left, hashList, maxRank, curBank, number);
 			number++;
 			if ((number << (maxRank - curBank)) >= hashList
-					.size()) {    //The smallest leaf child number = number<<(maxRank-curBank)
+				.size()) {    //The smallest leaf child number = number<<(maxRank-curBank)
 				Assert.assertNull(right);
 				Assert.assertEquals(head.getHash(), left.getHash());  //No right, leaf = left
 			} else {
 				pareTree(right, hashList, maxRank, curBank, number);
 				Assert.assertEquals(head.getHash(),
-						computeHash(left.getHash(), right.getHash())); //hash = sha256(left || right)
+					computeHash(left.getHash(), right.getHash())); //hash = sha256(left || right)
 			}
 		} else {
 			// last rank, no child, it is real leaf. Its hash in hashList.
