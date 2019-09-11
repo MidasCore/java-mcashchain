@@ -17,6 +17,7 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.protos.Protocol;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -186,7 +187,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 		String abi = "[{\"constant\":false,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacciNotify\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacci\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"input\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"result\",\"type\":\"uint256\"}],\"name\":\"Notify\",\"type\":\"event\"}]";
 
 		Protocol.Transaction trx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-			contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, Constant.CREATOR_DEFAULT_ENERGY_LIMIT, 100, null);
+			contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, VMConfig.MAX_FEE_LIMIT, 100, null);
 		byte[] contractAddress = Wallet.generateContractAddress(trx);
 		DepositImpl rootDeposit = DepositImpl.createRoot(dbManager);
 		Runtime runtime = TVMTestUtils.processTransactionAndReturnRuntime(trx, rootDeposit, null);

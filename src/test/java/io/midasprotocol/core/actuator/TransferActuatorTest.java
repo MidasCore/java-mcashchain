@@ -4,6 +4,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.*;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.ByteArray;
@@ -115,6 +116,18 @@ public class TransferActuatorTest {
 				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toaddress)))
 				.setAmount(count)
 				.build());
+	}
+
+	private Any getContract(long amount, String memo) {
+		ByteString memoBa = StringUtils.isBlank(memo) ? ByteString.EMPTY : ByteString.copyFrom(ByteArray.fromString(memo));
+		return Any.pack(
+			Contract.TransferContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
+				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)))
+				.setAmount(amount)
+				.setMemo(memoBa)
+				.build()
+		);
 	}
 
 	@Test
@@ -409,6 +422,73 @@ public class TransferActuatorTest {
 			Assert.fail(e.getMessage());
 		} finally {
 			dbManager.getAccountStore().delete(ByteArray.fromHexString(TO_ACCOUNT_INVALID));
+		}
+	}
+
+	@Test
+	public void memo() {
+		TransferActuator actuator = new TransferActuator(getContract(AMOUNT, "Hello from MCash"), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
+			AccountCapsule owner =
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount =
+				dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+
+			Assert.assertEquals(owner.getBalance(), OWNER_BALANCE - AMOUNT - ChainConstant.TRANSFER_FEE);
+			Assert.assertEquals(toAccount.getBalance(), TO_BALANCE + AMOUNT);
+			Assert.assertTrue(true);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void emptyMemo() {
+		TransferActuator actuator = new TransferActuator(getContract(AMOUNT, ""), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
+			AccountCapsule owner =
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount =
+				dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+
+			Assert.assertEquals(owner.getBalance(), OWNER_BALANCE - AMOUNT - ChainConstant.TRANSFER_FEE);
+			Assert.assertEquals(toAccount.getBalance(), TO_BALANCE + AMOUNT);
+			Assert.assertTrue(true);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void memoTooLong() {
+		TransferActuator actuator = new TransferActuator(getContract(AMOUNT,
+			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+				"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), dbManager);
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+		try {
+			actuator.validate();
+			actuator.execute(ret);
+			fail("Invalid memo length");
+
+		} catch (ContractValidateException e) {
+			Assert.assertEquals("Invalid memo length", e.getMessage());
+			AccountCapsule owner = dbManager.getAccountStore()
+				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore()
+				.get(ByteArray.fromHexString(TO_ADDRESS));
+			Assert.assertEquals(owner.getBalance(), OWNER_BALANCE);
+			Assert.assertEquals(toAccount.getBalance(), TO_BALANCE);
+
+		} catch (ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 

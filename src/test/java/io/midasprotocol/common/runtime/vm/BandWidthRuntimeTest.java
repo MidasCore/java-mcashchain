@@ -17,6 +17,7 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.protos.Protocol;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
@@ -224,7 +225,7 @@ public class BandWidthRuntimeTest {
 		String abi = "[{\"constant\":true,\"inputs\":[],\"name\":\"balances\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"receiver\",\"type\":\"uint256\"}],\"name\":\"setCoin\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]";
 
 		Protocol.Transaction trx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-			contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, Constant.CREATOR_DEFAULT_ENERGY_LIMIT, 100, null);
+			contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, VMConfig.MAX_FEE_LIMIT, 100, null);
 		byte[] contractAddress = Wallet.generateContractAddress(trx);
 		DepositImpl rootDeposit = DepositImpl.createRoot(dbManager);
 		Runtime runtime = TVMTestUtils.processTransactionAndReturnRuntime(trx, rootDeposit, null);

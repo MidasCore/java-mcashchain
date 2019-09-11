@@ -143,6 +143,11 @@ public class TransferActuator extends AbstractActuator {
 		byte[] toAddress = transferContract.getToAddress().toByteArray();
 		byte[] ownerAddress = transferContract.getOwnerAddress().toByteArray();
 		long amount = transferContract.getAmount();
+		byte[] memo = transferContract.getMemo().toByteArray();
+
+		if (memo.length > ChainConstant.MEMO_MAX_LENGTH) {
+			throw new ContractValidateException("Invalid memo length");
+		}
 
 		if (!Wallet.addressValid(ownerAddress)) {
 			throw new ContractValidateException("Invalid ownerAddress");
