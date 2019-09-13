@@ -34,7 +34,8 @@ public interface Parameter {
 
 	enum ForkBlockVersionEnum {
 		GENESIS(1),
-		VERSION_0_1_1(2);
+		VERSION_0_1_1(2),
+		VERSION_0_1_2(3);
 
 		@Getter
 		private int value;

@@ -99,10 +99,15 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 	private static final byte[] ALLOW_TVM_TRANSFER_M1 = "ALLOW_TVM_TRANSFER_M1".getBytes();
 	private static final byte[] ALLOW_VM_CONSTANTINOPLE = "ALLOW_VM_CONSTANTINOPLE".getBytes();
 
+	//Used only for protobuf data filter , once，value is 0,1
+	private static final byte[] ALLOW_PROTO_FILTER = "ALLOW_PROTO_FILTER".getBytes();
+
 	private static final byte[] AVAILABLE_CONTRACT_TYPE = "AVAILABLE_CONTRACT_TYPE".getBytes();
 	private static final byte[] ACTIVE_DEFAULT_OPERATIONS = "ACTIVE_DEFAULT_OPERATIONS".getBytes();
 	private static final byte[] STAKE_TIME_IN_DAY = "STAKE_TIME_IN_DAY".getBytes();
 	private static final byte[] RESIGN_STAKE_TIME_IN_DAY = "RESIGN_STAKE_TIME_INT_DAY".getBytes();
+
+
 
 	@Autowired
 	private DynamicPropertiesStore(@Value("properties") String dbName) {
@@ -456,6 +461,12 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 		} catch (IllegalArgumentException e) {
 			this.saveNextMaintenanceTime(
 				Long.parseLong(Args.getInstance().getGenesisBlock().getTimestamp()));
+		}
+
+		try {
+			this.getAllowProtoFilter();
+		} catch (IllegalArgumentException e) {
+			this.saveAllowProtoFilter(Args.getInstance().getAllowProtoFilter());
 		}
 
 		try {
@@ -1388,6 +1399,19 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 			new DateTime(nextMaintenanceTime)
 		);
 	}
+
+	public long getAllowProtoFilter() {
+		return Optional.ofNullable(getUnchecked(ALLOW_PROTO_FILTER))
+			.map(BytesCapsule::getData)
+			.map(ByteArray::toLong)
+			.orElseThrow(() -> new IllegalArgumentException("not found allow protobuf filter"));
+	}
+
+	public void saveAllowProtoFilter(long allow) {
+		logger.info("update allow protobuf filter = {}", allow);
+		this.put(ALLOW_PROTO_FILTER, new BytesCapsule(ByteArray.fromLong(allow)));
+	}
+
 
 	//The unit is mcash
 	public void addTotalBandwidthWeight(long amount) {

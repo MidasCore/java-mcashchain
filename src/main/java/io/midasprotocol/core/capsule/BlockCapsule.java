@@ -17,6 +17,7 @@ package io.midasprotocol.core.capsule;
 
 import com.google.common.primitives.Longs;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
@@ -34,6 +35,7 @@ import io.midasprotocol.protos.Protocol.Transaction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.io.IOException;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,6 +106,15 @@ public class BlockCapsule implements ProtoCapsule<Block> {
 			this.block = Block.parseFrom(data);
 			initTxs();
 		} catch (InvalidProtocolBufferException e) {
+			throw new BadItemException("Block proto data parse exception");
+		}
+	}
+
+	public BlockCapsule(CodedInputStream data) throws BadItemException {
+		try {
+			this.block = Block.parseFrom(data);
+			initTxs();
+		} catch (IOException e) {
 			throw new BadItemException("Block proto data parse exception");
 		}
 	}
