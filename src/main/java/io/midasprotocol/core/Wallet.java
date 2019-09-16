@@ -870,6 +870,11 @@ public class Wallet {
 			.setValue(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople())
 			.build());
 
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("allowProtoFilter")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowProtoFilter())
+			.build());
+
 		return builder.build();
 	}
 

@@ -201,6 +201,12 @@ public class ProposalController {
 					manager.getDynamicPropertiesStore().saveMultiSignFee(entry.getValue());
 					break;
 				}
+				case (21): {
+					if (manager.getDynamicPropertiesStore().getAllowProtoFilter() == 0) {
+						manager.getDynamicPropertiesStore().saveAllowProtoFilter(entry.getValue());
+					}
+					break;
+				}
 				default:
 					break;
 			}

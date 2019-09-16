@@ -8,6 +8,7 @@ import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.ProposalCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
+import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.config.Parameter.ChainParameters;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
@@ -21,9 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static io.midasprotocol.core.actuator.ActuatorConstant.*;
-
-//import io.midasprotocol.core.config.Parameter.ForkBlockVersionConsts;
-//import io.midasprotocol.core.config.Parameter.ForkBlockVersionEnum;
 
 @Slf4j(topic = "actuator")
 public class ProposalCreateActuator extends AbstractActuator {
@@ -283,6 +281,17 @@ public class ProposalCreateActuator extends AbstractActuator {
 				if (entry.getValue() < 0 || entry.getValue() > 100_000_000_000L) {
 					throw new ContractValidateException(
 						"Bad chain parameter value, valid range is [0, 100_000_000_000L]");
+				}
+				break;
+			}
+			// allow protobuf data check
+			case (21): {
+				if (!dbManager.getForkController().pass(Parameter.ForkBlockVersionEnum.VERSION_0_1_2)) {
+					throw new ContractValidateException("Bad chain parameter id: ALLOW_PROTO_FILTER");
+				}
+				if (entry.getValue() != 1) {
+					throw new ContractValidateException(
+						"This value ALLOW_PROTO_FILTER is only allowed to be 1");
 				}
 				break;
 			}
