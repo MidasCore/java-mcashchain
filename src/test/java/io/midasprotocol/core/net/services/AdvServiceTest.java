@@ -26,7 +26,7 @@ public class AdvServiceTest {
 	@Test
 	public void testBroadcast() {
 		BlockCapsule blockCapsule = new BlockCapsule(1, Sha256Hash.ZERO_HASH,
-				System.currentTimeMillis(), Sha256Hash.ZERO_HASH.getByteString());
+			System.currentTimeMillis(), Sha256Hash.ZERO_HASH.getByteString());
 		BlockMessage msg = new BlockMessage(blockCapsule);
 		service.broadcast(msg);
 		Item item = new Item(blockCapsule.getBlockId(), InventoryType.BLOCK);

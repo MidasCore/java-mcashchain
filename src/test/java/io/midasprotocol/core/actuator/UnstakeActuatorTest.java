@@ -2,7 +2,6 @@ package io.midasprotocol.core.actuator;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.core.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
@@ -78,11 +77,11 @@ public class UnstakeActuatorTest {
 	@Before
 	public void createCapsule() {
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("owner"),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.Normal,
-						initBalance);
+			new AccountCapsule(
+				ByteString.copyFromUtf8("owner"),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				initBalance);
 		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
 
 		dbManager.getStakeAccountStore().delete(ByteArray.fromHexString(OWNER_ADDRESS));
@@ -90,9 +89,9 @@ public class UnstakeActuatorTest {
 
 	private Any getContract(String ownerAddress) {
 		return Any.pack(
-				Contract.UnstakeContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.build());
+			Contract.UnstakeContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.build());
 	}
 
 
@@ -102,19 +101,19 @@ public class UnstakeActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setStake(stakeAmount, now);
 		Assert.assertEquals(accountCapsule.getNormalStakeAmount(), stakeAmount);
 		Assert.assertEquals(accountCapsule.getVotingPower(), StakeUtil.getVotingPowerFromStakeAmount(stakeAmount));
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 
 		StakeAccountCapsule stakeAccountCapsule = new StakeAccountCapsule(accountCapsule.getAddress(),
-				StakeUtil.getStakeAmountWithBonusFromStakeAmount(stakeAmount),
-				StakeUtil.getVotingPowerFromStakeAmount(stakeAmount));
+			StakeUtil.getStakeAmountWithBonusFromStakeAmount(stakeAmount),
+			StakeUtil.getVotingPowerFromStakeAmount(stakeAmount));
 		dbManager.getStakeAccountStore().put(stakeAccountCapsule.createDbKey(), stakeAccountCapsule);
 
 		UnstakeActuator actuator = new UnstakeActuator(
-				getContract(OWNER_ADDRESS), dbManager);
+			getContract(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 //		long totalNetWeightBefore = dbManager.getDynamicPropertiesStore().getTotalBandwidthWeight();
 
@@ -124,7 +123,7 @@ public class UnstakeActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 			Assert.assertEquals(owner.getBalance(), initBalance + stakeAmount);
 			Assert.assertEquals(owner.getFrozenBalanceForBandwidth(), 0);
@@ -188,11 +187,11 @@ public class UnstakeActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setStake(stakeAmount, now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnstakeActuator actuator = new UnstakeActuator(
-				getContract(OWNER_ADDRESS_INVALID), dbManager);
+			getContract(OWNER_ADDRESS_INVALID), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -213,11 +212,11 @@ public class UnstakeActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setStake(ConversionUtil.McashToMatoshi(1_000), now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnstakeActuator actuator = new UnstakeActuator(
-				getContract(OWNER_ACCOUNT_INVALID), dbManager);
+			getContract(OWNER_ACCOUNT_INVALID), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -225,7 +224,7 @@ public class UnstakeActuatorTest {
 			Assert.fail("Account " + OWNER_ACCOUNT_INVALID + " does not exist");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Account " + OWNER_ACCOUNT_INVALID + " does not exist",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -252,11 +251,11 @@ public class UnstakeActuatorTest {
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
 
 		AccountCapsule accountCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 		accountCapsule.setStake(ConversionUtil.McashToMatoshi(1_000), now + 60000);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		UnstakeActuator actuator = new UnstakeActuator(
-				getContract(OWNER_ADDRESS), dbManager);
+			getContract(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -270,7 +269,7 @@ public class UnstakeActuatorTest {
 	}
 
 	@Test
-	public void testClearVote() {
+	public void clearVoteTest() {
 		byte[] ownerAddressBytes = ByteArray.fromHexString(OWNER_ADDRESS);
 		long now = System.currentTimeMillis();
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(now);
@@ -280,7 +279,7 @@ public class UnstakeActuatorTest {
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 
 		UnstakeActuator actuator = new UnstakeActuator(
-				getContract(OWNER_ADDRESS), dbManager);
+			getContract(OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 
 		dbManager.getVoteChangeStore().reset();
@@ -296,9 +295,9 @@ public class UnstakeActuatorTest {
 
 		// if had votes
 		VoteChangeCapsule voteChangeCapsule = new VoteChangeCapsule(
-				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
+			ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)));
 		voteChangeCapsule.setNewVote(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-				100);
+			100);
 		dbManager.getVoteChangeStore().put(ByteArray.fromHexString(OWNER_ADDRESS), voteChangeCapsule);
 		accountCapsule.setStake(ConversionUtil.McashToMatoshi(1_000_000), now);
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);

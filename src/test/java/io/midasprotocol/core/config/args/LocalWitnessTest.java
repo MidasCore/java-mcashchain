@@ -27,9 +27,9 @@ public class LocalWitnessTest {
 	@Before
 	public void setLocalWitness() {
 		localWitness
-				.setPrivateKeys(
-						Lists.newArrayList(
-								"f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"));
+			.setPrivateKeys(
+				Lists.newArrayList(
+					"f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"));
 	}
 
 	@Test
@@ -50,17 +50,17 @@ public class LocalWitnessTest {
 	@Test
 	public void whenSetPrefixPrivateKey() {
 		localWitness
-				.setPrivateKeys(Lists
-						.newArrayList("0xf31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"));
+			.setPrivateKeys(Lists
+				.newArrayList("0xf31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"));
 		localWitness
-				.setPrivateKeys(Lists
-						.newArrayList("0Xf31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"));
+			.setPrivateKeys(Lists
+				.newArrayList("0Xf31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"));
 	}
 
 	@Test
 	public void getPrivateKey() {
 		Assert.assertEquals(Lists
-						.newArrayList("f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"),
-				localWitness.getPrivateKeys());
+				.newArrayList("f31db24bfbd1a2ef19beddca0a0fa37632eded9ac666a05d3bd925f01dde1f62"),
+			localWitness.getPrivateKeys());
 	}
 }

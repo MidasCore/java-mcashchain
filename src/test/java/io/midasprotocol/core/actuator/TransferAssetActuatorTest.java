@@ -39,8 +39,6 @@ import io.midasprotocol.protos.Protocol.Transaction.Result.Code;
 
 import java.io.File;
 
-import static junit.framework.TestCase.fail;
-
 @Slf4j
 public class TransferAssetActuatorTest {
 
@@ -106,10 +104,10 @@ public class TransferAssetActuatorTest {
 	@Before
 	public void createCapsule() {
 		AccountCapsule toAccountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)),
-						ByteString.copyFromUtf8("toAccount"),
-						AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)),
+				ByteString.copyFromUtf8("toAccount"),
+				AccountType.Normal);
 		dbManager.getAccountStore().put(toAccountCapsule.getAddress().toByteArray(), toAccountCapsule);
 	}
 
@@ -122,99 +120,96 @@ public class TransferAssetActuatorTest {
 
 	public void createAsset(String assetName) {
 		AccountCapsule ownerCapsule = dbManager.getAccountStore()
-				.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			.get(ByteArray.fromHexString(OWNER_ADDRESS));
 
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		ownerCapsule.addAsset(id, OWNER_ASSET_BALANCE);
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
 		AssetIssueContract assetIssueContract =
-				AssetIssueContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
-						.setName(ByteString.copyFrom(ByteArray.fromString(assetName)))
-						.setId(id)
-						.setTotalSupply(TOTAL_SUPPLY)
-						.setMcashNum(TRX_NUM)
-						.setNum(NUM)
-						.setStartTime(START_TIME)
-						.setEndTime(END_TIME)
-						.setVoteScore(VOTE_SCORE)
-						.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
-						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-						.build();
+			AssetIssueContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
+				.setName(ByteString.copyFrom(ByteArray.fromString(assetName)))
+				.setId(id)
+				.setTotalSupply(TOTAL_SUPPLY)
+				.setMcashNum(TRX_NUM)
+				.setNum(NUM)
+				.setStartTime(START_TIME)
+				.setEndTime(END_TIME)
+				.setVoteScore(VOTE_SCORE)
+				.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
+				.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
+				.build();
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
 		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 		dbManager.getAssetIssueStore()
-				.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
+			.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 	}
 
 	private Any getContract(long sendCoin) {
 		long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 		return Any.pack(
-				Contract.TransferAssetContract.newBuilder()
-						.setAssetId(tokenIdNum)
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
-						.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)))
-						.setAmount(sendCoin)
-						.build());
+			Contract.TransferAssetContract.newBuilder()
+				.setAssetId(tokenIdNum)
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
+				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)))
+				.setAmount(sendCoin)
+				.build());
 	}
 
 	private Any getContract(long sendCoin, long assetId) {
 		return Any.pack(
-				Contract.TransferAssetContract.newBuilder()
-						.setAssetId(assetId)
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
-						.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)))
-						.setAmount(sendCoin)
-						.build());
+			Contract.TransferAssetContract.newBuilder()
+				.setAssetId(assetId)
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
+				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(TO_ADDRESS)))
+				.setAmount(sendCoin)
+				.build());
 	}
 
 	private Any getContract(long sendCoin, String owner, String to) {
 		long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 		return Any.pack(
-				Contract.TransferAssetContract.newBuilder()
-						.setAssetId(tokenIdNum)
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(owner)))
-						.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(to)))
-						.setAmount(sendCoin)
-						.build());
+			Contract.TransferAssetContract.newBuilder()
+				.setAssetId(tokenIdNum)
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(owner)))
+				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(to)))
+				.setAmount(sendCoin)
+				.build());
 	}
 
-	private void createAssertSameTokenNameActive() {
+	private void createAsset() {
 		long id = dbManager.getDynamicPropertiesStore().getTokenIdNum() + 1;
 		dbManager.getDynamicPropertiesStore().saveTokenIdNum(id);
 		AssetIssueContract assetIssueContract =
-				AssetIssueContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
-						.setName(ByteString.copyFrom(ByteArray.fromString(ASSET_NAME)))
-						.setId(id)
-						.setTotalSupply(TOTAL_SUPPLY)
-						.setMcashNum(TRX_NUM)
-						.setNum(NUM)
-						.setStartTime(START_TIME)
-						.setEndTime(END_TIME)
-						.setVoteScore(VOTE_SCORE)
-						.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
-						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-						.build();
+			AssetIssueContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)))
+				.setName(ByteString.copyFrom(ByteArray.fromString(ASSET_NAME)))
+				.setId(id)
+				.setTotalSupply(TOTAL_SUPPLY)
+				.setMcashNum(TRX_NUM)
+				.setNum(NUM)
+				.setStartTime(START_TIME)
+				.setEndTime(END_TIME)
+				.setVoteScore(VOTE_SCORE)
+				.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
+				.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
+				.build();
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
 		dbManager.getAssetIssueStore().put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						ByteString.copyFromUtf8("owner"),
-						AccountType.AssetIssue);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				ByteString.copyFromUtf8("owner"),
+				AccountType.AssetIssue);
 
 		ownerCapsule.addAsset(id, OWNER_ASSET_BALANCE);
 		dbManager.getAccountStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 	}
 
-	/**
-	 * SameTokenName open, transfer assert success.
-	 */
 	@Test
-	public void SameTokenNameOpenSuccessTransfer() {
-		createAssertSameTokenNameActive();
+	public void successTransfer() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(getContract(100L), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -222,243 +217,195 @@ public class TransferAssetActuatorTest {
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 			Assert.assertEquals(
-					owner.getInstance().getAssetsMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE - 100);
+				owner.getInstance().getAssetsMap().get(tokenIdNum).longValue(),
+				OWNER_ASSET_BALANCE - 100);
 			Assert.assertEquals(
-					toAccount.getInstance().getAssetsMap().get(tokenIdNum).longValue(),
-					100L);
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+				toAccount.getInstance().getAssetsMap().get(tokenIdNum).longValue(),
+				100L);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open, transfer assert success.
-	 */
 	@Test
-	public void SameTokenNameOpenSuccessTransfer2() {
-		createAssertSameTokenNameActive();
+	public void successTransfer2() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(getContract(OWNER_ASSET_BALANCE),
-				dbManager);
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
 			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+				dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 			Assert.assertEquals(
-					owner.getInstance().getAssetsMap().get(tokenIdNum).longValue(), 0L);
+				owner.getInstance().getAssetsMap().get(tokenIdNum).longValue(), 0L);
 			Assert.assertEquals(
-					toAccount.getInstance().getAssetsMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
-		} catch (ContractValidateException e) {
-			Assert.assertFalse(e instanceof ContractValidateException);
-		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+				toAccount.getInstance().getAssetsMap().get(tokenIdNum).longValue(),
+				OWNER_ASSET_BALANCE);
+		} catch (ContractValidateException | ContractExeException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,no Assert.
-	 */
 	@Test
-	public void SameTokenNameOpenOwnerNoAssetTest() {
-		createAssertSameTokenNameActive();
+	public void ownerNoAsset() {
+		createAsset();
 		AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 		owner.setInstance(owner.getInstance().toBuilder().clearAssets().build());
 		dbManager.getAccountStore().put(owner.createDbKey(), owner);
-		TransferAssetActuator actuator = new TransferAssetActuator(getContract(OWNER_ASSET_BALANCE),
-				dbManager);
+		TransferAssetActuator actuator = new TransferAssetActuator(getContract(OWNER_ASSET_BALANCE), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail();
+			Assert.fail("Owner no asset!");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Owner no asset!", e.getMessage());
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
-			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,Unit test.
-	 */
 	@Test
-	public void SameTokenNameOpenNotEnoughAssetTest() {
-		createAssertSameTokenNameActive();
+	public void notEnoughAssetTest() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(getContract(OWNER_ASSET_BALANCE + 1),
-				dbManager);
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.fail();
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertTrue("assetBalance is not sufficient.".equals(e.getMessage()));
+			Assert.assertEquals("assetBalance is not sufficient.", e.getMessage());
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open, zero amount
-	 */
 	@Test
-	public void SameTokenNameOpenZeroAmountTest() {
-		createAssertSameTokenNameActive();
+	public void zeroAmount() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(getContract(0), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail();
+			Assert.fail("Amount must greater than 0.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertTrue("Amount must greater than 0.".equals(e.getMessage()));
+			Assert.assertEquals("Amount must greater than 0.", e.getMessage());
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open, negative amount
-	 */
 	@Test
-	public void SameTokenNameOpenNegativeAmountTest() {
-		createAssertSameTokenNameActive();
+	public void negativeAmount() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(getContract(-999), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail();
+			Assert.fail("Amount must greater than 0.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Amount must greater than 0.", e.getMessage());
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open, no exist assert
-	 */
 	@Test
-	public void SameTokenNameOpenNoneExistAssetTest() {
-		createAssertSameTokenNameActive();
+	public void noneExistAsset() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(getContract(1, 10000000L),
-				dbManager);
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail();
+			Assert.fail("No asset !");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert.assertTrue("No asset !".equals(e.getMessage()));
+			Assert.assertEquals("No asset !", e.getMessage());
 			Assert.assertEquals(ret.getInstance().getCode(), Code.SUCCESS);
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,If to account not exit, create it.
-	 */
 	@Test
-	public void SameTokenNameOpenNoExitToAccount() {
-		createAssertSameTokenNameActive();
+	public void noExistToAccount() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(
-				getContract(100L, OWNER_ADDRESS, NOT_EXIT_ADDRESS_2), dbManager);
+			getContract(100L, OWNER_ADDRESS, NOT_EXIT_ADDRESS_2), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			AccountCapsule noExitAccount = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(NOT_EXIT_ADDRESS_2));
+				.get(ByteArray.fromHexString(NOT_EXIT_ADDRESS_2));
 			Assert.assertNull(noExitAccount);
 			actuator.validate();
 			actuator.execute(ret);
 			noExitAccount = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(NOT_EXIT_ADDRESS_2));
+				.get(ByteArray.fromHexString(NOT_EXIT_ADDRESS_2));
 			Assert.assertNotNull(noExitAccount);    //Had created.
 			Assert.assertEquals(noExitAccount.getBalance(), 0);
 			actuator.execute(ret);
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
-			Assert
-					.assertEquals("Validate TransferAssetActuator error, insufficient fee.", e.getMessage());
-			AccountCapsule owner = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(OWNER_ADDRESS));
+			Assert.assertEquals("Validate TransferAssetActuator error, insufficient fee.", e.getMessage());
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
-			AccountCapsule noExitAccount = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(NOT_EXIT_ADDRESS_2));
-			Assert.assertTrue(noExitAccount == null);
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
+			AccountCapsule noExitAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(NOT_EXIT_ADDRESS_2));
+			Assert.assertNull(noExitAccount);
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open, add over flow
-	 */
 	@Test
-	public void SameTokenNameOpenAddOverflowTest() {
-		createAssertSameTokenNameActive();
+	public void addOverflowTest() {
+		createAsset();
 		// First, increase the to balance. Else can't complete this test case.
 		AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 		long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
@@ -469,170 +416,146 @@ public class TransferAssetActuatorTest {
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail();
+			Assert.fail("long overflow");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("long overflow", e.getMessage());
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
 			toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
-			Assert.assertEquals(toAccount.getAssetMap().get(tokenIdNum).longValue(),
-					Long.MAX_VALUE);
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
+			Assert.assertEquals(toAccount.getAssetMap().get(tokenIdNum).longValue(), Long.MAX_VALUE);
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,transfer asset to yourself,result is error
-	 */
 	@Test
-	public void SameTokenNameOpenTransferToYourself() {
-		createAssertSameTokenNameActive();
+	public void transferToYourself() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(
-				getContract(100L, OWNER_ADDRESS, OWNER_ADDRESS), dbManager);
+			getContract(100L, OWNER_ADDRESS, OWNER_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Cannot transfer asset to yourself.");
+			Assert.fail("Cannot transfer asset to yourself.");
 
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Cannot transfer asset to yourself.", e.getMessage());
-			AccountCapsule owner = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(TO_ADDRESS));
+
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,Invalid ownerAddress,result is error
-	 */
 	@Test
-	public void SameTokenNameOpenInvalidOwnerAddress() {
-		createAssertSameTokenNameActive();
+	public void invalidOwnerAddress() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(
-				getContract(100L, OWNER_ADDRESS_INVALID, TO_ADDRESS), dbManager);
+			getContract(100L, OWNER_ADDRESS_INVALID, TO_ADDRESS), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Invalid ownerAddress");
+			Assert.fail("Invalid ownerAddress");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Invalid ownerAddress", e.getMessage());
-			AccountCapsule owner = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(TO_ADDRESS));
+
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertTrue(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,Invalid ToAddress,result is error
-	 */
 	@Test
-	public void SameTokenNameOpenInvalidToAddress() {
-		createAssertSameTokenNameActive();
+	public void invalidToAddress() {
+		createAsset();
 		TransferAssetActuator actuator = new TransferAssetActuator(
-				getContract(100L, OWNER_ADDRESS, TO_ADDRESS_INVALID), dbManager);
+			getContract(100L, OWNER_ADDRESS, TO_ADDRESS_INVALID), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			fail("Invalid toAddress");
+			Assert.fail("Invalid toAddress");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("Invalid toAddress", e.getMessage());
-			AccountCapsule owner = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount = dbManager.getAccountStore()
-					.get(ByteArray.fromHexString(TO_ADDRESS));
+
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long tokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+
+			Assert.assertEquals(owner.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * SameTokenName open,Account do not have this asset,Transfer this Asset result is failed
-	 */
 	@Test
-	public void SameTokenNameOpenOwnerNoThisAsset() {
-		createAssertSameTokenNameActive();
+	public void ownerZeroAssetBalance() {
+		createAsset();
 		long tokenIdNum = 2000000;
 		AccountCapsule ownerAssetCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(ownerAsset_ADDRESS)),
-						ByteString.copyFromUtf8("ownerAsset"),
-						AccountType.AssetIssue);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(ownerAsset_ADDRESS)),
+				ByteString.copyFromUtf8("ownerAsset"),
+				AccountType.AssetIssue);
 		ownerAssetCapsule.addAsset(tokenIdNum, OWNER_ASSET_Test_BALANCE);
 
 		AssetIssueContract assetIssueTestContract =
-				AssetIssueContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAsset_ADDRESS)))
-						.setName(ByteString.copyFrom(ByteArray.fromString(ownerASSET_NAME)))
-						.setTotalSupply(TOTAL_SUPPLY)
-						.setMcashNum(TRX_NUM)
-						.setId(tokenIdNum)
-						.setNum(NUM)
-						.setStartTime(START_TIME)
-						.setEndTime(END_TIME)
-						.setVoteScore(VOTE_SCORE)
-						.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
-						.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
-						.build();
+			AssetIssueContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAsset_ADDRESS)))
+				.setName(ByteString.copyFrom(ByteArray.fromString(ownerASSET_NAME)))
+				.setTotalSupply(TOTAL_SUPPLY)
+				.setMcashNum(TRX_NUM)
+				.setId(tokenIdNum)
+				.setNum(NUM)
+				.setStartTime(START_TIME)
+				.setEndTime(END_TIME)
+				.setVoteScore(VOTE_SCORE)
+				.setDescription(ByteString.copyFrom(ByteArray.fromString(DESCRIPTION)))
+				.setUrl(ByteString.copyFrom(ByteArray.fromString(URL)))
+				.build();
 
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueTestContract);
 		dbManager.getAccountStore()
-				.put(ownerAssetCapsule.getAddress().toByteArray(), ownerAssetCapsule);
+			.put(ownerAssetCapsule.getAddress().toByteArray(), ownerAssetCapsule);
 		dbManager.getAssetIssueStore()
-				.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
+			.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 		TransferAssetActuator actuator = new TransferAssetActuator(
-				getContract(1, tokenIdNum),
-				dbManager);
+			getContract(1, tokenIdNum),
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
-			Assert.fail();
+			Assert.fail("assetBalance must greater than 0.");
 		} catch (ContractValidateException e) {
-			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals("assetBalance must greater than 0.", e.getMessage());
-			AccountCapsule owner =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
-			AccountCapsule toAccount =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
+
+			AccountCapsule owner = dbManager.getAccountStore().get(ByteArray.fromHexString(OWNER_ADDRESS));
+			AccountCapsule toAccount = dbManager.getAccountStore().get(ByteArray.fromHexString(TO_ADDRESS));
 			long secondTokenIdNum = dbManager.getDynamicPropertiesStore().getTokenIdNum();
-			Assert.assertEquals(owner.getAssetMap().get(secondTokenIdNum).longValue(),
-					OWNER_ASSET_BALANCE);
+
+			Assert.assertEquals(owner.getAssetMap().get(secondTokenIdNum).longValue(), OWNER_ASSET_BALANCE);
 			Assert.assertTrue(isNullOrZero(toAccount.getAssetMap().get(tokenIdNum)));
-			AccountCapsule ownerAsset =
-					dbManager.getAccountStore().get(ByteArray.fromHexString(ownerAsset_ADDRESS));
-			Assert.assertEquals(ownerAsset.getAssetMap().get(tokenIdNum).longValue(),
-					OWNER_ASSET_Test_BALANCE);
+
+			AccountCapsule ownerAsset = dbManager.getAccountStore().get(ByteArray.fromHexString(ownerAsset_ADDRESS));
+
+			Assert.assertEquals(ownerAsset.getAssetMap().get(tokenIdNum).longValue(), OWNER_ASSET_Test_BALANCE);
 		} catch (ContractExeException e) {
-			Assert.assertFalse(e instanceof ContractExeException);
+			Assert.fail(e.getMessage());
 		}
 	}
 

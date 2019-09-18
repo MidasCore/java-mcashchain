@@ -29,7 +29,7 @@ public class KhaosDatabaseTest {
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
 
@@ -49,10 +49,10 @@ public class KhaosDatabaseTest {
 	@Test
 	public void testStartBlock() {
 		BlockCapsule blockCapsule = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
-						ByteArray.fromHexString(
-								"0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b81")))
-				)).build());
+			BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
+				ByteArray.fromHexString(
+					"0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b81")))
+			)).build());
 		khaosDatabase.start(blockCapsule);
 
 		Assert.assertEquals(blockCapsule, khaosDatabase.getBlock(blockCapsule.getBlockId()));
@@ -61,15 +61,15 @@ public class KhaosDatabaseTest {
 	@Test
 	public void testPushGetBlock() {
 		BlockCapsule blockCapsule = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
-						ByteArray.fromHexString(
-								"0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b81")))
-				)).build());
+			BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
+				ByteArray.fromHexString(
+					"0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b81")))
+			)).build());
 		BlockCapsule blockCapsule2 = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
-						ByteArray.fromHexString(
-								"9938a342238077182498b464ac029222ae169360e540d1fd6aee7c2ae9575a06")))
-				)).build());
+			BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
+				ByteArray.fromHexString(
+					"9938a342238077182498b464ac029222ae169360e540d1fd6aee7c2ae9575a06")))
+			)).build());
 		khaosDatabase.start(blockCapsule);
 		try {
 			khaosDatabase.push(blockCapsule2);
@@ -90,14 +90,14 @@ public class KhaosDatabaseTest {
 	@Ignore
 	public void checkWeakReference() throws UnLinkedBlockException, BadNumberBlockException {
 		BlockCapsule blockCapsule = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
-						ByteArray
-								.fromHexString("0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b82")))
-						.setNumber(0)
-				)).build());
+			BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
+				ByteArray
+					.fromHexString("0304f784e4e7bae517bcab94c3e0c9214fb4ac7ff9d7d5a937d1f40031f87b82")))
+				.setNumber(0)
+			)).build());
 		BlockCapsule blockCapsule2 = new BlockCapsule(Block.newBuilder().setBlockHeader(
-				BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
-						blockCapsule.getBlockId().getBytes())).setNumber(1))).build());
+			BlockHeader.newBuilder().setRawData(Raw.newBuilder().setParentHash(ByteString.copyFrom(
+				blockCapsule.getBlockId().getBytes())).setNumber(1))).build());
 		Assert.assertEquals(blockCapsule.getBlockId(), blockCapsule2.getParentHash());
 
 		khaosDatabase.start(blockCapsule);

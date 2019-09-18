@@ -22,7 +22,7 @@ import org.junit.Test;
 public class LoggerTest {
 
 	@Test
-	public void testLogger() {
+	public void logger() {
 		logger.debug("test debug: {}", "success");
 		logger.info("test info: {}", "success");
 		logger.warn("test warn: {}", "success");

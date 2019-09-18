@@ -130,23 +130,23 @@ public class StoreAPITest {
 	 */
 	private static void initAssetIssue() {
 		assetIssue1 =
-				getBuildAssetIssueContract(
-						ASSETISSUE_NAME_ONE, ACCOUNT_ADDRESS_ONE, ASSETISSUE_START_ONE, ASSETISSUE_END_ONE);
+			getBuildAssetIssueContract(
+				ASSETISSUE_NAME_ONE, ACCOUNT_ADDRESS_ONE, ASSETISSUE_START_ONE, ASSETISSUE_END_ONE);
 		addAssetIssueToStore(assetIssue1);
 		assetIssue2 =
-				getBuildAssetIssueContract(
-						ASSETISSUE_NAME_TWO, ACCOUNT_ADDRESS_TWO, ASSETISSUE_START_TWO, ASSETISSUE_END_TWO);
+			getBuildAssetIssueContract(
+				ASSETISSUE_NAME_TWO, ACCOUNT_ADDRESS_TWO, ASSETISSUE_START_TWO, ASSETISSUE_END_TWO);
 		addAssetIssueToStore(assetIssue2);
 		assetIssue3 =
-				getBuildAssetIssueContract(
-						ASSETISSUE_NAME_THREE,
-						ACCOUNT_ADDRESS_THREE,
-						ASSETISSUE_START_THREE,
-						ASSETISSUE_END_THREE);
+			getBuildAssetIssueContract(
+				ASSETISSUE_NAME_THREE,
+				ACCOUNT_ADDRESS_THREE,
+				ASSETISSUE_START_THREE,
+				ASSETISSUE_END_THREE);
 		addAssetIssueToStore(assetIssue3);
 		assetIssue4 =
-				getBuildAssetIssueContract(
-						ASSETISSUE_NAME_FOUR, ACCOUNT_ADDRESS_ONE, ASSETISSUE_START_FOUR, ASSETISSUE_END_FOUR);
+			getBuildAssetIssueContract(
+				ASSETISSUE_NAME_FOUR, ACCOUNT_ADDRESS_ONE, ASSETISSUE_START_FOUR, ASSETISSUE_END_FOUR);
 		addAssetIssueToStore(assetIssue4);
 		dbManager.getAssetIssueStore().delete(ASSETISSUE_NAME_FOUR.getBytes());
 		dbManager.getAssetIssueStore().delete(ASSETISSUE_NAME_THREE.getBytes());
@@ -157,8 +157,8 @@ public class StoreAPITest {
 	private static void addAssetIssueToStore(AssetIssueContract assetIssueContract) {
 		AssetIssueCapsule assetIssueCapsule = new AssetIssueCapsule(assetIssueContract);
 		dbManager
-				.getAssetIssueStore()
-				.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
+			.getAssetIssueStore()
+			.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 	}
 
 	private static void addAssetIssueToStoreV2(AssetIssueContract assetIssueContract, byte[] id) {
@@ -167,13 +167,13 @@ public class StoreAPITest {
 	}
 
 	private static AssetIssueContract getBuildAssetIssueContract(
-			String name, String address, long start, long end) {
+		String name, String address, long start, long end) {
 		return AssetIssueContract.newBuilder()
-				.setName(ByteString.copyFrom(name.getBytes()))
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.setStartTime(start)
-				.setEndTime(end)
-				.build();
+			.setName(ByteString.copyFrom(name.getBytes()))
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+			.setStartTime(start)
+			.setEndTime(end)
+			.build();
 	}
 
 	/**
@@ -181,46 +181,46 @@ public class StoreAPITest {
 	 */
 	private static void initTransaction() {
 		transaction1 =
-				getBuildTransaction(
-						getBuildTransferContract(ACCOUNT_ADDRESS_ONE, ACCOUNT_ADDRESS_TWO),
-						TRANSACTION_TIMESTAMP_ONE);
+			getBuildTransaction(
+				getBuildTransferContract(ACCOUNT_ADDRESS_ONE, ACCOUNT_ADDRESS_TWO),
+				TRANSACTION_TIMESTAMP_ONE);
 		addTransactionToStore(transaction1);
 		transaction2 =
-				getBuildTransaction(
-						getBuildTransferContract(ACCOUNT_ADDRESS_TWO, ACCOUNT_ADDRESS_THREE),
-						TRANSACTION_TIMESTAMP_TWO);
+			getBuildTransaction(
+				getBuildTransferContract(ACCOUNT_ADDRESS_TWO, ACCOUNT_ADDRESS_THREE),
+				TRANSACTION_TIMESTAMP_TWO);
 		addTransactionToStore(transaction2);
 	}
 
 	private static void addTransactionToStore(Transaction transaction) {
 		TransactionCapsule transactionCapsule = new TransactionCapsule(transaction);
 		dbManager
-				.getTransactionStore()
-				.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
+			.getTransactionStore()
+			.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 	}
 
 	private static Transaction getBuildTransaction(
-			TransferContract transferContract, long transactionTimestamp) {
+		TransferContract transferContract, long transactionTimestamp) {
 		return Transaction.newBuilder()
-				.setRawData(
-						Transaction.Raw
-								.newBuilder()
-								.setTimestamp(transactionTimestamp)
-								.addContract(
-										Contract.newBuilder()
-												.setType(ContractType.TransferContract)
-												.setParameter(Any.pack(transferContract))
-												.build())
-								.build())
-				.build();
+			.setRawData(
+				Transaction.Raw
+					.newBuilder()
+					.setTimestamp(transactionTimestamp)
+					.addContract(
+						Contract.newBuilder()
+							.setType(ContractType.TransferContract)
+							.setParameter(Any.pack(transferContract))
+							.build())
+					.build())
+			.build();
 	}
 
 	private static TransferContract getBuildTransferContract(String ownerAddress, String toAddress) {
 		return TransferContract.newBuilder()
-				.setAmount(10)
-				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-				.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toAddress)))
-				.build();
+			.setAmount(10)
+			.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+			.setToAddress(ByteString.copyFrom(ByteArray.fromHexString(toAddress)))
+			.build();
 	}
 
 	/**
@@ -228,20 +228,20 @@ public class StoreAPITest {
 	 */
 	private static void initWitness() {
 		witness1 =
-				getBuildWitness(
-						true, ACCOUNT_ADDRESS_ONE, WITNESS_PUB_K_ONE, WITNESS_URL_ONE, WITNESS_COUNT_ONE);
+			getBuildWitness(
+				true, ACCOUNT_ADDRESS_ONE, WITNESS_PUB_K_ONE, WITNESS_URL_ONE, WITNESS_COUNT_ONE);
 		addWitnessToStore(witness1);
 		witness2 =
-				getBuildWitness(
-						true, ACCOUNT_ADDRESS_TWO, WITNESS_PUB_K_TWO, WITNESS_URL_TWO, WITNESS_COUNT_ONE);
+			getBuildWitness(
+				true, ACCOUNT_ADDRESS_TWO, WITNESS_PUB_K_TWO, WITNESS_URL_TWO, WITNESS_COUNT_ONE);
 		addWitnessToStore(witness2);
 		witness3 =
-				getBuildWitness(
-						true, ACCOUNT_ADDRESS_THREE, WITNESS_PUB_K_THREE, WITNESS_URL_THREE, WITNESS_COUNT_ONE);
+			getBuildWitness(
+				true, ACCOUNT_ADDRESS_THREE, WITNESS_PUB_K_THREE, WITNESS_URL_THREE, WITNESS_COUNT_ONE);
 		addWitnessToStore(witness3);
 		witness4 =
-				getBuildWitness(
-						false, ACCOUNT_ADDRESS_FOUR, WITNESS_PUB_K_FOUR, WITNESS_URL_FOUR, WITNESS_COUNT_ONE);
+			getBuildWitness(
+				false, ACCOUNT_ADDRESS_FOUR, WITNESS_PUB_K_FOUR, WITNESS_URL_FOUR, WITNESS_COUNT_ONE);
 		addWitnessToStore(witness4);
 	}
 
@@ -251,14 +251,14 @@ public class StoreAPITest {
 	}
 
 	private static Witness getBuildWitness(
-			boolean job, String address, String pubKey, String url, long count) {
+		boolean job, String address, String pubKey, String url, long count) {
 		return Witness.newBuilder()
-				.setIsJobs(job)
-				.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.setPubKey(ByteString.copyFrom(ByteArray.fromHexString(pubKey)))
-				.setUrl(url)
-				.setVoteCount(count)
-				.build();
+			.setIsJobs(job)
+			.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+			.setPubKey(ByteString.copyFrom(ByteArray.fromHexString(pubKey)))
+			.setUrl(url)
+			.setVoteCount(count)
+			.build();
 	}
 
 	/**
@@ -266,13 +266,13 @@ public class StoreAPITest {
 	 */
 	private static void initBlock() {
 		block1 =
-				getBuildBlock(
-						BLOCK_TIMESTAMP_ONE,
-						BLOCK_NUM_ONE,
-						BLOCK_WITNESS_ONE,
-						ACCOUNT_ADDRESS_ONE,
-						transaction1,
-						transaction2);
+			getBuildBlock(
+				BLOCK_TIMESTAMP_ONE,
+				BLOCK_NUM_ONE,
+				BLOCK_WITNESS_ONE,
+				ACCOUNT_ADDRESS_ONE,
+				transaction1,
+				transaction2);
 		addBlockToStore(block1);
 	}
 
@@ -282,27 +282,27 @@ public class StoreAPITest {
 	}
 
 	private static Block getBuildBlock(
-			long timestamp,
-			long num,
-			long witnessId,
-			String witnessAddress,
-			Transaction transaction,
-			Transaction transactionNext) {
+		long timestamp,
+		long num,
+		long witnessId,
+		String witnessAddress,
+		Transaction transaction,
+		Transaction transactionNext) {
 		return Block.newBuilder()
-				.setBlockHeader(
-						BlockHeader.newBuilder()
-								.setRawData(
-										Raw.newBuilder()
-												.setTimestamp(timestamp)
-												.setNumber(num)
-												.setWitnessId(witnessId)
-												.setWitnessAddress(
-														ByteString.copyFrom(ByteArray.fromHexString(witnessAddress)))
-												.build())
-								.build())
-				.addTransactions(transaction)
-				.addTransactions(transactionNext)
-				.build();
+			.setBlockHeader(
+				BlockHeader.newBuilder()
+					.setRawData(
+						Raw.newBuilder()
+							.setTimestamp(timestamp)
+							.setNumber(num)
+							.setWitnessId(witnessId)
+							.setWitnessAddress(
+								ByteString.copyFrom(ByteArray.fromHexString(witnessAddress)))
+							.build())
+					.build())
+			.addTransactions(transaction)
+			.addTransactions(transactionNext)
+			.build();
 	}
 
 	/**
@@ -322,9 +322,9 @@ public class StoreAPITest {
 
 	private static Account getBuildAccount(String address, String name) {
 		return Account.newBuilder()
-				.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-				.setAccountName(ByteString.copyFrom(name.getBytes()))
-				.build();
+			.setAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+			.setAccountName(ByteString.copyFrom(name.getBytes()))
+			.build();
 	}
 
 	@Test
@@ -351,7 +351,7 @@ public class StoreAPITest {
 	@Test
 	public void getTransactionsFromThis() {
 		List<Transaction> transactionList = storeAPI
-				.getTransactionsFromThis(ACCOUNT_ADDRESS_ONE, 0, 1000);
+			.getTransactionsFromThis(ACCOUNT_ADDRESS_ONE, 0, 1000);
 		Assert.assertEquals("TransactionsFromThis1", transaction1, transactionList.get(0));
 		transactionList = storeAPI.getTransactionsFromThis(ACCOUNT_ADDRESS_TWO, 0, 1000);
 		Assert.assertEquals("TransactionsFromThis2", transaction2, transactionList.get(0));
@@ -365,7 +365,7 @@ public class StoreAPITest {
 	public void getTransactionsToThis() {
 
 		List<Transaction> transactionList = storeAPI
-				.getTransactionsToThis(ACCOUNT_ADDRESS_TWO, 0, 1000);
+			.getTransactionsToThis(ACCOUNT_ADDRESS_TWO, 0, 1000);
 		Assert.assertEquals("TransactionsToThis1", transaction1, transactionList.get(0));
 		transactionList = storeAPI.getTransactionsToThis(ACCOUNT_ADDRESS_THREE, 0, 1000);
 		Assert.assertEquals("TransactionsToThis2", transaction2, transactionList.get(0));
@@ -379,12 +379,12 @@ public class StoreAPITest {
 	public void getTransactionById() {
 		try {
 			Transaction transaction =
-					storeAPI.getTransactionById(
-							new TransactionCapsule(transaction1).getTransactionId().toString());
+				storeAPI.getTransactionById(
+					new TransactionCapsule(transaction1).getTransactionId().toString());
 			Assert.assertEquals("TransactionById1", transaction1, transaction);
 			transaction =
-					storeAPI.getTransactionById(
-							new TransactionCapsule(transaction2).getTransactionId().toString());
+				storeAPI.getTransactionById(
+					new TransactionCapsule(transaction2).getTransactionId().toString());
 			Assert.assertEquals("TransactionById2", transaction2, transaction);
 		} catch (NonUniqueObjectException e) {
 			Assert.fail("Exception " + e);

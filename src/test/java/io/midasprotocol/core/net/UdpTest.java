@@ -76,16 +76,16 @@ public class UdpTest {
 		DatagramSocket socket = new DatagramSocket();
 
 		DatagramPacket pingPacket = new DatagramPacket(pingMessage.getSendData(),
-				pingMessage.getSendData().length, server, port);
+			pingMessage.getSendData().length, server, port);
 
 		DatagramPacket pongPacket = new DatagramPacket(pongMessage.getSendData(),
-				pongMessage.getSendData().length, server, port);
+			pongMessage.getSendData().length, server, port);
 
 		DatagramPacket findNodePacket = new DatagramPacket(findNodeMessage.getSendData(),
-				findNodeMessage.getSendData().length, server, port);
+			findNodeMessage.getSendData().length, server, port);
 
 		DatagramPacket neighborsPacket = new DatagramPacket(neighborsMessage.getSendData(),
-				neighborsMessage.getSendData().length, server, port);
+			neighborsMessage.getSendData().length, server, port);
 
 		// send ping msg
 		socket.send(pingPacket);

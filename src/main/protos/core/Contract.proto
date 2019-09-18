@@ -45,6 +45,7 @@ message TransferContract {
     bytes owner_address = 1;
     bytes to_address = 2;
     int64 amount = 3;
+    bytes memo = 4;
 }
 
 message TransferAssetContract {
@@ -52,6 +53,7 @@ message TransferAssetContract {
     bytes owner_address = 2;
     bytes to_address = 3;
     int64 amount = 4;
+    bytes memo = 5;
 }
 
 

@@ -72,6 +72,8 @@ public interface Parameter {
 		int DECIMALS = 8;
 		long TEN_POW_DECIMALS = 100000000L;
 		long BLOCKS_PER_YEAR = 10512000L;
+
+		int MEMO_MAX_LENGTH = 64;
 	}
 
 	interface NodeConstant {

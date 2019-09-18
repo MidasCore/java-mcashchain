@@ -101,7 +101,7 @@ contract D {
 	long value = 100;
 	long fee = 100000000000L;
 	long consumeUserResourcePercent = 0;
-	long engeryLimit = 100000000000L;
+	long energyLimit = 1000000000L;
 
 
 	@Test
@@ -115,25 +115,25 @@ contract D {
 		VMConfig.initAllowMultiSign(1);
 
 		Transaction aTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testA", address, abi, aCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testA", address, abi, aCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime aRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(aTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertEquals(aRuntime.getRuntimeError(), "REVERT opcode executed");
 
 		Transaction bTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testB", address, abi, bCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testB", address, abi, bCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime bRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(bTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertEquals(bRuntime.getRuntimeError(), "REVERT opcode executed");
 
 		Transaction cTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testC", address, abi, cCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testC", address, abi, cCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime cRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(cTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertTrue(cRuntime.getResult().getException() instanceof OutOfEnergyException);
 
 		Transaction dTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testC", address, abi, dCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testC", address, abi, dCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime dRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(dTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertEquals(dRuntime.getRuntimeError(), "REVERT opcode executed");
@@ -146,26 +146,26 @@ contract D {
 		VMConfig.initAllowMultiSign(0);
 		byte[] address = Hex.decode(OWNER_ADDRESS);
 		Transaction aTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testA", address, abi, aCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testA", address, abi, aCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime aRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(aTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertEquals(aRuntime.getRuntimeError(), "Unknown Exception");
 //
 //
 		Transaction bTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testB", address, abi, bCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testB", address, abi, bCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime bRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(bTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertEquals(bRuntime.getRuntimeError(), "REVERT opcode executed");
 
 		Transaction cTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testC", address, abi, cCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testC", address, abi, cCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime cRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(cTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertTrue(cRuntime.getResult().getException() instanceof OutOfEnergyException);
 
 		Transaction dTrx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
-				"testC", address, abi, dCode, value, fee, consumeUserResourcePercent, null, engeryLimit);
+				"testC", address, abi, dCode, value, fee, consumeUserResourcePercent, null, energyLimit);
 		Runtime dRuntime = TVMTestUtils
 				.processTransactionAndReturnRuntime(dTrx, DepositImpl.createRoot(manager), null);
 		Assert.assertEquals(dRuntime.getRuntimeError(), "REVERT opcode executed");

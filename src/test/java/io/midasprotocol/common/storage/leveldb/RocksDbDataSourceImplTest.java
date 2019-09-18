@@ -58,7 +58,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testPutGet() {
+	public void putGet() {
 		dataSourceTest.resetDb();
 		String key1 = "2c0937534dd1b3832d05d865e8e6f2bf23218300b33a992740d45ccab7d4f519";
 		byte[] key = key1.getBytes();
@@ -75,7 +75,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testReset() {
+	public void reset() {
 		RocksDbDataSourceImpl dataSource = new RocksDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_reset");
 		dataSource.resetDb();
@@ -84,7 +84,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testupdateByBatchInner() {
+	public void updateByBatchInner() {
 		RocksDbDataSourceImpl dataSource = new RocksDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_updateByBatch");
 		dataSource.initDB();
@@ -107,7 +107,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testdeleteData() {
+	public void deleteData() {
 		RocksDbDataSourceImpl dataSource = new RocksDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_delete");
 		dataSource.initDB();
@@ -121,7 +121,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testallKeys() {
+	public void allKeys() {
 		RocksDbDataSourceImpl dataSource = new RocksDbDataSourceImpl(
 				Args.getInstance().getOutputDirectory(), "test_find_key");
 		dataSource.initDB();
@@ -147,7 +147,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test(timeout = 1000)
-	public void testLockReleased() {
+	public void lockReleased() {
 		dataSourceTest.initDB();
 		// normal close
 		dataSourceTest.closeDB();
@@ -250,7 +250,7 @@ public class RocksDbDataSourceImplTest {
 	}
 
 	@Test
-	public void testCheckOrInitEngine() {
+	public void checkOrInitEngine() {
 		String dir =
 				Args.getInstance().getOutputDirectory() + Args.getInstance().getStorage().getDbDirectory();
 		String enginePath = dir + File.separator + "test_engine" + File.separator + "engine.properties";

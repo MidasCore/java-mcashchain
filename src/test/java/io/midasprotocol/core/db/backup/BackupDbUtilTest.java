@@ -43,12 +43,12 @@ public class BackupDbUtilTest {
 	@Before
 	public void before() {
 		Args.setParam(
-				new String[]{
-						"--output-directory", dbPath,
-						"--storage-db-directory", "database",
-						"--storage-index-directory", "index"
-				},
-				"config-test-dbbackup.conf"
+			new String[]{
+				"--output-directory", dbPath,
+				"--storage-db-directory", "database",
+				"--storage-index-directory", "index"
+			},
+			"config-test-dbbackup.conf"
 		);
 
 		context = new ApplicationContext(DefaultConfig.class);
@@ -64,7 +64,7 @@ public class BackupDbUtilTest {
 		frequency = 50;
 		Args cfgArgs = Args.getInstance();
 		cfgArgs.getDbBackupConfig()
-				.initArgs(true, propPath, bak1Path, bak2Path, frequency);
+			.initArgs(true, propPath, bak1Path, bak2Path, frequency);
 		FileUtil.createFileIfNotExists(propPath);
 	}
 
@@ -83,7 +83,7 @@ public class BackupDbUtilTest {
 	@Test
 	public void testDoBackup() {
 		PropUtil.writeProperty(propPath, BackupDbUtil.getDB_BACKUP_STATE(),
-				String.valueOf("11"));
+			String.valueOf("11"));
 		mngForTest.pushNTestBlock(50);
 		List<RevokingDBWithCachingNewValue> alist = ((SnapshotManager) dbBackupUtil.getDb()).getDbs();
 

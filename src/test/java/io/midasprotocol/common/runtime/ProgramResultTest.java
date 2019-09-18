@@ -111,7 +111,7 @@ public class ProgramResultTest {
 		byte[] calledContractAddress = deployCalledContractAndGetItsAddress();
 		byte[] contractAAddress = deployContractAAndGetItsAddress(calledContractAddress);
 		/* =================================== CALL create() =================================== */
-		byte[] triggerData1 = TVMTestUtils.parseABI("create()", "");
+		byte[] triggerData1 = TVMTestUtils.parseAbi("create()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						contractAAddress, triggerData1,
@@ -252,7 +252,7 @@ public class ProgramResultTest {
 						"0000000000000000000000000000000000000000000000000000000000000000";
 
 		// ======================================= Test Success =======================================
-		byte[] triggerData1 = TVMTestUtils.parseABI("transfer(address,bool)",
+		byte[] triggerData1 = TVMTestUtils.parseAbi("transfer(address,bool)",
 				params);
 		Transaction trx1 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), aContract,
@@ -296,7 +296,7 @@ public class ProgramResultTest {
 		// set revert == true
 		params = Hex.toHexString(new DataWord(new DataWord(cContract).getLast20Bytes()).getData()) +
 				"0000000000000000000000000000000000000000000000000000000000000001";
-		byte[] triggerData2 = TVMTestUtils.parseABI("transfer(address,bool)",
+		byte[] triggerData2 = TVMTestUtils.parseAbi("transfer(address,bool)",
 				params);
 		Transaction trx2 = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), aContract,
@@ -413,7 +413,7 @@ public class ProgramResultTest {
 				.toHexString(new DataWord(new DataWord(TRANSFER_TO).getLast20Bytes()).getData());
 
 		// ======================================= Test Suicide =======================================
-		byte[] triggerData1 = TVMTestUtils.parseABI("suicide(address)",
+		byte[] triggerData1 = TVMTestUtils.parseAbi("suicide(address)",
 				params);
 		Transaction trx = TVMTestUtils
 				.generateTriggerSmartContractAndGetTransaction(Hex.decode(OWNER_ADDRESS), suicideContract,

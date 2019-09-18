@@ -139,9 +139,9 @@ public class SnapshotRootTest {
 		@Override
 		public String toString() {
 			return "ProtoCapsuleTest{"
-					+ "value=" + Arrays.toString(value)
-					+ ", string=" + (value == null ? "" : new String(value))
-					+ '}';
+				+ "value=" + Arrays.toString(value)
+				+ ", string=" + (value == null ? "" : new String(value))
+				+ '}';
 		}
 	}
 }

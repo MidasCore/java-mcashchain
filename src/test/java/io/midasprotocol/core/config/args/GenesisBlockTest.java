@@ -37,8 +37,7 @@ public class GenesisBlockTest {
 
 		account.setAccountName("tron");
 		account.setAccountType("Normal");
-		account
-				.setAddress(ByteArray.fromHexString(Wallet.getAddressPreFixString() + "4948c2e8a756d9437037dcd8c7e0c73d560ca38d"));
+		account.setAddress(ByteArray.fromHexString(Wallet.getAddressPreFixString() + "4948c2e8a756d9437037dcd8c7e0c73d560ca38d"));
 		account.setBalance("10000");
 
 		List<Account> assets = new ArrayList<>();
@@ -49,7 +48,7 @@ public class GenesisBlockTest {
 		Witness witness = new Witness();
 
 		witness
-				.setAddress(ByteArray.fromHexString(Wallet.getAddressPreFixString() + "448d53b2df0cd78158f6f0aecdf60c1c10b15413"));
+			.setAddress(ByteArray.fromHexString(Wallet.getAddressPreFixString() + "448d53b2df0cd78158f6f0aecdf60c1c10b15413"));
 		witness.setUrl("http://Uranus.org");
 		witness.setVoteCount(1000L);
 
@@ -60,8 +59,7 @@ public class GenesisBlockTest {
 		genesisBlock.setWitnesses(witnesses);
 
 		genesisBlock.setTimestamp("1");
-		genesisBlock
-				.setParentHash("0x0000000000000000000000000000000000000000000000000000000000000000");
+		genesisBlock.setParentHash("0x0000000000000000000000000000000000000000000000000000000000000000");
 		genesisBlock.setNumber("0");
 	}
 
@@ -157,7 +155,7 @@ public class GenesisBlockTest {
 	@Test
 	public void getParentHash() {
 		Assert.assertEquals("0x0000000000000000000000000000000000000000000000000000000000000000",
-				genesisBlock.getParentHash());
+			genesisBlock.getParentHash());
 	}
 
 	@Test

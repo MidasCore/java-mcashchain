@@ -88,47 +88,47 @@ public class WitnessCreateActuatorTest {
 	@Before
 	public void createCapsule() {
 		WitnessCapsule ownerCapsule =
-				new WitnessCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						10_000_000L,
-						URL);
+			new WitnessCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				10_000_000L,
+				URL);
 		AccountCapsule ownerAccountCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(""),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						AccountType.Normal,
-						ConversionUtil.McashToMatoshi(200_000));
+			new AccountCapsule(
+				ByteString.copyFromUtf8(""),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(200_000));
 		ownerAccountCapsule.setWitnessStake(500000000000000L);
 		ownerAccountCapsule.setStake(1000000000000000L, 0);
 
 		AccountCapsule supernodeAccountSecondCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
-						AccountType.Normal,
-						0);
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+				AccountType.Normal,
+				0);
 		AccountCapsule supernodeAccountFirstCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
-						AccountType.Normal,
-						0);
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
+				AccountType.Normal,
+				0);
 		AccountCapsule supernodeAccountThirdCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_THIRD),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_THIRD)),
-						AccountType.Normal,
-						0);
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_THIRD),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_THIRD)),
+				AccountType.Normal,
+				0);
 
 		dbManager.getAccountStore()
-				.put(ownerAccountCapsule.getAddress().toByteArray(), ownerAccountCapsule);
+			.put(ownerAccountCapsule.getAddress().toByteArray(), ownerAccountCapsule);
 		dbManager.getAccountStore()
-				.put(supernodeAccountSecondCapsule.getAddress().toByteArray(), supernodeAccountSecondCapsule);
+			.put(supernodeAccountSecondCapsule.getAddress().toByteArray(), supernodeAccountSecondCapsule);
 		dbManager.getAccountStore()
-				.put(supernodeAccountFirstCapsule.getAddress().toByteArray(), supernodeAccountFirstCapsule);
+			.put(supernodeAccountFirstCapsule.getAddress().toByteArray(), supernodeAccountFirstCapsule);
 		dbManager.getAccountStore()
-				.put(supernodeAccountThirdCapsule.getAddress().toByteArray(), supernodeAccountThirdCapsule);
+			.put(supernodeAccountThirdCapsule.getAddress().toByteArray(), supernodeAccountThirdCapsule);
 
 		dbManager.getWitnessStore().put(ownerCapsule.getAddress().toByteArray(), ownerCapsule);
 		dbManager.getWitnessStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND));
@@ -137,20 +137,20 @@ public class WitnessCreateActuatorTest {
 
 	private Any getContract(String address, String ownerAddress, String url) {
 		return Any.pack(
-				Contract.WitnessCreateContract.newBuilder()
-						.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setUrl(ByteString.copyFrom(ByteArray.fromString(url)))
-						.build());
+			Contract.WitnessCreateContract.newBuilder()
+				.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setUrl(ByteString.copyFrom(ByteArray.fromString(url)))
+				.build());
 	}
 
 	private Any getContract(String address, String ownerAddress, ByteString url) {
 		return Any.pack(
-				Contract.WitnessCreateContract.newBuilder()
-						.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
-						.setUrl(url)
-						.build());
+			Contract.WitnessCreateContract.newBuilder()
+				.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(ownerAddress)))
+				.setUrl(url)
+				.build());
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class WitnessCreateActuatorTest {
 	@Test
 	public void firstCreateWitness() {
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, URL), dbManager);
+			new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -175,7 +175,7 @@ public class WitnessCreateActuatorTest {
 	@Test
 	public void secondCreateWitness() {
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_SECOND, OWNER_ADDRESS, URL), dbManager);
+			new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_SECOND, OWNER_ADDRESS, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -191,18 +191,18 @@ public class WitnessCreateActuatorTest {
 	@Test
 	public void createWitness() {
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(""),
-						ByteString.copyFrom(ByteArray.fromHexString(NEW_OWNER_ADDRESS)),
-						AccountType.Normal,
-						ConversionUtil.McashToMatoshi(200_000));
+			new AccountCapsule(
+				ByteString.copyFromUtf8(""),
+				ByteString.copyFrom(ByteArray.fromHexString(NEW_OWNER_ADDRESS)),
+				AccountType.Normal,
+				ConversionUtil.McashToMatoshi(200_000));
 		long startingStakeAmount = 10000000000000000L;
 		ownerCapsule.setStake(startingStakeAmount, 0);
 		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
 
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_THIRD, NEW_OWNER_ADDRESS, URL),
-						dbManager);
+			new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_THIRD, NEW_OWNER_ADDRESS, URL),
+				dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -210,14 +210,14 @@ public class WitnessCreateActuatorTest {
 
 			ownerCapsule = dbManager.getAccountStore().get(ByteArray.fromHexString(NEW_OWNER_ADDRESS));
 			Assert.assertEquals(startingStakeAmount - Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT,
-					ownerCapsule.getNormalStakeAmount());
+				ownerCapsule.getNormalStakeAmount());
 			Assert.assertEquals(Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT,
-					ownerCapsule.getWitnessStakeAmount());
+				ownerCapsule.getWitnessStakeAmount());
 			Assert.assertEquals(startingStakeAmount, ownerCapsule.getTotalStakeAmount());
 
 			dbManager.getWitnessController().updateWitness();
 			WitnessCapsule witnessCapsule =
-					dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_THIRD));
+				dbManager.getWitnessStore().get(ByteArray.fromHexString(SUPERNODE_ADDRESS_THIRD));
 			Assert.assertNotNull(witnessCapsule);
 			long votingPower = StakeUtil.getVotingPowerFromStakeAmount(ownerCapsule.getTotalStakeAmount());
 			Assert.assertEquals(votingPower, witnessCapsule.getVoteCount());
@@ -230,9 +230,9 @@ public class WitnessCreateActuatorTest {
 	 * use Invalid Address createWitness,result is failed,exception is "Invalid address".
 	 */
 	@Test
-	public void InvalidAddress() {
+	public void invalidAddress() {
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_INVALID, OWNER_ADDRESS, URL), dbManager);
+			new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_INVALID, OWNER_ADDRESS, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -249,12 +249,12 @@ public class WitnessCreateActuatorTest {
 	 * use Invalid url createWitness,result is failed,exception is "Invalid url".
 	 */
 	@Test
-	public void InvalidUrlTest() {
+	public void invalidUrlTest() {
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		//Url cannot empty
 		try {
 			WitnessCreateActuator actuator = new WitnessCreateActuator(
-					getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, ByteString.EMPTY), dbManager);
+				getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, ByteString.EMPTY), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
 			fail("Invalid url");
@@ -269,7 +269,7 @@ public class WitnessCreateActuatorTest {
 		//Url length can not greater than 256
 		try {
 			WitnessCreateActuator actuator = new WitnessCreateActuator(
-					getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, ByteString.copyFromUtf8(url256Bytes + "0")), dbManager);
+				getContract(SUPERNODE_ADDRESS_FIRST, OWNER_ADDRESS, ByteString.copyFromUtf8(url256Bytes + "0")), dbManager);
 			actuator.validate();
 			actuator.execute(ret);
 			fail("Invalid url");
@@ -287,7 +287,7 @@ public class WitnessCreateActuatorTest {
 	@Test
 	public void noAccount() {
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_NOACCOUNT, OWNER_ADDRESS, URL), dbManager);
+			new WitnessCreateActuator(getContract(SUPERNODE_ADDRESS_NOACCOUNT, OWNER_ADDRESS, URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -307,19 +307,19 @@ public class WitnessCreateActuatorTest {
 	@Test
 	public void balanceNotSufficient() {
 		AccountCapsule balanceNotSufficientCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("balanceNotSufficient"),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS_BALANCENOTSUFFIENT)),
-						AccountType.Normal,
-						50L);
+			new AccountCapsule(
+				ByteString.copyFromUtf8("balanceNotSufficient"),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS_BALANCENOTSUFFIENT)),
+				AccountType.Normal,
+				50L);
 		dbManager.getAccountStore()
-				.put(balanceNotSufficientCapsule.getAddress().toByteArray(), balanceNotSufficientCapsule);
+			.put(balanceNotSufficientCapsule.getAddress().toByteArray(), balanceNotSufficientCapsule);
 
 		WitnessCreateActuator actuator =
-				new WitnessCreateActuator(getContract(
-						SUPERNODE_ADDRESS_SECOND,
-						OWNER_ADDRESS_BALANCENOTSUFFIENT,
-						URL), dbManager);
+			new WitnessCreateActuator(getContract(
+				SUPERNODE_ADDRESS_SECOND,
+				OWNER_ADDRESS_BALANCENOTSUFFIENT,
+				URL), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();

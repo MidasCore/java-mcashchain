@@ -110,11 +110,11 @@ public class TimeBenchmarkTest {
 		long expectEnergyUsageTotal = 88529;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - expectEnergyUsageTotal * 100);
+				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("fibonacciNotify(uint)", "");
+		byte[] triggerData = TVMTestUtils.parseAbi("fibonacciNotify(uint)", "");
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -125,7 +125,7 @@ public class TimeBenchmarkTest {
 		Assert.assertTrue(
 				result.getRuntime().getResult().getException() == null);
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
-				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * 100);
+				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 	}
 
 	/**
