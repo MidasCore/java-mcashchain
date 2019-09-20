@@ -864,16 +864,19 @@ public class Wallet {
 			.setKey("getMultiSignFee")
 			.setValue(dbManager.getDynamicPropertiesStore().getMultiSignFee())
 			.build());
-		//    ALLOW_TVM_CONSTANTINOPLE, // 1, 20
+
+		//    ALLOW_PROTO_FILTER, // 1, 21
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("allowProtoFilter")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowProtoFilter())
+			.build());
+
+		//    ALLOW_VM_CONSTANTINOPLE, // 1, 22
 		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
 			.setKey("getAllowVmConstantinople")
 			.setValue(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople())
 			.build());
 
-		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-			.setKey("allowProtoFilter")
-			.setValue(dbManager.getDynamicPropertiesStore().getAllowProtoFilter())
-			.build());
 
 		return builder.build();
 	}

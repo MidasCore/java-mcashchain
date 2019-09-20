@@ -295,6 +295,17 @@ public class ProposalCreateActuator extends AbstractActuator {
 				}
 				break;
 			}
+			// allow Vm constantinople
+			case (22): {
+				if (!dbManager.getForkController().pass(Parameter.ForkBlockVersionEnum.VERSION_0_1_2)) {
+					throw new ContractValidateException("Bad chain parameter id: ALLOW_VM_CONSTANTINOPLE");
+				}
+				if (entry.getValue() != 1) {
+					throw new ContractValidateException(
+						"This value ALLOW_VM_CONSTANTINOPLE is only allowed to be 1"
+					);
+				}
+			}
 			default:
 				break;
 		}

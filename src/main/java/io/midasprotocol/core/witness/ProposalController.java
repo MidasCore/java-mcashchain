@@ -207,6 +207,12 @@ public class ProposalController {
 					}
 					break;
 				}
+				case (22): {
+					if (manager.getDynamicPropertiesStore().getAllowVmConstantinople() == 0) {
+						manager.getDynamicPropertiesStore().saveAllowVmConstantinople(entry.getValue());
+					}
+					break;
+				}
 				default:
 					break;
 			}
