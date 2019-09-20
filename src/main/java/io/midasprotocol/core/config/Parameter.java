@@ -30,12 +30,14 @@ public interface Parameter {
 		ALLOW_ADAPTIVE_ENERGY, // 1, 18
 		UPDATE_ACCOUNT_PERMISSION_FEE, // 100, 19
 		MULTI_SIGN_FEE, // 1, 20
+		ALLOW_PROTO_FILTER,		// 21
+		ALLOW_VM_CONSTANTINOPLE, // 22
 	}
 
 	enum ForkBlockVersionEnum {
 		GENESIS(1),
 		VERSION_0_1_1(2),
-		VERSION_0_1_2(3);
+		VERSION_0_2_0(3);
 
 		@Getter
 		private int value;
@@ -67,7 +69,7 @@ public interface Parameter {
 		int SINGLE_REPEAT = 1;
 		int BLOCK_FILLED_SLOTS_NUMBER = 128;
 		int MAX_FROZEN_NUMBER = 1;
-		int BLOCK_VERSION = 2;
+		int BLOCK_VERSION = 3;
 
 		int DECIMALS = 8;
 		long TEN_POW_DECIMALS = 100000000L;
