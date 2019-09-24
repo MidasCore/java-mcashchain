@@ -1,5 +1,6 @@
 package io.midasprotocol.core.net;
 
+import io.midasprotocol.common.utils.ReflectUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,7 +17,6 @@ import io.midasprotocol.common.application.Application;
 import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
 import io.midasprotocol.common.utils.FileUtil;
-import io.midasprotocol.common.utils.ReflectUtils;
 import io.midasprotocol.core.config.DefaultConfig;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.net.peer.PeerConnection;

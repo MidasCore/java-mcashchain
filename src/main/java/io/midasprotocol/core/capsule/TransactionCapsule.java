@@ -15,23 +15,20 @@
 
 package io.midasprotocol.core.capsule;
 
-import com.google.protobuf.Any;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.*;
 import io.midasprotocol.common.crypto.ECKey;
 import io.midasprotocol.common.crypto.ECKey.ECDSASignature;
+import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.runtime.Runtime;
 import io.midasprotocol.common.runtime.vm.program.Program.*;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.Wallet;
+import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.AccountStore;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.db.TransactionTrace;
-import io.midasprotocol.core.exception.BadItemException;
-import io.midasprotocol.core.exception.PermissionException;
-import io.midasprotocol.core.exception.SignatureFormatException;
-import io.midasprotocol.core.exception.ValidateSignatureException;
+import io.midasprotocol.core.exception.*;
 import io.midasprotocol.protos.Contract;
 import io.midasprotocol.protos.Contract.*;
 import io.midasprotocol.protos.Protocol.Key;
@@ -39,21 +36,27 @@ import io.midasprotocol.protos.Protocol.Permission;
 import io.midasprotocol.protos.Protocol.Permission.PermissionType;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
+import io.midasprotocol.protos.Protocol.Transaction.Raw;
 import io.midasprotocol.protos.Protocol.Transaction.Result;
 import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
-import io.midasprotocol.protos.Protocol.Transaction.Raw;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.lang.Exception;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static io.midasprotocol.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
 
 @Slf4j(topic = "capsule")
 public class TransactionCapsule implements ProtoCapsule<Transaction> {
@@ -69,6 +72,10 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	@Getter
 	@Setter
 	private TransactionTrace trxTrace;
+
+	private static final ExecutorService executorService = Executors
+		.newFixedThreadPool(Args.getInstance().getValidContractProtoThreadNum());
+
 	private StringBuffer toStringBuff = new StringBuffer();
 
 	/**
@@ -99,8 +106,16 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 	 */
 	public TransactionCapsule(byte[] data) throws BadItemException {
 		try {
+			this.transaction = Transaction.parseFrom(Message.getCodedInputStream(data));
+		} catch (IOException e) {
+			throw new BadItemException("Transaction proto data parse exception");
+		}
+	}
+
+	public TransactionCapsule(CodedInputStream data) throws BadItemException {
+		try {
 			this.transaction = Transaction.parseFrom(data);
-		} catch (InvalidProtocolBufferException e) {
+		} catch (IOException e) {
 			throw new BadItemException("Transaction proto data parse exception");
 		}
 	}
@@ -279,15 +294,6 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 				case SetAccountIdContract:
 					owner = contractParameter.unpack(SetAccountIdContract.class).getOwnerAddress();
 					break;
-//				case BuyStorageContract:
-//					owner = contractParameter.unpack(BuyStorageContract.class).getOwnerAddress();
-//					break;
-//				case BuyStorageBytesContract:
-//					owner = contractParameter.unpack(BuyStorageBytesContract.class).getOwnerAddress();
-//					break;
-//				case SellStorageContract:
-//					owner = contractParameter.unpack(SellStorageContract.class).getOwnerAddress();
-//					break;
 				case UpdateSettingContract:
 					owner = contractParameter.unpack(UpdateSettingContract.class)
 						.getOwnerAddress();
@@ -332,6 +338,152 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
 			logger.error(ex.getMessage());
 			return null;
 		}
+	}
+
+	public static <T extends com.google.protobuf.Message> T parse(Class<T> clazz,
+																  CodedInputStream codedInputStream) throws InvalidProtocolBufferException {
+		T defaultInstance = Internal.getDefaultInstance(clazz);
+		return (T) defaultInstance.getParserForType().parseFrom(codedInputStream);
+	}
+
+	public static void validContractProto(List<Transaction> transactionList) throws P2pException {
+		List<Future<Boolean>> futureList = new ArrayList<>();
+		transactionList.forEach(transaction -> {
+			Future<Boolean> future = executorService.submit(() -> {
+				try {
+					validContractProto(transaction.getRawData().getContract(0));
+					return true;
+				} catch (Exception e) {
+					logger.error("{}", e.getMessage());
+				}
+				return false;
+			});
+			futureList.add(future);
+		});
+		for (Future<Boolean> future : futureList) {
+			try {
+				if (!future.get()) {
+					throw new P2pException(PROTOBUF_ERROR, PROTOBUF_ERROR.getDesc());
+				}
+			} catch (Exception e) {
+				throw new P2pException(PROTOBUF_ERROR, PROTOBUF_ERROR.getDesc());
+			}
+		}
+	}
+
+	public static void validContractProto(Transaction.Contract contract)
+		throws InvalidProtocolBufferException, P2pException {
+		Any contractParameter = contract.getParameter();
+		Class clazz = null;
+		switch (contract.getType()) {
+			case AccountCreateContract:
+				clazz = AccountCreateContract.class;
+				break;
+			case TransferContract:
+				clazz = TransferContract.class;
+				break;
+			case TransferAssetContract:
+				clazz = TransferAssetContract.class;
+				break;
+			case VoteAssetContract:
+				clazz = VoteAssetContract.class;
+				break;
+			case VoteWitnessContract:
+				clazz = VoteWitnessContract.class;
+				break;
+			case WitnessCreateContract:
+				clazz = WitnessCreateContract.class;
+				break;
+			case AssetIssueContract:
+				clazz = AssetIssueContract.class;
+				break;
+			case WitnessUpdateContract:
+				clazz = WitnessUpdateContract.class;
+				break;
+			case ParticipateAssetIssueContract:
+				clazz = ParticipateAssetIssueContract.class;
+				break;
+			case AccountUpdateContract:
+				clazz = AccountUpdateContract.class;
+				break;
+			case FreezeBalanceContract:
+				clazz = FreezeBalanceContract.class;
+				break;
+			case UnfreezeBalanceContract:
+				clazz = UnfreezeBalanceContract.class;
+				break;
+			case UnfreezeAssetContract:
+				clazz = UnfreezeAssetContract.class;
+				break;
+			case WithdrawBalanceContract:
+				clazz = WithdrawBalanceContract.class;
+				break;
+			case CreateSmartContract:
+				clazz = Contract.CreateSmartContract.class;
+				break;
+			case TriggerSmartContract:
+				clazz = Contract.TriggerSmartContract.class;
+				break;
+			case UpdateAssetContract:
+				clazz = UpdateAssetContract.class;
+				break;
+			case ProposalCreateContract:
+				clazz = ProposalCreateContract.class;
+				break;
+			case ProposalApproveContract:
+				clazz = ProposalApproveContract.class;
+				break;
+			case ProposalDeleteContract:
+				clazz = ProposalDeleteContract.class;
+				break;
+			case SetAccountIdContract:
+				clazz = SetAccountIdContract.class;
+				break;
+			case UpdateSettingContract:
+				clazz = UpdateSettingContract.class;
+				break;
+			case UpdateEnergyLimitContract:
+				clazz = UpdateEnergyLimitContract.class;
+				break;
+			case ExchangeCreateContract:
+				clazz = ExchangeCreateContract.class;
+				break;
+			case ExchangeInjectContract:
+				clazz = ExchangeInjectContract.class;
+				break;
+			case ExchangeWithdrawContract:
+				clazz = ExchangeWithdrawContract.class;
+				break;
+			case ExchangeTransactionContract:
+				clazz = ExchangeTransactionContract.class;
+				break;
+			case AccountPermissionUpdateContract:
+				clazz = AccountPermissionUpdateContract.class;
+				break;
+			case StakeContract:
+				clazz = StakeContract.class;
+				break;
+			case UnstakeContract:
+				clazz = UnstakeContract.class;
+				break;
+			case WitnessResignContract:
+				clazz = WitnessResignContract.class;
+				break;
+			case ClearAbiContract:
+				clazz = ClearAbiContract.class;
+				break;
+			// todo add other contracts
+			default:
+				break;
+		}
+		if (clazz == null) {
+			throw new P2pException(PROTOBUF_ERROR, PROTOBUF_ERROR.getDesc());
+		}
+		com.google.protobuf.Message src = contractParameter.unpack(clazz);
+		com.google.protobuf.Message contractMessage = parse(clazz,
+			Message.getCodedInputStream(src.toByteArray()));
+
+		Message.compareBytes(src.toByteArray(), contractMessage.toByteArray());
 	}
 
 	// todo mv this static function to capsule util

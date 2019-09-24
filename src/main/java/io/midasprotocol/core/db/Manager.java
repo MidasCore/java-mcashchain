@@ -16,6 +16,7 @@ import io.midasprotocol.common.logsfilter.capsule.*;
 import io.midasprotocol.common.logsfilter.trigger.ContractLogTrigger;
 import io.midasprotocol.common.logsfilter.trigger.ContractTrigger;
 import io.midasprotocol.common.overlay.discover.node.Node;
+import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.LogEventWrapper;
 import io.midasprotocol.common.utils.*;
@@ -341,6 +342,7 @@ public class Manager {
 
 	@PostConstruct
 	public void init() {
+		Message.setManager(this);
 		revokingStore.disable();
 		revokingStore.check();
 		this.setWitnessController(WitnessController.createInstance(this));

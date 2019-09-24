@@ -1,6 +1,7 @@
 package io.midasprotocol.core.net;
 
 import com.google.common.cache.CacheBuilder;
+import io.midasprotocol.common.utils.ReflectUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -15,7 +16,6 @@ import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.message.*;
 import io.midasprotocol.common.overlay.server.ChannelManager;
 import io.midasprotocol.common.overlay.server.SyncPool;
-import io.midasprotocol.common.utils.ReflectUtils;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
 import io.midasprotocol.core.config.args.Args;

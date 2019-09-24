@@ -844,6 +844,18 @@ public class Wallet {
 				.setKey("getAllowAdaptiveEnergy")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowAdaptiveEnergy())
 				.build());
+		//    ALLOW_PROTO_FILTER, // 1, 21
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("allowProtoFilter")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowProtoFilter())
+			.build());
+
+		//    ALLOW_VM_CONSTANTINOPLE, // 1, 22
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("allowVmConstantinople")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople())
+			.build());
+
 		//other chainParameters
 		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
 			.setKey("getTotalEnergyTargetLimit")
@@ -863,11 +875,6 @@ public class Wallet {
 		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
 			.setKey("getMultiSignFee")
 			.setValue(dbManager.getDynamicPropertiesStore().getMultiSignFee())
-			.build());
-		//    ALLOW_TVM_CONSTANTINOPLE, // 1, 20
-		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
-			.setKey("getAllowVmConstantinople")
-			.setValue(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople())
 			.build());
 
 		return builder.build();

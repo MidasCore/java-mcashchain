@@ -440,6 +440,14 @@ public class Args {
 	@Parameter(names = {"-v", "--version"}, description = "output code version", help = true)
 	private boolean version;
 
+	@Getter
+	@Setter
+	private long allowProtoFilter;
+
+	@Getter
+	@Setter
+	private int validContractProtoThreadNum;
+
 	public static void clearParam() {
 		INSTANCE.outputDirectory = "output-directory";
 		INSTANCE.help = false;
@@ -514,6 +522,8 @@ public class Args {
 		INSTANCE.longRunningTime = 10;
 		INSTANCE.allowMultiSign = 0;
 		INSTANCE.trxExpirationTimeInMilliseconds = 0;
+		INSTANCE.allowProtoFilter = 0;
+		INSTANCE.validContractProtoThreadNum = 1;
 	}
 
 	/**
@@ -889,6 +899,15 @@ public class Args {
 
 		INSTANCE.eventFilter =
 			config.hasPath("event.subscribe.filter") ? getEventFilter(config) : null;
+
+		INSTANCE.allowProtoFilter =
+			config.hasPath("committee.allowProtoFilter") ? config
+				.getInt("committee.allowProtoFilter") : 0;
+
+		INSTANCE.validContractProtoThreadNum =
+			config.hasPath("node.validContractProtoThreadNum") ? config
+				.getInt("node.validContractProtoThreadNum")
+				: Runtime.getRuntime().availableProcessors();
 
 		initBackupProperty(config);
 		if ("ROCKSDB".equals(Args.getInstance().getStorage().getDbEngine().toUpperCase())) {

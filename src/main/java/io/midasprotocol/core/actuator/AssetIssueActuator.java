@@ -24,6 +24,7 @@ import io.midasprotocol.core.capsule.AssetIssueCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
 import io.midasprotocol.core.capsule.utils.TransactionUtil;
 import io.midasprotocol.core.config.Parameter;
+import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
 import io.midasprotocol.core.exception.ContractExeException;
@@ -204,6 +205,7 @@ public class AssetIssueActuator extends AbstractActuator {
 		List<FrozenSupply> frozenList = assetIssueContract.getFrozenSupplyList();
 		Iterator<FrozenSupply> iterator = frozenList.iterator();
 
+		boolean needCheckFrozenTime = Args.getInstance().getCheckFrozenTime() == 1;//for test
 		while (iterator.hasNext()) {
 			FrozenSupply next = iterator.next();
 			if (next.getFrozenAmount() <= 0) {
@@ -212,7 +214,7 @@ public class AssetIssueActuator extends AbstractActuator {
 			if (next.getFrozenAmount() > remainSupply) {
 				throw new ContractValidateException("Frozen supply cannot exceed total supply");
 			}
-			if (!(next.getFrozenDays() >= minFrozenSupplyTime
+			if (needCheckFrozenTime && !(next.getFrozenDays() >= minFrozenSupplyTime
 				&& next.getFrozenDays() <= maxFrozenSupplyTime)) {
 				throw new ContractValidateException(
 					"frozenDuration must be less than " + maxFrozenSupplyTime + " days "
