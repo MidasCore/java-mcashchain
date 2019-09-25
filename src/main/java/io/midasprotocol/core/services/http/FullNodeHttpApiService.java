@@ -244,7 +244,7 @@ public class FullNodeHttpApiService implements Service {
 			context.addServlet(new ServletHolder(triggerSmartContractServlet), "/triggersmartcontract");
 			context.addServlet(new ServletHolder(triggerConstantContractServlet), "/triggerconstantcontract");
 			context.addServlet(new ServletHolder(getContractServlet), "/getcontract");
-			context.addServlet(new ServletHolder(clearAbiServlet), "/clearabi");
+//			context.addServlet(new ServletHolder(clearAbiServlet), "/clearabi");
 			context.addServlet(new ServletHolder(proposalCreateServlet), "/proposalcreate");
 			context.addServlet(new ServletHolder(proposalApproveServlet), "/proposalapprove");
 			context.addServlet(new ServletHolder(proposalDeleteServlet), "/proposaldelete");
