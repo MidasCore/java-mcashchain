@@ -107,7 +107,8 @@ public class ActuatorFactory {
 			case WitnessResignContract:
 				return new WitnessResignActuator(contract.getParameter(), manager);
 			case ClearAbiContract:
-				return new ClearAbiContractActuator(contract.getParameter(), manager);
+//				return new ClearAbiContractActuator(contract.getParameter(), manager);
+				break;
 			// todo: add other contracts
 			default:
 				break;
