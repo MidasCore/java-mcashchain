@@ -66,6 +66,9 @@ if [[ ${DB} == "remove" ]]; then
   rm -rf ${OUTPUT_DIRECTORY}
   echo "remove db success"
 elif [[ ${DB} == "backup" ]]; then
+  current_time=$(date "+%Y.%m.%d-%H.%M.%S")
+  tar -czf ${OUTPUT_DIRECTORY}-${current_time}.tar.gz ${OUTPUT_DIRECTORY}
+  rm -rf ${OUTPUT_DIRECTORY}
   echo "backup db success"
 fi
 
