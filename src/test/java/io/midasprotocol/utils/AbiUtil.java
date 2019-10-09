@@ -53,6 +53,7 @@ public class AbiUtil {
 				return new CoderBool();
 			case "bytes":
 				return new CoderDynamicBytes();
+			case "token":
 			case "trcToken":
 				return new CoderNumber();
 		}
