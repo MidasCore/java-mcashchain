@@ -36,7 +36,7 @@ public class RevokingDbWithCacheNewValueTest {
 	@Before
 	public void init() {
 		Args.setParam(new String[]{"-d", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		appT = ApplicationFactory.create(context);
 	}
@@ -190,8 +190,8 @@ public class RevokingDbWithCacheNewValueTest {
 		}
 
 		Set<ProtoCapsuleTest> result = tronDatabase.getRevokingDB().getlatestValues(5).stream()
-				.map(ProtoCapsuleTest::new)
-				.collect(Collectors.toSet());
+			.map(ProtoCapsuleTest::new)
+			.collect(Collectors.toSet());
 
 		for (int i = 9; i >= 5; i--) {
 			Assert.assertTrue(result.contains(new ProtoCapsuleTest(("getLastestValues" + i).getBytes())));
@@ -217,9 +217,9 @@ public class RevokingDbWithCacheNewValueTest {
 		}
 
 		Set<ProtoCapsuleTest> result =
-				tronDatabase.getRevokingDB().getValuesNext(
-						new ProtoCapsuleTest("getValuesNext2".getBytes()).getData(), 3
-				).stream().map(ProtoCapsuleTest::new).collect(Collectors.toSet());
+			tronDatabase.getRevokingDB().getValuesNext(
+				new ProtoCapsuleTest("getValuesNext2".getBytes()).getData(), 3
+			).stream().map(ProtoCapsuleTest::new).collect(Collectors.toSet());
 
 		for (int i = 2; i < 5; i++) {
 			Assert.assertTrue(result.contains(new ProtoCapsuleTest(("getValuesNext" + i).getBytes())));

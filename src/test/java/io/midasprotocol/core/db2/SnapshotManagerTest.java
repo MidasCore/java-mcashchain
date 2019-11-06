@@ -35,7 +35,7 @@ public class SnapshotManagerTest {
 	@Before
 	public void init() {
 		Args.setParam(new String[]{"-d", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		appT = ApplicationFactory.create(context);
 		revokingDatabase = new TestSnapshotManager();
@@ -59,7 +59,7 @@ public class SnapshotManagerTest {
 
 	@Test
 	public synchronized void testRefresh()
-			throws BadItemException, ItemNotFoundException {
+		throws BadItemException, ItemNotFoundException {
 		while (revokingDatabase.size() != 0) {
 			revokingDatabase.pop();
 		}
@@ -78,7 +78,7 @@ public class SnapshotManagerTest {
 
 		revokingDatabase.flush();
 		Assert.assertEquals(new ProtoCapsuleTest("refresh10".getBytes()),
-				tronDatabase.get(protoCapsule.getData()));
+			tronDatabase.get(protoCapsule.getData()));
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package io.midasprotocol.core.net;
 
 import com.google.common.cache.CacheBuilder;
+import io.midasprotocol.common.utils.ReflectUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -15,7 +16,6 @@ import io.midasprotocol.common.overlay.discover.node.Node;
 import io.midasprotocol.common.overlay.message.*;
 import io.midasprotocol.common.overlay.server.ChannelManager;
 import io.midasprotocol.common.overlay.server.SyncPool;
-import io.midasprotocol.common.utils.ReflectUtils;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
 import io.midasprotocol.core.config.args.Args;
@@ -54,7 +54,7 @@ public class TcpTest {
 	public void normalTest() throws InterruptedException {
 		Channel channel = BaseNet.connect(new HandshakeHandler(TestType.normal));
 		HelloMessage message = new HelloMessage(node, System.currentTimeMillis(),
-				manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
+			manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
 		sendMessage(channel, message);
 		validResultCloseConnect(channel);
 	}
@@ -63,7 +63,7 @@ public class TcpTest {
 		Channel channel = BaseNet.connect(new HandshakeHandler(TestType.errorGenesisBlock));
 		BlockId genesisBlockId = new BlockId();
 		HelloMessage message = new HelloMessage(node, System.currentTimeMillis(), genesisBlockId,
-				manager.getSolidBlockId(), manager.getHeadBlockId());
+			manager.getSolidBlockId(), manager.getHeadBlockId());
 		sendMessage(channel, message);
 		validResultCloseConnect(channel);
 	}
@@ -72,7 +72,7 @@ public class TcpTest {
 		Channel channel = BaseNet.connect(new HandshakeHandler(TestType.errorVersion));
 		Args.getInstance().setNodeP2pVersion(1);
 		HelloMessage message = new HelloMessage(node, System.currentTimeMillis(),
-				manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
+			manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
 		Args.getInstance().setNodeP2pVersion(2);
 		sendMessage(channel, message);
 		validResultCloseConnect(channel);
@@ -81,7 +81,7 @@ public class TcpTest {
 	public void errorSolidBlockIdTest() throws InterruptedException {
 		Channel channel = BaseNet.connect(new HandshakeHandler(TestType.errorSolid));
 		HelloMessage message = new HelloMessage(node, System.currentTimeMillis(),
-				manager.getGenesisBlockId(), new BlockId(), manager.getHeadBlockId());
+			manager.getGenesisBlockId(), new BlockId(), manager.getHeadBlockId());
 		sendMessage(channel, message);
 		validResultCloseConnect(channel);
 	}
@@ -89,7 +89,7 @@ public class TcpTest {
 	public void repeatConnectTest() throws InterruptedException {
 		Channel channel = BaseNet.connect(new HandshakeHandler(TestType.normal));
 		HelloMessage message = new HelloMessage(node, System.currentTimeMillis(),
-				manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
+			manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
 		sendMessage(channel, message);
 		validResultUnCloseConnect();
 		Channel repeatChannel = BaseNet.connect(new HandshakeHandler(TestType.repeatConnect));
@@ -113,20 +113,20 @@ public class TcpTest {
 	public void errorMsgTest() throws InterruptedException {
 		Channel channel = BaseNet.connect(new HandshakeHandler(TestType.normal));
 		HelloMessage message = new HelloMessage(node, System.currentTimeMillis(),
-				manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
+			manager.getGenesisBlockId(), manager.getSolidBlockId(), manager.getHeadBlockId());
 		sendMessage(channel, message);
 		validResultUnCloseConnect();
 		List<PeerConnection> beforeActivePeers = ReflectUtils.getFieldValue(pool, "activePeers");
 		int beforeSize = beforeActivePeers.size();
 		logger.info("beforeSize : {}", beforeSize);
 		channel.writeAndFlush(Unpooled.wrappedBuffer(ArrayUtils.add("nihao".getBytes(), 0, (byte) 1)))
-				.addListener((ChannelFutureListener) future -> {
-					if (future.isSuccess()) {
-						logger.info("send msg success");
-					} else {
-						logger.error("send msg fail", future.cause());
-					}
-				});
+			.addListener((ChannelFutureListener) future -> {
+				if (future.isSuccess()) {
+					logger.info("send msg success");
+				} else {
+					logger.error("send msg fail", future.cause());
+				}
+			});
 		Thread.sleep(2000);
 		List<PeerConnection> afterActivePeers = ReflectUtils.getFieldValue(pool, "activePeers");
 		int afterSize = afterActivePeers.size();
@@ -137,13 +137,13 @@ public class TcpTest {
 
 	private void sendMessage(Channel channel, Message message) {
 		channel.writeAndFlush(message.getSendData())
-				.addListener((ChannelFutureListener) future -> {
-					if (future.isSuccess()) {
-						logger.info("send msg success");
-					} else {
-						logger.error("send msg fail", future.cause());
-					}
-				});
+			.addListener((ChannelFutureListener) future -> {
+				if (future.isSuccess()) {
+					logger.info("send msg success");
+				} else {
+					logger.error("send msg fail", future.cause());
+				}
+			});
 	}
 
 	private void validResultCloseConnect(Channel channel) throws InterruptedException {
@@ -156,13 +156,13 @@ public class TcpTest {
 		channel.close();
 		Thread.sleep(sleepTime);
 		Collection<PeerConnection> peerConnections = ReflectUtils
-				.invokeMethod(tronNetDelegate, "getActivePeer");
+			.invokeMethod(tronNetDelegate, "getActivePeer");
 		for (PeerConnection peer : peerConnections) {
 			peer.close();
 		}
 		ReflectUtils.setFieldValue(channelManager, "recentlyDisconnected",
-				CacheBuilder.newBuilder().maximumSize(1000)
-						.expireAfterWrite(30, TimeUnit.SECONDS).recordStats().build());
+			CacheBuilder.newBuilder().maximumSize(1000)
+				.expireAfterWrite(30, TimeUnit.SECONDS).recordStats().build());
 	}
 
 	private void validResultUnCloseConnect() throws InterruptedException {
@@ -178,13 +178,13 @@ public class TcpTest {
 		channel.close();
 		Thread.sleep(sleepTime);
 		Collection<PeerConnection> peerConnections = ReflectUtils
-				.invokeMethod(tronNetDelegate, "getActivePeer");
+			.invokeMethod(tronNetDelegate, "getActivePeer");
 		for (PeerConnection peer : peerConnections) {
 			peer.close();
 		}
 		ReflectUtils.setFieldValue(channelManager, "recentlyDisconnected",
-				CacheBuilder.newBuilder().maximumSize(1000)
-						.expireAfterWrite(30, TimeUnit.SECONDS).recordStats().build());
+			CacheBuilder.newBuilder().maximumSize(1000)
+				.expireAfterWrite(30, TimeUnit.SECONDS).recordStats().build());
 	}
 
 	public void test() throws InterruptedException {
@@ -220,7 +220,7 @@ public class TcpTest {
 
 		@Override
 		protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out)
-				throws Exception {
+			throws Exception {
 			byte[] encoded = new byte[buffer.readableBytes()];
 			buffer.readBytes(encoded);
 			P2pMessage msg = messageFactory.create(encoded);

@@ -37,7 +37,6 @@ import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Block;
 import io.midasprotocol.protos.Protocol.SmartContract;
-import io.midasprotocol.protos.Protocol.SmartContract.ABI;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
@@ -83,10 +82,13 @@ public class RuntimeImpl implements Runtime {
 
 	//tx trace
 	private TransactionTrace trace;
-	private boolean isStaticCall;
+
+	@Getter
+	@Setter
+	private boolean isStaticCall = false;
 
 	@Setter
-	private boolean enableEventLinstener;
+	private boolean enableEventListener;
 
 	private LogInfoTriggerParser logInfoTriggerParser;
 
@@ -439,8 +441,7 @@ public class RuntimeImpl implements Runtime {
 				this.blockCap);
 			byte[] txId = new TransactionCapsule(trx).getTransactionId().getBytes();
 			this.program.setRootTransactionId(txId);
-			this.program.setRootCallConstant(isCallConstant());
-			if (enableEventLinstener &&
+			if (enableEventListener &&
 				(EventPluginLoader.getInstance().isContractEventTriggerEnable()
 					|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
 				&& isCheckTransaction()) {
@@ -459,8 +460,9 @@ public class RuntimeImpl implements Runtime {
 
 		deposit.createContract(contractAddress, new ContractCapsule(newSmartContract));
 		byte[] code = newSmartContract.getBytecode().toByteArray();
-		deposit.saveCode(contractAddress, ProgramPrecompile.getCode(code));
-
+		if (!VMConfig.allowVmConstantinople()) {
+			deposit.saveCode(contractAddress, ProgramPrecompile.getCode(code));
+		}
 		// transfer from callerAddress to contractAddress according to callValue
 		if (callValue > 0) {
 			transfer(this.deposit, callerAddress, contractAddress, callValue);
@@ -533,8 +535,7 @@ public class RuntimeImpl implements Runtime {
 			}
 			AccountCapsule caller = this.deposit.getAccount(callerAddress);
 			long energyLimit;
-			if (isCallConstant(contractAddress)) {
-				isStaticCall = true;
+			if (isStaticCall) {
 				energyLimit = Constant.ENERGY_LIMIT_IN_CONSTANT_TX;
 			} else {
 				AccountCapsule creator = this.deposit
@@ -560,9 +561,8 @@ public class RuntimeImpl implements Runtime {
 				this.blockCap);
 			byte[] txId = new TransactionCapsule(trx).getTransactionId().getBytes();
 			this.program.setRootTransactionId(txId);
-			this.program.setRootCallConstant(isCallConstant());
 
-			if (enableEventLinstener &&
+			if (enableEventListener &&
 				(EventPluginLoader.getInstance().isContractEventTriggerEnable()
 					|| EventPluginLoader.getInstance().isContractLogTriggerEnable())
 				&& isCheckTransaction()) {
@@ -603,7 +603,7 @@ public class RuntimeImpl implements Runtime {
 				vm.play(program);
 				result = program.getResult();
 
-				if (isCallConstant()) {
+				if (isStaticCall) {
 					long callValue = TransactionCapsule.getCallValue(trx.getRawData().getContract(0));
 					long callTokenValue = TransactionCapsule
 						.getCallTokenValue(trx.getRawData().getContract(0));
@@ -626,6 +626,9 @@ public class RuntimeImpl implements Runtime {
 						}
 					} else {
 						result.spendEnergy(saveCodeEnergy);
+						if (VMConfig.allowVmConstantinople()) {
+							deposit.saveCode(program.getContractAddress().getNoLeadZeroesData(), code);
+						}
 					}
 				}
 
@@ -636,7 +639,9 @@ public class RuntimeImpl implements Runtime {
 					result.rejectInternalTransactions();
 
 					if (result.getException() != null) {
-						program.spendAllEnergy();
+						if (!(result.getException() instanceof Program.TransferException)) {
+							program.spendAllEnergy();
+						}
 						runtimeError = result.getException().getMessage();
 						throw result.getException();
 					} else {
@@ -669,10 +674,10 @@ public class RuntimeImpl implements Runtime {
 			result.rejectInternalTransactions();
 			runtimeError = result.getException().getMessage();
 			logger.info("timeout: {}", result.getException().getMessage());
-		} catch (ContractValidateException e) {
-			logger.info("when check constant, {}", e.getMessage());
 		} catch (Throwable e) {
-			program.spendAllEnergy();
+			if (!(e instanceof Program.TransferException)) {
+				program.spendAllEnergy();
+			}
 			result = program.getResult();
 			result.rejectInternalTransactions();
 			if (Objects.isNull(result.getException())) {
@@ -685,40 +690,6 @@ public class RuntimeImpl implements Runtime {
 			logger.info("runtime result is :{}", result.getException().getMessage());
 		}
 		trace.setBill(result.getEnergyUsed());
-	}
-
-	public boolean isCallConstant() throws ContractValidateException {
-
-		TriggerSmartContract triggerContractFromTransaction = ContractCapsule
-			.getTriggerContractFromTransaction(trx);
-		if (TrxType.TRX_CONTRACT_CALL_TYPE == trxType) {
-
-			ContractCapsule contract = deposit
-				.getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
-			if (contract == null) {
-				logger.info("contract: {} is not in contract store", Wallet
-					.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray()));
-				throw new ContractValidateException("contract: " + Wallet
-					.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray())
-					+ " is not in contract store");
-			}
-			ABI abi = contract.getInstance().getAbi();
-			if (Wallet.isConstant(abi, triggerContractFromTransaction)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isCallConstant(byte[] address) throws ContractValidateException {
-
-		if (TrxType.TRX_CONTRACT_CALL_TYPE == trxType) {
-			ABI abi = deposit.getContract(address).getInstance().getAbi();
-			if (Wallet.isConstant(abi, ContractCapsule.getTriggerContractFromTransaction(trx))) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public void finalization() {

@@ -17,14 +17,11 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
-import org.junit.*;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
+import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.runtime.Runtime;
-import io.midasprotocol.common.runtime.RuntimeImpl;
 import io.midasprotocol.common.runtime.TVMTestUtils;
-import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvokeFactoryImpl;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.storage.DepositImpl;
 import io.midasprotocol.common.utils.FileUtil;
 import io.midasprotocol.core.Constant;
@@ -37,15 +34,23 @@ import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.db.TransactionTrace;
 import io.midasprotocol.core.exception.*;
-import io.midasprotocol.protos.Contract.CreateSmartContract;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
+import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Raw;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.spongycastle.util.encoders.Hex;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * pragma solidity ^0.4.2;
@@ -62,154 +67,138 @@ import java.io.File;
  * function fibonacciNotify(uint number) returns(uint result) { result = fibonacci(number);
  * Notify(number, result); } }
  */
+@Slf4j
 public class BandWidthRuntimeOutOfTimeTest {
 
-	public static final long totalBalance = 1000_0000_000_000L;
-	private static String dbPath = "output_BandWidthRuntimeOutOfTimeTest_test";
-	private static String dbDirectory = "db_BandWidthRuntimeOutOfTimeTest_test";
-	private static String indexDirectory = "index_BandWidthRuntimeOutOfTimeTest_test";
-	private static AnnotationConfigApplicationContext context;
-	private static Manager dbManager;
+    public static final long totalBalance = 1000_0000_000_000L;
+    private static String dbPath = "output_BandWidthRuntimeOutOfTimeTest_test";
+    private static String dbDirectory = "db_BandWidthRuntimeOutOfTimeTest_test";
+    private static String indexDirectory = "index_BandWidthRuntimeOutOfTimeTest_test";
+    private static AnnotationConfigApplicationContext context;
+    private static Manager dbManager;
 
-	private static String OwnerAddress = "MSCYyKrJ5rQjcbXRNhQnijZudbBEngP6jC";
-	private static String TriggerOwnerAddress = "MWXz8Wyib9yTptiMXvsfEk9ohUPqqnqVdW";
+    private static String OwnerAddress = "MSCYyKrJ5rQjcbXRNhQnijZudbBEngP6jC";
+    private static String TriggerOwnerAddress = "MWXz8Wyib9yTptiMXvsfEk9ohUPqqnqVdW";
 
-	static {
-		Args.setParam(
-				new String[]{
-						"--output-directory", dbPath,
-						"--storage-db-directory", dbDirectory,
-						"--storage-index-directory", indexDirectory,
-						"-w",
-						"--debug"
-				},
+    static {
+        Args.setParam(
+            new String[]{
+                "--output-directory", dbPath,
+                "--storage-db-directory", dbDirectory,
+                "--storage-index-directory", indexDirectory,
+                "-w",
+//                "--debug"
+            },
 //				"config-test-mainnet.conf"
-				Constant.TEST_CONF
-		);
-		context = new ApplicationContext(DefaultConfig.class);
-	}
+            Constant.TEST_CONF
+        );
+        context = new ApplicationContext(DefaultConfig.class);
+    }
 
-	private String trx2ContractAddress = "MRMnDQKREu7JAg8s5qNaVzh2Gkg1MTiYqE";
+    /**
+     * Init data.
+     */
+    @BeforeClass
+    public static void init() {
+        dbManager = context.getBean(Manager.class);
+        //init energy
+        dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647828000L);
+        dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
 
-	/**
-	 * Init data.
-	 */
-	@BeforeClass
-	public static void init() {
-		dbManager = context.getBean(Manager.class);
-		//init energy
-		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1526647828000L);
-		dbManager.getDynamicPropertiesStore().saveTotalEnergyWeight(10_000_000L);
+        dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
 
-		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(0);
+        AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
+            ByteString.copyFrom(Objects.requireNonNull(Wallet.decodeFromBase58Check(OwnerAddress))),
+            AccountType.Normal,
+            totalBalance);
 
-		AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
-				ByteString.copyFrom(Wallet.decodeFromBase58Check(OwnerAddress)), AccountType.Normal,
-				totalBalance);
+        accountCapsule.setFrozenForEnergy(1000_000_000L, 0L);
+        dbManager.getAccountStore()
+            .put(Wallet.decodeFromBase58Check(OwnerAddress), accountCapsule);
 
-		accountCapsule.setFrozenForEnergy(1000_000_000L, 0L);
-		dbManager.getAccountStore()
-				.put(Wallet.decodeFromBase58Check(OwnerAddress), accountCapsule);
+        AccountCapsule accountCapsule2 = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
+            ByteString.copyFrom(Objects.requireNonNull(Wallet.decodeFromBase58Check(TriggerOwnerAddress))),
+            AccountType.Normal,
+            totalBalance);
 
-		AccountCapsule accountCapsule2 = new AccountCapsule(ByteString.copyFrom("owner".getBytes()),
-				ByteString.copyFrom(Wallet.decodeFromBase58Check(TriggerOwnerAddress)), AccountType.Normal,
-				totalBalance);
+        accountCapsule2.setFrozenForEnergy(1000_000_000L, 0L);
+        dbManager.getAccountStore()
+            .put(Wallet.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
+        dbManager.getDynamicPropertiesStore()
+            .saveLatestBlockHeaderTimestamp(System.currentTimeMillis() / 1000);
+    }
 
-		accountCapsule2.setFrozenForEnergy(1000_000_000L, 0L);
-		dbManager.getAccountStore()
-				.put(Wallet.decodeFromBase58Check(TriggerOwnerAddress), accountCapsule2);
-		dbManager.getDynamicPropertiesStore()
-				.saveLatestBlockHeaderTimestamp(System.currentTimeMillis() / 1000);
-	}
+    /**
+     * destroy clear data of testing.
+     */
+    @AfterClass
+    public static void destroy() {
+        Args.clearParam();
+        ApplicationFactory.create(context).shutdown();
+        context.destroy();
+        FileUtil.deleteDir(new File(dbPath));
+    }
 
-	/**
-	 * destroy clear data of testing.
-	 */
-	@AfterClass
-	public static void destroy() {
-		Args.clearParam();
-		ApplicationFactory.create(context).shutdown();
-		context.destroy();
-		FileUtil.deleteDir(new File(dbPath));
-	}
+    @Test
+    public void testSuccess() {
+        try {
+            byte[] contractAddress = createContract();
+            logger.info(Hex.toHexString(contractAddress));
+            AccountCapsule triggerOwner = dbManager.getAccountStore()
+                .get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
+            long energy = triggerOwner.getEnergyUsage();
+            long balance = triggerOwner.getBalance();
 
-	@Test
-	public void testSuccess() {
-		try {
-			byte[] contractAddress = createContract();
-			AccountCapsule triggerOwner = dbManager.getAccountStore()
-					.get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-			long energy = triggerOwner.getEnergyUsage();
-			long balance = triggerOwner.getBalance();
-			TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
-					"fibonacciNotify(uint256)", "500000", false,
-					0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-			Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
-					Contract.newBuilder().setParameter(Any.pack(triggerContract))
-							.setType(ContractType.TriggerSmartContract)).setFeeLimit(10000000000L)).build();
-			TransactionCapsule trxCap = new TransactionCapsule(transaction);
-			TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
-			dbManager.consumeBandwidth(trxCap, trace);
-			BlockCapsule blockCapsule = null;
-			DepositImpl deposit = DepositImpl.createRoot(dbManager);
-			Runtime runtime = new RuntimeImpl(trace, blockCapsule, deposit,
-					new ProgramInvokeFactoryImpl());
-			trace.init(blockCapsule);
-			trace.exec();
-			trace.finalization();
+            logger.info("energy = {}", energy);
+            logger.info("balance = {}", balance);
+            TriggerSmartContract triggerContract = TVMTestUtils.createTriggerContract(contractAddress,
+                "fibonacciNotify(uint256)", "500000", false,
+                0, Wallet.decodeFromBase58Check(TriggerOwnerAddress));
+            Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
+                Contract.newBuilder().setParameter(Any.pack(triggerContract))
+                    .setType(ContractType.TriggerSmartContract)).setFeeLimit(10000000000L)).build();
+            TransactionCapsule trxCap = new TransactionCapsule(transaction);
+            TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
+            dbManager.consumeBandwidth(trxCap, trace);
+            BlockCapsule blockCapsule = null;
+            trace.init(blockCapsule);
+            trace.exec();
+            trace.finalization();
 
-			triggerOwner = dbManager.getAccountStore()
-					.get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
-			energy = triggerOwner.getEnergyUsage() - energy;
-			balance = balance - triggerOwner.getBalance();
-			Assert.assertNotNull(runtime.getRuntimeError());
-			Assert.assertTrue(runtime.getRuntimeError().contains(" timeout "));
-			Assert.assertEquals(9950000, trace.getReceipt().getEnergyUsageTotal());
-			Assert.assertEquals(50000, energy);
-			Assert.assertEquals(990000000, balance);
-			Assert.assertEquals(9950000 * Constant.MATOSHI_PER_ENERGY,
-					balance + energy * Constant.MATOSHI_PER_ENERGY);
-		} catch (TronException e) {
-			Assert.assertNotNull(e);
-		}
-	}
+            Runtime runtime = trace.getRuntime();
 
-	private byte[] createContract()
-			throws ContractValidateException, AccountResourceInsufficientException, TooBigTransactionResultException, ContractExeException, VMIllegalException {
-		AccountCapsule owner = dbManager.getAccountStore()
-				.get(Wallet.decodeFromBase58Check(OwnerAddress));
-		long energy = owner.getEnergyUsage();
-		long balance = owner.getBalance();
+            triggerOwner = dbManager.getAccountStore()
+                .get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
+            energy = triggerOwner.getEnergyUsage() - energy;
 
-		String contractName = "Fibonacci3";
-		String code = "608060405234801561001057600080fd5b506101ba806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680633c7fdc701461005157806361047ff414610092575b600080fd5b34801561005d57600080fd5b5061007c600480360381019080803590602001909291905050506100d3565b6040518082815260200191505060405180910390f35b34801561009e57600080fd5b506100bd60048036038101908080359060200190929190505050610124565b6040518082815260200191505060405180910390f35b60006100de82610124565b90507f71e71a8458267085d5ab16980fd5f114d2d37f232479c245d523ce8d23ca40ed8282604051808381526020018281526020019250505060405180910390a1919050565b60008060008060008086141561013d5760009450610185565b600186141561014f5760019450610185565b600093506001925060009150600290505b85811115156101815782840191508293508192508080600101915050610160565b8194505b505050509190505600a165627a7a7230582071f3cf655137ce9dc32d3307fb879e65f3960769282e6e452a5f0023ea046ed20029";
-		String abi = "[{\"constant\":false,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacciNotify\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacci\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"input\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"result\",\"type\":\"uint256\"}],\"name\":\"Notify\",\"type\":\"event\"}]";
-		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
-				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
-				Contract.newBuilder().setParameter(Any.pack(smartContract))
-						.setType(ContractType.CreateSmartContract)).setFeeLimit(10000000000L)).build();
-		TransactionCapsule trxCap = new TransactionCapsule(transaction);
-		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
-		dbManager.consumeBandwidth(trxCap, trace);
-		BlockCapsule blockCapsule = null;
-		DepositImpl deposit = DepositImpl.createRoot(dbManager);
-		Runtime runtime = new RuntimeImpl(trace, blockCapsule, deposit, new ProgramInvokeFactoryImpl());
-		trace.init(blockCapsule);
-		trace.exec();
-		trace.finalization();
-		owner = dbManager.getAccountStore()
-				.get(Wallet.decodeFromBase58Check(OwnerAddress));
-		energy = owner.getEnergyUsage() - energy;
-		balance = balance - owner.getBalance();
-		Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(50000, energy);
-		Assert.assertEquals(38529000, balance);
-		Assert.assertEquals(88529 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
-		if (runtime.getRuntimeError() != null) {
-			return runtime.getResult().getContractAddress();
-		}
-		return runtime.getResult().getContractAddress();
+            balance = balance - triggerOwner.getBalance();
+            Assert.assertNotNull(runtime.getRuntimeError());
+            logger.info(runtime.getRuntimeError());
+            Assert.assertTrue(runtime.getRuntimeError().contains(" timeout "));
+            Assert.assertEquals(10000000, trace.getReceipt().getEnergyUsageTotal());
+            Assert.assertEquals(50000, energy);
+            Assert.assertEquals(9950000000L, balance);
+            Assert.assertEquals(10000000 * Constant.MATOSHI_PER_ENERGY,
+                balance + energy * Constant.MATOSHI_PER_ENERGY);
+        } catch (TronException | ReceiptCheckErrException e) {
+            Assert.fail();
+        }
+    }
 
-	}
+    private byte[] createContract()
+        throws ContractValidateException, ContractExeException, VMIllegalException, ReceiptCheckErrException {
+        String contractName = "Fibonacci3";
+        String code = "608060405234801561001057600080fd5b506101ba806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680633c7fdc701461005157806361047ff414610092575b600080fd5b34801561005d57600080fd5b5061007c600480360381019080803590602001909291905050506100d3565b6040518082815260200191505060405180910390f35b34801561009e57600080fd5b506100bd60048036038101908080359060200190929190505050610124565b6040518082815260200191505060405180910390f35b60006100de82610124565b90507f71e71a8458267085d5ab16980fd5f114d2d37f232479c245d523ce8d23ca40ed8282604051808381526020018281526020019250505060405180910390a1919050565b60008060008060008086141561013d5760009450610185565b600186141561014f5760019450610185565b600093506001925060009150600290505b85811115156101815782840191508293508192508080600101915050610160565b8194505b505050509190505600a165627a7a7230582071f3cf655137ce9dc32d3307fb879e65f3960769282e6e452a5f0023ea046ed20029";
+        String abi = "[{\"constant\":false,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacciNotify\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacci\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"input\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"result\",\"type\":\"uint256\"}],\"name\":\"Notify\",\"type\":\"event\"}]";
+
+        Protocol.Transaction trx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
+            contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, VMConfig.MAX_FEE_LIMIT, 100, null);
+        byte[] contractAddress = Wallet.generateContractAddress(trx);
+        logger.info("contractAddress = " + Hex.toHexString(contractAddress));
+        DepositImpl rootDeposit = DepositImpl.createRoot(dbManager);
+        Runtime runtime = TVMTestUtils.processTransactionAndReturnRuntime(trx, rootDeposit, null);
+        org.testng.Assert.assertNull(runtime.getRuntimeError());
+        return contractAddress;
+    }
 }
+

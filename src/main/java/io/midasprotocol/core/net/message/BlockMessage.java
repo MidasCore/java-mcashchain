@@ -1,18 +1,25 @@
 package io.midasprotocol.core.net.message;
 
+import io.midasprotocol.common.overlay.message.Message;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.capsule.BlockCapsule;
 import io.midasprotocol.core.capsule.BlockCapsule.BlockId;
+import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.exception.BadItemException;
+import io.midasprotocol.core.exception.P2pException;
 
 public class BlockMessage extends TronMessage {
 
 	private BlockCapsule block;
 
-	public BlockMessage(byte[] data) throws BadItemException {
+	public BlockMessage(byte[] data) throws BadItemException, P2pException {
+		super(data);
 		this.type = MessageTypes.BLOCK.asByte();
-		this.data = data;
-		this.block = new BlockCapsule(data);
+		this.block = new BlockCapsule(getCodedInputStream(data));
+		if (Message.isFilter()) {
+			Message.compareBytes(data, block.getInstance().toByteArray());
+			TransactionCapsule.validContractProto(block.getInstance().getTransactionsList());
+		}
 	}
 
 	public BlockMessage(BlockCapsule block) {

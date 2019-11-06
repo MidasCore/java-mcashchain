@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 public class ObjectSizeUtilTest {
 
 	@Test
-	public void testGetObjectSize() {
+	public void getObjectSize() {
 
 		Person person = new Person();
 		assertEquals(48, com.carrotsearch.sizeof.RamUsageEstimator.sizeOf(person));

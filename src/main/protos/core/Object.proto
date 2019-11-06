@@ -305,6 +305,7 @@ message Transaction {
             StakeContract = 47;
             UnstakeContract = 48;
             WitnessResignContract = 49;
+            ClearAbiContract = 50;
         }
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
@@ -333,6 +334,7 @@ message Transaction {
             OUT_OF_TIME = 11;
             JVM_STACK_OVER_FLOW = 12;
             UNKNOWN = 13;
+            TRANSFER_FAILED = 14;
         }
         int64 fee = 1;
         Code code = 2;

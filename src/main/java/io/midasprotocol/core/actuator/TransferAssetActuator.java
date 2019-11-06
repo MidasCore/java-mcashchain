@@ -22,6 +22,7 @@ import io.midasprotocol.common.storage.Deposit;
 import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
+import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.db.AccountStore;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.BalanceInsufficientException;
@@ -193,6 +194,11 @@ public class TransferAssetActuator extends AbstractActuator {
 		byte[] toAddress = transferAssetContract.getToAddress().toByteArray();
 		long assetId = transferAssetContract.getAssetId();
 		long amount = transferAssetContract.getAmount();
+		byte[] memo = transferAssetContract.getMemo().toByteArray();
+
+		if (memo.length > Parameter.ChainConstant.MEMO_MAX_LENGTH) {
+			throw new ContractValidateException("Invalid memo length");
+		}
 
 		if (!Wallet.addressValid(ownerAddress)) {
 			throw new ContractValidateException("Invalid ownerAddress");

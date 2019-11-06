@@ -109,4 +109,8 @@ public class ContractCapsule implements ProtoCapsule<SmartContract> {
 		}
 		return originEnergyLimit;
 	}
+
+	public void clearABI() {
+		this.smartContract = this.smartContract.toBuilder().setAbi(SmartContract.ABI.getDefaultInstance()).build();
+	}
 }

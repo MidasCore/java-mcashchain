@@ -18,6 +18,7 @@
 package io.midasprotocol.common.runtime.vm.program;
 
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.crypto.Hash;
 import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.*;
 import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvoke;
@@ -75,7 +76,6 @@ public class Program {
 	private BlockCapsule blockCap;
 	private long nonce;
 	private byte[] rootTransactionId;
-	private Boolean isRootCallConstant;
 	private InternalTransaction internalTransaction;
 	private ProgramInvoke invoke;
 	private ProgramInvokeFactory programInvokeFactory = new ProgramInvokeFactoryImpl();
@@ -272,14 +272,6 @@ public class Program {
 
 	public void setNonce(long nonceValue) {
 		nonce = nonceValue;
-	}
-
-	public Boolean getRootCallConstant() {
-		return isRootCallConstant;
-	}
-
-	public void setRootCallConstant(Boolean rootCallConstant) {
-		isRootCallConstant = rootCallConstant;
 	}
 
 	public ProgramPrecompile getProgramPrecompile() {
@@ -534,6 +526,9 @@ public class Program {
 					transferAllToken(getContractState(), owner, obtainer);
 				}
 			} catch (ContractValidateException e) {
+				if (VMConfig.allowVmConstantinople()) {
+					throw new TransferException("transfer all token or transfer all mcash failed in suicide: %s", e.getMessage());
+				}
 				throw new BytecodeExecutionException("transfer failure");
 			}
 		}
@@ -553,24 +548,27 @@ public class Program {
 			return;
 		}
 
-		byte[] senderAddress = convertToTronAddress(this.getContractAddress().getLast20Bytes());
-
-		long endowment = value.value().longValueExact();
-		if (getContractState().getBalance(senderAddress) < endowment) {
-			stackPushZero();
-			return;
-		}
-
 		// [1] FETCH THE CODE FROM THE MEMORY
 		byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
+		byte[] newAddress = Wallet
+			.generateContractAddress(rootTransactionId, nonce);
+
+		createContractImpl(value, programCode, newAddress);
+	}
+
+	private void createContractImpl(DataWord value, byte[] programCode, byte[] newAddress) {
+		byte[] senderAddress = convertToTronAddress(this.getContractAddress().getLast20Bytes());
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("creating a new contract inside contract run: [{}]",
 				Hex.toHexString(senderAddress));
 		}
 
-		byte[] newAddress = Wallet
-			.generateContractAddress(rootTransactionId, nonce);
+		long endowment = value.value().longValueExact();
+		if (getContractState().getBalance(senderAddress) < endowment) {
+			stackPushZero();
+			return;
+		}
 
 		AccountCapsule existingAddr = getContractState().getAccount(newAddress);
 		boolean contractAlreadyExists = existingAddr != null;
@@ -625,7 +623,6 @@ public class Program {
 			VM vm = new VM(config);
 			Program program = new Program(programCode, programInvoke, internalTx, config, this.blockCap);
 			program.setRootTransactionId(this.rootTransactionId);
-			program.setRootCallConstant(this.isRootCallConstant);
 			vm.play(program);
 			createResult = program.getResult();
 			getTrace().merge(program.getTrace());
@@ -776,6 +773,10 @@ public class Program {
 					TransferActuator
 						.validateForSmartContract(deposit, senderAddress, contextAddress, endowment);
 				} catch (ContractValidateException e) {
+					if (VMConfig.allowVmConstantinople()) {
+						refundEnergy(msg.getEnergy().longValue(), "refund energy from message call");
+						throw new TransferException("transfer mcash failed: %s", e.getMessage());
+					}
 					throw new BytecodeExecutionException(VALIDATE_FOR_SMART_CONTRACT_FAILURE);
 				}
 				deposit.addBalance(senderAddress, -endowment);
@@ -785,6 +786,10 @@ public class Program {
 					TransferAssetActuator.validateForSmartContract(deposit, senderAddress, contextAddress,
 						tokenId, endowment);
 				} catch (ContractValidateException e) {
+					if (VMConfig.allowVmConstantinople()) {
+						refundEnergy(msg.getEnergy().longValue(), "refund energy from message call");
+						throw new TransferException("transfer m1 failed: %s", e.getMessage());
+					}
 					throw new BytecodeExecutionException(VALIDATE_FOR_SMART_CONTRACT_FAILURE);
 				}
 				deposit.addTokenBalance(senderAddress, tokenId, -endowment);
@@ -817,7 +822,6 @@ public class Program {
 			Program program = new Program(programCode, programInvoke, internalTx, config,
 				this.blockCap);
 			program.setRootTransactionId(this.rootTransactionId);
-			program.setRootCallConstant(this.isRootCallConstant);
 			vm.play(program);
 			callResult = program.getResult();
 
@@ -951,6 +955,16 @@ public class Program {
 	public byte[] getCodeAt(DataWord address) {
 		byte[] code = invoke.getDeposit().getCode(convertToTronAddress(address.getLast20Bytes()));
 		return nullToEmpty(code);
+	}
+
+	public byte[] getCodeHashAt(DataWord address) {
+		AccountCapsule addr = getContractState().getAccount(convertToTronAddress(address.getLast20Bytes()));
+		if (addr != null) {
+			byte[] code = getCodeAt(address);
+			return Hash.sha3(code);
+		} else {
+			return EMPTY_BYTE_ARRAY;
+		}
 	}
 
 	public DataWord getContractAddress() {
@@ -1296,7 +1310,7 @@ public class Program {
 			// this is the depositImpl, not contractState as above
 			contract.setDeposit(deposit);
 			contract.setResult(this.result);
-			contract.setRootCallConstant(getRootCallConstant().booleanValue());
+			contract.setStaticCall(isStaticCall());
 			Pair<Boolean, byte[]> out = contract.execute(data);
 
 			if (out.getLeft()) { // success
@@ -1405,6 +1419,14 @@ public class Program {
 		void output(String out);
 	}
 
+	public void createContract2(DataWord value, DataWord memStart, DataWord memSize, DataWord salt) {
+		byte[] senderAddress = convertToTronAddress(this.getCallerAddress().getLast20Bytes());
+		byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
+
+		byte[] contractAddress = Wallet.generateContractAddress2(senderAddress, programCode, salt.getData());
+		createContractImpl(value, programCode, contractAddress);
+	}
+
 	static class ByteCodeIterator {
 
 		private byte[] code;
@@ -1456,6 +1478,12 @@ public class Program {
 
 		public BytecodeExecutionException(String message) {
 			super(message);
+		}
+	}
+
+	public static class TransferException extends BytecodeExecutionException {
+		public TransferException(String message, Object... args) {
+			super(format(message, args));
 		}
 	}
 

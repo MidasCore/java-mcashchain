@@ -27,7 +27,6 @@ import io.midasprotocol.core.capsule.TransactionCapsule;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.exception.ContractValidateException;
-import io.midasprotocol.core.exception.NonUniqueObjectException;
 import io.midasprotocol.core.exception.StoreException;
 import io.midasprotocol.core.exception.VMIllegalException;
 import io.midasprotocol.protos.Contract;
@@ -741,6 +740,12 @@ public class RpcApiService implements Service {
 		}
 
 		@Override
+		public void clearContractABI(ClearAbiContract request,
+									 StreamObserver<TransactionExtension> responseObserver) {
+			createTransactionExtension(request, ContractType.ClearAbiContract, responseObserver);
+		}
+
+		@Override
 		public void createWitness(WitnessCreateContract request,
 								  StreamObserver<TransactionExtension> responseObserver) {
 			createTransactionExtension(request, ContractType.WitnessCreateContract, responseObserver);
@@ -1081,12 +1086,28 @@ public class RpcApiService implements Service {
 		@Override
 		public void triggerContract(Contract.TriggerSmartContract request,
 									StreamObserver<TransactionExtension> responseObserver) {
+			callContract(request, responseObserver, false);
+		}
+
+		@Override
+		public void triggerConstantContract(Contract.TriggerSmartContract request,
+											StreamObserver<TransactionExtension> responseObserver) {
+			callContract(request, responseObserver, true);
+		}
+
+		private void callContract(Contract.TriggerSmartContract request,
+								  StreamObserver<TransactionExtension> responseObserver, boolean isConstant) {
 			TransactionExtension.Builder trxExtBuilder = TransactionExtension.newBuilder();
 			Return.Builder retBuilder = Return.newBuilder();
 			try {
 				TransactionCapsule trxCap = createTransactionCapsule(request,
 					ContractType.TriggerSmartContract);
-				Transaction trx = wallet.triggerContract(request, trxCap, trxExtBuilder, retBuilder);
+				Transaction trx;
+				if (isConstant) {
+					trx = wallet.triggerConstantContract(request, trxCap, trxExtBuilder, retBuilder);
+				} else {
+					trx = wallet.triggerContract(request, trxCap, trxExtBuilder, retBuilder);
+				}
 				trxExtBuilder.setTransaction(trx);
 				trxExtBuilder.setTxId(trxCap.getTransactionId().getByteString());
 				retBuilder.setResult(true).setCode(ResponseCode.SUCCESS);

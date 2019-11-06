@@ -37,7 +37,7 @@ public class AccountIdIndexStoreTest {
 
 	static {
 		Args.setParam(new String[]{"--output-directory", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
 
@@ -52,16 +52,16 @@ public class AccountIdIndexStoreTest {
 	public static void init() {
 		accountIdIndexStore = context.getBean(AccountIdIndexStore.class);
 		accountCapsule1 = new AccountCapsule(ByteString.copyFrom(ACCOUNT_ADDRESS_ONE),
-				ByteString.copyFrom(ACCOUNT_NAME_ONE), AccountType.Normal);
+			ByteString.copyFrom(ACCOUNT_NAME_ONE), AccountType.Normal);
 		accountCapsule1.setAccountId(ByteString.copyFrom(ACCOUNT_NAME_ONE).toByteArray());
 		accountCapsule2 = new AccountCapsule(ByteString.copyFrom(ACCOUNT_ADDRESS_TWO),
-				ByteString.copyFrom(ACCOUNT_NAME_TWO), AccountType.Normal);
+			ByteString.copyFrom(ACCOUNT_NAME_TWO), AccountType.Normal);
 		accountCapsule2.setAccountId(ByteString.copyFrom(ACCOUNT_NAME_TWO).toByteArray());
 		accountCapsule3 = new AccountCapsule(ByteString.copyFrom(ACCOUNT_ADDRESS_THREE),
-				ByteString.copyFrom(ACCOUNT_NAME_THREE), AccountType.Normal);
+			ByteString.copyFrom(ACCOUNT_NAME_THREE), AccountType.Normal);
 		accountCapsule3.setAccountId(ByteString.copyFrom(ACCOUNT_NAME_THREE).toByteArray());
 		accountCapsule4 = new AccountCapsule(ByteString.copyFrom(ACCOUNT_ADDRESS_FOUR),
-				ByteString.copyFrom(ACCOUNT_NAME_FOUR), AccountType.Normal);
+			ByteString.copyFrom(ACCOUNT_NAME_FOUR), AccountType.Normal);
 		accountCapsule4.setAccountId(ByteString.copyFrom(ACCOUNT_NAME_FOUR).toByteArray());
 		accountIdIndexStore.put(accountCapsule1);
 		accountIdIndexStore.put(accountCapsule2);
@@ -111,7 +111,7 @@ public class AccountIdIndexStoreTest {
 		byte[] accountAddress = randomBytes(16);
 
 		AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom(accountAddress),
-				ByteString.copyFrom(accountName), AccountType.Normal);
+			ByteString.copyFrom(accountName), AccountType.Normal);
 		accountCapsule.setAccountId(ByteString.copyFrom(accountName).toByteArray());
 		accountIdIndexStore.put(accountCapsule);
 
@@ -119,14 +119,14 @@ public class AccountIdIndexStoreTest {
 		Assert.assertTrue("fail", result);
 
 		byte[] lowerCase = ByteString
-				.copyFromUtf8(ByteString.copyFrom(accountName).toStringUtf8().toLowerCase())
-				.toByteArray();
+			.copyFromUtf8(ByteString.copyFrom(accountName).toStringUtf8().toLowerCase())
+			.toByteArray();
 		result = accountIdIndexStore.has(lowerCase);
 		Assert.assertTrue("lowerCase fail", result);
 
 		byte[] upperCase = ByteString
-				.copyFromUtf8(ByteString.copyFrom(accountName).toStringUtf8().toUpperCase())
-				.toByteArray();
+			.copyFromUtf8(ByteString.copyFrom(accountName).toStringUtf8().toUpperCase())
+			.toByteArray();
 		result = accountIdIndexStore.has(upperCase);
 		Assert.assertTrue("upperCase fail", result);
 

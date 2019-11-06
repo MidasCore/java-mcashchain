@@ -333,13 +333,13 @@ public class Args {
 
 	@Getter
 	@Setter
-	private long allowSameTokenName; //committee parameter
-
-	@Getter
-	@Setter
 	private long allowTvmTransferTrc10; //committee parameter
 
-	@Getter
+    @Getter
+    @Setter
+    private long allowVmConstantinople; //committee parameter
+
+    @Getter
 	@Setter
 	private int tcpNettyWorkThreadNum;
 
@@ -436,6 +436,14 @@ public class Args {
 	@Parameter(names = {"-v", "--version"}, description = "output code version", help = true)
 	private boolean version;
 
+	@Getter
+	@Setter
+	private long allowProtoFilter;
+
+	@Getter
+	@Setter
+	private int validContractProtoThreadNum;
+
 	public static void clearParam() {
 		INSTANCE.outputDirectory = "output-directory";
 		INSTANCE.help = false;
@@ -488,8 +496,8 @@ public class Args {
 		INSTANCE.allowCreationOfContracts = 0;
 		INSTANCE.allowAdaptiveEnergy = 0;
 		INSTANCE.allowTvmTransferTrc10 = 0;
+        INSTANCE.allowVmConstantinople = 0;
 		INSTANCE.allowDelegateResource = 0;
-		INSTANCE.allowSameTokenName = 0;
 		INSTANCE.tcpNettyWorkThreadNum = 0;
 		INSTANCE.udpNettyWorkThreadNum = 0;
 		INSTANCE.p2pNodeId = "";
@@ -509,6 +517,8 @@ public class Args {
 		INSTANCE.longRunningTime = 10;
 		INSTANCE.allowMultiSign = 0;
 		INSTANCE.trxExpirationTimeInMilliseconds = 0;
+		INSTANCE.allowProtoFilter = 0;
+		INSTANCE.validContractProtoThreadNum = 1;
 	}
 
 	/**
@@ -816,13 +826,13 @@ public class Args {
 			config.hasPath("committee.allowDelegateResource") ? config
 				.getInt("committee.allowDelegateResource") : 0;
 
-		INSTANCE.allowSameTokenName =
-			config.hasPath("committee.allowSameTokenName") ? config
-				.getInt("committee.allowSameTokenName") : 0;
-
 		INSTANCE.allowTvmTransferTrc10 =
 			config.hasPath("committee.allowTvmTransferM1") ? config
 				.getInt("committee.allowTvmTransferM1") : 0;
+
+        INSTANCE.allowVmConstantinople =
+            config.hasPath("committee.allowVmConstantinople") ? config
+                .getInt("committee.allowVmConstantinople") : 0;
 
 		INSTANCE.tcpNettyWorkThreadNum = config.hasPath("node.tcpNettyWorkThreadNum") ? config
 			.getInt("node.tcpNettyWorkThreadNum") : 0;
@@ -880,6 +890,15 @@ public class Args {
 
 		INSTANCE.eventFilter =
 			config.hasPath("event.subscribe.filter") ? getEventFilter(config) : null;
+
+		INSTANCE.allowProtoFilter =
+			config.hasPath("committee.allowProtoFilter") ? config
+				.getInt("committee.allowProtoFilter") : 0;
+
+		INSTANCE.validContractProtoThreadNum =
+			config.hasPath("node.validContractProtoThreadNum") ? config
+				.getInt("node.validContractProtoThreadNum")
+				: Runtime.getRuntime().availableProcessors();
 
 		initBackupProperty(config);
 		if ("ROCKSDB".equals(Args.getInstance().getStorage().getDbEngine().toUpperCase())) {

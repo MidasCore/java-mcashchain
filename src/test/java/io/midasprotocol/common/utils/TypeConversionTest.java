@@ -26,7 +26,7 @@ import static io.midasprotocol.common.utils.TypeConversion.*;
 public class TypeConversionTest {
 
 	@Test
-	public void testLongToBytes() {
+	public void longToBytesTest() {
 		byte[] result = longToBytes(123L);
 		//logger.info("long 123 to bytes is: {}", result);
 		byte[] expected = new byte[]{0, 0, 0, 0, 0, 0, 0, 123};
@@ -35,7 +35,7 @@ public class TypeConversionTest {
 	}
 
 	@Test
-	public void testBytesToLong() {
+	public void bytesToLongTest() {
 		long result = bytesToLong(new byte[]{0, 0, 0, 0, 0, 0, 0, 124});
 		//logger.info("bytes 124 to long is: {}", result);
 		assertEquals(124L, result);
@@ -43,14 +43,14 @@ public class TypeConversionTest {
 	}
 
 	@Test
-	public void testBytesToHexString() {
+	public void bytesToHexStringTest() {
 		String result = bytesToHexString(new byte[]{0, 0, 0, 0, 0, 0, 0, 125});
 		//logger.info("bytes 125 to hex string is: {}", result);
 		assertEquals("000000000000007d", result);
 	}
 
 	@Test
-	public void testHexStringToBytes() {
+	public void hexStringToBytesTest() {
 		byte[] result = hexStringToBytes("7f");
 		//logger.info("hex string 7f to bytes is: {}", result);
 		byte[] expected = new byte[]{127};

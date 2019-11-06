@@ -25,24 +25,24 @@ public class BlockUtil {
 		Args args = Args.getInstance();
 		GenesisBlock genesisBlockArg = args.getGenesisBlock();
 		List<Transaction> transactionList =
-				genesisBlockArg.getAssets().stream()
-						.map(key -> {
-							byte[] address = key.getAddress();
-							long balance = key.getBalance();
-							return TransactionUtil.newGenesisTransaction(address, balance);
-						})
-						.collect(Collectors.toList());
+			genesisBlockArg.getAssets().stream()
+				.map(key -> {
+					byte[] address = key.getAddress();
+					long balance = key.getBalance();
+					return TransactionUtil.newGenesisTransaction(address, balance);
+				})
+				.collect(Collectors.toList());
 
 		long timestamp = Long.parseLong(genesisBlockArg.getTimestamp());
 		ByteString parentHash =
-				ByteString.copyFrom(ByteArray.fromHexString(genesisBlockArg.getParentHash()));
+			ByteString.copyFrom(ByteArray.fromHexString(genesisBlockArg.getParentHash()));
 		long number = Long.parseLong(genesisBlockArg.getNumber());
 
 		BlockCapsule blockCapsule = new BlockCapsule(timestamp, parentHash, number, transactionList);
 
 		blockCapsule.setMerkleRoot();
 		blockCapsule.setWitness(
-				"A new system must allow existing systems to be linked together without requiring any central control or coordination");
+			"A new system must allow existing systems to be linked together without requiring any central control or coordination");
 		blockCapsule.generatedByMyself = true;
 
 		return blockCapsule;
@@ -56,9 +56,9 @@ public class BlockUtil {
 													  long number, ByteString hash, Map<ByteString, String> addressToProvateKeys) {
 		WitnessController witnessController = dbManager.getWitnessController();
 		ByteString witnessAddress =
-				witnessController.getScheduledWitness(witnessController.getSlotAtTime(time));
+			witnessController.getScheduledWitness(witnessController.getSlotAtTime(time));
 		BlockCapsule blockCapsule = new BlockCapsule(number, Sha256Hash.wrap(hash), time,
-				witnessAddress);
+			witnessAddress);
 		blockCapsule.generatedByMyself = true;
 		blockCapsule.setMerkleRoot();
 		blockCapsule.sign(ByteArray.fromHexString(addressToProvateKeys.get(witnessAddress)));

@@ -30,8 +30,7 @@ public class ReadIp {
 	 */
 	public String readFile(String path) {
 		String laststr = "";
-		try (BufferedReader reader =
-					 new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))) {
 			String tempString = null;
 			while ((tempString = reader.readLine()) != null) {
 				laststr += tempString;

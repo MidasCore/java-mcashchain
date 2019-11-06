@@ -64,31 +64,31 @@ public class WitnessControllerTest {
 
 		// test witnesses in genesis block
 		assertEquals(
-				"a0904fe896536f4bebc64c95326b5054a2c3d27df6", // first(current witness)
-				ByteArray.toHexString(
-						(dbManager.getWitnessController().getScheduledWitness(0).toByteArray())));
+			"a0904fe896536f4bebc64c95326b5054a2c3d27df6", // first(current witness)
+			ByteArray.toHexString(
+				(dbManager.getWitnessController().getScheduledWitness(0).toByteArray())));
 		assertEquals(
-				"a0904fe896536f4bebc64c95326b5054a2c3d27df6",
-				ByteArray.toHexString(
-						(dbManager.getWitnessController().getScheduledWitness(5).toByteArray())));
+			"a0904fe896536f4bebc64c95326b5054a2c3d27df6",
+			ByteArray.toHexString(
+				(dbManager.getWitnessController().getScheduledWitness(5).toByteArray())));
 		assertEquals(
-				"a0807337f180b62a77576377c1d0c9c24df5c0dd62", // second(next witness)
-				ByteArray.toHexString(
-						(dbManager.getWitnessController().getScheduledWitness(6).toByteArray())));
+			"a0807337f180b62a77576377c1d0c9c24df5c0dd62", // second(next witness)
+			ByteArray.toHexString(
+				(dbManager.getWitnessController().getScheduledWitness(6).toByteArray())));
 		assertEquals(
-				"a0807337f180b62a77576377c1d0c9c24df5c0dd62",
-				ByteArray.toHexString(
-						(dbManager.getWitnessController().getScheduledWitness(11).toByteArray())));
+			"a0807337f180b62a77576377c1d0c9c24df5c0dd62",
+			ByteArray.toHexString(
+				(dbManager.getWitnessController().getScheduledWitness(11).toByteArray())));
 		assertEquals(
-				"a05430a3f089154e9e182ddd6fe136a62321af22a7", // third
-				ByteArray.toHexString(
-						(dbManager.getWitnessController().getScheduledWitness(12).toByteArray())));
+			"a05430a3f089154e9e182ddd6fe136a62321af22a7", // third
+			ByteArray.toHexString(
+				(dbManager.getWitnessController().getScheduledWitness(12).toByteArray())));
 
 		// test maintenance
 		ByteString a =
-				ByteString.copyFrom(ByteArray.fromHexString("a0ec6525979a351a54fa09fea64beb4cce33ffbb7a"));
+			ByteString.copyFrom(ByteArray.fromHexString("a0ec6525979a351a54fa09fea64beb4cce33ffbb7a"));
 		ByteString b =
-				ByteString.copyFrom(ByteArray.fromHexString("a0fab5fbf6afb681e4e37e9d33bddb7e923d6132e5"));
+			ByteString.copyFrom(ByteArray.fromHexString("a0fab5fbf6afb681e4e37e9d33bddb7e923d6132e5"));
 		// system.out.print("a address:" + ByteArray.toHexString(a.toByteArray()) + "\n");
 		// System.out.print("b address:" + ByteArray.toHexString(b.toByteArray()));
 		List<ByteString> w = new ArrayList<>();

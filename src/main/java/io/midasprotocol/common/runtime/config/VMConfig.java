@@ -35,9 +35,11 @@ public class VMConfig {
 //	@Setter
 //	private static boolean ENERGY_LIMIT_HARD_FORK = false;
 	@Setter
-	private static boolean ALLOW_TVM_TRANSFER_M1 = false;
+	private static boolean ALLOW_VM_TRANSFER_M1 = false;
 	@Setter
 	private static boolean ALLOW_MULTI_SIGN = false;
+	@Setter
+	private static boolean ALLOW_VM_CONSTANTINOPLE = false;
 
 	//  @Getter
 //  @Setter
@@ -61,16 +63,20 @@ public class VMConfig {
 		ALLOW_MULTI_SIGN = allow == 1;
 	}
 
-	public static void initAllowTvmTransferM1(long allow) {
-		ALLOW_TVM_TRANSFER_M1 = allow == 1;
+	public static void initAllowVmTransferM1(long allow) {
+		ALLOW_VM_TRANSFER_M1 = allow == 1;
 	}
 
-//	public static boolean getEnergyLimitHardFork() {
-//		return ENERGY_LIMIT_HARD_FORK;
-//	}
+	public static void initAllowVmConstantinople(long allow) {
+		ALLOW_VM_CONSTANTINOPLE = allow == 1;
+	}
 
 	public static boolean allowTvmTransferM1() {
-		return ALLOW_TVM_TRANSFER_M1;
+		return ALLOW_VM_TRANSFER_M1;
+	}
+
+	public static boolean allowVmConstantinople() {
+		return ALLOW_VM_CONSTANTINOPLE;
 	}
 
 	public static boolean allowMultiSign() {

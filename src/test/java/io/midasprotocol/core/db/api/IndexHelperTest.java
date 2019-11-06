@@ -44,44 +44,44 @@ public class IndexHelperTest {
 	public static void init() {
 		dbManager = context.getBean(Manager.class);
 		AccountCapsule accountCapsule =
-				new AccountCapsule(
-						Account.newBuilder()
-								.setAddress(ByteString.copyFrom(ByteArray.fromHexString("121212abc")))
-								.build());
+			new AccountCapsule(
+				Account.newBuilder()
+					.setAddress(ByteString.copyFrom(ByteArray.fromHexString("121212abc")))
+					.build());
 		dbManager.getAccountStore().put(ByteArray.fromHexString("121212abc"), accountCapsule);
 		BlockCapsule blockCapsule =
-				new BlockCapsule(
-						Block.newBuilder()
-								.setBlockHeader(
-										BlockHeader.newBuilder()
-												.setRawData(Raw.newBuilder().setNumber(4).build())
-												.build())
-								.build());
+			new BlockCapsule(
+				Block.newBuilder()
+					.setBlockHeader(
+						BlockHeader.newBuilder()
+							.setRawData(Raw.newBuilder().setNumber(4).build())
+							.build())
+					.build());
 		dbManager.getBlockStore().put(blockCapsule.getBlockId().getBytes(), blockCapsule);
 		WitnessCapsule witnessCapsule =
-				new WitnessCapsule(
-						Witness.newBuilder()
-								.setAddress(ByteString.copyFrom(ByteArray.fromHexString("121212abc")))
-								.build());
+			new WitnessCapsule(
+				Witness.newBuilder()
+					.setAddress(ByteString.copyFrom(ByteArray.fromHexString("121212abc")))
+					.build());
 		dbManager.getWitnessStore().put(ByteArray.fromHexString("121212abc"), witnessCapsule);
 		TransactionCapsule transactionCapsule =
-				new TransactionCapsule(
-						Transaction.newBuilder()
-								.setRawData(
-										Transaction.Raw
-												.newBuilder()
-												.setData(ByteString.copyFrom("i am trans".getBytes()))
-												.build())
-								.build());
+			new TransactionCapsule(
+				Transaction.newBuilder()
+					.setRawData(
+						Transaction.Raw
+							.newBuilder()
+							.setData(ByteString.copyFrom("i am trans".getBytes()))
+							.build())
+					.build());
 		dbManager
-				.getTransactionStore()
-				.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
+			.getTransactionStore()
+			.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		AssetIssueCapsule assetIssueCapsule =
-				new AssetIssueCapsule(
-						AssetIssueContract.newBuilder()
-								.setName(ByteString.copyFrom("assetIssueName".getBytes()))
-								.setNum(12581)
-								.build());
+			new AssetIssueCapsule(
+				AssetIssueContract.newBuilder()
+					.setName(ByteString.copyFrom("assetIssueName".getBytes()))
+					.setNum(12581)
+					.build());
 		dbManager.getAssetIssueStore().put("assetIssueName".getBytes(), assetIssueCapsule);
 		indexHelper = context.getBean(IndexHelper.class);
 	}
@@ -119,10 +119,10 @@ public class IndexHelperTest {
 	@Test
 	public void addAndRemoveAccount() {
 		AccountCapsule accountCapsule =
-				new AccountCapsule(
-						Account.newBuilder()
-								.setAddress(ByteString.copyFrom(ByteArray.fromHexString("232323abc")))
-								.build());
+			new AccountCapsule(
+				Account.newBuilder()
+					.setAddress(ByteString.copyFrom(ByteArray.fromHexString("232323abc")))
+					.build());
 		dbManager.getAccountStore().put(accountCapsule.createDbKey(), accountCapsule);
 		indexHelper.add(accountCapsule.getInstance());
 		int size = getIndexSizeOfAccount();
@@ -142,13 +142,13 @@ public class IndexHelperTest {
 	@Test
 	public void addAndRemoveBlock() {
 		BlockCapsule blockCapsule =
-				new BlockCapsule(
-						Block.newBuilder()
-								.setBlockHeader(
-										BlockHeader.newBuilder()
-												.setRawData(Raw.newBuilder().setNumber(6).build())
-												.build())
-								.build());
+			new BlockCapsule(
+				Block.newBuilder()
+					.setBlockHeader(
+						BlockHeader.newBuilder()
+							.setRawData(Raw.newBuilder().setNumber(6).build())
+							.build())
+					.build());
 		dbManager.getBlockStore().put(blockCapsule.getBlockId().getBytes(), blockCapsule);
 		indexHelper.add(blockCapsule.getInstance());
 		int size = getIndexSizeOfBlock();
@@ -168,10 +168,10 @@ public class IndexHelperTest {
 	@Test
 	public void addAndRemoveWitness() {
 		WitnessCapsule witnessCapsule =
-				new WitnessCapsule(
-						Witness.newBuilder()
-								.setAddress(ByteString.copyFrom(ByteArray.fromHexString("343434abc")))
-								.build());
+			new WitnessCapsule(
+				Witness.newBuilder()
+					.setAddress(ByteString.copyFrom(ByteArray.fromHexString("343434abc")))
+					.build());
 		dbManager.getWitnessStore().put(witnessCapsule.createDbKey(), witnessCapsule);
 		indexHelper.add(witnessCapsule.getInstance());
 		int size = getIndexSizeOfWitness();
@@ -190,16 +190,16 @@ public class IndexHelperTest {
 	@Test
 	public void addAndRemoveTransaction() {
 		TransactionCapsule transactionCapsule =
-				new TransactionCapsule(
-						Transaction.newBuilder()
-								.setRawData(
-										Transaction.Raw
-												.newBuilder()
-												.setData(ByteString.copyFrom("i am trans".getBytes()))
-												.build())
-								.build());
+			new TransactionCapsule(
+				Transaction.newBuilder()
+					.setRawData(
+						Transaction.Raw
+							.newBuilder()
+							.setData(ByteString.copyFrom("i am trans".getBytes()))
+							.build())
+					.build());
 		dbManager.getTransactionStore()
-				.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
+			.put(transactionCapsule.getTransactionId().getBytes(), transactionCapsule);
 		indexHelper.add(transactionCapsule.getInstance());
 		int size = getIndexSizeOfTransaction();
 		Assert.assertEquals("account index add", 1, size);
@@ -218,13 +218,13 @@ public class IndexHelperTest {
 	@Test
 	public void addAndRemoveAssetIssue() {
 		AssetIssueCapsule assetIssueCapsule =
-				new AssetIssueCapsule(
-						AssetIssueContract.newBuilder()
-								.setName(ByteString.copyFrom("assetIssueName".getBytes()))
-								.setNum(12581)
-								.build());
+			new AssetIssueCapsule(
+				AssetIssueContract.newBuilder()
+					.setName(ByteString.copyFrom("assetIssueName".getBytes()))
+					.setNum(12581)
+					.build());
 		dbManager.getAssetIssueStore()
-				.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
+			.put(assetIssueCapsule.createDbKey(), assetIssueCapsule);
 		indexHelper.add(assetIssueCapsule.getInstance());
 		int size = getIndexSizeOfAssetIssue();
 		Assert.assertEquals("account index add", 1, size);
@@ -235,9 +235,9 @@ public class IndexHelperTest {
 
 	private int getIndexSizeOfAssetIssue() {
 		Index.Iface<AssetIssueContract> assetIssueContractIndex =
-				indexHelper.getAssetIssueIndex();
+			indexHelper.getAssetIssueIndex();
 		ImmutableList<AssetIssueContract> accountImmutableList =
-				ImmutableList.copyOf(assetIssueContractIndex);
+			ImmutableList.copyOf(assetIssueContractIndex);
 		return accountImmutableList.size();
 	}
 
@@ -249,45 +249,45 @@ public class IndexHelperTest {
 		 */
 		// account1
 		Account account1 = Account.newBuilder()
-				.setAddress(ByteString.copyFrom("update123".getBytes()))
-				.setBalance(123)
-				.build();
+			.setAddress(ByteString.copyFrom("update123".getBytes()))
+			.setBalance(123)
+			.build();
 		dbManager.getAccountStore()
-				.put(account1.getAddress().toByteArray(), new AccountCapsule(account1));
+			.put(account1.getAddress().toByteArray(), new AccountCapsule(account1));
 		indexHelper.update(account1);
 		ResultSet<Account> resultSet = indexHelper.getAccountIndex()
-				.retrieve(equal(AccountIndex.Account_ADDRESS,
-						ByteArray.toHexString(account1.getAddress().toByteArray())));
+			.retrieve(equal(AccountIndex.Account_ADDRESS,
+				ByteArray.toHexString(account1.getAddress().toByteArray())));
 		Assert.assertEquals(1, resultSet.size());
 		Assert.assertEquals(123, resultSet.uniqueResult().getBalance());
 		logger.info("account1 balance: " + resultSet.uniqueResult().getBalance());
 
 		// account2
 		Account account2 = Account.newBuilder()
-				.setAddress(ByteString.copyFrom("update123".getBytes()))
-				.setBalance(456)
-				.build();
+			.setAddress(ByteString.copyFrom("update123".getBytes()))
+			.setBalance(456)
+			.build();
 		dbManager.getAccountStore()
-				.put(account1.getAddress().toByteArray(), new AccountCapsule(account2));
+			.put(account1.getAddress().toByteArray(), new AccountCapsule(account2));
 		indexHelper.update(account2);
 		resultSet = indexHelper.getAccountIndex()
-				.retrieve(equal(AccountIndex.Account_ADDRESS,
-						ByteArray.toHexString(account1.getAddress().toByteArray())));
+			.retrieve(equal(AccountIndex.Account_ADDRESS,
+				ByteArray.toHexString(account1.getAddress().toByteArray())));
 		Assert.assertEquals(1, resultSet.size());
 		Assert.assertEquals(456, resultSet.uniqueResult().getBalance());
 		logger.info("account2 balance: " + resultSet.uniqueResult().getBalance());
 
 		// account3
 		Account account3 = Account.newBuilder()
-				.setAddress(ByteString.copyFrom("update123".getBytes()))
-				.setBalance(789)
-				.build();
+			.setAddress(ByteString.copyFrom("update123".getBytes()))
+			.setBalance(789)
+			.build();
 		dbManager.getAccountStore()
-				.put(account1.getAddress().toByteArray(), new AccountCapsule(account3));
+			.put(account1.getAddress().toByteArray(), new AccountCapsule(account3));
 		indexHelper.update(account3);
 		resultSet = indexHelper.getAccountIndex()
-				.retrieve(equal(AccountIndex.Account_ADDRESS,
-						ByteArray.toHexString(account1.getAddress().toByteArray())));
+			.retrieve(equal(AccountIndex.Account_ADDRESS,
+				ByteArray.toHexString(account1.getAddress().toByteArray())));
 		Assert.assertEquals(1, resultSet.size());
 		Assert.assertEquals(789, resultSet.uniqueResult().getBalance());
 		logger.info("account3 balance: " + resultSet.uniqueResult().getBalance());

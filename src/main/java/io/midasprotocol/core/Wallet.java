@@ -41,10 +41,7 @@ import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.program.ProgramResult;
 import io.midasprotocol.common.runtime.vm.program.invoke.ProgramInvokeFactoryImpl;
 import io.midasprotocol.common.storage.DepositImpl;
-import io.midasprotocol.common.utils.Base58;
-import io.midasprotocol.common.utils.ByteArray;
-import io.midasprotocol.common.utils.Sha256Hash;
-import io.midasprotocol.common.utils.Utils;
+import io.midasprotocol.common.utils.*;
 import io.midasprotocol.core.actuator.Actuator;
 import io.midasprotocol.core.actuator.ActuatorFactory;
 import io.midasprotocol.core.capsule.*;
@@ -174,6 +171,13 @@ public class Wallet {
 		return null;
 	}
 
+	// for `CREATE2`
+	public static byte[] generateContractAddress2(byte[] address, byte[] code, byte[] salt) {
+		byte[] mergedData = ByteUtil.merge(address, salt, Hash.sha3(code));
+		return Hash.sha3omit12(mergedData);
+	}
+
+	// for `CREATE`
 	public static byte[] generateContractAddress(Transaction trx) {
 
 		CreateSmartContract contract = ContractCapsule.getSmartContractFromTransaction(trx);
@@ -840,6 +844,18 @@ public class Wallet {
 				.setKey("getAllowAdaptiveEnergy")
 				.setValue(dbManager.getDynamicPropertiesStore().getAllowAdaptiveEnergy())
 				.build());
+		//    ALLOW_PROTO_FILTER, // 1, 21
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("allowProtoFilter")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowProtoFilter())
+			.build());
+
+		//    ALLOW_VM_CONSTANTINOPLE, // 1, 22
+		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
+			.setKey("allowVmConstantinople")
+			.setValue(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople())
+			.build());
+
 		//other chainParameters
 		builder.addChainParameter(Protocol.ChainParameters.ChainParameter.newBuilder()
 			.setKey("getTotalEnergyTargetLimit")
@@ -1106,50 +1122,76 @@ public class Wallet {
 
 		byte[] selector = getSelector(triggerSmartContract.getData().toByteArray());
 
-		if (!isConstant(abi, selector)) {
-			return trxCap.getInstance();
+		if (isConstant(abi, selector)) {
+			return callConstantContract(trxCap, builder, retBuilder);
 		} else {
-			if (!Args.getInstance().isSupportConstant()) {
-				throw new ContractValidateException("this node don't support constant");
-			}
-			DepositImpl deposit = DepositImpl.createRoot(dbManager);
-
-			Block headBlock;
-			List<BlockCapsule> blockCapsuleList = dbManager.getBlockStore().getBlockByLatestNum(1);
-			if (CollectionUtils.isEmpty(blockCapsuleList)) {
-				throw new HeaderNotFound("latest block not found");
-			} else {
-				headBlock = blockCapsuleList.get(0).getInstance();
-			}
-
-			Runtime runtime = new RuntimeImpl(trxCap.getInstance(), new BlockCapsule(headBlock), deposit,
-				new ProgramInvokeFactoryImpl(), true);
-			VMConfig.initVmHardFork();
-			VMConfig.initAllowTvmTransferM1(
-				dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1());
-			VMConfig.initAllowMultiSign(dbManager.getDynamicPropertiesStore().getAllowMultiSign());
-			runtime.execute();
-			runtime.go();
-			runtime.finalization();
-			// TODO exception
-			if (runtime.getResult().getException() != null) {
-				RuntimeException e = runtime.getResult().getException();
-				logger.warn("Constant call has error {}", e.getMessage());
-				throw e;
-			}
-
-			ProgramResult result = runtime.getResult();
-			TransactionResultCapsule ret = new TransactionResultCapsule();
-
-			builder.addConstantResult(ByteString.copyFrom(result.getHReturn()));
-			ret.setStatus(0, Code.SUCCESS);
-			if (StringUtils.isNoneEmpty(runtime.getRuntimeError())) {
-				ret.setStatus(0, Code.FAILED);
-				retBuilder.setMessage(ByteString.copyFromUtf8(runtime.getRuntimeError())).build();
-			}
-			trxCap.setResult(ret);
 			return trxCap.getInstance();
 		}
+	}
+
+	public Transaction triggerConstantContract(TriggerSmartContract triggerSmartContract,
+											   TransactionCapsule trxCap, Builder builder,
+											   Return.Builder retBuilder)
+		throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
+
+		ContractStore contractStore = dbManager.getContractStore();
+		byte[] contractAddress = triggerSmartContract.getContractAddress().toByteArray();
+		byte[] contract = contractStore.findContractByHash(contractAddress);
+
+		if (ArrayUtils.isEmpty(contract)) {
+			throw new ContractValidateException("no contract or not a smart contract");
+		}
+		if (!Args.getInstance().isSupportConstant()) {
+			throw new ContractValidateException("not support constant");
+		}
+
+		return callConstantContract(trxCap, builder, retBuilder);
+	}
+
+	public Transaction callConstantContract(TransactionCapsule trxCap, Builder builder,
+											Return.Builder retBuilder)
+		throws ContractValidateException, ContractExeException, HeaderNotFound, VMIllegalException {
+
+		if (!Args.getInstance().isSupportConstant()) {
+			throw new ContractValidateException("not support constant");
+		}
+		DepositImpl deposit = DepositImpl.createRoot(dbManager);
+
+		Block headBlock;
+		List<BlockCapsule> blockCapsuleList = dbManager.getBlockStore().getBlockByLatestNum(1);
+		if (CollectionUtils.isEmpty(blockCapsuleList)) {
+			throw new HeaderNotFound("latest block not found");
+		} else {
+			headBlock = blockCapsuleList.get(0).getInstance();
+		}
+
+		Runtime runtime = new RuntimeImpl(trxCap.getInstance(), new BlockCapsule(headBlock), deposit,
+			new ProgramInvokeFactoryImpl(), true);
+		VMConfig.initVmHardFork();
+		VMConfig.initAllowVmTransferM1(dbManager.getDynamicPropertiesStore().getAllowTvmTransferM1());
+		VMConfig.initAllowVmConstantinople(dbManager.getDynamicPropertiesStore().getAllowVmConstantinople());
+		VMConfig.initAllowMultiSign(dbManager.getDynamicPropertiesStore().getAllowMultiSign());
+		runtime.execute();
+		runtime.go();
+		runtime.finalization();
+		// TODO exception
+		if (runtime.getResult().getException() != null) {
+			RuntimeException e = runtime.getResult().getException();
+			logger.warn("Constant call has error {}", e.getMessage());
+			throw e;
+		}
+
+		ProgramResult result = runtime.getResult();
+		TransactionResultCapsule ret = new TransactionResultCapsule();
+
+		builder.addConstantResult(ByteString.copyFrom(result.getHReturn()));
+		ret.setStatus(0, Code.SUCCESS);
+		if (StringUtils.isNoneEmpty(runtime.getRuntimeError())) {
+			ret.setStatus(0, Code.FAILED);
+			retBuilder.setMessage(ByteString.copyFromUtf8(runtime.getRuntimeError())).build();
+		}
+		trxCap.setResult(ret);
+		return trxCap.getInstance();
 	}
 
 	public SmartContract getContract(GrpcAPI.BytesMessage bytesMessage) {

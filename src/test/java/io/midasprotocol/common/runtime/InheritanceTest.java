@@ -110,7 +110,7 @@ public class InheritanceTest {
 
 
 		/* =================================== CALL getName() return child value =================================== */
-		byte[] triggerData1 = TVMTestUtils.parseABI("getName()", "");
+		byte[] triggerData1 = TVMTestUtils.parseAbi("getName()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(callerAddress, contractAddress,
 						triggerData1,
@@ -123,7 +123,7 @@ public class InheritanceTest {
 						+ "6261720000000000000000000000000000000000000000000000000000000000");
 
 		/* =================================== CALL getNumber() return parent value=================================== */
-		byte[] triggerData2 = TVMTestUtils.parseABI("getNumber()", "");
+		byte[] triggerData2 = TVMTestUtils.parseAbi("getNumber()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(callerAddress, contractAddress,
 						triggerData2,
@@ -134,7 +134,7 @@ public class InheritanceTest {
 				"0000000000000000000000000000000000000000000000000000000000000064");
 
 		/* =================================== CALL getId() call child function return parent field value=================================== */
-		byte[] triggerData3 = TVMTestUtils.parseABI("getId()", "");
+		byte[] triggerData3 = TVMTestUtils.parseAbi("getId()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(callerAddress, contractAddress,
 						triggerData3,

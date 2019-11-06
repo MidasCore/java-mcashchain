@@ -17,10 +17,13 @@ package io.midasprotocol.common.runtime.vm;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.ByteString;
+import io.midasprotocol.common.runtime.config.VMConfig;
+import io.midasprotocol.protos.Protocol;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import io.midasprotocol.common.application.ApplicationFactory;
 import io.midasprotocol.common.application.ApplicationContext;
@@ -40,7 +43,6 @@ import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
 import io.midasprotocol.core.db.TransactionTrace;
 import io.midasprotocol.core.exception.*;
-import io.midasprotocol.protos.Contract.CreateSmartContract;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
 import io.midasprotocol.protos.Protocol.AccountType;
 import io.midasprotocol.protos.Protocol.Transaction;
@@ -86,7 +88,6 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 						"--storage-index-directory", indexDirectory,
 						"-w"
 				},
-//				"config-test-mainnet.conf"
 				Constant.TEST_CONF
 		);
 		context = new ApplicationContext(DefaultConfig.class);
@@ -159,6 +160,7 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 			trace.init(blockCapsule);
 			trace.exec();
 			trace.finalization();
+			trace.setResult();
 			trace.check();
 			triggerOwner = dbManager.getAccountStore()
 					.get(Wallet.decodeFromBase58Check(TriggerOwnerAddress));
@@ -179,40 +181,18 @@ public class BandWidthRuntimeOutOfTimeWithCheckTest {
 	}
 
 	private byte[] createContract()
-			throws ContractValidateException, AccountResourceInsufficientException, TooBigTransactionResultException, ContractExeException, VMIllegalException {
-		AccountCapsule owner = dbManager.getAccountStore()
-				.get(Wallet.decodeFromBase58Check(OwnerAddress));
-		long energy = owner.getEnergyUsage();
-		long balance = owner.getBalance();
-
-		String contractName = "Fibonacci";
+		throws ContractValidateException, ContractExeException, VMIllegalException, ReceiptCheckErrException {
+		String contractName = "Fibonacci3";
 		String code = "608060405234801561001057600080fd5b506101ba806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680633c7fdc701461005157806361047ff414610092575b600080fd5b34801561005d57600080fd5b5061007c600480360381019080803590602001909291905050506100d3565b6040518082815260200191505060405180910390f35b34801561009e57600080fd5b506100bd60048036038101908080359060200190929190505050610124565b6040518082815260200191505060405180910390f35b60006100de82610124565b90507f71e71a8458267085d5ab16980fd5f114d2d37f232479c245d523ce8d23ca40ed8282604051808381526020018281526020019250505060405180910390a1919050565b60008060008060008086141561013d5760009450610185565b600186141561014f5760019450610185565b600093506001925060009150600290505b85811115156101815782840191508293508192508080600101915050610160565b8194505b505050509190505600a165627a7a7230582071f3cf655137ce9dc32d3307fb879e65f3960769282e6e452a5f0023ea046ed20029";
 		String abi = "[{\"constant\":false,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacciNotify\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"number\",\"type\":\"uint256\"}],\"name\":\"fibonacci\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"input\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"result\",\"type\":\"uint256\"}],\"name\":\"Notify\",\"type\":\"event\"}]";
-		CreateSmartContract smartContract = TVMTestUtils.createSmartContract(
-				Wallet.decodeFromBase58Check(OwnerAddress), contractName, abi, code, 0, 100, Constant.CREATOR_DEFAULT_ENERGY_LIMIT);
-		Transaction transaction = Transaction.newBuilder().setRawData(Raw.newBuilder().addContract(
-				Contract.newBuilder().setParameter(Any.pack(smartContract))
-						.setType(ContractType.CreateSmartContract)).setFeeLimit(1000000000)).build();
-		TransactionCapsule trxCap = new TransactionCapsule(transaction);
-		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
-		dbManager.consumeBandwidth(trxCap, trace);
-		BlockCapsule blockCapsule = null;
-		DepositImpl deposit = DepositImpl.createRoot(dbManager);
-		Runtime runtime = new RuntimeImpl(trace, blockCapsule, deposit, new ProgramInvokeFactoryImpl());
-		trace.init(blockCapsule);
-		trace.exec();
-		trace.finalization();
-		owner = dbManager.getAccountStore()
-				.get(Wallet.decodeFromBase58Check(OwnerAddress));
-		energy = owner.getEnergyUsage() - energy;
-		balance = balance - owner.getBalance();
-		Assert.assertEquals(88529, trace.getReceipt().getEnergyUsageTotal());
-		Assert.assertEquals(5000, energy);
-		Assert.assertEquals(83529000, balance);
-		Assert.assertEquals(88529 * Constant.MATOSHI_PER_ENERGY, balance + energy * Constant.MATOSHI_PER_ENERGY);
-		if (runtime.getRuntimeError() != null) {
-			return runtime.getResult().getContractAddress();
-		}
-		return runtime.getResult().getContractAddress();
+
+		Protocol.Transaction trx = TVMTestUtils.generateDeploySmartContractAndGetTransaction(
+			contractName, Wallet.decodeFromBase58Check(OwnerAddress), abi, code, 0, VMConfig.MAX_FEE_LIMIT, 100, null);
+		byte[] contractAddress = Wallet.generateContractAddress(trx);
+		DepositImpl rootDeposit = DepositImpl.createRoot(dbManager);
+		Runtime runtime = TVMTestUtils.processTransactionAndReturnRuntime(trx, rootDeposit, null);
+		org.testng.Assert.assertNull(runtime.getRuntimeError());
+		return contractAddress;
 	}
+
 }

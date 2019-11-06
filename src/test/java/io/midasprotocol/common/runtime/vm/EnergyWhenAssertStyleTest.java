@@ -110,7 +110,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testOutOfIndex()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testOutOfIndex()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -161,7 +161,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testbytesN()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testbytesN()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -211,7 +211,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testDivZero()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testDivZero()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -262,7 +262,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testShiftByNegative()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testShiftByNegative()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -314,7 +314,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testEnumType()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testEnumType()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -364,7 +364,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testFunctionPointer()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testFunctionPointer()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -414,7 +414,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 
-		byte[] triggerData = TVMTestUtils.parseABI("testAssert()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testAssert()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -473,7 +473,7 @@ public class EnergyWhenAssertStyleTest {
 				Hex.toHexString(new DataWord(new DataWord(contractAddress).getLast20Bytes()).getData())
 						+ "0000000000000000000000000000000000000000000000000000000000000003";
 
-		byte[] triggerData = TVMTestUtils.parseABI("voteForSingleWitness(address,uint256)", params);
+		byte[] triggerData = TVMTestUtils.parseAbi("voteForSingleWitness(address,uint256)", params);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -523,7 +523,7 @@ public class EnergyWhenAssertStyleTest {
 				totalBalance - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 		byte[] contractAddress = result.getContractAddress();
 		String params = "0000000000000000000000000000000000000000000000000000000000000001";
-		byte[] triggerData = TVMTestUtils.parseABI("testMem(uint256)", params);
+		byte[] triggerData = TVMTestUtils.parseAbi("testMem(uint256)", params);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);

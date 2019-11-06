@@ -3,6 +3,7 @@ package io.midasprotocol.core.db;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.common.runtime.Runtime;
 import io.midasprotocol.common.runtime.RuntimeImpl;
+import io.midasprotocol.common.runtime.config.VMConfig;
 import io.midasprotocol.common.runtime.vm.program.InternalTransaction;
 import io.midasprotocol.common.runtime.vm.program.Program.*;
 import io.midasprotocol.common.runtime.vm.program.ProgramResult;
@@ -11,10 +12,12 @@ import io.midasprotocol.common.storage.DepositImpl;
 import io.midasprotocol.common.utils.ByteArray;
 import io.midasprotocol.common.utils.Sha256Hash;
 import io.midasprotocol.core.Constant;
+import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.*;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.exception.*;
 import io.midasprotocol.protos.Contract.TriggerSmartContract;
+import io.midasprotocol.protos.Protocol;
 import io.midasprotocol.protos.Protocol.Transaction;
 import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import io.midasprotocol.protos.Protocol.Transaction.Result.ContractResult;
@@ -86,12 +89,31 @@ public class TransactionTrace {
 		txStartTimeInMs = System.currentTimeMillis();
 		DepositImpl deposit = DepositImpl.createRoot(dbManager);
 		runtime = new RuntimeImpl(this, blockCap, deposit, new ProgramInvokeFactoryImpl());
-		runtime.setEnableEventLinstener(eventPluginLoaded);
+		runtime.setEnableEventListener(eventPluginLoaded);
 	}
 
 	public void checkIsConstant() throws ContractValidateException, VMIllegalException {
-		if (runtime.isCallConstant()) {
-			throw new VMIllegalException("cannot call constant method ");
+		if (VMConfig.allowVmConstantinople()) {
+			return;
+		}
+
+		TriggerSmartContract triggerContractFromTransaction = ContractCapsule
+			.getTriggerContractFromTransaction(this.getTrx().getInstance());
+		if (InternalTransaction.TrxType.TRX_CONTRACT_CALL_TYPE == this.trxType) {
+			DepositImpl deposit = DepositImpl.createRoot(dbManager);
+			ContractCapsule contract = deposit
+				.getContract(triggerContractFromTransaction.getContractAddress().toByteArray());
+			if (contract == null) {
+				String msg = "contract: " + Wallet
+					.encodeBase58Check(triggerContractFromTransaction.getContractAddress().toByteArray())
+					+ " is not in contract store";
+				logger.info(msg);
+				throw new ContractValidateException(msg);
+			}
+			Protocol.SmartContract.ABI abi = contract.getInstance().getAbi();
+			if (Wallet.isConstant(abi, triggerContractFromTransaction)) {
+				throw new VMIllegalException("cannot call constant method");
+			}
 		}
 	}
 
@@ -156,7 +178,7 @@ public class TransactionTrace {
 				// todo: check
 				TriggerSmartContract callContract = ContractCapsule
 					.getTriggerContractFromTransaction(trx.getInstance());
-				if (callContract.getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
+				if (callContract != null && callContract.getData().startsWith(ByteString.copyFrom(ByteArray.fromHexString("a9059cbb")))) {
 					receipt.setEnergyUsageTotal(0);
 				}
 				ContractCapsule contractCapsule =
@@ -260,6 +282,10 @@ public class TransactionTrace {
 		}
 		if (exception instanceof JVMStackOverFlowException) {
 			receipt.setResult(ContractResult.JVM_STACK_OVER_FLOW);
+			return;
+		}
+		if (exception instanceof TransferException) {
+			receipt.setResult(ContractResult.TRANSFER_FAILED);
 			return;
 		}
 		receipt.setResult(ContractResult.UNKNOWN);

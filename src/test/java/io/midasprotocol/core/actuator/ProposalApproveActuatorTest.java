@@ -30,7 +30,6 @@ import java.io.File;
 import java.util.HashMap;
 
 @Slf4j
-
 public class ProposalApproveActuatorTest {
 
 	private static final String dbPath = "output_proposal_approve_test";

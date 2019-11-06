@@ -106,7 +106,7 @@ public class EnergyWhenSendAndTransferTest {
 				totalBalance - value - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL simpleCall() =================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("simpleCall()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("simpleCall()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -117,7 +117,7 @@ public class EnergyWhenSendAndTransferTest {
 				totalBalance - value - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL complexCall() =================================== */
-		triggerData = TVMTestUtils.parseABI("complexCall()", null);
+		triggerData = TVMTestUtils.parseAbi("complexCall()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -167,7 +167,7 @@ public class EnergyWhenSendAndTransferTest {
 	public void sendTest()
 			throws ContractExeException, ReceiptCheckErrException, ContractValidateException, VMIllegalException {
 
-		long value = 100_000L;
+		long value = 1_000L;
 		long feeLimit = 100_000_000_000L; // sun
 		long consumeUserResourcePercent = 100;
 		byte[] address = Hex.decode(OWNER_ADDRESS);
@@ -182,12 +182,12 @@ public class EnergyWhenSendAndTransferTest {
 				totalBalance - value - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
 		/* =================================== CALL doSend() =================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("doSend()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("doSend()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = 9325;
+		long expectEnergyUsageTotal2 = 7025;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertFalse(result.getRuntime().getResult().isRevert());
@@ -200,9 +200,9 @@ public class EnergyWhenSendAndTransferTest {
 	public void transferTest()
 			throws ContractExeException, ReceiptCheckErrException, ContractValidateException, VMIllegalException {
 
-		long value = 100_000L;
+		long value = 1_000L;
 		// long value = 10000000L;
-		long feeLimit = 100_000_000_000L; // sun
+		long feeLimit = 100_000_000_000L; // matoshi
 		long consumeUserResourcePercent = 100;
 		byte[] address = Hex.decode(OWNER_ADDRESS);
 		TVMTestResult result = deploySendAndTransferTestContract(value, feeLimit,
@@ -215,13 +215,13 @@ public class EnergyWhenSendAndTransferTest {
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
 				totalBalance - value - expectEnergyUsageTotal * Constant.MATOSHI_PER_ENERGY);
 
-		/* =================================== CALL doSend() =================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("doTransfer()", null);
+		/* =================================== CALL doTransfer() =================================== */
+		byte[] triggerData = TVMTestUtils.parseAbi("doTransfer()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
 
-		long expectEnergyUsageTotal2 = 9330;
+		long expectEnergyUsageTotal2 = 7030;
 		Assert.assertEquals(result.getReceipt().getEnergyUsageTotal(), expectEnergyUsageTotal2);
 		Assert.assertNull(result.getRuntime().getResult().getException());
 		Assert.assertTrue(result.getRuntime().getResult().isRevert());

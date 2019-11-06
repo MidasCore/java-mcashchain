@@ -98,14 +98,14 @@ public class InternalTransactionComplexTest {
 		byte[] callerContractAddress = deployCallerContractAndGetItsAddress(calledContractAddress);
 
 		/* =================================== CALL makeTheCall =================================== */
-		byte[] triggerData1 = TVMTestUtils.parseABI("makeTheCall()", "");
+		byte[] triggerData1 = TVMTestUtils.parseAbi("makeTheCall()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						callerContractAddress, triggerData1,
 						0, 10000000000L, deposit, null);
 
 		/* =================================== CALL testCallbackReturns_ to check data =================================== */
-		byte[] triggerData2 = TVMTestUtils.parseABI("testCallbackReturns_()", "");
+		byte[] triggerData2 = TVMTestUtils.parseAbi("testCallbackReturns_()", "");
 		runtime = TVMTestUtils
 				.triggerContractWholeProcessReturnContractAddress(Hex.decode(OWNER_ADDRESS),
 						callerContractAddress, triggerData2,

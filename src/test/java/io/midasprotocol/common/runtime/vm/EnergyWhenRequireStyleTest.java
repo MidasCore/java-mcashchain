@@ -105,7 +105,7 @@ public class EnergyWhenRequireStyleTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testThrow()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testThrow()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -155,7 +155,7 @@ public class EnergyWhenRequireStyleTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testRequire()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testRequire()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -210,7 +210,7 @@ public class EnergyWhenRequireStyleTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testThisFunctionViaMessageCall()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testThisFunctionViaMessageCall()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -274,7 +274,7 @@ public class EnergyWhenRequireStyleTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testThatFunctionViaMessageCall()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testThatFunctionViaMessageCall()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -331,7 +331,7 @@ public class EnergyWhenRequireStyleTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testNewContract()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testNewContract()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);
@@ -406,7 +406,7 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
 				totalBalance - (expectEnergyUsageTotal + expectEnergyUsageTotal2) * Constant.MATOSHI_PER_ENERGY);
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testFallback()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testFallback()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 1000, feeLimit, dbManager, null);
@@ -418,7 +418,6 @@ public class EnergyWhenRequireStyleTest {
 		Assert.assertEquals(dbManager.getAccountStore().get(address).getBalance(),
 				totalBalance
 						- (expectEnergyUsageTotal + expectEnergyUsageTotal2 + expectEnergyUsageTotal3) * Constant.MATOSHI_PER_ENERGY);
-
 	}
 
 	@Test
@@ -470,7 +469,7 @@ public class EnergyWhenRequireStyleTest {
 		byte[] contractAddress = result.getContractAddress();
 
 		/* ====================================================================== */
-		byte[] triggerData = TVMTestUtils.parseABI("testRevert()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testRevert()", null);
 		result = TVMTestUtils
 				.triggerContractAndReturnTVMTestResult(Hex.decode(OWNER_ADDRESS),
 						contractAddress, triggerData, 0, feeLimit, dbManager, null);

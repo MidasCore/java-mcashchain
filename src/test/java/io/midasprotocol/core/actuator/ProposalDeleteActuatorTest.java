@@ -30,7 +30,6 @@ import java.io.File;
 import java.util.HashMap;
 
 @Slf4j
-
 public class ProposalDeleteActuatorTest {
 
 	private static final String dbPath = "output_proposal_approve_test";
@@ -82,11 +81,11 @@ public class ProposalDeleteActuatorTest {
 	@Before
 	public void initTest() {
 		WitnessCapsule ownerWitnessFirstCapsule =
-				new WitnessCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						10_000_000L,
-						URL);
+			new WitnessCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				10_000_000L,
+				URL);
 		AccountCapsule ownerAccountCapsule =
 			new AccountCapsule(
 				ByteString.copyFromUtf8(""),
@@ -96,27 +95,27 @@ public class ProposalDeleteActuatorTest {
 		ownerAccountCapsule.setIsCommittee(true);
 
 		AccountCapsule ownerAccountFirstCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
-						AccountType.Normal,
-						300_000_000L);
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_FIRST),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_FIRST)),
+				AccountType.Normal,
+				300_000_000L);
 		AccountCapsule ownerAccountSecondCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
-						AccountType.Normal,
-						200_000_000_000L);
+			new AccountCapsule(
+				ByteString.copyFromUtf8(ACCOUNT_NAME_SECOND),
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND)),
+				AccountType.Normal,
+				200_000_000_000L);
 
 		dbManager.getAccountStore()
 			.put(ownerAccountCapsule.getAddress().toByteArray(), ownerAccountCapsule);
 		dbManager.getAccountStore()
-				.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
+			.put(ownerAccountFirstCapsule.getAddress().toByteArray(), ownerAccountFirstCapsule);
 		dbManager.getAccountStore()
-				.put(ownerAccountSecondCapsule.getAddress().toByteArray(), ownerAccountSecondCapsule);
+			.put(ownerAccountSecondCapsule.getAddress().toByteArray(), ownerAccountSecondCapsule);
 
 		dbManager.getWitnessStore().put(ownerWitnessFirstCapsule.getAddress().toByteArray(),
-				ownerWitnessFirstCapsule);
+			ownerWitnessFirstCapsule);
 
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderTimestamp(1000000);
 		dbManager.getDynamicPropertiesStore().saveLatestBlockHeaderNumber(10);
@@ -129,7 +128,7 @@ public class ProposalDeleteActuatorTest {
 		HashMap<Long, Long> paras = new HashMap<>();
 		paras.put(0L, 3 * 27 * 1000L);
 		ProposalCreateActuator actuator =
-				new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
+			new ProposalCreateActuator(getContract(OWNER_ADDRESS, paras), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		Assert.assertEquals(dbManager.getDynamicPropertiesStore().getLatestProposalNum(), 0);
 		try {
@@ -142,7 +141,7 @@ public class ProposalDeleteActuatorTest {
 			Assert.assertEquals(proposalCapsule.getApprovals().size(), 0);
 			Assert.assertEquals(proposalCapsule.getCreateTime(), 1000000);
 			Assert.assertEquals(proposalCapsule.getExpirationTime(),
-					261200000); // 2000000 + 3 * 4 * 21600000
+				261200000); // 2000000 + 3 * 4 * 21600000
 		} catch (ContractValidateException | ContractExeException | ItemNotFoundException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -150,18 +149,18 @@ public class ProposalDeleteActuatorTest {
 
 	private Any getContract(String address, HashMap<Long, Long> paras) {
 		return Any.pack(
-				Contract.ProposalCreateContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.putAllParameters(paras)
-						.build());
+			Contract.ProposalCreateContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.putAllParameters(paras)
+				.build());
 	}
 
 	private Any getContract(String address, long id) {
 		return Any.pack(
-				Contract.ProposalDeleteContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setProposalId(id)
-						.build());
+			Contract.ProposalDeleteContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.setProposalId(id)
+				.build());
 	}
 
 	/**
@@ -173,7 +172,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(OWNER_ADDRESS, id), dbManager);
+			getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -209,7 +208,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_INVALID, id), dbManager);
+			getContract(SUPERNODE_ADDRESS_INVALID, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -231,7 +230,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_NOACCOUNT, id), dbManager);
+			getContract(SUPERNODE_ADDRESS_NOACCOUNT, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -239,7 +238,7 @@ public class ProposalDeleteActuatorTest {
 			Assert.fail("Account " + SUPERNODE_ADDRESS_NOACCOUNT + " does not exist");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Account " + SUPERNODE_ADDRESS_NOACCOUNT + " does not exist",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -254,19 +253,19 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(SUPERNODE_ADDRESS_SECOND, id), dbManager);
+			getContract(SUPERNODE_ADDRESS_SECOND, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.fail("Proposal " + id + " " + "is not proposed by "
-					+ StringUtil.createReadableString(
-					ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND))));
+				+ StringUtil.createReadableString(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND))));
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Proposal " + id + " " + "is not proposed by "
-							+ StringUtil.createReadableString(
-					ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND))),
-					e.getMessage());
+					+ StringUtil.createReadableString(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_SECOND))),
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -281,7 +280,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 2;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(OWNER_ADDRESS, id), dbManager);
+			getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -289,7 +288,7 @@ public class ProposalDeleteActuatorTest {
 			Assert.fail("Proposal " + id + " does not exist");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Proposal " + id + " does not exist",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -304,7 +303,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(OWNER_ADDRESS, id), dbManager);
+			getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -312,7 +311,7 @@ public class ProposalDeleteActuatorTest {
 			Assert.fail("Proposal " + id + " expired");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Proposal " + id + " expired",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -327,7 +326,7 @@ public class ProposalDeleteActuatorTest {
 		long id = 1;
 
 		ProposalDeleteActuator actuator = new ProposalDeleteActuator(
-				getContract(OWNER_ADDRESS, id), dbManager);
+			getContract(OWNER_ADDRESS, id), dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		ProposalCapsule proposalCapsule;
 		try {
@@ -345,7 +344,7 @@ public class ProposalDeleteActuatorTest {
 			Assert.fail("Proposal " + id + " canceled");
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Proposal " + id + " canceled",
-					e.getMessage());
+				e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

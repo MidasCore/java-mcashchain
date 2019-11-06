@@ -88,10 +88,10 @@ public class UpdateEnergyLimitContractActuatorTest {
 	public void createCapsule() {
 		// address in accountStore and the owner of contract
 		AccountCapsule accountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						ByteString.copyFromUtf8(OWNER_ADDRESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				ByteString.copyFromUtf8(OWNER_ADDRESS_ACCOUNT_NAME),
+				Protocol.AccountType.Normal);
 		dbManager.getAccountStore().put(ByteArray.fromHexString(OWNER_ADDRESS), accountCapsule);
 
 		// smartContract in contractStore
@@ -101,15 +101,15 @@ public class UpdateEnergyLimitContractActuatorTest {
 		builder.setContractAddress(ByteString.copyFrom(ByteArray.fromHexString(CONTRACT_ADDRESS)));
 		builder.setOriginEnergyLimit(SOURCE_ENERGY_LIMIT);
 		dbManager.getContractStore().put(
-				ByteArray.fromHexString(CONTRACT_ADDRESS),
-				new ContractCapsule(builder.build()));
+			ByteArray.fromHexString(CONTRACT_ADDRESS),
+			new ContractCapsule(builder.build()));
 
 		// address in accountStore not the owner of contract
 		AccountCapsule secondAccount =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SECOND_ACCOUNT_ADDRESS)),
-						ByteString.copyFromUtf8(OWNER_ADDRESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(SECOND_ACCOUNT_ADDRESS)),
+				ByteString.copyFromUtf8(OWNER_ADDRESS_ACCOUNT_NAME),
+				Protocol.AccountType.Normal);
 		dbManager.getAccountStore().put(ByteArray.fromHexString(SECOND_ACCOUNT_ADDRESS), secondAccount);
 
 		// address does not exist in accountStore
@@ -118,17 +118,17 @@ public class UpdateEnergyLimitContractActuatorTest {
 
 	private Any getContract(String accountAddress, String contractAddress, long originEnergyLimit) {
 		return Any.pack(
-				Contract.UpdateEnergyLimitContract.newBuilder()
-						.setOwnerAddress(StringUtil.hexString2ByteString(accountAddress))
-						.setContractAddress(StringUtil.hexString2ByteString(contractAddress))
-						.setOriginEnergyLimit(originEnergyLimit).build());
+			Contract.UpdateEnergyLimitContract.newBuilder()
+				.setOwnerAddress(StringUtil.hexString2ByteString(accountAddress))
+				.setContractAddress(StringUtil.hexString2ByteString(contractAddress))
+				.setOriginEnergyLimit(originEnergyLimit).build());
 	}
 
 	@Test
 	public void successUpdateEnergyLimitContract() throws InvalidProtocolBufferException {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -137,11 +137,11 @@ public class UpdateEnergyLimitContractActuatorTest {
 
 			// assert result state and energy_limit
 			Assert.assertEquals(OWNER_ADDRESS,
-					ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
+				ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
 			Assert.assertEquals(ret.getInstance().getCode(), Protocol.Transaction.Result.Code.SUCCESS);
 			Assert.assertEquals(
-					dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
-							.getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
+				dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
+					.getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -150,8 +150,8 @@ public class UpdateEnergyLimitContractActuatorTest {
 	@Test
 	public void invalidAddress() {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS_INVALID, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS_INVALID, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -168,8 +168,8 @@ public class UpdateEnergyLimitContractActuatorTest {
 	@Test
 	public void noExistAccount() {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS_NOTEXIST, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS_NOTEXIST, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -185,8 +185,8 @@ public class UpdateEnergyLimitContractActuatorTest {
 	@Test
 	public void invalidResourceEnergyLimit() {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, INVALID_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, INVALID_ENERGY_LIMIT), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -202,8 +202,8 @@ public class UpdateEnergyLimitContractActuatorTest {
 	@Test
 	public void noExistContract() {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS, NO_EXIST_CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS, NO_EXIST_CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -219,8 +219,8 @@ public class UpdateEnergyLimitContractActuatorTest {
 	@Test
 	public void callerNotContractOwner() {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(SECOND_ACCOUNT_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(SECOND_ACCOUNT_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -230,20 +230,20 @@ public class UpdateEnergyLimitContractActuatorTest {
 		} catch (TronException e) {
 			Assert.assertTrue(e instanceof ContractValidateException);
 			Assert.assertEquals(
-					"Account " + SECOND_ACCOUNT_ADDRESS + " is not the owner of the contract",
-					e.getMessage());
+				"Account " + SECOND_ACCOUNT_ADDRESS + " is not the owner of the contract",
+				e.getMessage());
 		}
 	}
 
 	@Test
 	public void twiceUpdateEnergyLimitContract() throws InvalidProtocolBufferException {
 		UpdateEnergyLimitContractActuator actuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, TARGET_ENERGY_LIMIT), dbManager);
 
 		UpdateEnergyLimitContractActuator secondActuator =
-				new UpdateEnergyLimitContractActuator(
-						getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, 90L), dbManager);
+			new UpdateEnergyLimitContractActuator(
+				getContract(OWNER_ADDRESS, CONTRACT_ADDRESS, 90L), dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -252,11 +252,11 @@ public class UpdateEnergyLimitContractActuatorTest {
 			actuator.execute(ret);
 
 			Assert.assertEquals(OWNER_ADDRESS,
-					ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
+				ByteArray.toHexString(actuator.getOwnerAddress().toByteArray()));
 			Assert.assertEquals(ret.getInstance().getCode(), Protocol.Transaction.Result.Code.SUCCESS);
 			Assert.assertEquals(
-					dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
-							.getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
+				dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
+					.getOriginEnergyLimit(), TARGET_ENERGY_LIMIT);
 
 			// second
 			secondActuator.validate();
@@ -264,8 +264,8 @@ public class UpdateEnergyLimitContractActuatorTest {
 
 			Assert.assertEquals(ret.getInstance().getCode(), Protocol.Transaction.Result.Code.SUCCESS);
 			Assert.assertEquals(
-					dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
-							.getOriginEnergyLimit(), 90L);
+				dbManager.getContractStore().get(ByteArray.fromHexString(CONTRACT_ADDRESS))
+					.getOriginEnergyLimit(), 90L);
 		} catch (ContractValidateException | ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

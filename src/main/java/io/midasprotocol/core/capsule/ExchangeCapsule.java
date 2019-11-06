@@ -39,11 +39,11 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 		return ByteArray.fromLong(number);
 	}
 
-	public long getID() {
+	public long getId() {
 		return this.exchange.getExchangeId();
 	}
 
-	public void setID(long id) {
+	public void setId(long id) {
 		this.exchange = this.exchange.toBuilder()
 			.setExchangeId(id)
 			.build();
@@ -105,7 +105,7 @@ public class ExchangeCapsule implements ProtoCapsule<Exchange> {
 	}
 
 	public byte[] createDbKey() {
-		return calculateDbKey(getID());
+		return calculateDbKey(getId());
 	}
 
 	public long transaction(long sellTokenID, long sellTokenQuant) {

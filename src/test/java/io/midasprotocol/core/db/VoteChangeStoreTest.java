@@ -43,13 +43,13 @@ public class VoteChangeStoreTest {
 	@Test
 	public void putAndGetVotes() {
 		VoteChangeCapsule voteChangeCapsule = new VoteChangeCapsule(ByteString.copyFromUtf8("100000000x"),
-				null);
+			null);
 		this.voteChangeStore.put(voteChangeCapsule.createDbKey(), voteChangeCapsule);
 
 		Assert.assertTrue("voteChangeStore is empty", voteChangeStore.iterator().hasNext());
 		Assert.assertTrue(voteChangeStore.has(voteChangeCapsule.createDbKey()));
 		VoteChangeCapsule votesSource = this.voteChangeStore
-				.get(ByteString.copyFromUtf8("100000000x").toByteArray());
+			.get(ByteString.copyFromUtf8("100000000x").toByteArray());
 		Assert.assertEquals(voteChangeCapsule.getAddress(), votesSource.getAddress());
 		Assert.assertEquals(ByteString.copyFromUtf8("100000000x"), votesSource.getAddress());
 	}

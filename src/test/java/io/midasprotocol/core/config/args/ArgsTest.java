@@ -52,11 +52,11 @@ public class ArgsTest {
 		Assert.assertEquals("0", genesisBlock.getTimestamp());
 
 		Assert.assertEquals("0x0000000000000000000000000000000000000000000000000000000000000000",
-				genesisBlock.getParentHash());
+			genesisBlock.getParentHash());
 
 		Assert.assertEquals(
-				Lists.newArrayList("cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de"),
-				args.getLocalWitnesses().getPrivateKeys());
+			Lists.newArrayList("cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de"),
+			args.getLocalWitnesses().getPrivateKeys());
 
 		Assert.assertTrue(args.isNodeDiscoveryEnable());
 		Assert.assertTrue(args.isNodeDiscoveryPersist());
@@ -72,8 +72,7 @@ public class ArgsTest {
 		// gRPC network configs checking
 		Assert.assertEquals(50051, args.getRpcPort());
 		Assert.assertEquals(Integer.MAX_VALUE, args.getMaxConcurrentCallsPerConnection());
-		Assert
-				.assertEquals(NettyServerBuilder.DEFAULT_FLOW_CONTROL_WINDOW, args.getFlowControlWindow());
+		Assert.assertEquals(NettyServerBuilder.DEFAULT_FLOW_CONTROL_WINDOW, args.getFlowControlWindow());
 		Assert.assertEquals(60000L, args.getMaxConnectionIdleInMillis());
 		Assert.assertEquals(Long.MAX_VALUE, args.getMaxConnectionAgeInMillis());
 		Assert.assertEquals(GrpcUtil.DEFAULT_MAX_MESSAGE_SIZE, args.getMaxMessageSize());
@@ -81,9 +80,9 @@ public class ArgsTest {
 		Assert.assertEquals(1L, args.getAllowCreationOfContracts());
 
 		Assert.assertEquals("cf790eaa22cdda7cc04250f5f54043f8734080dedc502514ae16c2f000be66de",
-				args.getLocalWitnesses().getPrivateKey());
+			args.getLocalWitnesses().getPrivateKey());
 		Assert.assertEquals(Wallet.getAddressPreFixString() + "2b0c293ff59d17813b11161999b367e012173bd3",
-				ByteArray.toHexString(args.getLocalWitnesses().getWitnessAccountAddress()));
+			ByteArray.toHexString(args.getLocalWitnesses().getWitnessAccountAddress()));
 
 
 	}

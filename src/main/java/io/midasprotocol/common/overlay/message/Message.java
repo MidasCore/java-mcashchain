@@ -1,14 +1,22 @@
 package io.midasprotocol.common.overlay.message;
 
+import com.google.protobuf.CodedInputStream;
 import io.midasprotocol.common.utils.Sha256Hash;
+import io.midasprotocol.core.db.Manager;
+import io.midasprotocol.core.exception.P2pException;
 import io.midasprotocol.core.net.message.MessageTypes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
+
+import static io.midasprotocol.core.exception.P2pException.TypeEnum.PROTOBUF_ERROR;
 
 public abstract class Message {
 
@@ -16,6 +24,8 @@ public abstract class Message {
 
 	protected byte[] data;
 	protected byte type;
+	@Setter
+	private static Manager manager;
 
 	public Message() {
 	}
@@ -68,4 +78,33 @@ public abstract class Message {
 		Message message = (Message) o;
 		return Arrays.equals(data, message.data);
 	}
+
+	public static void compareBytes(byte[] src, byte[] dest) throws P2pException {
+		if (src.length != dest.length) {
+			throw new P2pException(PROTOBUF_ERROR, PROTOBUF_ERROR.getDesc());
+		}
+	}
+
+	private static final Field field = ReflectionUtils
+		.findField(CodedInputStream.class, "shouldDiscardUnknownFields");
+
+	static {
+		ReflectionUtils.makeAccessible(field);
+	}
+
+	public static CodedInputStream getCodedInputStream(byte[] data) {
+		CodedInputStream codedInputStream = CodedInputStream.newInstance(data);
+		if (isFilter()) {
+			ReflectionUtils.setField(field, codedInputStream, true);
+		}
+		return codedInputStream;
+	}
+
+	public void temp() {
+	}
+
+	public static boolean isFilter() {
+		return manager.getDynamicPropertiesStore().getAllowProtoFilter() == 1;
+	}
+
 }

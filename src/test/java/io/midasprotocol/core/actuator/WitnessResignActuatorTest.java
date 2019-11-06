@@ -81,34 +81,34 @@ public class WitnessResignActuatorTest {
 	public void createCapsule() {
 		// address in accountStore and witnessStore
 		AccountCapsule accountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS)),
-						ByteString.copyFromUtf8(SUPERNODE_ADDRESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS)),
+				ByteString.copyFromUtf8(SUPERNODE_ADDRESS_ACCOUNT_NAME),
+				Protocol.AccountType.Normal);
 		dbManager.getAccountStore().put(ByteArray.fromHexString(SUPERNODE_ADDRESS), accountCapsule);
 
 		AccountCapsule ownerAccountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-						ByteString.copyFromUtf8(SUPERNODE_ADDRESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+				ByteString.copyFromUtf8(SUPERNODE_ADDRESS_ACCOUNT_NAME),
+				Protocol.AccountType.Normal);
 		ownerAccountCapsule.setWitnessStake(Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT);
 		dbManager.getAccountStore().put(ownerAccountCapsule.createDbKey(), ownerAccountCapsule);
 
 		WitnessCapsule witnessCapsule = new WitnessCapsule(
-				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS)),
-				ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
-				10_000_000L, URL);
+			ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS)),
+			ByteString.copyFrom(ByteArray.fromHexString(OWNER_ADDRESS)),
+			10_000_000L, URL);
 		dbManager.getWitnessStore().put(ByteArray.fromHexString(SUPERNODE_ADDRESS), witnessCapsule);
 
 		// address exist in accountStore, but is not witness
 		AccountCapsule accountNotWitnessCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOT_WITNESS)),
-						ByteString.copyFromUtf8(SUPERNODE_ADDRESS_NOT_WITNESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOT_WITNESS)),
+				ByteString.copyFromUtf8(SUPERNODE_ADDRESS_NOT_WITNESS_ACCOUNT_NAME),
+				Protocol.AccountType.Normal);
 		dbManager.getAccountStore()
-				.put(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOT_WITNESS), accountNotWitnessCapsule);
+			.put(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOT_WITNESS), accountNotWitnessCapsule);
 		dbManager.getWitnessStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOT_WITNESS));
 		// address does not exist in accountStore
 		dbManager.getAccountStore().delete(ByteArray.fromHexString(SUPERNODE_ADDRESS_NOTEXIST));
@@ -116,15 +116,15 @@ public class WitnessResignActuatorTest {
 
 	private Any getContract(String address, String supernodeAddress) {
 		return Any.pack(
-				Contract.WitnessResignContract.newBuilder()
-						.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
-						.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(supernodeAddress)))
-						.build());
+			Contract.WitnessResignContract.newBuilder()
+				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
+				.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(supernodeAddress)))
+				.build());
 	}
 
 	private Any getCreateWitnessContract(String address, String witnessAddress, String url) {
 		return Any.pack(
-				Contract.WitnessCreateContract.newBuilder()
+			Contract.WitnessCreateContract.newBuilder()
 				.setOwnerAddress(ByteString.copyFrom(ByteArray.fromHexString(address)))
 				.setWitnessAddress(ByteString.copyFrom(ByteArray.fromHexString(witnessAddress)))
 				.setUrl(ByteString.copyFrom(ByteArray.fromString(url)))
@@ -143,27 +143,27 @@ public class WitnessResignActuatorTest {
 		dbManager.getWitnessStore().delete(ByteArray.fromHexString(witnessAddressString));
 
 		AccountCapsule ownerAccountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(ownerAddressString)),
-						ByteString.copyFromUtf8("owner"),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(ownerAddressString)),
+				ByteString.copyFromUtf8("owner"),
+				Protocol.AccountType.Normal);
 		ownerAccountCapsule.setStake(Parameter.NodeConstant.SUPER_NODE_STAKE_AMOUNT, 1);
 		ownerAccountCapsule.setBalance(dbManager.getDynamicPropertiesStore().getAccountUpgradeCost());
 		dbManager.getAccountStore().put(ownerAccountCapsule.createDbKey(), ownerAccountCapsule);
 
 		AccountCapsule witnessAccountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(witnessAddressString)),
-						ByteString.copyFromUtf8("witness"),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(witnessAddressString)),
+				ByteString.copyFromUtf8("witness"),
+				Protocol.AccountType.Normal);
 		dbManager.getAccountStore().put(witnessAccountCapsule.createDbKey(), witnessAccountCapsule);
 
 		WitnessCreateActuator witnessCreateActuator = new WitnessCreateActuator(getCreateWitnessContract(
-				ownerAddressString, witnessAddressString, "https://midasprotocol.io"), dbManager);
+			ownerAddressString, witnessAddressString, "https://midasprotocol.io"), dbManager);
 
 		WitnessResignActuator witnessResignActuator = new WitnessResignActuator(
-				getContract(ownerAddressString, witnessAddressString),
-				dbManager);
+			getContract(ownerAddressString, witnessAddressString),
+			dbManager);
 
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
@@ -189,7 +189,7 @@ public class WitnessResignActuatorTest {
 	@Test
 	public void rightResignWitness() {
 		WitnessResignActuator actuator = new WitnessResignActuator(getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS),
-				dbManager);
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		byte[] witnessAddress = ByteArray.fromHexString(SUPERNODE_ADDRESS);
 		List<ByteString> activeWitnesses = new ArrayList<>();
@@ -216,7 +216,7 @@ public class WitnessResignActuatorTest {
 	@Test
 	public void invalidOwnerAddress() {
 		WitnessResignActuator actuator = new WitnessResignActuator(getContract(ADDRESS_INVALID, SUPERNODE_ADDRESS),
-				dbManager);
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -232,8 +232,8 @@ public class WitnessResignActuatorTest {
 	@Test
 	public void invalidSupernodeAddress() {
 		WitnessResignActuator actuator = new WitnessResignActuator(
-				getContract(OWNER_ADDRESS, ADDRESS_INVALID),
-				dbManager);
+			getContract(OWNER_ADDRESS, ADDRESS_INVALID),
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -249,8 +249,8 @@ public class WitnessResignActuatorTest {
 	@Test
 	public void noneExistWitness() {
 		WitnessResignActuator actuator = new WitnessResignActuator(
-				getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS_NOT_WITNESS),
-				dbManager);
+			getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS_NOT_WITNESS),
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -266,8 +266,8 @@ public class WitnessResignActuatorTest {
 	@Test
 	public void noneExistAccount() {
 		WitnessResignActuator actuator = new WitnessResignActuator(
-				getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS_NOTEXIST),
-				dbManager);
+			getContract(OWNER_ADDRESS, SUPERNODE_ADDRESS_NOTEXIST),
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
@@ -283,24 +283,24 @@ public class WitnessResignActuatorTest {
 	@Test
 	public void ownerNotOwnSupernode() {
 		AccountCapsule otherOwnerAccountCapsule =
-				new AccountCapsule(
-						ByteString.copyFrom(ByteArray.fromHexString(OTHER_OWNER_ADDRESS)),
-						ByteString.copyFromUtf8(SUPERNODE_ADDRESS_ACCOUNT_NAME),
-						Protocol.AccountType.Normal);
+			new AccountCapsule(
+				ByteString.copyFrom(ByteArray.fromHexString(OTHER_OWNER_ADDRESS)),
+				ByteString.copyFromUtf8(SUPERNODE_ADDRESS_ACCOUNT_NAME),
+				Protocol.AccountType.Normal);
 		dbManager.getAccountStore().put(otherOwnerAccountCapsule.createDbKey(), otherOwnerAccountCapsule);
 
 		WitnessResignActuator actuator = new WitnessResignActuator(
-				getContract(OTHER_OWNER_ADDRESS, SUPERNODE_ADDRESS),
-				dbManager);
+			getContract(OTHER_OWNER_ADDRESS, SUPERNODE_ADDRESS),
+			dbManager);
 		TransactionResultCapsule ret = new TransactionResultCapsule();
 		try {
 			actuator.validate();
 			actuator.execute(ret);
 			Assert.fail("Address " + OTHER_OWNER_ADDRESS +
-					" does not own witness " + SUPERNODE_ADDRESS);
+				" does not own witness " + SUPERNODE_ADDRESS);
 		} catch (ContractValidateException e) {
 			Assert.assertEquals("Address " + OTHER_OWNER_ADDRESS +
-					" does not own witness " + SUPERNODE_ADDRESS, e.getMessage());
+				" does not own witness " + SUPERNODE_ADDRESS, e.getMessage());
 		} catch (ContractExeException e) {
 			Assert.fail(e.getMessage());
 		}

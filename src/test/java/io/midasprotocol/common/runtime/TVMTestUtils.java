@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.protobuf.ByteString;
 import io.midasprotocol.core.Constant;
 import io.midasprotocol.utils.AbiUtil;
+import io.midasprotocol.utils.ContractUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.spongycastle.util.encoders.Hex;
 import io.midasprotocol.common.crypto.Hash;
@@ -30,8 +31,6 @@ import io.midasprotocol.protos.Protocol.Transaction.Contract.ContractType;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static io.midasprotocol.utils.ContractUtil.jsonStr2Abi;
 
 
 /**
@@ -103,10 +102,10 @@ public class TVMTestUtils {
 	public static Transaction generateDeploySmartContractAndGetTransaction(String contractName,
 																		   byte[] callerAddress,
 																		   String ABI, String code, long value, long feeLimit, long consumeUserResourcePercent,
-																		   String libraryAddressPair, long orginEngeryLimit) {
+																		   String libraryAddressPair, long originEnergyLimit) {
 
 		CreateSmartContract contract = buildCreateSmartContract(contractName, callerAddress, ABI, code,
-				value, consumeUserResourcePercent, libraryAddressPair, orginEngeryLimit);
+				value, consumeUserResourcePercent, libraryAddressPair, originEnergyLimit);
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.CreateSmartContract);
 		Transaction.Builder transactionBuilder = trxCapWithoutFeeLimit.getInstance().toBuilder();
@@ -122,10 +121,10 @@ public class TVMTestUtils {
 	public static Transaction generateDeploySmartContractAndGetTransaction(String contractName,
 																		   byte[] callerAddress,
 																		   String ABI, String code, long value, long feeLimit, long consumeUserResourcePercent,
-																		   String libraryAddressPair, long orginEngeryLimit, long tokenValue, long tokenId) {
+																		   String libraryAddressPair, long originEnergyLimit, long tokenValue, long tokenId) {
 
 		CreateSmartContract contract = buildCreateSmartContract(contractName, callerAddress, ABI, code,
-				value, consumeUserResourcePercent, libraryAddressPair, orginEngeryLimit, tokenValue,
+				value, consumeUserResourcePercent, libraryAddressPair, originEnergyLimit, tokenValue,
 				tokenId);
 		TransactionCapsule trxCapWithoutFeeLimit = new TransactionCapsule(contract,
 				ContractType.CreateSmartContract);
@@ -181,11 +180,11 @@ public class TVMTestUtils {
 	}
 
 	public static Runtime processTransactionAndReturnRuntime(Transaction trx,
-															 Manager dbmanager, BlockCapsule block)
+															 Manager dbManager, BlockCapsule block)
 			throws ContractExeException, ContractValidateException, ReceiptCheckErrException, VMIllegalException {
 		TransactionCapsule trxCap = new TransactionCapsule(trx);
 
-		TransactionTrace trace = new TransactionTrace(trxCap, dbmanager);
+		TransactionTrace trace = new TransactionTrace(trxCap, dbManager);
 		// init
 		trace.init(block);
 		//exec
@@ -267,6 +266,8 @@ public class TVMTestUtils {
 
 		trace.finalization();
 
+		trace.setResult();
+
 		return new TVMTestResult(trace.getRuntime(), trace.getReceipt(), null);
 	}
 
@@ -274,7 +275,7 @@ public class TVMTestUtils {
 															   byte[] address,
 															   String ABI, String code, long value, long consumeUserResourcePercent,
 															   String libraryAddressPair, long engeryLimit) {
-		SmartContract.ABI abi = jsonStr2ABI(ABI);
+		SmartContract.ABI abi = jsonStr2Abi(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
 			return null;
@@ -305,8 +306,8 @@ public class TVMTestUtils {
 	public static CreateSmartContract buildCreateSmartContract(String contractName,
 															   byte[] address,
 															   String ABI, String code, long value, long consumeUserResourcePercent,
-															   String libraryAddressPair, long engeryLimit, long tokenValue, long tokenId) {
-		SmartContract.ABI abi = jsonStr2ABI(ABI);
+															   String libraryAddressPair, long energyLimit, long tokenValue, long tokenId) {
+		SmartContract.ABI abi = jsonStr2Abi(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
 			return null;
@@ -317,7 +318,7 @@ public class TVMTestUtils {
 		builder.setOriginAddress(ByteString.copyFrom(address));
 		builder.setAbi(abi);
 		builder.setConsumeUserResourcePercent(consumeUserResourcePercent);
-		builder.setOriginEnergyLimit(engeryLimit);
+		builder.setOriginEnergyLimit(energyLimit);
 
 		if (value != 0) {
 			builder.setCallValue(value);
@@ -353,7 +354,7 @@ public class TVMTestUtils {
 			byte[] address,
 			String ABI, String code, long value, long consumeUserResourcePercent,
 			String libraryAddressPair, long creatorEnergyLimit) {
-		SmartContract.ABI abi = jsonStr2ABI(ABI);
+		SmartContract.ABI abi = jsonStr2Abi(ABI);
 		if (abi == null) {
 			logger.error("abi is null");
 			return null;
@@ -498,7 +499,7 @@ public class TVMTestUtils {
 		}
 	}
 
-	public static SmartContract.ABI jsonStr2ABI(String jsonStr) {
+	public static SmartContract.ABI jsonStr2Abi(String jsonStr) {
 		if (jsonStr == null) {
 			return null;
 		}
@@ -595,7 +596,7 @@ public class TVMTestUtils {
 	}
 
 
-	public static byte[] parseABI(String selectorStr, String params) {
+	public static byte[] parseAbi(String selectorStr, String params) {
 		if (params == null) {
 			params = "";
 		}
@@ -609,7 +610,7 @@ public class TVMTestUtils {
 														  String abiString, String code, long value, long consumeUserResourcePercent,
 														  long originEnergyLimit) {
 
-		SmartContract.ABI abi = jsonStr2Abi(abiString);
+		SmartContract.ABI abi = ContractUtil.jsonStr2Abi(abiString);
 		if (abi == null) {
 			return null;
 		}
@@ -633,6 +634,7 @@ public class TVMTestUtils {
 															 String argsStr,
 															 Boolean isHex, long callValue, byte[] ownerAddress) {
 
+		Wallet.setAddressPreFixByte(Constant.ADD_PRE_FIX_BYTE_MAINNET);
 		byte[] owner = ownerAddress;
 		byte[] input = Hex.decode(AbiUtil.parseMethod(method, argsStr, isHex));
 

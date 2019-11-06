@@ -53,7 +53,7 @@ public class TransactionCapsuleTest {
 	@BeforeClass
 	public static void init() {
 		Args.setParam(new String[]{"-d", dbPath},
-				Constant.TEST_CONF);
+			Constant.TEST_CONF);
 		context = new ApplicationContext(DefaultConfig.class);
 		AppT = ApplicationFactory.create(context);
 		dbManager = context.getBean(Manager.class);
@@ -88,11 +88,11 @@ public class TransactionCapsuleTest {
 	@Before
 	public void createAccountCapsule() {
 		AccountCapsule ownerCapsule =
-				new AccountCapsule(
-						ByteString.copyFromUtf8("owner"),
-						StringUtil.hexString2ByteString(OWNER_ADDRESS),
-						AccountType.Normal,
-						10_000_000_000L);
+			new AccountCapsule(
+				ByteString.copyFromUtf8("owner"),
+				StringUtil.hexString2ByteString(OWNER_ADDRESS),
+				AccountType.Normal,
+				10_000_000_000L);
 		dbManager.getAccountStore().put(ownerCapsule.createDbKey(), ownerCapsule);
 	}
 

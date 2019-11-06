@@ -26,12 +26,12 @@ public class TransactionHistoryTest {
 
 	static {
 		Args.setParam(
-				new String[]{
-						"--output-directory", dbPath,
-						"--storage-db-directory", dbDirectory,
-						"--storage-index-directory", indexDirectory
-				},
-				Constant.TEST_CONF
+			new String[]{
+				"--output-directory", dbPath,
+				"--storage-db-directory", dbDirectory,
+				"--storage-index-directory", indexDirectory
+			},
+			Constant.TEST_CONF
 		);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
@@ -63,6 +63,6 @@ public class TransactionHistoryTest {
 		Assert.assertEquals(100L, resultCapsule.getBlockNumber());
 		Assert.assertEquals(200L, resultCapsule.getBlockTimeStamp());
 		Assert.assertEquals(ByteArray.toHexString(transactionId),
-				ByteArray.toHexString(resultCapsule.getId()));
+			ByteArray.toHexString(resultCapsule.getId()));
 	}
 }

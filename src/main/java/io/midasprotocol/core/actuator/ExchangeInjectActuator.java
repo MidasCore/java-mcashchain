@@ -189,7 +189,7 @@ public class ExchangeInjectActuator extends AbstractActuator {
 		}
 
 		if (anotherTokenQuant <= 0) {
-			throw new ContractValidateException("the calculated token quant  must be greater than 0");
+			throw new ContractValidateException("the calculated token quant must be greater than 0");
 		}
 
 		long balanceLimit = dbManager.getDynamicPropertiesStore().getExchangeBalanceLimit();

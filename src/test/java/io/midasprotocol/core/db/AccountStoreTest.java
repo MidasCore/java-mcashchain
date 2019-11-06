@@ -29,12 +29,12 @@ public class AccountStoreTest {
 
 	static {
 		Args.setParam(
-				new String[]{
-						"--output-directory", dbPath,
-						"--storage-db-directory", dbDirectory,
-						"--storage-index-directory", indexDirectory
-				},
-				Constant.TEST_CONF
+			new String[]{
+				"--output-directory", dbPath,
+				"--storage-db-directory", dbDirectory,
+				"--storage-index-directory", indexDirectory
+			},
+			Constant.TEST_CONF
 		);
 		context = new ApplicationContext(DefaultConfig.class);
 	}
@@ -50,8 +50,8 @@ public class AccountStoreTest {
 	public static void init() {
 		accountStore = context.getBean(AccountStore.class);
 		AccountCapsule accountCapsule = new AccountCapsule(ByteString.copyFrom(address),
-				ByteString.copyFrom(accountName),
-				AccountType.forNumber(1));
+			ByteString.copyFrom(accountName),
+			AccountType.forNumber(1));
 		accountStore.put(data, accountCapsule);
 	}
 
@@ -59,9 +59,9 @@ public class AccountStoreTest {
 	public void get() {
 		//test get and has Method
 		Assert.assertEquals(ByteArray.toHexString(address), ByteArray
-				.toHexString(accountStore.get(data).getInstance().getAddress().toByteArray()));
+			.toHexString(accountStore.get(data).getInstance().getAddress().toByteArray()));
 		Assert.assertEquals(ByteArray.toHexString(accountName), ByteArray
-				.toHexString(accountStore.get(data).getInstance().getAccountName().toByteArray()));
+			.toHexString(accountStore.get(data).getInstance().getAccountName().toByteArray()));
 		Assert.assertTrue(accountStore.has(data));
 	}
 }

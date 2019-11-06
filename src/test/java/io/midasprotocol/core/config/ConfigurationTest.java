@@ -35,7 +35,7 @@ public class ConfigurationTest {
 
 	@Before
 	public void resetSingleton()
-			throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Field instance = Configuration.class.getDeclaredField("config");
 		instance.setAccessible(true);
 		instance.set(null, null);
@@ -44,10 +44,10 @@ public class ConfigurationTest {
 	@Test
 	public void testGetEcKey() {
 		ECKey key = ECKey.fromPrivate(
-				Hex.decode("1cd5a70741c6e583d2dd3c5f17231e608eb1e52437210d948c5085e141c2d830"));
+			Hex.decode("1cd5a70741c6e583d2dd3c5f17231e608eb1e52437210d948c5085e141c2d830"));
 
 		assertEquals(Wallet.getAddressPreFixString() + "125b6c87b3d67114b3873977888c34582f27bbb0",
-				ByteArray.toHexString(key.getAddress()));
+			ByteArray.toHexString(key.getAddress()));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

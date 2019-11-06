@@ -8,6 +8,7 @@ import io.midasprotocol.core.Wallet;
 import io.midasprotocol.core.capsule.AccountCapsule;
 import io.midasprotocol.core.capsule.ProposalCapsule;
 import io.midasprotocol.core.capsule.TransactionResultCapsule;
+import io.midasprotocol.core.config.Parameter;
 import io.midasprotocol.core.config.Parameter.ChainParameters;
 import io.midasprotocol.core.config.args.Args;
 import io.midasprotocol.core.db.Manager;
@@ -21,9 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static io.midasprotocol.core.actuator.ActuatorConstant.*;
-
-//import io.midasprotocol.core.config.Parameter.ForkBlockVersionConsts;
-//import io.midasprotocol.core.config.Parameter.ForkBlockVersionEnum;
 
 @Slf4j(topic = "actuator")
 public class ProposalCreateActuator extends AbstractActuator {
@@ -226,15 +224,12 @@ public class ProposalCreateActuator extends AbstractActuator {
 			case (15): {
 				if (entry.getValue() != 1) {
 					throw new ContractValidateException(
-						"This value ALLOW_TVM_TRANSFER_TRC10 is only allowed to be 1");
+						"This value ALLOW_TVM_TRANSFER_M1 is only allowed to be 1");
 				}
 				break;
 			}
 			// total energy limit
 			case (16): {
-//				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_2_2)) {
-//					throw new ContractValidateException("Bad chain parameter id");
-//				}
 				if (entry.getValue() < 0 || entry.getValue() > 100_000_000_000_000_000L) {
 					throw new ContractValidateException(
 						"Bad chain parameter value,valid range is [0, 100_000_000_000_000_000L]");
@@ -243,9 +238,6 @@ public class ProposalCreateActuator extends AbstractActuator {
 			}
 			// initiation of multi-signature
 			case (17): {
-//				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
-//					throw new ContractValidateException("Bad chain parameter id: ALLOW_MULTI_SIGN");
-//				}
 				if (entry.getValue() != 1) {
 					throw new ContractValidateException(
 						"This value ALLOW_MULTI_SIGN is only allowed to be 1");
@@ -254,9 +246,6 @@ public class ProposalCreateActuator extends AbstractActuator {
 			}
 			// adaptive adjustment for total Energy
 			case (18): {
-//				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
-//					throw new ContractValidateException("Bad chain parameter id: ALLOW_ADAPTIVE_ENERGY");
-//				}
 				if (entry.getValue() != 1) {
 					throw new ContractValidateException(
 						"This value ALLOW_ADAPTIVE_ENERGY is only allowed to be 1");
@@ -265,10 +254,6 @@ public class ProposalCreateActuator extends AbstractActuator {
 			}
 			// fee for updating account permission
 			case (19): {
-//				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
-//					throw new ContractValidateException(
-//							"Bad chain parameter id: UPDATE_ACCOUNT_PERMISSION_FEE");
-//				}
 				if (entry.getValue() < 0 || entry.getValue() > 100_000_000_000L) {
 					throw new ContractValidateException(
 						"Bad chain parameter value, valid range is [0, 100_000_000_000L]");
@@ -277,14 +262,33 @@ public class ProposalCreateActuator extends AbstractActuator {
 			}
 			// fee for multi-signature
 			case (20): {
-//				if (!dbManager.getForkController().pass(ForkBlockVersionEnum.VERSION_3_5)) {
-//					throw new ContractValidateException("Bad chain parameter id: MULTI_SIGN_FEE");
-//				}
 				if (entry.getValue() < 0 || entry.getValue() > 100_000_000_000L) {
 					throw new ContractValidateException(
 						"Bad chain parameter value, valid range is [0, 100_000_000_000L]");
 				}
 				break;
+			}
+			// allow protobuf data check
+			case (21): {
+				if (!dbManager.getForkController().pass(Parameter.ForkBlockVersionEnum.VERSION_0_2_0)) {
+					throw new ContractValidateException("Bad chain parameter id: ALLOW_PROTO_FILTER");
+				}
+				if (entry.getValue() != 1) {
+					throw new ContractValidateException(
+						"This value ALLOW_PROTO_FILTER is only allowed to be 1");
+				}
+				break;
+			}
+			// allow Vm constantinople
+			case (22): {
+				if (!dbManager.getForkController().pass(Parameter.ForkBlockVersionEnum.VERSION_0_2_0)) {
+					throw new ContractValidateException("Bad chain parameter id: ALLOW_VM_CONSTANTINOPLE");
+				}
+				if (entry.getValue() != 1) {
+					throw new ContractValidateException(
+						"This value ALLOW_VM_CONSTANTINOPLE is only allowed to be 1"
+					);
+				}
 			}
 			default:
 				break;

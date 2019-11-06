@@ -97,6 +97,12 @@ public class VM {
 				}
 			}
 
+			if (!VMConfig.allowVmConstantinople()) {
+				if (op == SHL || op == SHR || op == SAR || op == CREATE2 || op == EXTCODEHASH) {
+					throw Program.Exception.invalidOpCode(program.getCurrentOp());
+				}
+			}
+
 			program.setLastOp(op.val());
 			program.verifyStackSize(op.require());
 			program.verifyStackOverflow(op.require(), op.ret()); //Check not exceeding stack limits
@@ -195,6 +201,9 @@ public class VM {
 						memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 4)),
 						stack.get(stack.size() - 4).longValueSafe(), op);
 					break;
+				case EXTCODEHASH:
+					energyCost = energyCosts.getEXT_CODE_HASH();
+					break;
 				case CALL:
 				case CALLCODE:
 				case DELEGATECALL:
@@ -244,6 +253,13 @@ public class VM {
 				case CREATE:
 					energyCost = energyCosts.getCREATE() + calcMemEnergy(energyCosts, oldMemSize,
 						memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0, op);
+					break;
+				case CREATE2:
+					DataWord codeSize = stack.get(stack.size() - 3);
+					energyCost = energyCosts.getCREATE();
+					energyCost += calcMemEnergy(energyCosts, oldMemSize,
+						memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0, op);
+					energyCost += DataWord.sizeInWords(codeSize.intValueSafe()) * energyCosts.getSHA3_WORD();
 					break;
 				case LOG0:
 				case LOG1:
@@ -598,6 +614,45 @@ public class VM {
 					program.step();
 				}
 				break;
+				case SHL: {
+					DataWord word1 = program.stackPop();
+					DataWord word2 = program.stackPop();
+					final DataWord result = word2.shiftLeft(word1);
+
+					if (logger.isInfoEnabled()) {
+						hint = "" + result.value();
+					}
+
+					program.stackPush(result);
+					program.step();
+				}
+				break;
+				case SHR: {
+					DataWord word1 = program.stackPop();
+					DataWord word2 = program.stackPop();
+					final DataWord result = word2.shiftRight(word1);
+
+					if (logger.isInfoEnabled()) {
+						hint = "" + result.value();
+					}
+
+					program.stackPush(result);
+					program.step();
+				}
+				break;
+				case SAR: {
+					DataWord word1 = program.stackPop();
+					DataWord word2 = program.stackPop();
+					final DataWord result = word2.shiftRightSigned(word1);
+
+					if (logger.isInfoEnabled()) {
+						hint = "" + result.value();
+					}
+
+					program.stackPush(result);
+					program.step();
+				}
+				break;
 				case ADDMOD: {
 					DataWord word1 = program.stackPop();
 					DataWord word2 = program.stackPop();
@@ -852,6 +907,13 @@ public class VM {
 					}
 
 					program.memorySave(memOffset, codeCopy);
+					program.step();
+				}
+				break;
+				case EXTCODEHASH:{
+					DataWord address = program.stackPop();
+					byte[] codeHash = program.getCodeHashAt(address);
+					program.stackPush(codeHash);
 					program.step();
 				}
 				break;
@@ -1217,6 +1279,18 @@ public class VM {
 					program.step();
 				}
 				break;
+				case CREATE2: {
+					if (program.isStaticCall()) {
+						throw new Program.StaticCallModificationException();
+					}
+					DataWord value = program.stackPop();
+					DataWord inOffset = program.stackPop();
+					DataWord inSize = program.stackPop();
+					DataWord salt = program.stackPop();
+					program.createContract2(value, inOffset, inSize, salt);
+					program.step();
+				}
+				break;
 				case TOKENBALANCE: {
 					DataWord tokenId = program.stackPop();
 					DataWord address = program.stackPop();
@@ -1342,7 +1416,9 @@ public class VM {
 			program.setPreviouslyExecutedOp(op.val());
 		} catch (RuntimeException e) {
 			logger.info("VM halted: [{}]", e.getMessage());
-			program.spendAllEnergy();
+			if (!(e instanceof Program.TransferException)) {
+				program.spendAllEnergy();
+			}
 			program.resetFutureRefund();
 			program.stop();
 			throw e;
@@ -1372,8 +1448,7 @@ public class VM {
 				program.setRuntimeFailure(e);
 			}
 		} catch (StackOverflowError soe) {
-			logger
-				.info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
+			logger.info("\n !!! StackOverflowError: update your java run command with -Xss !!!\n", soe);
 			throw new JVMStackOverFlowException();
 		}
 	}

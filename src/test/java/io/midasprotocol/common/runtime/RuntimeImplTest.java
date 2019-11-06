@@ -177,7 +177,7 @@ public class RuntimeImplTest {
 						creatorEnergyLimit);
 
 		byte[] contractAddress = result.getContractAddress();
-		byte[] triggerData = TVMTestUtils.parseABI("testNotConstant()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testNotConstant()", null);
 		Transaction trx = generateTriggerSmartContractAndGetTransaction(callerAddress, contractAddress,
 				triggerData, value, feeLimit);
 
@@ -265,7 +265,7 @@ public class RuntimeImplTest {
 						creatorEnergyLimit);
 
 		byte[] contractAddress = result.getContractAddress();
-		byte[] triggerData = TVMTestUtils.parseABI("testNotConstant()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testNotConstant()", null);
 		Transaction trx = generateTriggerSmartContractAndGetTransaction(callerAddress, contractAddress,
 				triggerData, value, feeLimit);
 
@@ -331,7 +331,7 @@ public class RuntimeImplTest {
 						creatorEnergyLimit);
 
 		byte[] contractAddress = result.getContractAddress();
-		byte[] triggerData = TVMTestUtils.parseABI("testNotConstant()", null);
+		byte[] triggerData = TVMTestUtils.parseAbi("testNotConstant()", null);
 		Transaction trx = generateTriggerSmartContractAndGetTransaction(callerAddress, contractAddress,
 				triggerData, value, feeLimit);
 
