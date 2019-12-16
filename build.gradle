@@ -3,9 +3,12 @@ buildscript {
 		mavenCentral()
 		jcenter()
 	}
+	ext {
+		lombokVersion = '1.18.10'
+	}
 	dependencies {
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
-		classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
+		classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
 	}
 }
 plugins {
@@ -26,12 +29,10 @@ shadowJar.enabled = false
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 mainClassName = 'io.midasprotocol.program.FullNode'
-
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
+		maven(MavenPublication) {
 			from components.java
-			artifact sourceJar
 		}
 	}
 	repositories {
@@ -85,8 +86,10 @@ dependencies {
 	compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.25'
 	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
-//    compile "org.projectlombok:lombok:1.16.18"
-	compile group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+	compileOnly("org.projectlombok:lombok:${lombokVersion}")
+	testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+	annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+	testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 
@@ -245,7 +248,6 @@ def binaryRelease(taskName, jarName, mainClass) {
 		from(sourceSets.main.output) {
 			include "/**"
 		}
-
 		from {
 			configurations.compile.collect {
 				it.isDirectory() ? it : zipTree(it)
@@ -259,7 +261,9 @@ def binaryRelease(taskName, jarName, mainClass) {
 }
 
 artifacts {
-	archives(binaryRelease('buildSolidityNodeJar', 'SolidityNode', 'io.midasprotocol.program.SolidityNode'),
+	archives(
+			binaryRelease('buildSolidityNodeJar', 'SolidityNode', 'io.midasprotocol.program.SolidityNode'),
 			binaryRelease('buildFullNodeJar', 'FullNode', 'io.midasprotocol.program.FullNode'),
-			binaryRelease('buildKeystoreFactoryJar', 'KeystoreFactory', 'io.midasprotocol.program.KeystoreFactory'))
+			binaryRelease('buildKeystoreFactoryJar', 'KeystoreFactory', 'io.midasprotocol.program.KeystoreFactory')
+	)
 }
